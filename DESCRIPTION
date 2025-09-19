@@ -22,3 +22,16 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
 BugReports: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/issues
+Imports: 
+    bde,
+    dplyr,
+    EnvStats,
+    ggplot2,
+    ggtext,
+    matrixStats,
+    patchwork,
+    scales,
+    sfsmisc,
+    viridis
+Depends: 
+    tidyverse
