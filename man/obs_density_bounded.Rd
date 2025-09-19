@@ -4,7 +4,7 @@
 \alias{obs_density_bounded}
 \title{Calculates the density of emissions observations}
 \usage{
-obs_density_bounded(dataset, up, low = 0, xvals)
+obs_density_bounded(dataset, up = 1, low = 0, xvals)
 }
 \arguments{
 \item{dataset}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
