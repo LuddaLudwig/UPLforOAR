@@ -1,4 +1,4 @@
-
+#' Selects top sources from emissions dataset
 #' @param CAA_section applicable Clean Air Act section, either 112 or 129
 #' @param dataset dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
 #' @import magrittr
