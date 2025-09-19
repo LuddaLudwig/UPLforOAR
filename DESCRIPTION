@@ -28,6 +28,7 @@ Imports:
     EnvStats,
     ggplot2,
     ggtext,
+    magrittr,
     matrixStats,
     patchwork,
     scales,
