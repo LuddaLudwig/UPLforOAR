@@ -16,7 +16,7 @@ Description: National Emission Standards for Hazardous Air Pollutants (NESHAP)
   of emissions data for Emission Guidance (EG) and New Source Performance Standards (NSPS). 
   Functions for determining the best distribution to represent the emissions data 
   and calculating the corresponding Upper Predictive Limit (UPL). Functions for 
-  comparing the observation data density to predicting distriubtion density.
+  comparing the observation data density to prediction distribution density.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
