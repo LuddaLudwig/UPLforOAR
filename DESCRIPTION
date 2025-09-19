@@ -5,13 +5,13 @@ Version: 0.1.0
 Author: Ludda Ludwig
 Maintainer: Ludda Ludwig <Ludwig.Ludda@epa.gov>
 Description: National Emission Standards for Hazardous Air Pollutants (NESHAP) 
-Maximum Achievable Control Technology (MACT) floor analysis.
-Functions for determining top performers amongst a sample population 
-of emissions data for Emission Guidance (EG) and New Source Performance Standards (NSPS). 
-Functions for determining the best distribution to represent the emissions data 
-and calculating the corresponding Upper Predictive Limit (UPL). Functions for 
-comparing the observation data density to predicting distriubtion density.
-License: What license is it under?
+  Maximum Achievable Control Technology (MACT) floor analysis.
+  Functions for determining top performers amongst a sample population 
+  of emissions data for Emission Guidance (EG) and New Source Performance Standards (NSPS). 
+  Functions for determining the best distribution to represent the emissions data 
+  and calculating the corresponding Upper Predictive Limit (UPL). Functions for 
+  comparing the observation data density to predicting distriubtion density.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
