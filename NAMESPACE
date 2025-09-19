@@ -2,4 +2,5 @@
 
 export(MACT_EG)
 export(MACT_NSPS)
+export(distribution_type)
 import(magrittr)

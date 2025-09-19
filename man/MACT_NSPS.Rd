@@ -9,6 +9,9 @@ MACT_NSPS(dataset)
 \arguments{
 \item{dataset}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
 }
+\value{
+A tibble containing the emissions data for the best performing source
+}
 \description{
 Selects best performer from emissions dataset
 }

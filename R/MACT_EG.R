@@ -2,7 +2,7 @@
 #' @param CAA_section applicable Clean Air Act section, either 112 or 129
 #' @param dataset dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
 #' @import magrittr
-#' @return a tibble of the top sources to be used in UPL calculations
+#' @returns a tibble of the top sources to be used in UPL calculations
 #' @export
 
 MACT_EG=function(CAA_section=112,dataset){
