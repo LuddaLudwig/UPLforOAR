@@ -30,5 +30,13 @@ MACT_EG=function(CAA_section=112,dataset){
       dat_top=subset(dataset,dataset$sources%in%top_list)
     }
   }
+  dat_topmeans=dat_top%>%group_by(sources)%>%summarize(means=mean(emissions),
+                                                                   counts=n())
+  dat_topmeans$sources=as.factor(dat_topmeans$sources)
+  dat_topmeans$sources=fct_reorder(dat_topmeans$sources,
+                                   dat_topmeans$means,.desc = FALSE)
+  dat_top$sources=factor(dat_top$sources,levels=levels(dat_topmeans$sources))
+  dat_topmeans=arrange(dat_topmeans,means)
+  dat_top=arrange(dat_top,sources)
   return(dat_top)
 }
