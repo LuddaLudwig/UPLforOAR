@@ -38,5 +38,6 @@ MACT_EG=function(CAA_section=112,dataset){
   dat_top$sources=factor(dat_top$sources,levels=levels(dat_topmeans$sources))
   dat_topmeans=arrange(dat_topmeans,means)
   dat_top=arrange(dat_top,sources)
+  dat_top$sources=droplevels(dat_top$sources)
   return(dat_top)
 }
