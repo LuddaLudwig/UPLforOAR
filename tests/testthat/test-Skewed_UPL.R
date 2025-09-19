@@ -1,4 +1,4 @@
-test_that("Lognormal_UPL() calculates UPL assuming emissions data are lognormal", {
+test_that("Skewed_UPL() calculates UPL assuming emissions data are skew-normal", {
   top5=tibble(emissions=c(1,2,1.5,
                           1.2,3,2.2,
                           0.2,0.4,0.7,
@@ -16,6 +16,6 @@ test_that("Lognormal_UPL() calculates UPL assuming emissions data are lognormal"
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=arrange(top5,sources)
-  test_result=Lognormal_UPL(dataset=top5)
-  expect_equal(test_result,4.80939868)
+  test_result=Skewed_UPL(dataset=top5)
+  expect_equal(test_result,2.50329236)
 })
