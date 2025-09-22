@@ -1,0 +1,61 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# EPA.MACT.floor.UPL
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of EPA.MACT.floor.UPL is to provide a set of functions for handling NESHAP emissions datasets for MACT floor analysis and UPL calculations. These functions include selecting the best and top performing sources from emissions data based on appropriate Clean Air Act sections, determining the appropriate distributions for the emissions data, and calculating the UPL for EG and NSPS standards.
+
+## Installation
+
+You can install the development version of EPA.MACT.floor.UPL from [GitHub](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL) with: 
+
+``` r
+# install.packages("pak")
+pak::pak("LuddaLudwig/EPA.MACT.floor.UPL")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(EPA.MACT.floor.UPL)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(viridis)
+library(ggtext)
+library(matrixStats)
+library(scales)
+library(EnvStats)
+library(patchwork)
+library(grid)
+library(np)
+library(sfsmisc)
+## basic example code
+```
+
+What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+
+```{r cars}
+summary(cars)
+```
+
+You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+
+
