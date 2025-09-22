@@ -42,24 +42,24 @@ dat_emiss=read_csv("man/data_example/MATS_Hg.csv",col_names=TRUE)
 dat_emiss$sources=paste0(dat_emiss$`Plant Name`,"_",dat_emiss$`Unit Number`,"_",dat_emiss$boiler_id)
 dat_emiss$emissions=dat_emiss$Mercury_min_lb_MMBtu
 dat_emiss=subset(dat_emiss,select=c(sources,emissions))
+nrow(dat_emiss) # number of tests in data set
+#> [1] 387
 summary(dat_emiss$emissions)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
 dat_EG=MACT_EG(CAA_section=112,dat_emiss)
-dat_EG_avg=dat_EG%>%group_by(sources)%>%summarize(avg=mean(emissions),
-                                                                 counts=n())
+dat_EG_avg=dat_EG%>%group_by(sources)%>%summarize(avg=mean(emissions),counts=n())
 dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 ```
 
 Since there were more than 30 sources in the emissions data, the top 12%
-were chosen to represent the top sources. This yielded `nrow(dat_EG)`
-sources. The data included in this regulatory docket were test averages
-as opposed to individual runs. As such the number of future runs used in
-UPL calculations will be `1` instead of the default, an average of `3`
-runs. The appropriate distribution for the UPL calculation is
-`distribution_result_EG`.
+were chosen to represent the top sources. This yielded 47 sources. The
+data included in this regulatory docket were test averages as opposed to
+individual runs. As such the number of future runs used in UPL
+calculations will be `1` instead of the default, an average of `3` runs.
+The appropriate distribution for the UPL calculation is Normal.
 
 | Source                           | Average emission | No. of Tests |
 |:---------------------------------|-----------------:|-------------:|
@@ -72,13 +72,52 @@ runs. The appropriate distribution for the UPL calculation is
 
 Top sources for existing guidance UPL calculation
 
-    #>      speed           dist       
-    #>  Min.   : 4.0   Min.   :  2.00  
-    #>  1st Qu.:12.0   1st Qu.: 26.00  
-    #>  Median :15.0   Median : 36.00  
-    #>  Mean   :15.4   Mean   : 42.98  
-    #>  3rd Qu.:19.0   3rd Qu.: 56.00  
-    #>  Max.   :25.0   Max.   :120.00
+``` r
+UPL_EG=Lognormal_UPL(dataset=dat_EG,
+                     future_tests = 1,
+                     significance=0.99)
+```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+Next we calculate the UPL using the appropriate distribution, which
+results in a MACT floor standard of 8.4825717^{-8} lb/MMBtu in Hg
+emissions. Lastly, we will want to plot observation density of emissions
+data as well as the Normal distribution that was used to as the
+probability density function for the UPL calculation.
+
+``` r
+# make an ordered sequence of emissions throughout which we will define the probability density
+x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
+# next define the probability density along x_hat and at each emission observation.
+obs_dens_results=obs_density(dat_EG,xvals=x_hat)
+Obs_onPoint=obs_dens_results$Obs_onPoint
+obs_den_df=obs_dens_results$obs_den_df
+# create a probability density function along the same x_hat based on estimated distribution parameters
+pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
+              sd=sd(log(dat_EG$emissions),na.rm=T))
+pred_dat=tibble(x_hat,pdf_ln)
+# plot the results
+ggplot()+
+  geom_line(data=obs_den_df,aes(y=y,x=(x),color='a'),size=0.75)+
+  geom_area(data=obs_den_df,aes(y=y,x=(x),fill='a'),alpha=0.25)+
+  geom_point(aes(y=ydens,x=(emissions)),data=Obs_onPoint,
+             size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(aes(y=pdf_ln,x=(x_hat),color='b'),
+               data = pred_dat,size=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=(x_hat),fill='b'),alpha=0.25,
+            data = pred_dat)+
+  ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
+  ggtitle("Overall observed population")+
+  pop_distr_theme+
+  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),color='a'),size=1,linetype=1)+
+  geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  coord_cartesian(clip='off')+labs(color='Distribution:',fill='Distribution:')+
+  geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
+           alpha=0.5,outside=TRUE,color='black')+
+  scale_color_manual(values=c('black','#984EA3'),
+                     labels=c('Observations','Lognormal'))+
+  scale_fill_manual(values=c('black','#984EA3'),
+                    labels=c('Observations','Lognormal'))
+#> Error: object 'pop_distr_theme' not found
+```
