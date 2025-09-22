@@ -1,5 +1,5 @@
 test_that("obs_density() calculate densities for emissions observations", {
-  top5=tibble(emissions=c(1,2,1.5,
+  top5=tibble::tibble(emissions=c(1,2,1.5,
                           1.2,3,2.2,
                           0.2,0.4,0.7,
                           0.1,0.2,0.3,1.1,1.2,1.3,
@@ -9,13 +9,13 @@ test_that("obs_density() calculate densities for emissions observations", {
                         rep('C',3),
                         rep('D',6),
                         rep('E',6)))
-  dat_topmeans=top5%>%group_by(sources)%>%summarize(means=mean(emissions),
-                                                    counts=n())
+  dat_topmeans=top5%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),
+                                                    counts=dplyr::n())
   dat_topmeans$sources=as.factor(dat_topmeans$sources)
-  dat_topmeans$sources=fct_reorder(dat_topmeans$sources,
+  dat_topmeans$sources=forcats::fct_reorder(dat_topmeans$sources,
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
-  top5=arrange(top5,sources)
+  top5=dplyr::arrange(top5,sources)
   xhat=seq(0,3*max(top5$emissions),length.out=1024)
   test_result=obs_density(dataset=top5,low=0,xvals=xhat)
   # ggplot(data=test_result$Obs_onPoint)+
@@ -35,8 +35,8 @@ test_that("obs_density() calculate densities for emissions observations", {
   # write_csv(test_result$Obs_onPoint,"test-Obs_onPoint.csv")
   # write_csv(test_result$obs_den_df,"test-obs_den_df.csv")
 
-  compare1 <- read_csv(test_path("test_obs_densities", "test-Obs_onPoint.csv"),show_col_types = FALSE)
-  compare2 <- read_csv(test_path("test_obs_densities", "test-obs_den_df.csv"),show_col_types = FALSE)
+  compare1 <- readr::read_csv(test_path("test_obs_densities", "test-Obs_onPoint.csv"),show_col_types = FALSE)
+  compare2 <- readr::read_csv(test_path("test_obs_densities", "test-obs_den_df.csv"),show_col_types = FALSE)
 
   expect_equal(test_result$Obs_onPoint,compare1)
   expect_equal(test_result$obs_den_df,compare2)

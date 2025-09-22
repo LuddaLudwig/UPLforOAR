@@ -10,14 +10,14 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
   n=length(dataset$emissions)
   df=n-1
   var.s=sum((dataset$emissions-mean(dataset$emissions))^2)*(1/(n-1))
-  tscore=qt(significance,df)
+  tscore=stats::qt(significance,df)
   u0=1/(1+(tscore^2/(n-1)))
   b=c(0.5,0.5,0.5,0.5,1,1)
   w=b*(u0/(1-u0))
   a=c((n-1)/2,(n+1)/2,(n+3)/2,(n+5)/2,(n-1)/2,(n+1)/2)
   term=c()
   for (i in 1:6){
-    c11=pgamma(w[i],shape=a[i],rate=1)
+    c11=stats::pgamma(w[i],shape=a[i],rate=1)
     c12=gamma(a[i])
     c13=((exp(-w[i])*w[i]^a[i])/gamma(a[i]))
     c14=(a[i]-1-w[i])/(2*b[i])
@@ -45,7 +45,7 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
       term=c()
 
       for (i in 1:6){
-        c11=pgamma(w[i],shape=a[i],rate=1)
+        c11=stats::pgamma(w[i],shape=a[i],rate=1)
         c12=gamma(a[i])
         c13=((exp(-w[i])*w[i]^a[i])/gamma(a[i]))
         c14=(a[i]-1-w[i])/(2*b[i])
@@ -75,7 +75,7 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
       term=c()
 
       for (i in 1:6){
-        c11=pgamma(w[i],shape=a[i],rate=1)
+        c11=stats::pgamma(w[i],shape=a[i],rate=1)
         c12=gamma(a[i])
         c13=((exp(-w[i])*w[i]^a[i])/gamma(a[i]))
         c14=(a[i]-1-w[i])/(2*b[i])

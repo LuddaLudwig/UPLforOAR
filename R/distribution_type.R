@@ -13,9 +13,9 @@ distribution_type=function(dataset){
 
   moment3=EnvStats::skewness(dataset$emissions,method='fisher')
   moment3_ln=EnvStats::skewness(dataset$ln_emiss,method='fisher')
-  std.s=sd(dataset$emissions)
+  std.s=stats::sd(dataset$emissions)
   mean_log=mean(dataset$ln_emiss,na.rm=TRUE)
-  sd_log=sd(dataset$ln_emiss,na.rm=TRUE)
+  sd_log=stats::sd(dataset$ln_emiss,na.rm=TRUE)
   n=length(dataset$emissions)
   emission_mean=mean(dataset$emissions)
 
@@ -35,7 +35,7 @@ distribution_type=function(dataset){
   S_SE_kurt=abs(moment4/SE_kurtosis)
   Sln_SE_kurt=abs(moment4_ln/SE_kurtosis)
 
-  norm_zscore=qnorm(0.975)
+  norm_zscore=stats::qnorm(0.975)
 
   if (S_SE_skew>norm_zscore){
     raw_distr1='Non-normal'

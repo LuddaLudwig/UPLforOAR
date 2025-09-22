@@ -10,7 +10,7 @@
 #' @export
 obs_density=function(dataset,xvals,up=Inf,low=0,kernel='gamma',bw=NULL){
   if (is.null(bw)){
-    bw=sd(dataset$emissions)*nrow(dataset)^(-2/5)
+    bw=stats::sd(dataset$emissions)*nrow(dataset)^(-2/5)
   }
   Obs_onPoint=np::npuniden.boundary(X=dataset$emissions,Y=dataset$emissions,
                                 a=low,b=up,proper=TRUE,kertype = kernel,h=bw)

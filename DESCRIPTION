@@ -26,6 +26,7 @@ SystemRequirements: JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
     dplyr,
     EnvStats,
+    forcats,
     ggplot2,
     ggtext,
     magrittr,
@@ -34,9 +35,8 @@ Imports:
     patchwork,
     scales,
     sfsmisc,
+    tibble,
     viridis
-Depends: 
-    tidyverse
 RoxygenNote: 7.3.3
 Suggests: 
     testthat (>= 3.0.0)

@@ -11,12 +11,12 @@ Lognormal_UPL=function(dataset,future_tests=3,significance=0.99){
                            !is.finite(dataset$ln_emiss),NA)
   n=length(dataset$emissions)
   mean_log=mean(dataset$ln_emiss,na.rm=TRUE)
-  sd_log=sd(dataset$ln_emiss,na.rm=TRUE)
+  sd_log=stats::sd(dataset$ln_emiss,na.rm=TRUE)
   # using Gram-Charlmier Series A distribution approximation
   beta2=(exp(4*sd_log^2)+2*exp(3*sd_log^2)+3*exp(2*sd_log^2)-3)/(future_tests*(exp(sd_log^2)-1)^2)+3*(1-1/future_tests)
   beta1=sqrt(exp(sd_log^2)-1)*(exp(sd_log^2)+2)/sqrt(future_tests)
   zvals=seq(-5,5,by=0.0101)
-  Fgzs=abs((1-(beta1/6)*(3*zvals-zvals^3)+(beta2-3)*(3-6*zvals^2+zvals^4)/24)*dnorm(zvals))
+  Fgzs=abs((1-(beta1/6)*(3*zvals-zvals^3)+(beta2-3)*(3-6*zvals^2+zvals^4)/24)*stats::dnorm(zvals))
   Fg_cdf=cumsum(Fgzs/sum(Fgzs))
   zscore1=zvals[Fg_cdf>significance][1]
   mean_convert=exp(mean_log+(sd_log^2)/2)
