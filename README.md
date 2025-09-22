@@ -110,7 +110,7 @@ ggplot()+
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
-  EPA.MACT.floor.UPL::pop_distr_theme()+
+  pop_distr_theme()+
   geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
                  color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
@@ -124,5 +124,18 @@ ggplot()+
                      labels=c('Observations','Lognormal'))+
   scale_fill_manual(values=c('black','#984EA3'),
                     labels=c('Observations','Lognormal'))
-#> Error: 'pop_distr_theme' is not an exported object from 'namespace:EPA.MACT.floor.UPL'
 ```
+
+<div class="figure">
+
+<img src="man/figures/README-plot1-1.png" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line." width="100%" />
+<p class="caption">
+Observation density of Hg for the overall population. The obseration
+data are indicated in black as points and a rug along the axis, with the
+observation density distribution as a black line. The fitted lognormal
+distribution that is the basis of the UPL estimate is colored purple.
+The average of the Hg emissions is the vertical black line and the UPL
+result is the vertical purple line.
+</p>
+
+</div>
