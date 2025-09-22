@@ -110,7 +110,7 @@ ggplot()+
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
-  pop_distr_theme()+
+  pop_distr_theme+
   geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
                  color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
@@ -124,5 +124,5 @@ ggplot()+
                      labels=c('Observations','Lognormal'))+
   scale_fill_manual(values=c('black','#984EA3'),
                     labels=c('Observations','Lognormal'))
-#> Error in pop_distr_theme(): could not find function "pop_distr_theme"
+#> Error: object 'pop_distr_theme' not found
 ```
