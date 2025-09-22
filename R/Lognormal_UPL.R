@@ -1,17 +1,17 @@
 #' Calculate UPL assuming lognormally distributed emissions data
-#' @param dataset Emissions data from either the best source or top performers, must have a column named 'emissions'
+#' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'
 #' @param future_tests Integer of future runs to use in prediction, the default is 3 since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is 0.99.
 #' @returns upper predictive limit at significance level for the average of the number of future test runs
 #' @export
 #' @references "An upper prediction limit for the arithmetic mean of a lognormal random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
-Lognormal_UPL=function(dataset,future_tests=3,significance=0.99){
-  dataset$ln_emiss=log(dataset$emissions)
-  dataset$ln_emiss=replace(dataset$ln_emiss,
-                           !is.finite(dataset$ln_emiss),NA)
-  n=length(dataset$emissions)
-  mean_log=mean(dataset$ln_emiss,na.rm=TRUE)
-  sd_log=stats::sd(dataset$ln_emiss,na.rm=TRUE)
+Lognormal_UPL=function(data,future_tests=3,significance=0.99){
+  data$ln_emiss=log(data$emissions)
+  data$ln_emiss=replace(data$ln_emiss,
+                           !is.finite(data$ln_emiss),NA)
+  n=length(data$emissions)
+  mean_log=mean(data$ln_emiss,na.rm=TRUE)
+  sd_log=stats::sd(data$ln_emiss,na.rm=TRUE)
   # using Gram-Charlmier Series A distribution approximation
   beta2=(exp(4*sd_log^2)+2*exp(3*sd_log^2)+3*exp(2*sd_log^2)-3)/(future_tests*(exp(sd_log^2)-1)^2)+3*(1-1/future_tests)
   beta1=sqrt(exp(sd_log^2)-1)*(exp(sd_log^2)+2)/sqrt(future_tests)

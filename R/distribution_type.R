@@ -1,31 +1,31 @@
 #' Determines the type of distribution from skewness and kurtosis ratios
-#' @param dataset Emissions data from either the best source or top performers, must have a column named 'emissions'
+#' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'
 #' @returns string with either 'Normal', 'Lognormal', or 'Skewed'
 #' @references  On measuring skewness and kurtosis" Dragan Doric, et al. Springer Science + Buisness Media B. V. 2007. September 20, 2007
 #' @export
-distribution_type=function(dataset){
+distribution_type=function(data){
   # note that there are multiple methods for evaluating skewness and kurtosis
   # the fisher method in the EnvStats package is the same as what is used in Excel
   # and is a good selection for small (<300) samples from an unknown population
-  dataset$ln_emiss=log(dataset$emissions)
-  dataset$ln_emiss=replace(dataset$ln_emiss,
-                                 !is.finite(dataset$ln_emiss),NA)
+  data$ln_emiss=log(data$emissions)
+  data$ln_emiss=replace(data$ln_emiss,
+                                 !is.finite(data$ln_emiss),NA)
 
-  moment3=EnvStats::skewness(dataset$emissions,method='fisher')
-  moment3_ln=EnvStats::skewness(dataset$ln_emiss,method='fisher')
-  std.s=stats::sd(dataset$emissions)
-  mean_log=mean(dataset$ln_emiss,na.rm=TRUE)
-  sd_log=stats::sd(dataset$ln_emiss,na.rm=TRUE)
-  n=length(dataset$emissions)
-  emission_mean=mean(dataset$emissions)
+  moment3=EnvStats::skewness(data$emissions,method='fisher')
+  moment3_ln=EnvStats::skewness(data$ln_emiss,method='fisher')
+  std.s=stats::sd(data$emissions)
+  mean_log=mean(data$ln_emiss,na.rm=TRUE)
+  sd_log=stats::sd(data$ln_emiss,na.rm=TRUE)
+  n=length(data$emissions)
+  emission_mean=mean(data$emissions)
 
   if (n>3){
-    moment4=EnvStats::kurtosis(dataset$emissions,method='fisher')
-    moment4_ln=EnvStats::kurtosis(dataset$ln_emiss,method='fisher')
+    moment4=EnvStats::kurtosis(data$emissions,method='fisher')
+    moment4_ln=EnvStats::kurtosis(data$ln_emiss,method='fisher')
     SE_kurtosis=sqrt(24*n*(n^2-1)/((n-2)*(n+3)*(n-3)*(n+5)))
   } else if (n==3){
-    moment4=sum((dataset$emissions-emission_mean)^4)/((3-1)*(std.s)^4)-3
-    moment4_ln=sum((dataset$ln_emiss-mean_log)^4)/((3-1)*(sd_log)^4)-3
+    moment4=sum((data$emissions-emission_mean)^4)/((3-1)*(std.s)^4)-3
+    moment4_ln=sum((data$ln_emiss-mean_log)^4)/((3-1)*(sd_log)^4)-3
     SE_kurtosis=sqrt(24/n)
   }
 

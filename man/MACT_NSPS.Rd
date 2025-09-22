@@ -2,16 +2,16 @@
 % Please edit documentation in R/MACT_NSPS.R
 \name{MACT_NSPS}
 \alias{MACT_NSPS}
-\title{Selects best performer from emissions dataset}
+\title{Selects best performer from emissions data}
 \usage{
-MACT_NSPS(dataset)
+MACT_NSPS(data)
 }
 \arguments{
-\item{dataset}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
+\item{data}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
 }
 \value{
-A tibble containing the emissions data for the best performing source
+data set (tibble) containing the emissions data for the best performing source
 }
 \description{
-Selects best performer from emissions dataset
+Selects best performer from emissions data
 }

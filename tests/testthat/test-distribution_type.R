@@ -16,6 +16,6 @@ test_that("distribution_type() determines best distribution", {
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  test_result=distribution_type(dataset=top5)
+  test_result=distribution_type(data=top5)
   expect_equal(test_result,'Lognormal')
 })

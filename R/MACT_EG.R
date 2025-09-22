@@ -1,20 +1,20 @@
-#' Selects top sources from emissions dataset
+#' Selects top sources from emissions data
 #' @param CAA_section applicable Clean Air Act section, either 112 or 129
-#' @param dataset dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
+#' @param data dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
 #' @import magrittr
-#' @returns a tibble of the top sources to be used in UPL calculations
+#' @returns data set (tibble) of the top sources to be used in UPL calculations
 #' @export
 
-MACT_EG=function(CAA_section=112,dataset){
+MACT_EG=function(CAA_section=112,data){
 
-  dat_means=dataset%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions))
-  n_sources=length(unique(dataset$sources))
+  dat_means=data%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions))
+  n_sources=length(unique(data$sources))
 
   if (CAA_section==129){
     n_topsources=ceiling(0.12*n_sources)
     set.seed(1)
     source_index=sample.int(n_sources,n_topsources)
-    dat_top=dataset[source_index,]
+    dat_top=data[source_index,]
 
   } else if (CAA_section==112){
     # select top performers
@@ -22,12 +22,12 @@ MACT_EG=function(CAA_section=112,dataset){
       n_topsources=ceiling(0.12*n_sources)
       top_list=dat_means[order(dat_means$means,decreasing=F),]
       top_list=top_list$sources[1:n_topsources]
-      dat_top=subset(dataset,dataset$sources%in%top_list)
+      dat_top=subset(data,data$sources%in%top_list)
     } else if (n_sources<30){
       n_topsources=5
       top_list=dat_means[order(dat_means$means,decreasing=F),]
       top_list=top_list$sources[1:n_topsources]
-      dat_top=subset(dataset,dataset$sources%in%top_list)
+      dat_top=subset(data,data$sources%in%top_list)
     }
   }
   dat_topmeans=dat_top%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),

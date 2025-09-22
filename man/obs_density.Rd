@@ -4,10 +4,10 @@
 \alias{obs_density}
 \title{Calculates the density of emissions observations}
 \usage{
-obs_density(dataset, xvals, up = Inf, low = 0, kernel = "gamma", bw = NULL)
+obs_density(data, xvals, up = Inf, low = 0, kernel = "gamma", bw = NULL)
 }
 \arguments{
-\item{dataset}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
+\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
 
 \item{xvals}{ordered sequence of emissions to define emission densities along.}
 

@@ -22,6 +22,6 @@ test_that("MACT_NSPS() selects top sources", {
   best_source=tibble::tibble(emissions=c(0.001,0.002,0.0015),sources=rep('TP',3))
   best_source$sources=factor(best_source$sources)
   dat_test=rbind(top5,others,best_source)
-  test_result=MACT_NSPS(dataset=dat_test)
+  test_result=MACT_NSPS(data=dat_test)
   expect_equal(test_result,best_source)
 })

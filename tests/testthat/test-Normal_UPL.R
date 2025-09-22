@@ -16,6 +16,6 @@ test_that("Normal_UPL() calculates UPL assuming emissions data are normal", {
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  test_result=Normal_UPL(dataset=top5)
+  test_result=Normal_UPL(data=top5)
   expect_equal(test_result,2.20703524203375)
 })
