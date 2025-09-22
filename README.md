@@ -94,7 +94,8 @@ x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
 obs_dens_results=obs_density(dat_EG,xvals=x_hat)
 Obs_onPoint=obs_dens_results$Obs_onPoint
 obs_den_df=obs_dens_results$obs_den_df
-# create a probability density function along the same x_hat based on estimated distribution parameters
+# create a probability density function along the same x_hat
+# based on estimated distribution parameters
 pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
               sd=sd(log(dat_EG$emissions),na.rm=T))
 pred_dat=tibble(x_hat,pdf_ln)
