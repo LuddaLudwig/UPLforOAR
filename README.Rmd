@@ -60,18 +60,18 @@ nrow(dat_emiss) # number of tests in data set
 summary(dat_emiss$emissions)
 
 dat_EG=MACT_EG(CAA_section=112,dat_emiss)
-dat_EG_avg=dat_EG%>%group_by(sources)%>%summarize(avg=mean(emissions),counts=n())
+dat_EG_avg=dat_EG%>%group_by(sources)%>%
+  summarize(avg=mean(emissions),counts=n())
 dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 
 ```
-Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be `1` instead of the default, an average of `3` runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`.
-
 ```{r EG table}
 knitr::kable(dat_EG_avg%>%mutate(across(c(2),~signif(.,digits=4)))%>%head(),
              caption="Top sources for existing guidance UPL calculation",
              col.names=c('Source','Average emission','No. of Tests'),digits=12)
 ```
+Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`.
 ```{r UPL, echo=TRUE}
 UPL_EG=Lognormal_UPL(dataset=dat_EG,
                      future_tests = 1,
@@ -79,9 +79,11 @@ UPL_EG=Lognormal_UPL(dataset=dat_EG,
 ```
 Next we calculate the UPL using the appropriate distribution, which results in a MACT floor standard of `r UPL_EG` lb/MMBtu in Hg emissions. Lastly, we will want to plot observation density of emissions data as well as the `r distribution_result_EG` distribution that was used to as the probability density function for the UPL calculation. 
 ```{r plot1, echo=TRUE, fig.cap="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line."}
-# make an ordered sequence of emissions throughout which we will define the probability density
+# make an ordered sequence of emissions 
+# for which we will define the probability density
 x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
-# next define the probability density along x_hat and at each emission observation.
+# next define the probability density along x_hat
+# and at each emission observation.
 obs_dens_results=obs_density(dat_EG,xvals=x_hat)
 Obs_onPoint=obs_dens_results$Obs_onPoint
 obs_den_df=obs_dens_results$obs_den_df
@@ -101,12 +103,14 @@ ggplot()+
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
-  pop_distr_theme+
-  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),color='a'),size=1,linetype=1)+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
+                 color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
   scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
   scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+labs(color='Distribution:',fill='Distribution:')+
+  coord_cartesian(clip='off')+
+  labs(color='Distribution:',fill='Distribution:')+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
            alpha=0.5,outside=TRUE,color='black')+
   scale_color_manual(values=c('black','#984EA3'),

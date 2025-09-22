@@ -49,17 +49,11 @@ summary(dat_emiss$emissions)
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
 dat_EG=MACT_EG(CAA_section=112,dat_emiss)
-dat_EG_avg=dat_EG%>%group_by(sources)%>%summarize(avg=mean(emissions),counts=n())
+dat_EG_avg=dat_EG%>%group_by(sources)%>%
+  summarize(avg=mean(emissions),counts=n())
 dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 ```
-
-Since there were more than 30 sources in the emissions data, the top 12%
-were chosen to represent the top sources. This yielded 47 sources. The
-data included in this regulatory docket were test averages as opposed to
-individual runs. As such the number of future runs used in UPL
-calculations will be `1` instead of the default, an average of `3` runs.
-The appropriate distribution for the UPL calculation is Normal.
 
 | Source                           | Average emission | No. of Tests |
 |:---------------------------------|-----------------:|-------------:|
@@ -71,6 +65,13 @@ The appropriate distribution for the UPL calculation is Normal.
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
 Top sources for existing guidance UPL calculation
+
+Since there were more than 30 sources in the emissions data, the top 12%
+were chosen to represent the top sources. This yielded 47 sources. The
+data included in this regulatory docket were test averages as opposed to
+individual runs. As such the number of future runs used in UPL
+calculations will be 1 instead of the default, an average of 3 runs. The
+appropriate distribution for the UPL calculation is Normal.
 
 ``` r
 UPL_EG=Lognormal_UPL(dataset=dat_EG,
@@ -85,9 +86,11 @@ data as well as the Normal distribution that was used to as the
 probability density function for the UPL calculation.
 
 ``` r
-# make an ordered sequence of emissions throughout which we will define the probability density
+# make an ordered sequence of emissions 
+# for which we will define the probability density
 x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
-# next define the probability density along x_hat and at each emission observation.
+# next define the probability density along x_hat
+# and at each emission observation.
 obs_dens_results=obs_density(dat_EG,xvals=x_hat)
 Obs_onPoint=obs_dens_results$Obs_onPoint
 obs_den_df=obs_dens_results$obs_den_df
@@ -107,17 +110,19 @@ ggplot()+
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
-  pop_distr_theme+
-  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),color='a'),size=1,linetype=1)+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
+                 color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
   scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
   scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+labs(color='Distribution:',fill='Distribution:')+
+  coord_cartesian(clip='off')+
+  labs(color='Distribution:',fill='Distribution:')+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
            alpha=0.5,outside=TRUE,color='black')+
   scale_color_manual(values=c('black','#984EA3'),
                      labels=c('Observations','Lognormal'))+
   scale_fill_manual(values=c('black','#984EA3'),
                     labels=c('Observations','Lognormal'))
-#> Error: object 'pop_distr_theme' not found
+#> Error in pop_distr_theme(): could not find function "pop_distr_theme"
 ```
