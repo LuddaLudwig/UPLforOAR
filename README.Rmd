@@ -103,7 +103,7 @@ ggplot()+
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
-  pop_distr_theme+
+  pop_distr_theme()+
   geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
                  color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
