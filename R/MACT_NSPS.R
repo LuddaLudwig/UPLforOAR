@@ -8,6 +8,7 @@ MACT_NSPS=function(dataset){
   top_list=dat_means[order(dat_means$means,decreasing=F),]
   top_source=top_list$sources[1]
   dat_top=subset(dataset,dataset$sources==top_source)
+  dat_top$sources=as.factor(dat_top$sources)
   dat_top$sources=droplevels(dat_top$sources)
   return(dat_top)
 }

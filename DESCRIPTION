@@ -24,13 +24,13 @@ URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
 BugReports: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/issues
 SystemRequirements: JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
-    bde,
     dplyr,
     EnvStats,
     ggplot2,
     ggtext,
     magrittr,
     matrixStats,
+    np,
     patchwork,
     scales,
     sfsmisc,
