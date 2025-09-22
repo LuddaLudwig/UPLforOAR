@@ -86,6 +86,22 @@ data as well as the Normal distribution that was used to as the
 probability density function for the UPL calculation.
 
 ``` r
+# make an ordered sequence of emissions 
+# for which we will define the probability density
+x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
+# next define the probability density along x_hat
+# and at each emission observation.
+obs_dens_results=obs_density(dat_EG,xvals=x_hat)
+Obs_onPoint=obs_dens_results$Obs_onPoint
+obs_den_df=obs_dens_results$obs_den_df
+# create a probability density function along the same x_hat
+# based on estimated distribution parameters
+pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
+              sd=sd(log(dat_EG$emissions),na.rm=T))
+pred_dat=tibble(x_hat,pdf_ln)
+```
+
+``` r
 ggplot()+
   geom_line(data=obs_den_df,aes(y=y,x=(x),color='a'),size=0.75)+
   geom_area(data=obs_den_df,aes(y=y,x=(x),fill='a'),alpha=0.25)+
@@ -113,16 +129,14 @@ ggplot()+
                     labels=c('Observations','Lognormal'))
 ```
 
-<div class="figure" style="text-align: center">
-
-<img src="man/figures/README-plot1-1.png" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line."  />
-<p class="caption">
-Observation density of Hg for the overall population. The obseration
-data are indicated in black as points and a rug along the axis, with the
-observation density distribution as a black line. The fitted lognormal
-distribution that is the basis of the UPL estimate is colored purple.
-The average of the Hg emissions is the vertical black line and the UPL
-result is the vertical purple line.
-</p>
-
-</div>
+<figure>
+<img src="man/figures/README-plot1-1.png"
+alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line." />
+<figcaption aria-hidden="true">Observation density of Hg for the overall
+population. The obseration data are indicated in black as points and a
+rug along the axis, with the observation density distribution as a black
+line. The fitted lognormal distribution that is the basis of the UPL
+estimate is colored purple. The average of the Hg emissions is the
+vertical black line and the UPL result is the vertical purple
+line.</figcaption>
+</figure>
