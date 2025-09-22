@@ -1,7 +1,7 @@
 #' Custom theme for ggplot overall density distributions
 #' @description
 #' This function sets ggplot2 theme elements
-#'
+#' @export
 pop_distr_theme <- function () {
   ggplot2::theme_bw() %+replace%
     ggplot2::theme(plot.margin=grid::unit(c(0.1,0.5,0.5,0.1),"cm"),
