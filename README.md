@@ -86,20 +86,6 @@ data as well as the Normal distribution that was used to as the
 probability density function for the UPL calculation.
 
 ``` r
-# make an ordered sequence of emissions 
-# for which we will define the probability density
-x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
-# next define the probability density along x_hat
-# and at each emission observation.
-obs_dens_results=obs_density(dat_EG,xvals=x_hat)
-Obs_onPoint=obs_dens_results$Obs_onPoint
-obs_den_df=obs_dens_results$obs_den_df
-# create a probability density function along the same x_hat
-# based on estimated distribution parameters
-pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
-              sd=sd(log(dat_EG$emissions),na.rm=T))
-pred_dat=tibble(x_hat,pdf_ln)
-# plot the results
 ggplot()+
   geom_line(data=obs_den_df,aes(y=y,x=(x),color='a'),size=0.75)+
   geom_area(data=obs_den_df,aes(y=y,x=(x),fill='a'),alpha=0.25)+
