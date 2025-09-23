@@ -1,6 +1,6 @@
 #' Calculates the density of emissions observations
 #' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'
-#' @param xvals ordered sequence of emissions to define emission densities along.
+#' @param xvals ordered sequence of emissions to define emission densities along. Default is NULL, in which case xvals is a 1024 length sequence between 0 and 3*max(data$emissions)
 #' @param up optional upper limit to bound density, default is Inf.
 #' @param low optional lower limit to bound density, default is 0.
 #' @param bw optional bandwidth, default is NULL in which case bw = sd(emissions)*n^(-2/5), where n is number of emissions.
@@ -8,9 +8,12 @@
 #' @references Bandwidth is set following
 #' @returns a list containing two tibbles, Obs_onPoint with exact emission observations and densities, and obs_den_df with densities for every position given in xvals.
 #' @export
-obs_density=function(data,xvals,up=Inf,low=0,kernel='gamma',bw=NULL){
+obs_density=function(data,xvals=NULL,up=Inf,low=0,kernel='gamma',bw=NULL){
   if (is.null(bw)){
     bw=stats::sd(data$emissions)*nrow(data)^(-2/5)
+  }
+  if (is.null(xvals)){
+    xvals=seq(0,3*max(data$emissions),length.out=1024)
   }
   Obs_onPoint=np::npuniden.boundary(X=data$emissions,Y=data$emissions,
                                 a=low,b=up,proper=TRUE,kertype = kernel,h=bw)
