@@ -18,4 +18,16 @@ test_that("Skewed_UPL() calculates UPL assuming emissions data are skew-normal",
   top5=dplyr::arrange(top5,sources)
   test_result=Skewed_UPL(data=top5)
   expect_equal(test_result,2.50329236)
+
+  small_dat=tibble::tibble(emissions=c(4.2,5.1,6.7),
+                           sources=c("A","A","A"))
+  test_result2=tryCatch({
+    result <- Skewed_UPL(data=small_dat)
+    print(result)
+  }, error = function(e) {
+      output=(e$message)
+    return(output)
+  })
+  err_message="data must have more than 3 observations for skew UPL method"
+  expect_equal(test_result2,err_message)
 })

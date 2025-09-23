@@ -5,12 +5,12 @@
 #' @returns upper predictive limit at significance level for the average of the number of future test runs
 #' @export
 Skewed_UPL=function(data,future_tests=3,significance=0.99){
-  kurtosis=EnvStats::kurtosis(data$emissions,method='fisher')
-  skewness=EnvStats::skewness(data$emissions,method='fisher')
   n=length(data$emissions)
   if (n<=3){
     stop("data must have more than 3 observations for skew UPL method")
   }
+  kurtosis=EnvStats::kurtosis(data$emissions,method='fisher')
+  skewness=EnvStats::skewness(data$emissions,method='fisher')
   df=n-1
   var.s=sum((data$emissions-mean(data$emissions))^2)*(1/(n-1))
   tscore=stats::qt(significance,df)
