@@ -5,9 +5,12 @@
 #' @returns upper predictive limit at significance level for the average of the number of future test runs
 #' @export
 Skewed_UPL=function(data,future_tests=3,significance=0.99){
+  n=length(data$emissions)
+  if (n<=3){
+    stop("data must have more than 3 observations for skew UPL method")
+  }
   kurtosis=EnvStats::kurtosis(data$emissions,method='fisher')
   skewness=EnvStats::skewness(data$emissions,method='fisher')
-  n=length(data$emissions)
   df=n-1
   var.s=sum((data$emissions-mean(data$emissions))^2)*(1/(n-1))
   tscore=stats::qt(significance,df)
@@ -34,7 +37,7 @@ Skewed_UPL=function(data,future_tests=3,significance=0.99){
   if (abs(current_prob-0.99)<0.0001){
     PI99_skew=mean(data$emissions)+tscore*sqrt(var.s*(1/n+1/future_tests))
   } else if ((current_prob-0.99)>0){
-    tstat_list=seq(from=tscore,length.out=1000,by=-0.001)
+    tstat_list=seq(from=tscore,length.out=20000,by=0.0001)
     new_prob=c()
     for (t in 1:length(tstat_list)){
 
@@ -61,10 +64,11 @@ Skewed_UPL=function(data,future_tests=3,significance=0.99){
 
       new_prob[t]=1-(term[1]/2+skewness*calc3-kurtosis*calc4+skewness^2*calc5)
     }
-    new_tscore=tstat_list[new_prob<significance][1]
+
+    new_tscore=tstat_list[(abs(new_prob-0.99)<0.0001)][1]
     PI99_skew=mean(data$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
   } else if ((current_prob-0.99)<0){
-    tstat_list=seq(from=tscore,length.out=1000,by=0.001)
+    tstat_list=seq(from=tscore,length.out=20000,by=0.0001)
     new_prob=c()
     for (t in 1:length(tstat_list)){
 
@@ -91,7 +95,7 @@ Skewed_UPL=function(data,future_tests=3,significance=0.99){
 
       new_prob[t]=1-(term[1]/2+skewness*calc3-kurtosis*calc4+skewness^2*calc5)
     }
-    new_tscore=tstat_list[new_prob>significance][1]
+    new_tscore=tstat_list[(abs(new_prob-0.99)<0.0001)][1]
     PI99_skew=mean(data$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
   }
   return(PI99_skew)
