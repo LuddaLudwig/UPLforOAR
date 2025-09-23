@@ -468,6 +468,27 @@
       "Maintainer": "Matthew Lincoln <matthew.d.lincoln@gmail.com>",
       "Repository": "CRAN"
     },
+    "coda": {
+      "Package": "coda",
+      "Version": "0.19-4.1",
+      "Source": "Repository",
+      "Date": "2020-09-30",
+      "Title": "Output Analysis and Diagnostics for MCMC",
+      "Authors@R": "c(person(\"Martyn\", \"Plummer\", role=c(\"aut\",\"cre\",\"trl\"), email=\"martyn.plummer@gmail.com\"), person(\"Nicky\", \"Best\", role=\"aut\"), person(\"Kate\", \"Cowles\", role=\"aut\"), person(\"Karen\", \"Vines\", role=\"aut\"), person(\"Deepayan\", \"Sarkar\", role=\"aut\"), person(\"Douglas\", \"Bates\", role=\"aut\"), person(\"Russell\", \"Almond\", role=\"aut\"), person(\"Arni\", \"Magnusson\", role=\"aut\"))",
+      "Depends": [
+        "R (>= 2.14.0)"
+      ],
+      "Imports": [
+        "lattice"
+      ],
+      "Description": "Provides functions for summarizing and plotting the output from Markov Chain Monte Carlo (MCMC) simulations, as well as diagnostic tests of convergence to the equilibrium distribution of the Markov chain.",
+      "License": "GPL (>= 2)",
+      "NeedsCompilation": "no",
+      "Author": "Martyn Plummer [aut, cre, trl], Nicky Best [aut], Kate Cowles [aut], Karen Vines [aut], Deepayan Sarkar [aut], Douglas Bates [aut], Russell Almond [aut], Arni Magnusson [aut]",
+      "Maintainer": "Martyn Plummer <martyn.plummer@gmail.com>",
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
+    },
     "commonmark": {
       "Package": "commonmark",
       "Version": "2.0.0",
@@ -1381,6 +1402,24 @@
       "Repository": "CRAN",
       "Encoding": "UTF-8"
     },
+    "mnormt": {
+      "Package": "mnormt",
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Date": "2022-09-26",
+      "Title": "The Multivariate Normal and t Distributions, and Their Truncated Versions",
+      "Author": "Adelchi Azzalini [aut, cre], Alan Genz [aut] (most Fortran code), Alan Miller [ctb] (Fortran routine PHI), Michael J. Wichura  [ctb] (Fortran routine PHINV), G. W. Hill [ctb] (Fortran routine STDINV), Yihong Ge [ctb] (Fortran routines BNVU and MVBVU).",
+      "Maintainer": "Adelchi Azzalini <adelchi.azzalini@unipd.it>",
+      "Depends": [
+        "R (>= 2.2.0)"
+      ],
+      "Description": "Functions are provided for computing the density and the distribution function of d-dimensional normal and \"t\" random variables, possibly truncated (on one side or two sides),  and for generating random  vectors sampled from these distributions, except sampling from the truncated \"t\". Moments of arbitrary order of a multivariate truncated normal are computed, and converted to cumulants up to order 4.  Probabilities are computed via non-Monte Carlo methods; different routines  are used in the case d=1, d=2, d=3, d>3, if d denotes the dimensionality.",
+      "License": "GPL-2 | GPL-3",
+      "URL": "http://azzalini.stat.unipd.it/SW/Pkg-mnormt/",
+      "NeedsCompilation": "yes",
+      "Encoding": "UTF-8",
+      "Repository": "RSPM"
+    },
     "nortest": {
       "Package": "nortest",
       "Version": "1.0-4",
@@ -1427,6 +1466,26 @@
       "Repository": "CRAN",
       "NeedsCompilation": "yes",
       "Author": "Jeffrey S. Racine [aut, cre], Tristen Hayfield [aut]",
+      "Encoding": "UTF-8"
+    },
+    "numDeriv": {
+      "Package": "numDeriv",
+      "Version": "2016.8-1.1",
+      "Source": "Repository",
+      "Title": "Accurate Numerical Derivatives",
+      "Description": "Methods for calculating (usually) accurate numerical first and second order derivatives. Accurate calculations  are done using 'Richardson''s' extrapolation or, when applicable, a complex step derivative is available. A simple difference  method is also provided. Simple difference is (usually) less accurate but is much quicker than 'Richardson''s' extrapolation and provides a  useful cross-check.  Methods are provided for real scalar and vector valued functions.",
+      "Depends": [
+        "R (>= 2.11.1)"
+      ],
+      "LazyLoad": "yes",
+      "ByteCompile": "yes",
+      "License": "GPL-2",
+      "Copyright": "2006-2011, Bank of Canada. 2012-2016, Paul Gilbert",
+      "Author": "Paul Gilbert and Ravi Varadhan",
+      "Maintainer": "Paul Gilbert <pgilbert.ttv9z@ncf.ca>",
+      "URL": "http://optimizer.r-forge.r-project.org/",
+      "NeedsCompilation": "no",
+      "Repository": "RSPM",
       "Encoding": "UTF-8"
     },
     "patchwork": {
@@ -1797,6 +1856,30 @@
       "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
       "Repository": "CRAN"
     },
+    "rjags": {
+      "Package": "rjags",
+      "Version": "4-17",
+      "Source": "Repository",
+      "Date": "2025-03-24",
+      "Title": "Bayesian Graphical Models using MCMC",
+      "Authors@R": "c(person(\"Martyn\", \"Plummer\", role=c(\"aut\",\"cre\"), email=\"martyn.plummer@gmail.com\"), person(\"Alexey\", \"Stukalov\", role=\"ctb\"), person(\"Matt\", \"Denwood\", role=\"ctb\"))",
+      "Depends": [
+        "R (>= 2.14.0)",
+        "coda (>= 0.13)"
+      ],
+      "SystemRequirements": "JAGS 4.x.y",
+      "URL": "https://mcmc-jags.sourceforge.io",
+      "Suggests": [
+        "tcltk"
+      ],
+      "Description": "Interface to the JAGS MCMC library.",
+      "License": "GPL (== 2)",
+      "NeedsCompilation": "yes",
+      "Author": "Martyn Plummer [aut, cre], Alexey Stukalov [ctb], Matt Denwood [ctb]",
+      "Maintainer": "Martyn Plummer <martyn.plummer@gmail.com>",
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
+    },
     "rlang": {
       "Package": "rlang",
       "Version": "1.1.6",
@@ -1847,6 +1930,46 @@
       "Author": "Lionel Henry [aut, cre], Hadley Wickham [aut], mikefc [cph] (Hash implementation based on Mike's xxhashlite), Yann Collet [cph] (Author of the embedded xxHash library), Posit, PBC [cph, fnd]",
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
+    },
+    "runjags": {
+      "Package": "runjags",
+      "Version": "2.2.2-5",
+      "Source": "Repository",
+      "Title": "Interface Utilities, Model Templates, Parallel Computing Methods and Additional Distributions for MCMC Models in JAGS",
+      "Date": "2025-04-09",
+      "Authors@R": "c(person(\"Matthew\", \"Denwood\", role=c(\"aut\",\"cre\"), email=\"md@sund.ku.dk\"), person(\"Martyn\", \"Plummer\", role=\"cph\",  comment=\"Copyright holder of the code in src/distributions/DPar1.*, configure.ac, R/rjags_functions.R, and original copyright holder of some modified code where indicated\"))",
+      "Description": "User-friendly interface utilities for MCMC models via Just Another Gibbs Sampler (JAGS), facilitating the use of parallel (or distributed) processors for multiple chains, automated control of convergence and sample length diagnostics, and evaluation of the performance of a model using drop-k validation or against simulated data. Template model specifications can be generated using a standard lme4-style formula interface to assist users less familiar with the BUGS syntax.  A JAGS extension module provides additional distributions including the Pareto family of distributions, the DuMouchel prior and the half-Cauchy prior.",
+      "URL": "https://github.com/ku-awdc/runjags",
+      "BugReports": "https://github.com/ku-awdc/runjags/issues",
+      "License": "GPL-2",
+      "Encoding": "UTF-8",
+      "SystemRequirements": "JAGS >= 4.3.0 (https://mcmc-jags.sourceforge.io/)",
+      "Depends": [
+        "R (>= 2.14.0)"
+      ],
+      "Imports": [
+        "parallel",
+        "lattice (>= 0.20-10)",
+        "coda (>= 0.17-1)",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "rjags (>= 4-7)",
+        "modeest",
+        "testthat (>= 3.0.0)",
+        "knitr",
+        "markdown",
+        "spelling"
+      ],
+      "Config/testthat/edition": "3",
+      "VignetteBuilder": "knitr",
+      "Language": "en-GB",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Matthew Denwood [aut, cre], Martyn Plummer [cph] (Copyright holder of the code in src/distributions/DPar1.*, configure.ac, R/rjags_functions.R, and original copyright holder of some modified code where indicated)",
+      "Maintainer": "Matthew Denwood <md@sund.ku.dk>",
+      "Repository": "RSPM"
     },
     "scales": {
       "Package": "scales",
@@ -1947,6 +2070,37 @@
       "NeedsCompilation": "no",
       "Author": "Martin Maechler [aut, cre] (ORCID: <https://orcid.org/0000-0002-8685-9910>), Werner Stahel [ctb] (Functions: compresid2way(), f.robftest(), last(), p.scales(), p.dnorm()), Andreas Ruckstuhl [ctb] (Functions: p.arrows(), p.profileTraces(), p.res.2x()), Christian Keller [ctb] (Functions: histBxp(), p.tachoPlot()), Kjetil Halvorsen [ctb] (Functions: KSd(), ecdf.ksCI()), Alain Hauser [ctb] (Functions: cairoSwd(), is.whole(), toLatex.numeric()*), Christoph Buser [ctb] (to function Duplicated()), Lorenz Gygax [ctb] (to function p.res.2fact()), Bill Venables [ctb] (Functions: empty.dimnames(), primes()), Tony Plate [ctb] (to inv.seq()), Isabelle Flückiger [ctb], Marcel Wolbers [ctb], Markus Keller [ctb], Sandrine Dudoit [ctb], Jane Fridlyand [ctb], Greg Snow [ctb] (to loessDemo()), Henrik Aa. Nielsen [ctb] (to loessDemo()), Vincent Carey [ctb], Ben Bolker [ctb], Philippe Grosjean [ctb], Frédéric Ibanez [ctb], Caterina Savi [ctb], Charles Geyer [ctb], Jens Oehlschlägel [ctb]",
       "Repository": "CRAN"
+    },
+    "sn": {
+      "Package": "sn",
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Date": "2023-04-04",
+      "Title": "The Skew-Normal and Related Distributions Such as the Skew-t and the SUN",
+      "Authors@R": "person(given = \"Adelchi\", family = \"Azzalini\",  email = \"adelchi.azzalini@unipd.it\", role = c(\"aut\", \"cre\"),  comment = c(ORCID = \"0000-0002-7583-1269\"))",
+      "Maintainer": "Adelchi Azzalini <adelchi.azzalini@unipd.it>",
+      "Depends": [
+        "R (>= 3.0.0)",
+        "methods",
+        "stats4"
+      ],
+      "Imports": [
+        "mnormt (>= 2.0.0)",
+        "numDeriv",
+        "utils",
+        "quantreg"
+      ],
+      "Suggests": [
+        "R.rsp"
+      ],
+      "VignetteBuilder": "R.rsp",
+      "Description": "Build and manipulate probability distributions of the skew-normal  family and some related ones, notably the skew-t and the SUN families.  For the skew-normal and the skew-t distributions, statistical methods are  provided for data fitting and model diagnostics, in the univariate and the  multivariate case.",
+      "License": "GPL-2 | GPL-3",
+      "URL": "http://azzalini.stat.unipd.it/SN/",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Adelchi Azzalini [aut, cre] (<https://orcid.org/0000-0002-7583-1269>)",
+      "Repository": "RSPM"
     },
     "stringi": {
       "Package": "stringi",

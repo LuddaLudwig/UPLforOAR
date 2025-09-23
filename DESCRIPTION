@@ -33,10 +33,14 @@ Imports:
     magrittr,
     matrixStats,
     np,
+    parallel,
     patchwork,
     readr,
+    rjags,
+    runjags,
     scales,
     sfsmisc,
+    sn,
     tibble,
     viridis
 RoxygenNote: 7.3.3
