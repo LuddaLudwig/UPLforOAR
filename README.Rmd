@@ -66,7 +66,7 @@ knitr::kable(dat_EG_avg%>%mutate(across(c(2),~signif(.,digits=4)))%>%head(),
 ```
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`.
 ```{r UPL, echo=TRUE}
-UPL_EG=Lognormal_UPL(dataset=dat_EG,
+UPL_EG=Lognormal_UPL(data=dat_EG,
                      future_tests = 1,
                      significance=0.99)
 ```

@@ -2,18 +2,18 @@
 % Please edit documentation in R/MACT_EG.R
 \name{MACT_EG}
 \alias{MACT_EG}
-\title{Selects top sources from emissions dataset}
+\title{Selects top sources from emissions data}
 \usage{
-MACT_EG(CAA_section = 112, dataset)
+MACT_EG(CAA_section = 112, data)
 }
 \arguments{
 \item{CAA_section}{applicable Clean Air Act section, either 112 or 129}
 
-\item{dataset}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
+\item{data}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
 }
 \value{
-a tibble of the top sources to be used in UPL calculations
+data set (tibble) of the top sources to be used in UPL calculations
 }
 \description{
-Selects top sources from emissions dataset
+Selects top sources from emissions data
 }

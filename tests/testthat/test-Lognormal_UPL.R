@@ -16,6 +16,6 @@ test_that("Lognormal_UPL() calculates UPL assuming emissions data are lognormal"
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  test_result=Lognormal_UPL(dataset=top5)
+  test_result=Lognormal_UPL(data=top5)
   expect_equal(test_result,4.80939868)
 })

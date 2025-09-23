@@ -1,5 +1,5 @@
 #' Calculates the density of emissions observations
-#' @param dataset Emissions data from either the best source or top performers, must have a column named 'emissions'
+#' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'
 #' @param xvals ordered sequence of emissions to define emission densities along.
 #' @param up optional upper limit to bound density, default is Inf.
 #' @param low optional lower limit to bound density, default is 0.
@@ -8,16 +8,16 @@
 #' @references Bandwidth is set following
 #' @returns a list containing two tibbles, Obs_onPoint with exact emission observations and densities, and obs_den_df with densities for every position given in xvals.
 #' @export
-obs_density=function(dataset,xvals,up=Inf,low=0,kernel='gamma',bw=NULL){
+obs_density=function(data,xvals,up=Inf,low=0,kernel='gamma',bw=NULL){
   if (is.null(bw)){
-    bw=stats::sd(dataset$emissions)*nrow(dataset)^(-2/5)
+    bw=stats::sd(data$emissions)*nrow(data)^(-2/5)
   }
-  Obs_onPoint=np::npuniden.boundary(X=dataset$emissions,Y=dataset$emissions,
+  Obs_onPoint=np::npuniden.boundary(X=data$emissions,Y=data$emissions,
                                 a=low,b=up,proper=TRUE,kertype = kernel,h=bw)
-  obs_den_df=np::npuniden.boundary(X=dataset$emissions,Y=xvals,a=low,b=up,
+  obs_den_df=np::npuniden.boundary(X=data$emissions,Y=xvals,a=low,b=up,
                                proper=TRUE,kertype = kernel,h=bw)
   obs_den_df=tibble::tibble(x=xvals,y=obs_den_df$f)
-  Obs_onPoint=tibble::tibble(emissions=dataset$emissions,ydens=Obs_onPoint$f)
+  Obs_onPoint=tibble::tibble(emissions=data$emissions,ydens=Obs_onPoint$f)
   test_int=sfsmisc::integrate.xy(obs_den_df$x,obs_den_df$y)
   if (abs(test_int-1)>0.05){
     warning("density distribution does not integrate to 1, consider adjusting bandwidth or kernel choice")

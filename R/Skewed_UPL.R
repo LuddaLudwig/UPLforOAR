@@ -1,15 +1,15 @@
 #' Calculate UPL assuming skew-normal distributed emissions data
-#' @param dataset Emissions data from either the best source or top performers, must have a column named 'emissions'
+#' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'
 #' @param future_tests Integer of future runs to use in prediction, the default is 3 since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is 0.99.
 #' @returns upper predictive limit at significance level for the average of the number of future test runs
 #' @export
-Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
-  kurtosis=EnvStats::kurtosis(dataset$emissions,method='fisher')
-  skewness=EnvStats::skewness(dataset$emissions,method='fisher')
-  n=length(dataset$emissions)
+Skewed_UPL=function(data,future_tests=3,significance=0.99){
+  kurtosis=EnvStats::kurtosis(data$emissions,method='fisher')
+  skewness=EnvStats::skewness(data$emissions,method='fisher')
+  n=length(data$emissions)
   df=n-1
-  var.s=sum((dataset$emissions-mean(dataset$emissions))^2)*(1/(n-1))
+  var.s=sum((data$emissions-mean(data$emissions))^2)*(1/(n-1))
   tscore=stats::qt(significance,df)
   u0=1/(1+(tscore^2/(n-1)))
   b=c(0.5,0.5,0.5,0.5,1,1)
@@ -32,7 +32,7 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
   calc5=(n-1)*(2*n+5)*term[1]/72-(n-1)*(2*n^2+5*n+8)*term[2]/(24*n)+(n-1)*(2*n^2+5*n+12)*term[3]/(24*n)-(n-1)*(2*n^2+5*n+12)*term[4]/(72*n)
   current_prob=1-(term[1]/2+skewness*calc3-kurtosis*calc4+skewness^2*calc5)
   if (abs(current_prob-0.99)<0.0001){
-    PI99_skew=mean(dataset$emissions)+tscore*sqrt(var.s*(1/n+1/future_tests))
+    PI99_skew=mean(data$emissions)+tscore*sqrt(var.s*(1/n+1/future_tests))
   } else if ((current_prob-0.99)>0){
     tstat_list=seq(from=tscore,length.out=1000,by=-0.001)
     new_prob=c()
@@ -62,7 +62,7 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
       new_prob[t]=1-(term[1]/2+skewness*calc3-kurtosis*calc4+skewness^2*calc5)
     }
     new_tscore=tstat_list[new_prob<significance][1]
-    PI99_skew=mean(dataset$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
+    PI99_skew=mean(data$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
   } else if ((current_prob-0.99)<0){
     tstat_list=seq(from=tscore,length.out=1000,by=0.001)
     new_prob=c()
@@ -92,7 +92,7 @@ Skewed_UPL=function(dataset,future_tests=3,significance=0.99){
       new_prob[t]=1-(term[1]/2+skewness*calc3-kurtosis*calc4+skewness^2*calc5)
     }
     new_tscore=tstat_list[new_prob>significance][1]
-    PI99_skew=mean(dataset$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
+    PI99_skew=mean(data$emissions)+new_tscore*sqrt(var.s*(1/n+1/future_tests))
   }
   return(PI99_skew)
 }

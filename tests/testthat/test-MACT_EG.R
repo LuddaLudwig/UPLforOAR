@@ -20,6 +20,6 @@ test_that("MACT_EG() selects top sources", {
                             15,4,5.7),
                 sources=c(rep('F',12),rep('G',3)))
   dat_test=rbind(top5,others)
-  test_result=MACT_EG(dataset=dat_test)
+  test_result=MACT_EG(data=dat_test)
   expect_equal(test_result,top5)
 })

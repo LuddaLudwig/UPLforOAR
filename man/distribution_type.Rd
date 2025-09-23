@@ -4,10 +4,10 @@
 \alias{distribution_type}
 \title{Determines the type of distribution from skewness and kurtosis ratios}
 \usage{
-distribution_type(dataset)
+distribution_type(data)
 }
 \arguments{
-\item{dataset}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
+\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
 }
 \value{
 string with either 'Normal', 'Lognormal', or 'Skewed'

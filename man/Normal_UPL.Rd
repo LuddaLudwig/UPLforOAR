@@ -4,10 +4,10 @@
 \alias{Normal_UPL}
 \title{Calculate UPL assuming normally distributed emissions data}
 \usage{
-Normal_UPL(dataset, future_tests = 3, significance = 0.99)
+Normal_UPL(data, future_tests = 3, significance = 0.99)
 }
 \arguments{
-\item{dataset}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
+\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
 
 \item{future_tests}{Integer of future runs to use in prediction, the default is 3 since compliance uses 1 test average of 3 runs.}
 

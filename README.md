@@ -74,7 +74,7 @@ calculations will be 1 instead of the default, an average of 3 runs. The
 appropriate distribution for the UPL calculation is Normal.
 
 ``` r
-UPL_EG=Lognormal_UPL(dataset=dat_EG,
+UPL_EG=Lognormal_UPL(data=dat_EG,
                      future_tests = 1,
                      significance=0.99)
 ```
