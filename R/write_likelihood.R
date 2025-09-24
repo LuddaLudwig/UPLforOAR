@@ -1,6 +1,6 @@
 #' Writes likelihood scripts for JAGS model calls
 #' @description
-#' This function writes an R script for JAGS to call based on the selected distribution and prior. The initial values and priors are uninformative and set based on emissions data. The likelihood distributions are truncated to (0,3*max(emissions))
+#' This function writes an R script for JAGS to call based on the selected distribution and prior. The initial values and priors are uninformative and set based on emissions data. The likelihood distributions are truncated to (0,3*max(data$emissions))
 #' @param distribution any of c('Normal','Gamma','Skewed','Lognormal','Beta').
 #' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'.
 #' @returns object model_code, which is a string for the written R script that JAGS can call, par_list which is the list of parameters traced while running the JAGS model, dat_inits which is a list of initial parameter values and random seeds for 3 chains, and the distribution used in likelihood model.
@@ -36,7 +36,7 @@ write_likelihood=function(distribution='Normal',data){
           for (k in 1:n_draws){
             emission_hat[k]~dnorm(emission_mean,tau_em)T(0,3*maxOfY)
           }
-          for (h in 1:1024){
+          for (h in 1:n_x_hat){
             pdf_hat[h]<- dnorm(x_hat[h],emission_mean,tau_em)
           }
         }",file=JAGS_model)
@@ -73,7 +73,7 @@ write_likelihood=function(distribution='Normal',data){
           for (k in 1:n_draws){
             emission_hat[k]~dlnorm(u_ln,tau_ln)T(0,3*maxOfY)
           }
-          for (h in 1:1024){
+          for (h in 1:n_x_hat){
             pdf_hat[h]<- dlnorm(x_hat[h],u_ln,tau_ln)
           }
         }",file=JAGS_model)
@@ -141,7 +141,7 @@ write_likelihood=function(distribution='Normal',data){
           for (k in 1:n_draws){
             emission_hat[k]~dgamma(shape_em,rate_em)T(0,3*maxOfY)
           }
-          for (h in 1:1024){
+          for (h in 1:n_x_hat){
             pdf_hat[h]<- dgamma(x_hat[h],shape_em,rate_em)
           }
         }",file=JAGS_model)
@@ -175,7 +175,7 @@ write_likelihood=function(distribution='Normal',data){
           for (k in 1:n_draws){
             emission_hat[k]~dbeta(alpha_em,beta_em)T(0,3*maxOfY)
           }
-          for (h in 1:1024){
+          for (h in 1:n_x_hat){
             pdf_hat[h]<- dbeta(x_hat[h],alpha_em,beta_em)
           }
         }",file=JAGS_model)

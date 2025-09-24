@@ -17,7 +17,7 @@ model {
           for (k in 1:n_draws){
             emission_hat[k]~dlnorm(u_ln,tau_ln)T(0,3*maxOfY)
           }
-          for (h in 1:1024){
+          for (h in 1:n_x_hat){
             pdf_hat[h]<- dlnorm(x_hat[h],u_ln,tau_ln)
           }
         }
