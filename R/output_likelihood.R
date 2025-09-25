@@ -5,7 +5,7 @@
 #' @description
 #' 'output_likelihood() takes the jags_model_run produced by run_likelihood(), merges the mcmc chains and calculates the UPL as well as providing the predicted pdf.
 #'
-output_Bayes=function(jags_model,significance=0.99){
+output_likelihood=function(jags_model,significance=0.99){
   distribution=jags_model$distribution
   data=jags_model$data
   future_tests=jags_model$future_tests
@@ -18,12 +18,12 @@ output_Bayes=function(jags_model,significance=0.99){
     skew_quant=as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model$run_results,vars="skew")))
     hat_quant=matrix(nrow=length(locat_quant),ncol=future_tests,data=NA)
-    pdf_obs=matrix(ncol=nrow(dataset),nrow=length(locat_quant),data=NA)
+    pdf_obs=matrix(ncol=nrow(data),nrow=length(locat_quant),data=NA)
     pdf_hat=matrix(ncol=length(xvals),nrow=length(locat_quant),data=NA)
     for (i in 1:length(locat_quant)){
       Fy_sn=sn::dsn(xvals,xi=(locat_quant[i]),
                 omega=(scale_quant[i]),alpha=(skew_quant[i]))
-      pdf_obs[i,]=sn::dsn(dataset$emissions,xi=(locat_quant[i]),
+      pdf_obs[i,]=sn::dsn(data$emissions,xi=(locat_quant[i]),
                       omega=(scale_quant[i]),alpha=(skew_quant[i]))
       pdf_hat[i,]=Fy_sn
       if (all(Fy_sn==0)){
@@ -47,7 +47,7 @@ output_Bayes=function(jags_model,significance=0.99){
   }
   names(hat_quant)=sprintf('run%s',seq(1:future_tests))
   run3_mean=matrixStats::rowMeans(hat_quant)
-  pred_99_3rep=stats::quantile(as.matrix(na.omit(run3_mean)),
+  pred_99_3rep=stats::quantile(as.matrix(stats::na.omit(run3_mean)),
                                probs=c(significance))
 
   pdf_hat_quant=matrixStats::colQuantiles(pdf_hat,probs=c(0.5))
