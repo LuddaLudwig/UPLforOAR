@@ -36,6 +36,7 @@ Imports:
     parallel,
     patchwork,
     readr,
+    rjags,
     runjags,
     scales,
     sfsmisc,
