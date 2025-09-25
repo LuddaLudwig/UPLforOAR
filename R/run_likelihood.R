@@ -8,6 +8,7 @@
 #' @param xvals ordered sequence of emissions at which to predict probability density. Default is NULL, in which case x_hat is a 1024 length sequence between 0 and 3*max(data$emissions)
 #'
 run_likelihood=function(data,xvals=NULL,model_input,future_tests=3){
+  Sys.setenv("_R_CHECK_LIMIT_CORES_" = FALSE)
   verify_install=runjags::testjags(silent = TRUE)
   if (!verify_install$JAGS.available){
     stop('Please install JAGS')

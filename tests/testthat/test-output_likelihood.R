@@ -22,7 +22,7 @@ test_that("output_likelihood organizes mcmc results and calculates UPL", {
   runcount=4
   runmod=run_likelihood(data=top5,model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
-  run_results=as.matrix(runmod$run_results$mcmc)
+  run_results=as.matrix(runmod$run_results$mcmc[[1]])
   # saveRDS(run_results,'test_mcmc.rds')
   load_results=readRDS(test_path('test_output','test_mcmc.rds'))
 

@@ -9,7 +9,7 @@ write_likelihood(distribution, write_wd = NULL)
 \arguments{
 \item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
 
-\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'.}
+\item{write_wd}{defulat is NULL, in which case the JAGS scripts are written into JAGS folder in package directory}
 }
 \value{
 object model_code, which is a string for the written R script that JAGS can call and the distribution used in likelihood model.

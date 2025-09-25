@@ -1,4 +1,4 @@
-test_that("run_likelihood() runs JAGS models from write_likelihood()", {
+test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   top5=tibble::tibble(emissions=c(1,2,1.5,
                                   1.2,3,2.2,
                                   0.2,0.4,0.7,
