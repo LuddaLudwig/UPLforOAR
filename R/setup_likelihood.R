@@ -6,7 +6,7 @@
 #' @returns object model_code, which is a string for the written R script that JAGS can call, par_list which is the list of parameters traced while running the JAGS model, dat_inits which is a list of initial parameter values and random seeds for 3 chains, and the distribution used in likelihood model.
 #'
 setup_likelihood=function(distribution,data){
-  JAGS_path=system.file("R",package="EPA.MACT.floor.UPL",mustWork=TRUE)
+  JAGS_path=system.file("JAGS",package="EPA.MACT.floor.UPL",mustWork=TRUE)
   if (distribution=="Normal"){
     JAGS_model=runjags::read.jagsfile(paste0(JAGS_path,
                                              '/Emission_normal_JAGS.R'))
