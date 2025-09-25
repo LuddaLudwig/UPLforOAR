@@ -1,4 +1,4 @@
-test_that("write_likelihood() writes R scripts for JAGS model calls", {
+test_that("setup_likelihood() calls JAGS model scripts with initial values and par_list", {
   top5=tibble::tibble(emissions=c(1,2,1.5,
                                   1.2,3,2.2,
                                   0.2,0.4,0.7,
@@ -17,7 +17,7 @@ test_that("write_likelihood() writes R scripts for JAGS model calls", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=write_likelihood(data=top5,distribution='Lognormal')
+  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
 
   expect_equal(JAGS_model_stuff$par_list,c('emission_hat','pdf_obs','pdf_hat'))
   expect_equal(JAGS_model_stuff$dat_inits,list(
@@ -31,5 +31,7 @@ test_that("write_likelihood() writes R scripts for JAGS model calls", {
          'u_ln'=0.5*mean(ln_emiss,na.rm=TRUE),
          'sd_ln'=1.5*stats::sd(ln_emiss,na.rm=TRUE))))
   expect_equal(JAGS_model_stuff$distribution,'Lognormal')
-  expect_equal(JAGS_model_stuff$model_code,'Emission_lnorm_JAGS.R')
+  readjags=runjags::read.jagsfile(test_path('test_JAGS','test-Emission_lnorm_JAGS.R'))
+  expect_equal(JAGS_model_stuff$model_code$model,readjags$model)
 })
+

@@ -4,7 +4,7 @@
 \alias{write_likelihood}
 \title{Writes likelihood scripts for JAGS model calls}
 \usage{
-write_likelihood(distribution)
+write_likelihood(distribution, write_wd = NULL)
 }
 \arguments{
 \item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
@@ -12,7 +12,7 @@ write_likelihood(distribution)
 \item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'.}
 }
 \value{
-object model_code, which is a string for the written R script that JAGS can call, par_list which is the list of parameters traced while running the JAGS model, dat_inits which is a list of initial parameter values and random seeds for 3 chains, and the distribution used in likelihood model.
+object model_code, which is a string for the written R script that JAGS can call and the distribution used in likelihood model.
 }
 \description{
 This function writes an R script for JAGS to call based on the selected distribution and prior. The initial values and priors are uninformative and set based on emissions data. The likelihood distributions are truncated to (0,3*max(data$emissions))
