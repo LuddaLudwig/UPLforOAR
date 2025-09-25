@@ -17,7 +17,7 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
     mod_bayes=write_likelihood(distribution=distribution)
     mod_run=run_likelihood(data=data,model_input=mod_bayes,
                            future_tests =future_tests,xvals=xvals)
-    mod_output=output_likelihood(jags_model=mod_run,significance=significance)
+    mod_output=output_likelihood(jags_model_run=mod_run,significance=significance)
     mod_output_list[[j]]=mod_output
     rm(mod_run,mod_output)
     gc()
