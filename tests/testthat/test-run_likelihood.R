@@ -28,6 +28,6 @@ test_that("run_likelihood() runs JAGS models from write_likelihood()", {
   expect_equal(run_results$burnin,20000)
   expect_equal(run_results$monitor,c("emission_hat",'pdf_obs','pdf_hat'))
   mod_text=run_results$model
-  readjags=runjags::read.jagsfile('Emission_lnorm_JAGS.R')
+  readjags=runjags::read.jagsfile('test-Emission_lnorm_JAGS.R')
   expect_equal(mod_text[1],readjags$model)
 })
