@@ -1,7 +1,7 @@
 #' Custom theme for ggplot multi-source density distributions
 #' @description
 #' This function sets ggplot2 theme elements
-#' @import magrittr
+#' @importFrom ggplot2 %+replace%
 #' @export
 pop_distr_theme <- function () {
   multi_source_theme=ggplot2::theme_bw() %+replace%

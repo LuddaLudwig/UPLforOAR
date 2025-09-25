@@ -5,18 +5,18 @@
 #' @description
 #' 'output_likelihood() takes the jags_model_run produced by run_likelihood(), merges the mcmc chains and calculates the UPL as well as providing the predicted pdf.
 #'
-output_likelihood=function(jags_model,significance=0.99){
-  distribution=jags_model$distribution
-  data=jags_model$data
-  future_tests=jags_model$future_tests
-  xvals=jags_model$xvals
+output_likelihood=function(jags_model_run,significance=0.99){
+  distribution=jags_model_run$distribution
+  data=jags_model_run$data
+  future_tests=jags_model_run$future_tests
+  xvals=jags_model_run$xvals
   if (distribution=="Skewed"){
     locat_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model$run_results, vars="locat")))
+      coda::as.mcmc.list(jags_model_run$run_results, vars="locat")))
     scale_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model$run_results,vars="scale")))
+      coda::as.mcmc.list(jags_model_run$run_results,vars="scale")))
     skew_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model$run_results,vars="skew")))
+      coda::as.mcmc.list(jags_model_run$run_results,vars="skew")))
     hat_quant=matrix(nrow=length(locat_quant),ncol=future_tests,data=NA)
     pdf_obs=matrix(ncol=nrow(data),nrow=length(locat_quant),data=NA)
     pdf_hat=matrix(ncol=length(xvals),nrow=length(locat_quant),data=NA)
@@ -39,14 +39,14 @@ output_likelihood=function(jags_model,significance=0.99){
     hat_quant=tibble::as_tibble(hat_quant)
   } else {
       pdf_obs=as.matrix(runjags::combine.mcmc(
-        coda::as.mcmc.list(jags_model$run_results,vars="pdf_obs")))
+        coda::as.mcmc.list(jags_model_run$run_results,vars="pdf_obs")))
       hat_quant=tibble::as_tibble(as.matrix(runjags::combine.mcmc(
-        coda::as.mcmc.list(jags_model$run_results,vars="emission_hat"))))
+        coda::as.mcmc.list(jags_model_run$run_results,vars="emission_hat"))))
       pdf_hat=as.matrix(runjags::combine.mcmc(
-        coda::as.mcmc.list(jags_model$run_results, vars="pdf_hat")))
+        coda::as.mcmc.list(jags_model_run$run_results, vars="pdf_hat")))
   }
   names(hat_quant)=sprintf('run%s',seq(1:future_tests))
-  run3_mean=matrixStats::rowMeans(hat_quant)
+  run3_mean=rowMeans(hat_quant)
   pred_99_3rep=stats::quantile(as.matrix(stats::na.omit(run3_mean)),
                                probs=c(significance))
 
