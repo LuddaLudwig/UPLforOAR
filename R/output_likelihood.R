@@ -54,7 +54,8 @@ output_likelihood=function(jags_model_run,significance=0.99){
   density_hat=tibble::tibble(pdf_hat=pdf_hat_quant,x_hat=xvals)
   density_hat=subset(density_hat,is.finite(density_hat$pdf_hat))
   pdf_obs_quant=tibble::as_tibble(
-    matrixStats::colQuantiles(pdf_obs,probs = c(0.025,0.5,0.975)))
+    matrixStats::colQuantiles(pdf_obs,probs = c(0.025,0.5,0.975)),
+    .name_repair='minimal')
   names(pdf_obs_quant)=c('low','med','up')
   pdf_obs_quant$emissions=data$emissions
 
