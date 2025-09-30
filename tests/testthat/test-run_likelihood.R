@@ -27,7 +27,7 @@ test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   run_mcmc=as.matrix(runmod$run_results$mcmc[[1]])
   # saveRDS(run_mcmc,'test_mcmc.rds')
   load_results=readRDS(test_path('test_run','test_mcmc.rds'))
-  expect_equal(run_results,load_results)
+  expect_equal(run_mcmc,load_results)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+runcount+nrow(top5)))
   expect_equal(run_results$burnin,20000)
   expect_equal(run_results$monitor,c("emission_hat",'pdf_obs','pdf_hat'))
