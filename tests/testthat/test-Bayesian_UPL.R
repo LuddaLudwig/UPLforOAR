@@ -17,20 +17,24 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
-  runmod=run_likelihood(data=top5,model_input=JAGS_model_stuff,
+  JAGS_model_stuff1=setup_likelihood(data=top5,distribution='Lognormal')
+  runmod1=run_likelihood(data=top5,model_input=JAGS_model_stuff1,
                         xvals=xvals,future_tests=runcount)
-  run_results=as.matrix(runmod$run_results$mcmc[[1]])
-  # saveRDS(run_results,'test_mcmc.rds')
-  load_results=readRDS(test_path('test_output','test_mcmc.rds'))
+  outputresult1=output_likelihood(runmod1)
+  JAGS_model_stuff2=setup_likelihood(data=top5,distribution='Skewed')
+  runmod2=run_likelihood(data=top5,model_input=JAGS_model_stuff2,
+                         xvals=xvals,future_tests=runcount)
+  outputresult2=output_likelihood(runmod2)
 
-  expect_equal(run_results,load_results)
-  expect_equal(runmod$distribution,'Lognormal')
-  expect_equal(runmod$xvals,xvals)
-
-
+  output_set=Bayesian_UPL(data=top5,distr_list = c("Lognormal","Skewed"),
+               future_tests = runcount,significance = 0.99,xvals=xvals)
+  # saveRDS(output_set,'test-Bayes_UPL.rds')
+  load_results=readRDS(test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
+  expect_equal(output_set,load_results)
+  expect_equal(output_set[1],outputresult1)
+  expect_equal(output_set[2],outputresult2)
 
 })
 
