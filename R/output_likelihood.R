@@ -56,6 +56,7 @@ output_likelihood=function(jags_model_run,significance=0.99){
   pdf_obs_quant=tibble::as_tibble(
     matrixStats::colQuantiles(pdf_obs,probs = c(0.025,0.5,0.975)))
   names(pdf_obs_quant)=c('low','med','up')
+  pdf_obs_quant$emissions=data$emissions
 
   pred_mean=mean(hat_quant$run1,na.rm=TRUE)
   output=list("predicted_mean"=pred_mean,"UPL_Bayes"=pred_99_3rep,
