@@ -21,8 +21,10 @@ output_likelihood=function(jags_model_run,significance=0.99){
     pdf_obs=matrix(ncol=nrow(data),nrow=length(locat_quant),data=NA)
     pdf_hat=matrix(ncol=length(xvals),nrow=length(locat_quant),data=NA)
     for (i in 1:length(locat_quant)){
+      set.seed(12)
       Fy_sn=sn::dsn(xvals,xi=(locat_quant[i]),
                 omega=(scale_quant[i]),alpha=(skew_quant[i]))
+      set.seed(12)
       pdf_obs[i,]=sn::dsn(data$emissions,xi=(locat_quant[i]),
                       omega=(scale_quant[i]),alpha=(skew_quant[i]))
       pdf_hat[i,]=Fy_sn
@@ -32,6 +34,7 @@ output_likelihood=function(jags_model_run,significance=0.99){
         }
       } else {
         for (k in 1:future_tests){
+          set.seed(12)
           hat_quant[i,k]=sample(x=xvals,size=1,prob=Fy_sn,replace=T)
         }
       }

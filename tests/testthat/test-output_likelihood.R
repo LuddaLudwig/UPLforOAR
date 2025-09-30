@@ -26,9 +26,9 @@ test_that("output_likelihood organizes mcmc results and calculates UPL", {
   # write.csv(outputresult$obs_pdf,'test-obs_pdf.csv')
   # write.csv(outputresult$pred_pdf,'test-pred_pdf.csv')
   load_results1=readr::read_csv(test_path('test_output','test-obs_pdf.csv'),
-                                col_select = 2:5)
+                                col_select = 2:5,show_col_types = FALSE)
   load_results2=readr::read_csv(test_path('test_output','test-pred_pdf.csv'),
-                                col_select = 2:3)
+                                col_select = 2:3,show_col_types = FALSE)
   attr(load_results1,'spec')=NULL
   attr(load_results2,'spec')=NULL
   attr(outputresult$pred_pdf$pdf_hat,'names')=NULL

@@ -27,14 +27,14 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   runmod2=run_likelihood(data=top5,model_input=JAGS_model_stuff2,
                          xvals=xvals,future_tests=runcount)
   outputresult2=output_likelihood(runmod2)
-
+  output3=output_likelihood(runmod2)
   output_set=Bayesian_UPL(data=top5,distr_list = c("Lognormal","Skewed"),
                future_tests = runcount,significance = 0.99,xvals=xvals)
-  # saveRDS(output_set,'test-Bayes_UPL.rds')
+  # saveRDS(output_set,test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   load_results=readRDS(test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   expect_equal(output_set,load_results)
-  expect_equal(output_set[1],outputresult1)
-  expect_equal(output_set[2],outputresult2)
+  expect_equal(output_set[[1]],outputresult1)
+  expect_equal(output_set[[2]],outputresult2)
 
 })
 
