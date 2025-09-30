@@ -23,8 +23,14 @@ test_that("output_likelihood organizes mcmc results and calculates UPL", {
   runmod=run_likelihood(data=top5,model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
   outputresult=output_likelihood(runmod)
-  expect_equal(outputresult$UPL_Bayes,)
+  # write.csv(outputresult$obs_pdf,'test-obs_pdf.csv')
+  # write.csv(outputresult$pred_pdf,'test-pred_pdf.csv')
+  load_results1=read_csv(test_path('test_output','test-obs_pdf.csv'))
+  load_results2=read_csv(test_path('test_output','pred-obs_pdf.csv'))
+
+  expect_equal(outputresult$pred_pdf,load_results2)
+  expect_equal(outputresult$UPL_Bayes,3.86)
   expect_equal(outputresult$distr,'Lognormal')
-  expect_equal(outputresult$obs_pdf,)
+  expect_equal(outputresult$obs_pdf,load_results1)
 
 })
