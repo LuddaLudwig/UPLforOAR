@@ -22,14 +22,9 @@ test_that("output_likelihood organizes mcmc results and calculates UPL", {
   runcount=4
   runmod=run_likelihood(data=top5,model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
-  run_results=as.matrix(runmod$run_results$mcmc[[1]])
-  # saveRDS(run_results,'test_mcmc.rds')
-  load_results=readRDS(test_path('test_output','test_mcmc.rds'))
-
-  expect_equal(run_results,load_results)
-  expect_equal(runmod$distribution,'Lognormal')
-  expect_equal(runmod$xvals,xvals)
-
-
+  outputresult=output_likelihood(runmod)
+  expect_equal(outputresult$UPL_Bayes,)
+  expect_equal(outputresult$distr,'Lognormal')
+  expect_equal(outputresult$obs_pdf,)
 
 })
