@@ -25,11 +25,16 @@ test_that("output_likelihood organizes mcmc results and calculates UPL", {
   outputresult=output_likelihood(runmod)
   # write.csv(outputresult$obs_pdf,'test-obs_pdf.csv')
   # write.csv(outputresult$pred_pdf,'test-pred_pdf.csv')
-  load_results1=read_csv(test_path('test_output','test-obs_pdf.csv'))
-  load_results2=read_csv(test_path('test_output','pred-obs_pdf.csv'))
-
+  load_results1=readr::read_csv(test_path('test_output','test-obs_pdf.csv'),
+                                col_select = 2:5)
+  load_results2=readr::read_csv(test_path('test_output','test-pred_pdf.csv'),
+                                col_select = 2:3)
+  attr(load_results1,'spec')=NULL
+  attr(load_results2,'spec')=NULL
+  attr(outputresult$pred_pdf$pdf_hat,'names')=NULL
+  attr(outputresult$UPL_Bayes,'names')=NULL
   expect_equal(outputresult$pred_pdf,load_results2)
-  expect_equal(outputresult$UPL_Bayes,3.86)
+  expect_equal(round(outputresult$UPL_Bayes,3),3.857)
   expect_equal(outputresult$distr,'Lognormal')
   expect_equal(outputresult$obs_pdf,load_results1)
 

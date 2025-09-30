@@ -36,7 +36,7 @@ output_likelihood=function(jags_model_run,significance=0.99){
         }
       }
     }
-    hat_quant=tibble::as_tibble(hat_quant)
+    hat_quant=tibble::as_tibble(hat_quant, .name_repair='minimal')
   } else {
       pdf_obs=as.matrix(runjags::combine.mcmc(
         coda::as.mcmc.list(jags_model_run$run_results,vars="pdf_obs")))
