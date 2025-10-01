@@ -4,16 +4,16 @@
 \alias{run_likelihood}
 \title{Runs JAGS model scripts for chosen likelihood}
 \usage{
-run_likelihood(data, xvals = NULL, model_input, future_tests = 3)
+run_likelihood(xvals = NULL, model_input, future_tests = 3, maxY = NULL)
 }
 \arguments{
-\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'. Should be the same data used in write_likelihood().}
-
 \item{xvals}{ordered sequence of emissions at which to predict probability density. Default is NULL, in which case x_hat is a 1024 length sequence between 0 and 3*max(data$emissions)}
 
-\item{model_input}{results from setup_likelihood(), including JAGS model script, distribution, initial values list, and parameters to monitor.}
+\item{model_input}{results from setup_likelihood(), including JAGS model script, emissions data, distribution, initial values list, and parameters to monitor.}
 
 \item{future_tests}{Integer of future runs to use in prediction, the default is 3 since compliance uses 1 test average of 3 runs.}
+
+\item{maxY}{The maximum emission value possible, used to truncate likelihood distributions and set upper ranges on prior distributions. Default is 3*maximum(data$emissions).}
 }
 \value{
 runjags object named run_results, likelihood distribution from the JAGS model script, as well as data and xvals used as inputs.

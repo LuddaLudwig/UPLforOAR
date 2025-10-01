@@ -19,6 +19,7 @@ Description: National Emission Standards for Hazardous Air Pollutants (NESHAP)
   comparing the observation data density to prediction distribution density.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
 BugReports: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/issues
 SystemRequirements: R >= 3.5.0 , JAGS (https://mcmc-jags.sourceforge.io/)

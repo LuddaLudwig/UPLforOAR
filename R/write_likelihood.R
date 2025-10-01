@@ -67,8 +67,8 @@ write_likelihood=function(distribution,write_wd=NULL){
         model {
       # priors
           omega ~ dunif(0,maxY) #must be positive
-          xi ~ dnorm(L1,0.001*1/sdY^2)
-          alpha ~ dunif(-10,10)
+          xi ~ dnorm(0,1/(100*maxY))
+          alpha ~ dunif(-50,50) # this is a very wide range
 
       #likelihood
           for (i in 1:length(emission_xi)) {
@@ -82,8 +82,8 @@ write_likelihood=function(distribution,write_wd=NULL){
     JAGS_model="Emission_gamma_JAGS.R"
     cat("model {
       # priors
-          rate_em~dunif(0,50)
-          shape_em~dunif(0,50)
+          rate_em~dunif(0,maxY/(sdY^2)) #must be positive
+          shape_em~dunif(0,(maxY^2)/(sdY^2)) #must be positive
 
       #likelihood
           for (i in 1:length(emission_xi)) {
@@ -104,8 +104,9 @@ write_likelihood=function(distribution,write_wd=NULL){
     JAGS_model="Emission_beta_JAGS.R"
     cat("model {
       # priors
-          beta_em~dunif(0,50)
-          alpha_em~dunif(0,50)
+          # note that both can be pos or neg, but the minimum is always -1
+          beta_em~dunif(-1,(0.25-1+0.25/sdY^2+0.25^3/sdY^2-2*0.25^2/sdY^2)*1.25)
+          alpha_em~dunif(-1,(0.75^2/sdY^2-0.75^3/sdY^2-0.75)*1.25)
 
       #likelihood
           for (i in 1:length(emission_xi)) {
