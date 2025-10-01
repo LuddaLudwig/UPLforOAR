@@ -9,7 +9,8 @@
 #' between 0 and 3*max(data$emissions)
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
-#' @returns A list of results from output_likelihood() for run_likelihood()
+#' @returns A list of results from output_likelihood(), fit_likelihood,
+#' and converge_likelihood() for run_likelihood()
 #' using each distribution in distr_list.
 #' @export
 #' @description
@@ -26,6 +27,7 @@
 Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
                    future_tests=3,significance=0.99,xvals=NULL){
   mod_output_list=c()
+  conv_output=tibble()
   for (j in 1:length(distr_list)){
     distribution=distr_list[j]
     mod_bayes=setup_likelihood(distribution=distribution,data=data)
@@ -33,8 +35,9 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
                            future_tests =future_tests,xvals=xvals)
     mod_output=output_likelihood(jags_model_run=mod_run,significance=significance)
     mod_fit=fit_likelihood(likelihood_result=mod_output)
-    mod_converge=converge_likelihood(jags_model_run)
     mod_output_list[[j]]=mod_fit
+    mod_converge=converge_likelihood(jags_model_run)
+    conv_output=rbind(conv_output,mod_converge)
     rm(mod_run,mod_output,mod_fit)
     gc()
   }
@@ -56,6 +59,7 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
     pred_pdf_dat=rbind(pred_pdf_dat,pred_temp)
   }
   return_list=list(fit_table=fit_table,
+                   conv_output=conv_output,
                    obs_pdf_dat=obs_pdf_dat,
                    pred_pdf_dat=pred_pdf_dat)
   return(return_list)
