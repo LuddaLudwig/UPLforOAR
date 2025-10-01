@@ -1,6 +1,7 @@
 #' Selects top sources from emissions data
 #' @param CAA_section applicable Clean Air Act section, either 112 or 129
-#' @param data dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
+#' @param data data.frame or tibble with columns for emissions (numeric) and
+#' sources (character or factor)
 #' @import magrittr
 #' @returns data set (tibble) of the top sources to be used in UPL calculations
 #' @export

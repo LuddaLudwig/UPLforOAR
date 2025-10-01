@@ -1,7 +1,9 @@
 #' Selects best performer from emissions data
-#' @param data dataframe or tibble with columns for emissions (numeric) and sources (character or factor)
+#' @param data data.frame or tibble with columns for emissions (numeric)
+#' and sources (character or factor)
 #' @import magrittr
-#' @returns data set (tibble) containing the emissions data for the best performing source
+#' @returns data set (tibble) containing the emissions data for the best
+#' performing source
 #' @export
 MACT_NSPS=function(data){
   dat_means=data%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions))

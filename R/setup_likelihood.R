@@ -1,9 +1,14 @@
 #' Sets up path to JAGS script, initial values, and variable list to monitor
 #' @description
-#' This function defines the jagsmodel script to call based on the selected distribution. It also defines the initial values and variables to monitor.
+#' This function defines the jagsmodel script to call based on the selected
+#' distribution. It also defines the initial values and variables to monitor.
 #' @param distribution any of c('Normal','Gamma','Skewed','Lognormal','Beta').
-#' @param data Emissions data from either the best source or top performers, must have a column named 'emissions'.
-#' @returns object model_code, which is a string for the written R script that JAGS can call, par_list which is the list of parameters traced while running the JAGS model, dat_inits which is a list of initial parameter values and random seeds for 3 chains, and the distribution used in likelihood model.
+#' @param data Emissions data from either the best source or top performers,
+#' must have a column named 'emissions'.
+#' @returns object model_code, which is a string for the written R script that
+#' JAGS can call, par_list which is the list of parameters traced while running
+#' the JAGS model, dat_inits which is a list of initial parameter values and
+#' random seeds for 3 chains, and the distribution used in likelihood model.
 #'
 setup_likelihood=function(distribution,data){
   JAGS_path=system.file("JAGS",package="EPA.MACT.floor.UPL",mustWork=TRUE)
