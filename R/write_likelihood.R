@@ -15,20 +15,20 @@ write_likelihood=function(distribution,write_wd=NULL){
     JAGS_model="Emission_normal_JAGS.R"
     cat("model {
       # priors
-          emission_mean~dunif(0,10)
-          emission_sd~dunif(0,5)
+          emission_sd~dunif(0.001*sdY,1000*sdY)
+          emission_mean~dunif(0,maxY)
           tau_em<- 1/(emission_sd^2)
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i]~dnorm(emission_mean,tau_em)T(0,3*maxOfY)
+            emission_xi[i]~dnorm(emission_mean,tau_em)T(0,maxY)
             pdf_obs[i] <- dnorm(emission_xi[i],emission_mean,tau_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k]~dnorm(emission_mean,tau_em)T(0,3*maxOfY)
+            emission_hat[k]~dnorm(emission_mean,tau_em)T(0,maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h]<- dnorm(x_hat[h],emission_mean,tau_em)
@@ -40,20 +40,18 @@ write_likelihood=function(distribution,write_wd=NULL){
       # priors
           sd_ln ~ dunif( 0.001*sdOfLogY , 1000*sdOfLogY )
           u_ln ~ dnorm( meanOfLogY , 0.001*1/sdOfLogY^2 )
-          emission_mean <- exp(u_ln+sd_ln^2/2)
-          emission_sd <- sqrt(exp(2*u_ln+sd_ln^2)*(exp(sd_ln^2)-1))
           tau_ln<-1/(sd_ln^2)
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i]~dlnorm(u_ln,tau_ln)T(0,3*maxOfY)
+            emission_xi[i]~dlnorm(u_ln,tau_ln)T(0,maxY)
             pdf_obs[i] <- dlnorm(emission_xi[i],u_ln,tau_ln)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k]~dlnorm(u_ln,tau_ln)T(0,3*maxOfY)
+            emission_hat[k]~dlnorm(u_ln,tau_ln)T(0,maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h]<- dlnorm(x_hat[h],u_ln,tau_ln)
@@ -68,15 +66,15 @@ write_likelihood=function(distribution,write_wd=NULL){
         }
         model {
       # priors
-          scale ~ dunif(0,50)
-          locat ~ dnorm(0,1/10^2)
-          skew ~ dnorm(0,1/10^2)
+          omega ~ dunif(0,maxY) #must be positive
+          xi ~ dnorm(L1,0.001*1/sdY^2)
+          alpha ~ dunif(-10,10)
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-                L[i] <- ( (2/scale)
-                * dnorm( (emission_xi[i]-locat)/scale , 0 , 1 )
-                * pnorm( skew*(emission_xi[i]-locat)/scale , 0 , 1 ) )
+                L[i] <- ( (2/omega)
+                * dnorm( (emission_xi[i]-xi)/omega , 0 , 1 )
+                * pnorm( alpha*(emission_xi[i]-xi)/omega , 0 , 1 ) )
                 zeros[i] ~ dpois(-log(L[i]) + 10000)
           }
         }",file=JAGS_model)
@@ -89,14 +87,14 @@ write_likelihood=function(distribution,write_wd=NULL){
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i]~dgamma(shape_em,rate_em)T(0,3*maxOfY)
+            emission_xi[i]~dgamma(shape_em,rate_em)T(0,maxY)
             pdf_obs[i] <- dgamma(emission_xi[i],shape_em,rate_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k]~dgamma(shape_em,rate_em)T(0,3*maxOfY)
+            emission_hat[k]~dgamma(shape_em,rate_em)T(0,maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h]<- dgamma(x_hat[h],shape_em,rate_em)
@@ -111,7 +109,7 @@ write_likelihood=function(distribution,write_wd=NULL){
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i]~dbeta(alpha_em,beta_em)T(0,3*maxOfY)
+            emission_xi[i]~dbeta(alpha_em,beta_em)T(0,maxY)
             pdf_obs[i] <- dbeta(emission_xi[i],alpha_em,beta_em)
           }
 
@@ -119,7 +117,7 @@ write_likelihood=function(distribution,write_wd=NULL){
       emission_mean<-alpha_em/(alpha_em+beta_em)
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k]~dbeta(alpha_em,beta_em)T(0,3*maxOfY)
+            emission_hat[k]~dbeta(alpha_em,beta_em)T(0,maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h]<- dbeta(x_hat[h],alpha_em,beta_em)

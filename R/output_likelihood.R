@@ -11,22 +11,22 @@ output_likelihood=function(jags_model_run,significance=0.99){
   future_tests=jags_model_run$future_tests
   xvals=jags_model_run$xvals
   if (distribution=="Skewed"){
-    locat_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model_run$run_results, vars="locat")))
-    scale_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model_run$run_results,vars="scale")))
-    skew_quant=as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model_run$run_results,vars="skew")))
-    hat_quant=matrix(nrow=length(locat_quant),ncol=future_tests,data=NA)
-    pdf_obs=matrix(ncol=nrow(data),nrow=length(locat_quant),data=NA)
-    pdf_hat=matrix(ncol=length(xvals),nrow=length(locat_quant),data=NA)
-    for (i in 1:length(locat_quant)){
+    xi_quant=as.matrix(runjags::combine.mcmc(
+      coda::as.mcmc.list(jags_model_run$run_results, vars="xi")))
+    omega_quant=as.matrix(runjags::combine.mcmc(
+      coda::as.mcmc.list(jags_model_run$run_results,vars="omega")))
+    alpha_quant=as.matrix(runjags::combine.mcmc(
+      coda::as.mcmc.list(jags_model_run$run_results,vars="alpha")))
+    hat_quant=matrix(nrow=length(xi_quant),ncol=future_tests,data=NA)
+    pdf_obs=matrix(ncol=nrow(data),nrow=length(xi_quant),data=NA)
+    pdf_hat=matrix(ncol=length(xvals),nrow=length(xi_quant),data=NA)
+    for (i in 1:length(xi_quant)){
       set.seed(12)
-      Fy_sn=sn::dsn(xvals,xi=(locat_quant[i]),
-                omega=(scale_quant[i]),alpha=(skew_quant[i]))
+      Fy_sn=sn::dsn(xvals,xi=(xi_quant[i]),
+                omega=(omega_quant[i]),alpha=(alpha_quant[i]))
       set.seed(12)
-      pdf_obs[i,]=sn::dsn(data$emissions,xi=(locat_quant[i]),
-                      omega=(scale_quant[i]),alpha=(skew_quant[i]))
+      pdf_obs[i,]=sn::dsn(data$emissions,xi=(xi_quant[i]),
+                      omega=(omega_quant[i]),alpha=(alpha_quant[i]))
       pdf_hat[i,]=Fy_sn
       if (all(Fy_sn==0)){
         for (k in 1:future_tests){
