@@ -32,11 +32,17 @@ test_that("obs_density() calculate densities for emissions observations", {
   #   coord_cartesian(clip='off')+
   #   geom_rug(sides='b',aes(x=(emissions)),data=top5,
   #            alpha=0.5,outside=TRUE,color='black')
-  # write_csv(test_result$Obs_onPoint,"test-Obs_onPoint.csv")
-  # write_csv(test_result$obs_den_df,"test-obs_den_df.csv")
+  # write_csv(test_result$Obs_onPoint,test_path("test_obs_densities",
+  #                                             "test-Obs_onPoint.csv"))
+  # write_csv(test_result$obs_den_df,test_path("test_obs_densities",
+  #                                            "test-obs_den_df.csv"))
 
-  compare1 <- readr::read_csv(test_path("test_obs_densities", "test-Obs_onPoint.csv"),show_col_types = FALSE)
-  compare2 <- readr::read_csv(test_path("test_obs_densities", "test-obs_den_df.csv"),show_col_types = FALSE)
+  compare1 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-Obs_onPoint.csv"),
+                              show_col_types = FALSE)
+  compare2 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-obs_den_df.csv"),
+                              show_col_types = FALSE)
 
   expect_equal(test_result$Obs_onPoint,compare1)
   expect_equal(test_result$obs_den_df,compare2)
