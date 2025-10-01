@@ -9,10 +9,12 @@ write_likelihood(distribution, write_wd = NULL)
 \arguments{
 \item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
 
-\item{write_wd}{defulat is NULL, in which case the JAGS scripts are written into JAGS folder in package directory}
+\item{write_wd}{default is NULL, in which case the JAGS scripts are written
+into inst/JAGS folder in package directory}
 }
 \value{
-object model_code, which is a string for the written R script that JAGS can call and the distribution used in likelihood model.
+object model_code, which is a string for the written R script that
+JAGS can call and the distribution used in likelihood model.
 }
 \description{
 This function writes an R script for JAGS to call based on the selected distribution and prior. The initial values and priors are uninformative and set based on emissions data. The likelihood distributions are truncated to (0,3*max(data$emissions))

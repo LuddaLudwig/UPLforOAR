@@ -7,10 +7,12 @@
 MACT_NSPS(data)
 }
 \arguments{
-\item{data}{dataframe or tibble with columns for emissions (numeric) and sources (character or factor)}
+\item{data}{data.frame or tibble with columns for emissions (numeric)
+and sources (character or factor)}
 }
 \value{
-data set (tibble) containing the emissions data for the best performing source
+data set (tibble) containing the emissions data for the best
+performing source
 }
 \description{
 Selects best performer from emissions data

@@ -7,7 +7,8 @@
 distribution_type(data)
 }
 \arguments{
-\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
+\item{data}{Emissions data from either the best source or top performers,
+must have a column named 'emissions'}
 }
 \value{
 string with either 'Normal', 'Lognormal', or 'Skewed'
@@ -16,5 +17,6 @@ string with either 'Normal', 'Lognormal', or 'Skewed'
 Determines the type of distribution from skewness and kurtosis ratios
 }
 \references{
-On measuring skewness and kurtosis" Dragan Doric, et al. Springer Science + Buisness Media B. V. 2007. September 20, 2007
+On measuring skewness and kurtosis" Dragan Doric, et al.
+Springer Science + Buisness Media B. V. 2007. September 20, 2007
 }

@@ -7,13 +7,22 @@
 output_likelihood(jags_model_run, significance = 0.99)
 }
 \arguments{
-\item{jags_model_run}{The output list returned from run_likelihood(), which includes the jags model 'run_results', likelihood distribution type, and data, xvals, and future_tests used as inputs to run_likelihood()}
+\item{jags_model_run}{The output list returned from run_likelihood(),
+which includes the jags model 'run_results', likelihood distribution type,
+and data, xvals, and future_tests used as inputs to run_likelihood()}
 
 \item{significance}{Level of significance from 0 to 1, the default is 0.99.}
 }
 \value{
-A list including 'distr' the distribution used in write_likelihood(), the 'predicted_mean' the mean of the fitted distribution, 'UPL_Bayes' the upper predictive limit based on the 'significance' level and average distribution of 'future_tests' number of draws, 'obs_pdf' the predicted probability density at each observation, and 'pred_pdf' the predicted probability density at each point in xvals.
+A list including 'distr' the distribution used in write_likelihood(),
+the 'predicted_mean' the mean of the fitted distribution, 'UPL_Bayes' the
+upper predictive limit based on the 'significance' level and average
+distribution of 'future_tests' number of draws, 'obs_pdf' the predicted
+probability density at each observation, and 'pred_pdf' the predicted
+probability density at each point in xvals.
 }
 \description{
-'output_likelihood() takes the jags_model_run produced by run_likelihood(), merges the mcmc chains and calculates the UPL as well as providing the predicted pdf.
+'output_likelihood() takes the jags_model_run produced by run_likelihood(),
+merges the mcmc chains and calculates the UPL as well as
+providing the predicted pdf.
 }
