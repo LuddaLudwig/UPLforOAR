@@ -27,11 +27,12 @@ obs_density=function(data,xvals=NULL,up=Inf,low=0,kernel='gamma',bw=NULL){
                                 a=low,b=up,proper=TRUE,kertype = kernel,h=bw)
   obs_den_df=np::npuniden.boundary(X=data$emissions,Y=xvals,a=low,b=up,
                                proper=TRUE,kertype = kernel,h=bw)
-  obs_den_df=tibble::tibble(x=xvals,y=obs_den_df$f)
+  obs_den_df=tibble::tibble(x_hat=xvals,ydens=obs_den_df$f)
   Obs_onPoint=tibble::tibble(emissions=data$emissions,ydens=Obs_onPoint$f)
-  test_int=sfsmisc::integrate.xy(obs_den_df$x,obs_den_df$y)
+  test_int=sfsmisc::integrate.xy(obs_den_df$x_hat,obs_den_df$ydens)
   if (abs(test_int-1)>0.05){
-    warning("density distribution does not integrate to 1, consider adjusting bandwidth or kernel choice")
+    warning("density distribution does not integrate to 1, consider adjusting
+            bandwidth or kernel choice")
   }
   output=list(Obs_onPoint=Obs_onPoint,obs_den_df=obs_den_df)
   return(output)
