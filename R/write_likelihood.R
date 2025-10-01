@@ -8,7 +8,7 @@
 write_likelihood=function(distribution,write_wd=NULL){
   current_wd=getwd()
   if (is.null(write_wd)){
-    write_wd='JAGS/'
+    write_wd='inst/JAGS/'
   }
   setwd(write_wd)
   if (distribution=="Normal"){
