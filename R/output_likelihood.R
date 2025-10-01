@@ -70,7 +70,8 @@ output_likelihood=function(jags_model_run,significance=0.99){
     .name_repair='minimal')
   names(pdf_obs_quant)=c('low','med','up')
   pdf_obs_quant$emissions=data$emissions
-
+  density_hat$distr=rep(distribution,nrow(density_hat))
+  pdf_obs_quant$distr=rep(distribution,nrow(pdf_obs_quant))
   pred_mean=mean(hat_quant$run1,na.rm=TRUE)
   output=list("predicted_mean"=pred_mean,"UPL_Bayes"=pred_99_3rep,
               "obs_pdf"=pdf_obs_quant,'pred_pdf'=density_hat,distr=distribution)
