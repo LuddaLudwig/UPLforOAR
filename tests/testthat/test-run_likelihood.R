@@ -20,7 +20,7 @@ test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
-  runmod=run_likelihood(data=top5,model_input=JAGS_model_stuff,
+  runmod=run_likelihood(model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
   expect_equal(runmod$distribution,'Lognormal')
   run_results=runmod$run_results

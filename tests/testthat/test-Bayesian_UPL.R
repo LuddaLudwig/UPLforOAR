@@ -20,11 +20,11 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   JAGS_model_stuff1=setup_likelihood(data=top5,distribution='Lognormal')
-  runmod1=run_likelihood(data=top5,model_input=JAGS_model_stuff1,
+  runmod1=run_likelihood(model_input=JAGS_model_stuff1,
                         xvals=xvals,future_tests=runcount)
   outputresult1=output_likelihood(runmod1)
   JAGS_model_stuff2=setup_likelihood(data=top5,distribution='Skewed')
-  runmod2=run_likelihood(data=top5,model_input=JAGS_model_stuff2,
+  runmod2=run_likelihood(model_input=JAGS_model_stuff2,
                          xvals=xvals,future_tests=runcount)
   outputresult2=output_likelihood(runmod2)
   output3=output_likelihood(runmod2)
