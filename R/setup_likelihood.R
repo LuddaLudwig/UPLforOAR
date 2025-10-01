@@ -17,9 +17,9 @@ setup_likelihood=function(distribution,data){
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
            'emission_mean'=mu,'emission_sd'=sigma),
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 12,
-           'emission_mean'=1.5*mu, 'emission_sd'=0.5*sigma,
+           'emission_mean'=1.5*mu, 'emission_sd'=0.5*sigma),
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
-           'emission_mean'=0.5*mu, 'emission_sd'=1.5*sigma)))
+           'emission_mean'=0.5*mu, 'emission_sd'=1.5*sigma))
   } else if (distribution=="Lognormal"){
     ln_emiss=log(data$emissions)
     ln_mu=mean(ln_emiss,na.rm=TRUE)
