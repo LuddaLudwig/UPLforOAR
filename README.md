@@ -64,7 +64,7 @@ distribution_result_EG=distribution_type(dat_EG)
 | Logan Generating Plant_Unit1_B01 |         5.33e-09 |            1 |
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
-Top sources for existing guidance UPL calculation
+Top 5 of 42 sources for existing guidance UPL calculation
 
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The
@@ -127,16 +127,9 @@ ggplot()+
                      labels=c('Observations','Lognormal'))+
   scale_fill_manual(values=c('black','#984EA3'),
                     labels=c('Observations','Lognormal'))
+#> Error in `geom_line()`:
+#> ! Problem while computing aesthetics.
+#> ℹ Error occurred in the 1st layer.
+#> Caused by error:
+#> ! object 'x' not found
 ```
-
-<figure>
-<img src="man/figures/README-plot1-1.png"
-alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line." />
-<figcaption aria-hidden="true">Observation density of Hg for the overall
-population. The obseration data are indicated in black as points and a
-rug along the axis, with the observation density distribution as a black
-line. The fitted lognormal distribution that is the basis of the UPL
-estimate is colored purple. The average of the Hg emissions is the
-vertical black line and the UPL result is the vertical purple
-line.</figcaption>
-</figure>

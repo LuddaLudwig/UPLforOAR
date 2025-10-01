@@ -61,7 +61,7 @@ distribution_result_EG=distribution_type(dat_EG)
 ```
 ```{r EG table}
 knitr::kable(dat_EG_avg%>%mutate(across(c(2),~signif(.,digits=4)))%>%head(),
-             caption="Top sources for existing guidance UPL calculation",
+             caption="Top 5 of 42 sources for existing guidance UPL calculation",
              col.names=c('Source','Average emission','No. of Tests'),digits=12)
 ```
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`.
