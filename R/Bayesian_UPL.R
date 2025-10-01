@@ -1,5 +1,5 @@
 #' Bayesian_UPL() wraps setup_likelihood(), run_likelihood(),
-#' output_likelihood(), and fit_likelihood()
+#' output_likelihood(), converge_likelihood(), and fit_likelihood()
 #' @param distr_list any of c('Normal','Skewed','Lognormal','Gamma','Beta')
 #' @param future_tests Integer of future runs to use in prediction, the default
 #' is 3 since compliance uses 1 test average of 3 runs.
@@ -14,12 +14,14 @@
 #' @export
 #' @description
 #' For each distribution in distr_list Bayesian_UPL() will setup_likelihood(),
-#' run_likelihood(), and concatenate a list of results from output_likelihood()
+#' run_likelihood(), test for convergence of likelihood parameters using
+#' converge_likelihood, and concatenate a list of results from output_likelihood()
 #' including the 'predicted_mean' the mean of the fitted distribution,
 #' 'UPL_Bayes' the upper predictive limit based on the 'significance' level and
 #' average distribution of 'future_tests' number of draws, 'obs_pdf' the
 #' predicted probability density at each observation, and 'pred_pdf' the
-#' predicted probability density at each point in xvals.
+#' predicted probability density at each point in xvals. Then fit_likelihood will
+#' add calculations of fit metrics to each distribution result.
 #'
 Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
                    future_tests=3,significance=0.99,xvals=NULL){
@@ -31,6 +33,7 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
                            future_tests =future_tests,xvals=xvals)
     mod_output=output_likelihood(jags_model_run=mod_run,significance=significance)
     mod_fit=fit_likelihood(likelihood_result=mod_output)
+    mod_converge=converge_likelihood(jags_model_run)
     mod_output_list[[j]]=mod_fit
     rm(mod_run,mod_output,mod_fit)
     gc()

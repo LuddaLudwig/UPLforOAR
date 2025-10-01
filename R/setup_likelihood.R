@@ -17,7 +17,8 @@ setup_likelihood=function(distribution,data){
   if (distribution=="Normal"){
     JAGS_model=runjags::read.jagsfile(paste0(JAGS_path,
                                              '/Emission_normal_JAGS.R'))
-    par_list=c('emission_hat','pdf_obs','pdf_hat')
+    par_list=c('emission_hat','pdf_obs','pdf_hat',
+               'emission_mean','emission_sd')
     data_inits=list(
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
            'emission_mean'=mu,'emission_sd'=sigma),
@@ -31,7 +32,8 @@ setup_likelihood=function(distribution,data){
     ln_sig=stats::sd(ln_emiss,na.rm=TRUE)
     JAGS_model=runjags::read.jagsfile(paste0(JAGS_path,
                                              '/Emission_lnorm_JAGS.R'))
-    par_list=c('emission_hat','pdf_obs','pdf_hat')
+    par_list=c('emission_hat','pdf_obs','pdf_hat',
+               'u_ln','sd_ln')
     data_inits=list(
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
            'u_ln'=ln_mu, 'sd_ln'=ln_sig),
@@ -61,7 +63,8 @@ setup_likelihood=function(distribution,data){
     rate=mu/sigma^2
     JAGS_model=runjags::read.jagsfile(paste0(JAGS_path,
                                              '/Emission_gamma_JAGS.R'))
-    par_list=c('emission_hat','pdf_obs','pdf_hat')
+    par_list=c('emission_hat','pdf_obs','pdf_hat',
+               'rate_em','shape_em')
     data_inits=list(
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
            'rate_em'=rate,
@@ -83,7 +86,8 @@ setup_likelihood=function(distribution,data){
     beta=mu-1+mu/sigma^2+mu^3/sigma^2-2*mu^2/sigma^2
     JAGS_model=runjags::read.jagsfile(paste0(JAGS_path,
                                              '/Emission_beta_JAGS.R'))
-    par_list=c('emission_hat','pdf_obs','pdf_hat')
+    par_list=c('emission_hat','pdf_obs','pdf_hat',
+               'alpha_em','beta_em')
     data_inits=list(
       list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
            'beta_em'=beta,

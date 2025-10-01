@@ -3,7 +3,7 @@
 \name{Bayesian_UPL}
 \alias{Bayesian_UPL}
 \title{Bayesian_UPL() wraps setup_likelihood(), run_likelihood(),
-output_likelihood(), and fit_likelihood()}
+output_likelihood(), converge_likelihood(), and fit_likelihood()}
 \usage{
 Bayesian_UPL(
   data,
@@ -34,10 +34,12 @@ using each distribution in distr_list.
 }
 \description{
 For each distribution in distr_list Bayesian_UPL() will setup_likelihood(),
-run_likelihood(), and concatenate a list of results from output_likelihood()
+run_likelihood(), test for convergence of likelihood parameters using
+converge_likelihood, and concatenate a list of results from output_likelihood()
 including the 'predicted_mean' the mean of the fitted distribution,
 'UPL_Bayes' the upper predictive limit based on the 'significance' level and
 average distribution of 'future_tests' number of draws, 'obs_pdf' the
 predicted probability density at each observation, and 'pred_pdf' the
-predicted probability density at each point in xvals.
+predicted probability density at each point in xvals. Then fit_likelihood will
+add calculations of fit metrics to each distribution result.
 }
