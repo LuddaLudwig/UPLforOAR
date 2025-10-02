@@ -1,4 +1,4 @@
-test_that("fit_likelihood() compares predicted and observed density distributions", {
+test_that("converge_likelihood() runs gelman diagnostics for convergence tests", {
   top5=tibble::tibble(emissions=c(1,2,1.5,
                                   1.2,3,2.2,
                                   0.2,0.4,0.7,
@@ -22,11 +22,9 @@ test_that("fit_likelihood() compares predicted and observed density distribution
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
-  outputresult=output_likelihood(runmod)
-  fit_results=fit_likelihood(outputresult)
-  expect_equal(round(fit_results$pdf_integral,3),0.921)
-  expect_equal(fit_results$distr,'Lognormal')
-  expect_equal(round(fit_results$SSE,3),0.592)
+  conv_results=converge_likelihood(runmod)
+  expect_equal(round(conv_results$gelman_diag,3),c(1.074,1.041))
+  expect_equal(conv_results$params,c('u_ln','sd_ln'))
+  expect_equal(conv_results$convYN,c('Yes','Yes'))
 
 })
-

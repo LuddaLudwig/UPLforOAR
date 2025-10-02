@@ -2,11 +2,12 @@
 #' @param jags_model_run The output list returned from run_likelihood(),
 #' which includes the jags model 'run_results', likelihood distribution type,
 #' @returns A tibble of parameters and convergence results from gelman.diag(),
-#' Values much greater than 1 indicate problems in convergence.
+#' Values greater than 1.2 indicate problems in convergence.
 #'
 converge_likelihood=function(jags_model_run){
   distribution=jags_model_run$distribution
-  gelman_list=list()
+  gelman_list=c()
+  convYN=c()
   if (distribution=="Skewed"){
     params_list=c('omega','xi','alpha')
   }
@@ -27,8 +28,17 @@ converge_likelihood=function(jags_model_run){
     result=coda::gelman.diag(coda::as.mcmc.list(jags_model_run$run_results,
                                                 vars=param))
     gelman_list[i]=result$psrf[1]
+    if (result$psrf[1]>1.2){
+      convYN[i]="No"
+    } else if (result$psrf[1]<1.1){
+      convYN[i]="Yes"
+    } else if ((result$psrf[1]>1.1)&(result$psrf[1]<1.2)){
+      convYN[i]="Weak convergence"
+    }
   }
-  results=tibble::tibble(params=params_list,gelman_diag=gelman_list)
+  results=tibble::tibble(params=params_list,
+                         gelman_diag=gelman_list,
+                         convYN=convYN)
   results$distr=rep(distribution,nrow(results))
   return(results)
 }
