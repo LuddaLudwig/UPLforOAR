@@ -1,4 +1,4 @@
-test_that("output_likelihood() organizes mcmc results and calculates UPL", {
+test_that("fit_likelihood() runs gelman diagnostics for convergence tests", {
   top5=tibble::tibble(emissions=c(1,2,1.5,
                                   1.2,3,2.2,
                                   0.2,0.4,0.7,
@@ -23,19 +23,10 @@ test_that("output_likelihood() organizes mcmc results and calculates UPL", {
   runmod=run_likelihood(model_input=JAGS_model_stuff,
                         xvals=xvals,future_tests=runcount)
   outputresult=output_likelihood(runmod)
-  # write.csv(outputresult$obs_pdf,test_path('test_output','test-obs_pdf.csv'))
-  # write.csv(outputresult$pred_pdf,test_path('test_output','test-pred_pdf.csv'))
-  load_results1=readr::read_csv(test_path('test_output','test-obs_pdf.csv'),
-                                col_select = 2:6,show_col_types = FALSE)
-  load_results2=readr::read_csv(test_path('test_output','test-pred_pdf.csv'),
-                                col_select = 2:4,show_col_types = FALSE)
-  attr(load_results1,'spec')=NULL
-  attr(load_results2,'spec')=NULL
-  attr(outputresult$pred_pdf$pdf_hat,'names')=NULL
-  attr(outputresult$UPL_Bayes,'names')=NULL
-  expect_equal(outputresult$pred_pdf,load_results2)
-  expect_equal(round(outputresult$UPL_Bayes,3),3.857)
-  expect_equal(outputresult$distr,'Lognormal')
-  expect_equal(outputresult$obs_pdf,load_results1)
+  fit_results=fit_likelihood(outputresult)
+  expect_equal(round(fit_results$pdf_integral,3),0.921)
+  expect_equal(fit_results$distr,'Lognormal')
+  expect_equal(round(fit_results$SSE,3),0.592)
 
 })
+
