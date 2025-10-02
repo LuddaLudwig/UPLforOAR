@@ -10,7 +10,9 @@
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
 #' @param convergence_report Default is FALSE, if a report containing
-#' convergence figures should be generated with results.
+#' convergence figures should be generated with results. If TRUE, a document
+#' Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
+#' working directory.
 #' @returns A list of results from output_likelihood(), fit_likelihood,
 #' and converge_likelihood() for run_likelihood()
 #' using each distribution in distr_list.
@@ -32,7 +34,7 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
   mod_output_list=c()
   conv_output=tibble()
   if (convergence_report==TRUE){
-    figs_list=c()
+    figs_list=list()
   }
   for (j in 1:length(distr_list)){
     distribution=distr_list[j]
@@ -45,7 +47,9 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
     mod_converge=converge_likelihood(mod_run)
     conv_output=rbind(conv_output,mod_converge)
     if (convergence_report==TRUE){
-      figs_list=cbind(figs_list,converge_figs(distribution,mod_run))
+      fig_set=converge_figs(distribution,mod_run)
+      figs_list[[j]]=fig_set
+      rm(fig_set)
     }
     rm(mod_run,mod_output,mod_fit)
     gc()

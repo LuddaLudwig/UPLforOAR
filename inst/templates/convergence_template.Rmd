@@ -17,7 +17,8 @@ indicate there is no convergence, and the results should be rejected and the mod
 or distribution reassessed for appropriateness to the data.
 ```{r gelamn}
 knitr::kable(conv_output,caption="Gelman-Rubin diagnostic results",
-             col.names=c('Parameter','Diagnostic','Converged?','Distribution'))
+             col.names=c('Parameter','Diagnostic','Converged?','Distribution'),
+             digits = 4)
 ```
 
 For each distribution used, a pair of plots is generated for each defining 
