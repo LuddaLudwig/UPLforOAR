@@ -12,7 +12,7 @@ which includes the jags model 'run_results', likelihood distribution type,}
 }
 \value{
 A tibble of parameters and convergence results from gelman.diag(),
-Values much greater than 1 indicate problems in convergence.
+Values greater than 1.2 indicate problems in convergence.
 }
 \description{
 Tests for convergence in likelihood parameters

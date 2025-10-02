@@ -10,7 +10,8 @@ Bayesian_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   future_tests = 3,
   significance = 0.99,
-  xvals = NULL
+  xvals = NULL,
+  convergence_report = FALSE
 )
 }
 \arguments{
@@ -27,9 +28,13 @@ is 3 since compliance uses 1 test average of 3 runs.}
 \item{xvals}{ordered sequence of emissions at which to predict probability
 density. Default is NULL, in which case x_hat is a 1024 length sequence
 between 0 and 3*max(data$emissions)}
+
+\item{convergence_report}{Default is FALSE, if a report containing
+convergence figures should be generated with results.}
 }
 \value{
-A list of results from output_likelihood() for run_likelihood()
+A list of results from output_likelihood(), fit_likelihood,
+and converge_likelihood() for run_likelihood()
 using each distribution in distr_list.
 }
 \description{

@@ -9,6 +9,8 @@
 #' between 0 and 3*max(data$emissions)
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
+#' @param convergence_report Default is FALSE, if a report containing
+#' convergence figures should be generated with results.
 #' @returns A list of results from output_likelihood(), fit_likelihood,
 #' and converge_likelihood() for run_likelihood()
 #' using each distribution in distr_list.
@@ -25,9 +27,13 @@
 #' add calculations of fit metrics to each distribution result.
 #'
 Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
-                   future_tests=3,significance=0.99,xvals=NULL){
+                   future_tests=3,significance=0.99,xvals=NULL,
+                   convergence_report=FALSE){
   mod_output_list=c()
   conv_output=tibble()
+  if (convergence_report==TRUE){
+    figs_list=c()
+  }
   for (j in 1:length(distr_list)){
     distribution=distr_list[j]
     mod_bayes=setup_likelihood(distribution=distribution,data=data)
@@ -38,10 +44,21 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
     mod_output_list[[j]]=mod_fit
     mod_converge=converge_likelihood(mod_run)
     conv_output=rbind(conv_output,mod_converge)
+    if (convergence_report==TRUE){
+      figs_list=cbind(figs_list,converge_figs(distribution,mod_run))
+    }
     rm(mod_run,mod_output,mod_fit)
     gc()
   }
-
+  if (convergence_report==TRUE){
+    current_wd=getwd()
+    template_path=system.file("templates",package="EPA.MACT.floor.UPL",
+                              mustWork=TRUE)
+    rmarkdown::render(paste0(template_path,'/convergence_template.Rmd'),
+                      output_dir = current_wd,
+                      output_file = paste0('Bayesian_UPL_convergence_',
+                                           format(Sys.time(),"%m%d%Y-%H%M")))
+  }
   fit_table=tibble(distr=unlist(lapply(mod_output_list,'[[','distr')),
                    UPL=(as.numeric(lapply(mod_output_list,'[[','UPL_Bayes'))),
                    pdf_integral=(as.numeric(lapply(mod_output_list,'[[','pdf_integral'))),
