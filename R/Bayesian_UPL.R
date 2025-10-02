@@ -36,7 +36,7 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
     mod_output=output_likelihood(jags_model_run=mod_run,significance=significance)
     mod_fit=fit_likelihood(likelihood_result=mod_output)
     mod_output_list[[j]]=mod_fit
-    mod_converge=converge_likelihood(jags_model_run)
+    mod_converge=converge_likelihood(mod_run)
     conv_output=rbind(conv_output,mod_converge)
     rm(mod_run,mod_output,mod_fit)
     gc()
@@ -57,6 +57,9 @@ Bayesian_UPL=function(data,distr_list=c('Normal','Skewed','Lognormal','Gamma','B
   for (i in 1:length(distr_list)){
     pred_temp=mod_output_list[[i]]$xhat_pdf_dat
     pred_pdf_dat=rbind(pred_pdf_dat,pred_temp)
+  }
+  if (any(conv_output$convYN!="Yes")){
+    warning('Some parameters have not converged')
   }
   return_list=list(fit_table=fit_table,
                    conv_output=conv_output,
