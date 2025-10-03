@@ -1,7 +1,7 @@
 model {
       # priors
           sd_ln ~ dunif( 0.001*sdOfLogY , 1000*sdOfLogY )
-          u_ln ~ dnorm( meanOfLogY , 0.001*1/sdOfLogY^2 )
+          u_ln ~ dnorm( meanOfLogY , 0.001*1/sdOfLogY^2 )T(0,)
           tau_ln<-1/(sd_ln^2)
 
       #likelihood

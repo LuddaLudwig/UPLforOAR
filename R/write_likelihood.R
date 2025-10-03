@@ -41,7 +41,7 @@ write_likelihood=function(distribution,write_wd=NULL){
     cat("model {
       # priors
           sd_ln ~ dunif( 0.001*sdOfLogY , 1000*sdOfLogY )
-          u_ln ~ dnorm( meanOfLogY , 0.001*1/sdOfLogY^2 )
+          u_ln ~ dnorm( meanOfLogY , 0.001*1/sdOfLogY^2 )T(0,)
           tau_ln<-1/(sd_ln^2)
 
       #likelihood
@@ -70,7 +70,7 @@ write_likelihood=function(distribution,write_wd=NULL){
       # priors
           omega ~ dunif(0,maxY) #must be positive
           xi ~ dnorm(0,1/(100*maxY))
-          alpha ~ dunif(-50,50) # this is a very wide range
+          alpha ~ dunif(-500,500) # this is a very wide range
 
       #likelihood
           for (i in 1:length(emission_xi)) {

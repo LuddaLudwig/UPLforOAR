@@ -7,7 +7,7 @@ data {
       # priors
           omega ~ dunif(0,maxY) #must be positive
           xi ~ dnorm(0,1/(100*maxY))
-          alpha ~ dunif(-50,50) # this is a very wide range
+          alpha ~ dunif(-500,500) # this is a very wide range
 
       #likelihood
           for (i in 1:length(emission_xi)) {
