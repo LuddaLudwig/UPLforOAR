@@ -9,7 +9,7 @@
 #' @returns object model_code, which is a string for the written R script that
 #' JAGS can call and the distribution used in likelihood model.
 #'
-write_likelihood=function(distribution,write_wd=NULL, manual_prior=FALSE){
+write_likelihood=function(distribution,manual_prior=FALSE,write_wd=NULL){
   current_wd=getwd()
   if (is.null(write_wd)){
     write_wd='inst/JAGS/'
