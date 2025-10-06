@@ -26,7 +26,8 @@ test_that("fit_likelihood() compares predicted and observed density distribution
   fit_results=fit_likelihood(outputresult)
   expect_equal(round(fit_results$pdf_integral,3),0.921)
   expect_equal(fit_results$distr,'Lognormal')
-  expect_equal(round(fit_results$SSE,3),0.592)
-
+  expect_equal(round(fit_results$SSE,3),0.371)
+  expect_equal(nrow(fit_results$obs_pdf_dat),nrow(top5))
+  expect_equal(nrow(fit_results$xhat_pdf_dat),length(xvals))
 })
 

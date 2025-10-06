@@ -21,8 +21,9 @@ fit_likelihood=function(likelihood_result){
   obs_dens_results=obs_density(data=obs_pdf_temp,
                                xvals=pred_pdf_temp$x_hat)
   Obs_onPoint=obs_dens_results$Obs_onPoint
-  Obs_onPoint$inCI=NA
-  obs_pdf_dat=dplyr::full_join(Obs_onPoint,obs_pdf_temp,by='emissions')
+  obs_pdf_dat=dplyr::left_join(Obs_onPoint,obs_pdf_temp,
+                               by='emissions',multiple='any')
+  obs_pdf_dat$inCI=NA
   for (k in 1:nrow(obs_pdf_dat)){
     if ((obs_pdf_dat$ydens[k]>obs_pdf_dat$low[k])&
         (obs_pdf_dat$ydens[k]<obs_pdf_dat$up[k])){

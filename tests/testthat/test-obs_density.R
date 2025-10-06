@@ -46,8 +46,8 @@ test_that("obs_density() calculate densities for emissions observations", {
 
   expect_equal(test_result$Obs_onPoint,compare1)
   expect_equal(test_result$obs_den_df,compare2)
-  expect_equal(length(test_result$obs_den_df$x),length(xhat))
+  expect_equal(length(test_result$obs_den_df$x_hat),length(xhat))
   test_null=obs_density(data=top5,low=0)
-  expect_equal(length(test_null$obs_den_df$x),1024)
+  expect_equal(length(test_null$obs_den_df$x_hat),1024)
 
 })

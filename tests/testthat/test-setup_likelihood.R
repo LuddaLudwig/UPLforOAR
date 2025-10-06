@@ -19,7 +19,8 @@ test_that("setup_likelihood() calls JAGS model scripts with initial values and p
   ln_emiss=log(top5$emissions)
   JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
 
-  expect_equal(JAGS_model_stuff$par_list,c('emission_hat','pdf_obs','pdf_hat'))
+  expect_equal(JAGS_model_stuff$par_list,c('emission_hat','pdf_obs','pdf_hat',
+                                           'u_ln','sd_ln'))
   expect_equal(JAGS_model_stuff$dat_inits,list(
     list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
          'u_ln'=mean(ln_emiss,na.rm=TRUE),
