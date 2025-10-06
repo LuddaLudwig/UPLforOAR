@@ -34,7 +34,7 @@ space, than it is likely there is too little information in data or too poor a
 model fit to converge, even if convergence checks have otherwise passed. In this 
 case, consider narrowing prior information or removing this distribution from 
 consideration.
-```{r plots,results=FALSE}
+```{r plots,results=FALSE,fig.height=4}
 
 figs_list
 
