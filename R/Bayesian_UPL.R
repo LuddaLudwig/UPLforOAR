@@ -92,11 +92,10 @@ Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta')
   if (!manual_prior){
     for (j in 1:length(distr_list)){
       distribution=distr_list[j]
-      mod_bayes=setup_likelihood(distribution=distribution,data=data)
-      mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,manual_prior=FALSE,
+      mod_bayes=setup_likelihood(distribution=distribution,data=data,
+                                 manual_prior=FALSE)
+      mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,
                              future_tests =future_tests,xvals=xvals)
-      manual_prior=mod_bayes$manual_prior
-
       mod_output=output_likelihood(jags_model_run=mod_run,
                                    significance=significance)
       mod_fit=fit_likelihood(likelihood_result=mod_output)
