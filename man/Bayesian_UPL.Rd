@@ -7,18 +7,18 @@ output_likelihood(), converge_likelihood(), and fit_likelihood()}
 \usage{
 Bayesian_UPL(
   data,
-  distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   future_tests = 3,
   significance = 0.99,
   xvals = NULL,
-  convergence_report = FALSE
+  distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
+  convergence_report = FALSE,
+  manual_prior = FALSE,
+  prior_list = NULL
 )
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
 must have a column named 'emissions'.}
-
-\item{distr_list}{any of c('Normal','Skewed','Lognormal','Gamma','Beta')}
 
 \item{future_tests}{Integer of future runs to use in prediction, the default
 is 3 since compliance uses 1 test average of 3 runs.}
@@ -29,8 +29,24 @@ is 3 since compliance uses 1 test average of 3 runs.}
 density. Default is NULL, in which case x_hat is a 1024 length sequence
 between 0 and 3*max(data$emissions)}
 
+\item{distr_list}{any of c('Normal','Skewed','Lognormal','Gamma','Beta')}
+
 \item{convergence_report}{Default is FALSE, if a report containing
-convergence figures should be generated with results.}
+convergence figures should be generated with results. If TRUE, a document
+Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
+working directory.}
+
+\item{manual_prior}{Default is FALSE, if priors should be specified manually
+or be uninformative calculated from range of emissions data. Note that if you
+are supplying priors manually than you can only run one type of distribution
+at a time.}
+
+\item{prior_list}{Optional list of dunif() upper and lower bounds for prior
+distributions. For normal they are ordered c(sd_low, sd_high, mean_low, mean_high).
+For lognormal they are ordered c(log_sd_low, log_sd_high, log_mean_low, log_mean_high).
+For skewed they are ordered c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high).
+For gamma they are ordered c(rate_low, rate_high, shape_low, shape_high). For
+beta they are ordered c(alpha_low, alpha_high, beta_low, beta_high).}
 }
 \value{
 A list of results from output_likelihood(), fit_likelihood,

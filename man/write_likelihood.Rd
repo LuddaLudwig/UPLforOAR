@@ -4,10 +4,13 @@
 \alias{write_likelihood}
 \title{Writes likelihood scripts for JAGS model calls}
 \usage{
-write_likelihood(distribution, write_wd = NULL)
+write_likelihood(distribution, manual_prior = FALSE, write_wd = NULL)
 }
 \arguments{
 \item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
+
+\item{manual_prior}{Default is FALSE, if priors should be specified manually
+or be uninformative calculated from range of emissions data.}
 
 \item{write_wd}{default is NULL, in which case the JAGS scripts are written
 into inst/JAGS folder in package directory}
