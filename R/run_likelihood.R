@@ -16,7 +16,9 @@
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
 #' Default is 3*maximum(data$emissions).
+
 run_likelihood=function(xvals=NULL,model_input,future_tests=3,maxY=NULL){
+  manual_prior=model_input$manual_prior
   data=model_input$data
   Sys.setenv("_R_CHECK_LIMIT_CORES_" = FALSE)
   verify_install=runjags::testjags(silent = TRUE)
@@ -39,20 +41,52 @@ run_likelihood=function(xvals=NULL,model_input,future_tests=3,maxY=NULL){
   if ((model_input$distribution=='Beta')&(max(xvals)>1)){
     stop('Cannot use beta distribution with max xvals greater than 1')
   }
-  data_list=list(emission_xi=data$emissions,
-                 n_draws=future_tests,
-                 sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
-                 maxY=maxY,sdY=stats::sd(data$emissions),
-                 meanOfLogY=mean(log(data$emissions),na.rm=T),
-                 pi=pi,x_hat=xvals,n_x_hat=length(xvals))
+  if (!manual_prior){
+    data_list=list(emission_xi=data$emissions,
+                   n_draws=future_tests,
+                   sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
+                   maxY=maxY,sdY=stats::sd(data$emissions),
+                   meanOfLogY=mean(log(data$emissions),na.rm=T),
+                   pi=pi,x_hat=xvals,n_x_hat=length(xvals))
+  } else if (manual_prior){
+    if (length(model_input$prior_list)==4){
+      data_list=list(emission_xi=data$emissions,
+                     n_draws=future_tests,
+                     sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
+                     maxY=maxY,sdY=stats::sd(data$emissions),
+                     meanOfLogY=mean(log(data$emissions),na.rm=T),
+                     pi=pi,x_hat=xvals,n_x_hat=length(xvals),
+                     low1=model_input$prior_list[1],
+                     up1=model_input$prior_list[2],
+                     low2=model_input$prior_list[3],
+                     up2=model_input$prior_list[4])
+    } else if (length(model_input$prior_list)==6){
+      data_list=list(emission_xi=data$emissions,
+                     n_draws=future_tests,
+                     sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
+                     maxY=maxY,sdY=stats::sd(data$emissions),
+                     meanOfLogY=mean(log(data$emissions),na.rm=T),
+                     pi=pi,x_hat=xvals,n_x_hat=length(xvals),
+                     low1=model_input$prior_list[1],
+                     up1=model_input$prior_list[2],
+                     low2=model_input$prior_list[3],
+                     up2=model_input$prior_list[4],
+                     low3=model_input$prior_list[5],
+                     up3=model_input$prior_list[6])
+    }
+  }
   cl3=parallel::makeCluster(3)
   rjm=suppressWarnings(runjags::run.jags(model=model_input$model_code,
                                          data=data_list,
-               monitor=model_input$par_list,
-               method='rjparallel',summarise = FALSE,cl=cl3,
-               n.chains=length(model_input$dat_inits), burnin=n.update,
-               adapt=n.adapt,sample=n.iter,inits = model_input$dat_inits))
+                                         monitor=model_input$par_list,
+                                         method='rjparallel',
+                                         summarise = FALSE,cl=cl3,
+                                         n.chains=length(model_input$dat_inits),
+                                         burnin=n.update,
+                                         adapt=n.adapt,sample=n.iter,
+                                         inits = model_input$dat_inits))
   output=list(run_results=rjm,distribution=model_input$distribution,
+              manual_prior=manual_prior,
               data=model_input$data, xvals=xvals,future_tests=future_tests)
   parallel::stopCluster(cl3)
   return(output)
