@@ -1,18 +1,18 @@
 #' Calculates the density of emissions observations
 #' @param data Emissions data from either the best source or top performers,
-#' must have a column named 'emissions'
-#' @param xvals ordered sequence of emissions to define emission densities along.
-#' Default is NULL, in which case xvals is a 1024 length sequence
+#' must have a column named 'emissions'.
+#' @param xvals Ordered sequence of emissions to define emission densities along.
+#' Default is NULL, in which case xvals is a 1024 length sequence.
 #' between 0 and 3*max(data$emissions)
-#' @param up optional upper limit to bound density, default is Inf.
-#' @param low optional lower limit to bound density, default is 0.
-#' @param bw optional bandwidth, default is NULL in which case
+#' @param up Optional upper limit to bound density, default is Inf.
+#' @param low Optional lower limit to bound density, default is 0.
+#' @param bw Optional bandwidth, default is NULL in which case
 #' bw = sd(emissions)*n^(-2/5), where n is number of emissions.
-#' @param kernel kernel choice for density function, default is 'gamma' defined
-#' on (0,Inf). Other options include
+#' @param kernel Kernel choice for density function, default is 'gamma' defined
+#' on (0,Inf). Other options include.
 #' c("gaussian1","gaussian2","beta1","beta2","fb","fbl","fbu","rigaussian")
 #' @references Bandwidth is set following
-#' @returns a list containing two tibbles, Obs_onPoint with exact emission
+#' @returns A list containing two tibbles, Obs_onPoint with exact emission
 #' observations and densities, and obs_den_df with densities for every
 #' position given in xvals.
 #' @export

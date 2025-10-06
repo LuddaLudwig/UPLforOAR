@@ -7,10 +7,10 @@
 DRE_trans(x)
 }
 \arguments{
-\item{x}{numeric vector of emissions as a fraction out of 1}
+\item{x}{Numeric vector of emissions as a fraction out of 1}
 }
 \value{
-numeric vector of percent destruction or removal efficiencies
+Numeric vector of percent destruction or removal efficiencies
 }
 \description{
 Convert from a an emission fraction into a percent destruction or removal efficiency

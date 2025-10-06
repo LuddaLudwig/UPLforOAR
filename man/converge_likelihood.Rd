@@ -7,13 +7,17 @@
 converge_likelihood(jags_model_run)
 }
 \arguments{
-\item{jags_model_run}{The output list returned from run_likelihood(),
-which includes the jags model 'run_results', likelihood distribution type,}
+\item{jags_model_run}{The output list returned from run_likelihood().}
 }
 \value{
 A tibble of parameters and convergence results from gelman.diag(),
-Values greater than 1.2 indicate problems in convergence.
+Values greater than 1.2 indicate problems in convergence. Values between 1.1
+and 1.2 indicate weak convergence. Values less than 1.1 indicate good
+convergence. This test indicates if the 3 mcmc chains are will mixed and
+stable but is insufficient as the only indicator of convergence. Visual plots
+of posterior distributions should be investigated as well.
 }
 \description{
-Tests for convergence in likelihood parameters
+Gelman-Rubin convergence tests for each defining parameter in the likelihood
+distribution.
 }

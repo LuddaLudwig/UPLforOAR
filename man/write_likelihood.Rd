@@ -7,18 +7,23 @@
 write_likelihood(distribution, manual_prior = FALSE, write_wd = NULL)
 }
 \arguments{
-\item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
+\item{distribution}{Any of 'Normal', 'Gamma', 'Skewed', 'Lognormal', or 'Beta'.}
 
 \item{manual_prior}{Default is FALSE, if priors should be specified manually
 or be uninformative calculated from range of emissions data.}
 
-\item{write_wd}{default is NULL, in which case the JAGS scripts are written
-into inst/JAGS folder in package directory}
+\item{write_wd}{Default is NULL, in which case the JAGS scripts are written
+into inst/JAGS folder in package directory. This is the location
+run_likelihood() will look for the JAGS scripts assigned via setup_likelihood().}
 }
 \value{
 object model_code, which is a string for the written R script that
 JAGS can call and the distribution used in likelihood model.
 }
 \description{
-This function writes an R script for JAGS to call based on the selected distribution and prior. The initial values and priors are uninformative and set based on emissions data. The likelihood distributions are truncated to (0,3*max(data$emissions))
+This function writes an R script for JAGS to call based on the selected
+distribution and prior. The priors are uninformative and
+set based on emissions data, unless specified manually via setup_likelihood().
+The likelihood distributions are truncated to (0,maxY), where maxY can be
+specified or used with the default maxY=3*max(data$emissions) in run_likelihood().
 }

@@ -2,11 +2,12 @@
 #' @description
 #' This function defines the jagsmodel script to call based on the selected
 #' distribution. It also defines the initial values and variables to monitor.
-#' @param distribution any of c('Normal','Gamma','Skewed','Lognormal','Beta').
+#' @param distribution Any of 'Normal', 'Gamma', 'Skewed', 'Lognormal', or 'Beta'.
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
-#' @param manual_prior Default is FALSE, if priors should be specified manually
-#' or be uninformative calculated from range of emissions data.
+#' @param manual_prior Default is FALSE, priors are uninformative and calculated
+#' from range of emissions data. if TRUE priors should be specified manually in
+#' 'prior_list'.
 #' @param prior_list Optional list of dunif() upper and lower bounds for prior
 #' distributions. For normal they are ordered c(sd_low, sd_high, mean_low, mean_high).
 #' For lognormal they are ordered c(log_sd_low, log_sd_high, log_mean_low, log_mean_high).
@@ -14,9 +15,9 @@
 #' For gamma they are ordered c(rate_low, rate_high, shape_low, shape_high). For
 #' beta they are ordered c(alpha_low, alpha_high, beta_low, beta_high).
 #' @param random Default is FALSE where random seeds are defined via .RNG.name
-#' and .RNG.seed so JAGS runs will be reproducible. Changing to TRUE will use
-#' random values for .RNG.name and .RNG.seed instead.
-#' @returns object model_code, which is a string for the written R script that
+#' and .RNG.seed so JAGS runs will be exactly reproducible. Changing to TRUE
+#' will use random values for .RNG.name and .RNG.seed instead.
+#' @returns Object model_code, which is a string for the written R script that
 #' JAGS can call, par_list which is the list of parameters traced while running
 #' the JAGS model, dat_inits which is a list of initial parameter values and
 #' random seeds for 3 chains, and the distribution used in likelihood model.

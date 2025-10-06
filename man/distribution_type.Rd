@@ -11,7 +11,7 @@ distribution_type(data)
 must have a column named 'emissions'}
 }
 \value{
-string with either 'Normal', 'Lognormal', or 'Skewed'
+String with either 'Normal', 'Lognormal', or 'Skewed'
 }
 \description{
 Determines the type of distribution from skewness and kurtosis ratios

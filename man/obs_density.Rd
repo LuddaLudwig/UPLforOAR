@@ -8,25 +8,25 @@ obs_density(data, xvals = NULL, up = Inf, low = 0, kernel = "gamma", bw = NULL)
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'}
+must have a column named 'emissions'.}
 
-\item{xvals}{ordered sequence of emissions to define emission densities along.
-Default is NULL, in which case xvals is a 1024 length sequence
+\item{xvals}{Ordered sequence of emissions to define emission densities along.
+Default is NULL, in which case xvals is a 1024 length sequence.
 between 0 and 3*max(data$emissions)}
 
-\item{up}{optional upper limit to bound density, default is Inf.}
+\item{up}{Optional upper limit to bound density, default is Inf.}
 
-\item{low}{optional lower limit to bound density, default is 0.}
+\item{low}{Optional lower limit to bound density, default is 0.}
 
-\item{kernel}{kernel choice for density function, default is 'gamma' defined
-on (0,Inf). Other options include
+\item{kernel}{Kernel choice for density function, default is 'gamma' defined
+on (0,Inf). Other options include.
 c("gaussian1","gaussian2","beta1","beta2","fb","fbl","fbu","rigaussian")}
 
-\item{bw}{optional bandwidth, default is NULL in which case
+\item{bw}{Optional bandwidth, default is NULL in which case
 bw = sd(emissions)*n^(-2/5), where n is number of emissions.}
 }
 \value{
-a list containing two tibbles, Obs_onPoint with exact emission
+A list containing two tibbles, Obs_onPoint with exact emission
 observations and densities, and obs_den_df with densities for every
 position given in xvals.
 }

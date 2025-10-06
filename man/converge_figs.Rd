@@ -7,11 +7,11 @@
 converge_figs(distribution, jags_model_run)
 }
 \arguments{
-\item{distribution}{One of c('Normal','Skewed','Lognormal','Gamma','Beta')}
+\item{distribution}{One of 'Normal', 'Skewed', 'Lognormal', 'Gamma', or 'Beta'.}
 
 \item{jags_model_run}{The output list returned from run_likelihood(),
 which includes the jags model 'run_results', likelihood distribution type,
-and data, xvals, and future_tests used as inputs to run_likelihood()}
+data, xvals, and future_tests that were used as inputs to run_likelihood()}
 }
 \value{
 A list of histograms and MCMC chain plots per parameter

@@ -7,13 +7,15 @@
 MACT_EG(CAA_section = 112, data)
 }
 \arguments{
-\item{CAA_section}{applicable Clean Air Act section, either 112 or 129}
+\item{CAA_section}{Applicable Clean Air Act section, either 112 or 129}
 
-\item{data}{data.frame or tibble with columns for emissions (numeric) and
+\item{data}{Data.frame or tibble with columns for emissions (numeric) and
 sources (character or factor)}
 }
 \value{
-data set (tibble) of the top sources to be used in UPL calculations
+Data set (tibble) of the top 5 or 12% of sources, depending on the
+number of sources, to be used in UPL calculations for Maximum Achievable
+Control Technology (MACT) floor analysis for Existing Source Guidelines.
 }
 \description{
 Selects top sources from emissions data

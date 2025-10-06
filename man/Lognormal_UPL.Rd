@@ -16,11 +16,12 @@ is 3 since compliance uses 1 test average of 3 runs.}
 \item{significance}{Level of significance from 0 to 1, the default is 0.99.}
 }
 \value{
-upper predictive limit at significance level for the average of the
+Upper predictive limit at significance level for the average of the
 number of future test runs
 }
 \description{
-Calculate UPL assuming lognormally distributed emissions data
+Uses Gram-Charlmier Series-A distribution approximation to determine the
+lognormal UPL.
 }
 \references{
 "An upper prediction limit for the arithmetic mean of a lognormal

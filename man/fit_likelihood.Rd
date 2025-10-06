@@ -11,14 +11,14 @@ fit_likelihood(likelihood_result)
 \item{likelihood_result}{Output list from output_likelihood()}
 }
 \value{
-The SSE between predicted and observed probability densities,
-and the count of emissions whose 95% CI around predicted probability
-densities overlaps observed probability densities. Also includes the integration
-of predicted pdf, distribution type used, and merged data sets of observed
-and predicted densities at each emission value and each xval, named obs_pdf_dat
-and xhat_pdf_dat respectively. The obs_pdf_dat also includes the upper and
-lower 95% and median around predicted pdf. The UPL estimate from the
-output_likelihood() is included in this result as well.
+The sum of squared error (SSE) between predicted and observed
+probability densities, and the count of emissions whose 95% CI around
+predicted probability densities overlaps observed probability densities.
+Also includes the integration of predicted pdf, distribution type used, and
+merged data sets of observed and predicted densities at each emission value
+and each xval, named obs_pdf_dat and xhat_pdf_dat respectively. The
+obs_pdf_dat also includes the upper and lower 95% and median around predicted
+pdf. The UPL estimate from the output_likelihood() as well.
 }
 \description{
 This function takes the list of results from output_likelihood() and compares

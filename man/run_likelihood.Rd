@@ -7,13 +7,13 @@
 run_likelihood(model_input, xvals = NULL, maxY = NULL, future_tests = 3)
 }
 \arguments{
-\item{model_input}{results from setup_likelihood(), including JAGS model
-script, emissions data, distribution, initial values list,
-and parameters to monitor.}
+\item{model_input}{Results from setup_likelihood(), including JAGS model
+script, emissions data, distribution, initial values list, and parameters to
+monitor.}
 
-\item{xvals}{ordered sequence of emissions at which to predict probability
+\item{xvals}{Ordered sequence of emissions at which to predict probability
 density. Default is NULL, in which case x_hat is a 1024 length
-sequence between 0 and 3*max(data$emissions)}
+sequence between 0 and 3*max(data$emissions).}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
 distributions and set upper ranges on prior distributions.
