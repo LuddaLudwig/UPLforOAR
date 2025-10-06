@@ -25,18 +25,23 @@ converge_figs=function(distribution,jags_model_run){
       i=i
       step3=coda::as.mcmc.list(jags_model_run$run_results, vars=par_list[i])
       step4=runjags::combine.mcmc(step3)
-      p1=ggplot()+geom_line(aes(color='a',x=1:10000,y=as.vector(step3[[1]])),
+      p1=ggplot2::ggplot()+
+        ggplot2::geom_line(ggplot2::aes(color='a',x=1:10000,
+                                        y=as.vector(step3[[1]])),
                             linewidth = 0.5,linetype = 1)+
-        geom_line(aes(color='b',x=1:10000,y=as.vector(step3[[2]])),
+        ggplot2::geom_line(ggplot2::aes(color='b',x=1:10000,
+                                        y=as.vector(step3[[2]])),
                   linewidth = 0.5,linetype = 2)+
-        geom_line(aes(color='c',x=1:10000,y=as.vector(step3[[3]])),
+        ggplot2::geom_line(ggplot2::aes(color='c',x=1:10000,
+                                        y=as.vector(step3[[3]])),
                   linewidth = 0.5,linetype = 3)+
-        mcmc_theme()+xlab('Iterations')+ylab(par_list[i])
-      p2=ggplot()+geom_histogram(aes(step4),color='black',fill='grey')+
-        xlab(par_list[i])+mcmc_theme()
+        mcmc_theme()+ggplot2::xlab('Iterations')+ggplot2::ylab(par_list[i])
+      p2=ggplot2::ggplot()+ggplot2::geom_histogram(ggplot2::aes(step4),
+                                          color='black',fill='grey')+
+        ggplot2::xlab(par_list[i])+mcmc_theme()
       p12=p1+p2+patchwork::plot_layout(ncol=2)+
         patchwork::plot_annotation(title=distribution) &
-        ggplot2::theme(plot.title = element_text(size=20,hjust=0.5))
+        ggplot2::theme(plot.title = ggplot2::element_text(size=20,hjust=0.5))
     fig_list[[i]]<<-p12
     })
   return(fig_list)

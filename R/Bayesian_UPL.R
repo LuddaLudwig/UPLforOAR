@@ -46,7 +46,7 @@ Bayesian_UPL=function(data,future_tests=3,significance=0.99,xvals=NULL,
     figs_list=list()
   }
   mod_output_list=c()
-  conv_output=tibble()
+  conv_output=tibble::tibble()
   if (manual_prior){
     if (length(distr_list)>1){
       stop('You can only run one distribution at a time if suppling priors manually')
@@ -106,7 +106,7 @@ Bayesian_UPL=function(data,future_tests=3,significance=0.99,xvals=NULL,
                       output_file = paste0('Bayesian_UPL_convergence_',
                                            format(Sys.time(),"%m%d%Y-%H%M")))
   }
-  fit_table=tibble(distr=unlist(lapply(mod_output_list,'[[','distr')),
+  fit_table=tibble::tibble(distr=unlist(lapply(mod_output_list,'[[','distr')),
                    UPL=(as.numeric(lapply(mod_output_list,'[[','UPL_Bayes'))),
                    pdf_integral=(as.numeric(lapply(mod_output_list,'[[','pdf_integral'))),
                    SSE=(as.numeric(lapply(mod_output_list,'[[','SSE'))),

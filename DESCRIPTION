@@ -38,6 +38,7 @@ Imports:
     patchwork,
     readr,
     rjags,
+    rmarkdown,
     runjags,
     scales,
     sfsmisc,
