@@ -49,7 +49,7 @@ Bayesian_UPL=function(data,future_tests=3,significance=0.99,xvals=NULL,
   conv_output=tibble::tibble()
   if (manual_prior){
     if (length(distr_list)>1){
-      stop('You can only run one distribution at a time if suppling priors manually')
+      stop('You can only run one distribution at a time if supplying priors manually')
     }
     distribution=distr_list[1]
     mod_bayes=setup_likelihood(distribution=distribution,data=data,

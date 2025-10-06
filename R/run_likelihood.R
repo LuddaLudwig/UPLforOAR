@@ -17,7 +17,7 @@
 #' distributions and set upper ranges on prior distributions.
 #' Default is 3*maximum(data$emissions).
 
-run_likelihood=function(xvals=NULL,model_input,future_tests=3,maxY=NULL){
+run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
   manual_prior=model_input$manual_prior
   data=model_input$data
   Sys.setenv("_R_CHECK_LIMIT_CORES_" = FALSE)
