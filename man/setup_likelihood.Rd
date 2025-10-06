@@ -4,7 +4,13 @@
 \alias{setup_likelihood}
 \title{Sets up path to JAGS script, initial values, and variable list to monitor}
 \usage{
-setup_likelihood(distribution, data, manual_prior = FALSE, prior_list = NULL)
+setup_likelihood(
+  distribution,
+  data,
+  manual_prior = FALSE,
+  prior_list = NULL,
+  random = FALSE
+)
 }
 \arguments{
 \item{distribution}{any of c('Normal','Gamma','Skewed','Lognormal','Beta').}
@@ -21,6 +27,10 @@ For lognormal they are ordered c(log_sd_low, log_sd_high, log_mean_low, log_mean
 For skewed they are ordered c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high).
 For gamma they are ordered c(rate_low, rate_high, shape_low, shape_high). For
 beta they are ordered c(alpha_low, alpha_high, beta_low, beta_high).}
+
+\item{random}{Default is FALSE where random seeds are defined via .RNG.name
+and .RNG.seed so JAGS runs will be reproducible. Changing to TRUE will use
+random values for .RNG.name and .RNG.seed instead.}
 }
 \value{
 object model_code, which is a string for the written R script that
