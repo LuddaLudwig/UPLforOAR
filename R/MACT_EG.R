@@ -2,15 +2,26 @@
 #' @param CAA_section Applicable Clean Air Act section, either 112 or 129
 #' @param data Data.frame or tibble with columns for emissions (numeric) and
 #' sources (character or factor)
-#' @import magrittr
 #' @returns Data set (tibble) of the top 5 or 12% of sources, depending on the
 #' number of sources, to be used in UPL calculations for Maximum Achievable
 #' Control Technology (MACT) floor analysis for Existing Source Guidelines.
 #' @export
 
 MACT_EG=function(CAA_section=112,data){
+  if (("emissions" %in% names(data))==FALSE){
+    stop("data must have numeric column named 'emissions' ")
+  }
+  if (("sources" %in% names(data))==FALSE){
+    stop("data must have character or factor column named 'sources' ")
+  }
+  if (!is.numeric(data$emissions)){
+    stop("Emissions must be numeric vector")
+  }
+  if ((!is.character(data$sources))&(!is.character(data$sources))){
+    stop("Sources must be a character or factor vector")
+  }
 
-  dat_means=data%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions))
+  dat_means=dplyr::summarize(data,means=mean(emissions),.by='sources')
   n_sources=length(unique(data$sources))
 
   if (CAA_section==129){
@@ -33,8 +44,8 @@ MACT_EG=function(CAA_section=112,data){
       dat_top=subset(data,data$sources%in%top_list)
     }
   }
-  dat_topmeans=dat_top%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),
-                                                                   counts=dplyr::n())
+  dat_topmeans=dplyr::summarize(dat_top,means=mean(emissions),.by='sources',
+                                counts=dplyr::n())
   dat_topmeans$sources=as.factor(dat_topmeans$sources)
   dat_topmeans$sources=forcats::fct_reorder(dat_topmeans$sources,
                                    dat_topmeans$means,.desc = FALSE)

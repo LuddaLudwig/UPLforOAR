@@ -25,6 +25,12 @@
 setup_likelihood=function(distribution,data,manual_prior=FALSE,prior_list=NULL,
                           random=FALSE){
   JAGS_path=system.file("JAGS",package="EPA.MACT.floor.UPL",mustWork=TRUE)
+  if (("emissions" %in% names(data))==FALSE){
+    stop("data must have numeric column named 'emissions' ")
+  }
+  if (!is.numeric(data$emissions)){
+    stop("Emissions must be numeric")
+  }
   mu=mean(data$emissions)
   sigma=stats::sd(data$emissions)
   if(!manual_prior){
