@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of UPLforOAR is to provide a set of functions for supporting
+The goal of `UPLforOAR` is to provide a set of functions for supporting
 National Emissions Standards for Hazardous Air Pollutants (NESHAP)
 analyses. This includes organizing data sets for Maximum Achievable
 Control Technology (MACT) floor analysis and Upper Predictive Limit
@@ -16,7 +16,7 @@ Act sections, determining the appropriate distributions for the
 emissions data, and calculating the UPL for Existing source Guidance
 (EG) and New Source Performance Standards (NSPS).
 
-The UPLforOAR R package replicates all of the functionality of the
+The `UPLforOAR` R package replicates all of the functionality of the
 UPL.xlsx workbook while streamlining its use. Using R instead of Excel
 avoids common sources of user-error such as copy-paste mistakes,
 cell-dragging, and inter-sheet references. Furthermore, the R package
@@ -24,8 +24,8 @@ adds clarity to UPL standards calculations by plotting the distribution
 probability densities and emissions data underlying the methods. This
 allows the user to verify visually that the emissions data are well
 represented and the assumptions of the probability distribution are
-reasonable. Furthermore, the UPLforOAR can be used through an R shiny
-app for quick and reproducible UPL calculations, and also generate pdf
+reasonable. Furthermore, `UPLforOAR` can be used through an R shiny app
+for quick and reproducible UPL calculations, and also generate pdf
 reports directly from uploading emissions data without user input
 required.
 
@@ -84,7 +84,7 @@ distribution_result_EG=distribution_type(dat_EG)
 | Logan Generating Plant_Unit1_B01 |         5.33e-09 |            1 |
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
-Top 5 of 42 sources for existing guidance UPL calculation
+Top 5 of 42 sources for EG standard UPL calculation
 
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The
@@ -123,8 +123,8 @@ pred_dat=tibble(x_hat,pdf_ln)
 
 ``` r
 ggplot()+
-  geom_line(data=obs_den_df,aes(y=y,x=(x),color='a'),size=0.75)+
-  geom_area(data=obs_den_df,aes(y=y,x=(x),fill='a'),alpha=0.25)+
+  geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat),color='a'),size=0.75)+
+  geom_area(data=obs_den_df,aes(y=ydens,x=(x_hat),fill='a'),alpha=0.25)+
   geom_point(aes(y=ydens,x=(emissions)),data=Obs_onPoint,
              size=3,alpha=0.5,shape=19,color='black')+
   geom_line(aes(y=pdf_ln,x=(x_hat),color='b'),
@@ -147,22 +147,21 @@ ggplot()+
                      labels=c('Observations','Lognormal'))+
   scale_fill_manual(values=c('black','#984EA3'),
                     labels=c('Observations','Lognormal'))
-#> Error in `geom_line()`:
-#> ! Problem while computing aesthetics.
-#> ℹ Error occurred in the 1st layer.
-#> Caused by error:
-#> ! object 'x' not found
 ```
 
-## Disclaimer
-
-The United States Environmental Protection Agency (EPA) GitHub project
-code is provided on an “as is” basis and the user assumes responsibility
-for its use. EPA has relinquished control of the information and no
-longer has responsibility to protect the integrity , confidentiality, or
-availability of the information. Any reference to specific commercial
-products, processes, or services by service mark, trademark,
-manufacturer, or otherwise, does not constitute or imply their
-endorsement, recommendation or favoring by EPA. The EPA seal and logo
-shall not be used in any manner to imply endorsement of any commercial
-product or activity by EPA or the United States Government.
+![Observation density of Hg for the overall population. The obseration
+data are indicated in black as points and a rug along the axis, with the
+observation density distribution as a black line. The fitted lognormal
+distribution that is the basis of the UPL estimate is colored purple.
+The average of the Hg emissions is the vertical black line and the UPL
+result is the vertical purple line.](man/figures/README-plot1-1.png) \##
+Disclaimer The United States Environmental Protection Agency (EPA)
+GitHub project code is provided on an “as is” basis and the user assumes
+responsibility for its use. EPA has relinquished control of the
+information and no longer has responsibility to protect the integrity ,
+confidentiality, or availability of the information. Any reference to
+specific commercial products, processes, or services by service mark,
+trademark, manufacturer, or otherwise, does not constitute or imply
+their endorsement, recommendation or favoring by EPA. The EPA seal and
+logo shall not be used in any manner to imply endorsement of any
+commercial product or activity by EPA or the United States Government.

@@ -1,4 +1,4 @@
-Package: EPA.MACT.floor.UPL
+Package: UPLforOAR
 Type: Package
 Title: UPL calculations for MACT floor standards
 Version: 0.1.0
@@ -20,8 +20,8 @@ Description: National Emission Standards for Hazardous Air Pollutants (NESHAP)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
-BugReports: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/issues
+URL: https://github.com/USEPA/UPLforOAR
+BugReports: https://github.com/USEPA/UPLforOAR/issues
 SystemRequirements: R >= 3.5.0 , JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
     coda,

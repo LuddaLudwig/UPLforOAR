@@ -8,7 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE)
 ```
-Convergence results from Bayesian UPL analysis using EPA.MACT.floor.UPL version
+Convergence results from Bayesian UPL analysis using `UPLforOAR` version
 `r packageVersion('EPA.MACT.floor.UPL')`. Convergence is assessed quantitatively
 with Gelman-Rubin diagnostics, and visually with convergence plots. Gelman-Rubin 
 diagnostic values of less than 1.1 indicate good convergence. Values greater 
