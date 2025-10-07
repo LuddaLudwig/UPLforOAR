@@ -4,16 +4,16 @@
 #' This function takes the list of results from output_likelihood() and compares
 #' the predicted density distributions to observed density distributions,
 #' estimating the SSE (sum of squared errors) and counts the number of emissions
-#' observations with densities that have overlapping 95% CI with predicted densities.
+#' observations with densities that have overlapping 95\% CI with predicted densities.
 #'
 #' @param likelihood_result Output list from output_likelihood()
 #' @returns The sum of squared error (SSE) between predicted and observed
-#' probability densities, and the count of emissions whose 95% CI around
+#' probability densities, and the count of emissions whose 95\% CI around
 #' predicted probability densities overlaps observed probability densities.
 #' Also includes the integration of predicted pdf, distribution type used, and
 #' merged data sets of observed and predicted densities at each emission value
 #' and each xval, named obs_pdf_dat and xhat_pdf_dat respectively. The
-#' obs_pdf_dat also includes the upper and lower 95% and median around predicted
+#' obs_pdf_dat also includes the upper and lower 95\% and median around predicted
 #' pdf. The UPL estimate from the output_likelihood() as well.
 fit_likelihood=function(likelihood_result){
   obs_pdf_temp=likelihood_result$obs_pdf
