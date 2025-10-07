@@ -17,7 +17,7 @@ MACT_EG=function(CAA_section=112,data){
   if (!is.numeric(data$emissions)){
     stop("Emissions must be numeric vector")
   }
-  if ((!is.character(data$sources))&(!is.character(data$sources))){
+  if ((!is.character(data$sources))&(!is.factor(data$sources))){
     stop("Sources must be a character or factor vector")
   }
 
