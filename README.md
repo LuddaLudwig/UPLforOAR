@@ -4,6 +4,10 @@
 # UPLforOAR
 
 <!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
+[![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
