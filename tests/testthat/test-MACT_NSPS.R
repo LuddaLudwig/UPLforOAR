@@ -9,8 +9,8 @@ test_that("MACT_NSPS() selects top sources", {
                         rep('C',3),
                         rep('D',6),
                         rep('E',6)))
-  dat_topmeans=top5%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),
-                                                    counts=dplyr::n())
+  dat_topmeans=dplyr::summarize(top5,means=mean(emissions),.by='sources',
+                                counts=dplyr::n())
   dat_topmeans$sources=as.factor(dat_topmeans$sources)
   dat_topmeans$sources=forcats::fct_reorder(dat_topmeans$sources,
                                    dat_topmeans$means,.desc = FALSE)
@@ -19,7 +19,8 @@ test_that("MACT_NSPS() selects top sources", {
   others=tibble::tibble(emissions=c(8,5,6,7,10,11,1,3,1.1,0.2,11,5,
                             15,4,5.7),
                 sources=c(rep('F',12),rep('G',3)))
-  best_source=tibble::tibble(emissions=c(0.001,0.002,0.0015),sources=rep('TP',3))
+  best_source=tibble::tibble(emissions=c(0.001,0.002,0.0015),
+                             sources=rep('TP',3))
   best_source$sources=factor(best_source$sources)
   dat_test=rbind(top5,others,best_source)
   test_result=MACT_NSPS(data=dat_test)

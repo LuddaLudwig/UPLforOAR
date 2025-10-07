@@ -20,25 +20,28 @@ Description: National Emission Standards for Hazardous Air Pollutants (NESHAP)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL
-BugReports: https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/issues
-SystemRequirements: JAGS (https://mcmc-jags.sourceforge.io/)
+URL: https://github.com/USEPA/UPLforOAR
+BugReports: https://github.com/USEPA/UPLforOAR/issues
+SystemRequirements: R >= 3.5.0 , JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
+    coda,
     dplyr,
     EnvStats,
     forcats,
     ggplot2,
-    ggtext,
     grid,
-    magrittr,
     matrixStats,
     np,
+    parallel,
     patchwork,
     readr,
+    rjags,
+    rmarkdown,
+    runjags,
     scales,
     sfsmisc,
+    sn,
     tibble,
-    viridis
 RoxygenNote: 7.3.3
 Suggests: 
     testthat (>= 3.0.0)

@@ -1,8 +1,9 @@
 #' Custom theme for ggplot multi-source density distributions
 #' @description
 #' This function sets ggplot2 theme elements
+#' @importFrom ggplot2 %+replace%
 #' @export
-pop_distr_theme <- function () {
+multi_source_theme <- function () {
   multi_source_theme=ggplot2::theme_bw() %+replace%
   ggplot2::theme(plot.margin=grid::unit(c(0.1,0.5,0.5,0.1),"cm"),
                          legend.direction = 'horizontal',

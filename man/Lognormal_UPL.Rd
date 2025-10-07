@@ -7,18 +7,23 @@
 Lognormal_UPL(data, future_tests = 3, significance = 0.99)
 }
 \arguments{
-\item{data}{Emissions data from either the best source or top performers, must have a column named 'emissions'}
+\item{data}{Emissions data from either the best source or top performers,
+must have a column named 'emissions'}
 
-\item{future_tests}{Integer of future runs to use in prediction, the default is 3 since compliance uses 1 test average of 3 runs.}
+\item{future_tests}{Integer of future runs to use in prediction, the default
+is 3 since compliance uses 1 test average of 3 runs.}
 
 \item{significance}{Level of significance from 0 to 1, the default is 0.99.}
 }
 \value{
-upper predictive limit at significance level for the average of the number of future test runs
+Upper predictive limit at significance level for the average of the
+number of future test runs
 }
 \description{
-Calculate UPL assuming lognormally distributed emissions data
+Uses Gram-Charlmier Series-A distribution approximation to determine the
+lognormal UPL.
 }
 \references{
-"An upper prediction limit for the arithmetic mean of a lognormal random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
+"An upper prediction limit for the arithmetic mean of a lognormal
+random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
 }

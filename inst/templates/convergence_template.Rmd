@@ -1,0 +1,41 @@
+---
+title: "Convergence Results"
+author: "Ludda Ludwig"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE)
+```
+Convergence results from Bayesian UPL analysis using `UPLforOAR` version
+`r packageVersion('EPA.MACT.floor.UPL')`. Convergence is assessed quantitatively
+with Gelman-Rubin diagnostics, and visually with convergence plots. Gelman-Rubin 
+diagnostic values of less than 1.1 indicate good convergence. Values greater 
+than 1.1 but less than 1.2 indicate weak convergence. Values greater than 1.2 
+indicate there is no convergence, and the results should be rejected and the model
+or distribution reassessed for appropriateness to the data.
+```{r gelamn}
+knitr::kable(conv_output,caption="Gelman-Rubin diagnostic results",
+             col.names=c('Parameter','Diagnostic','Converged?','Distribution'),
+             digits = 4)
+```
+
+For each distribution used, a pair of plots is generated for each defining 
+parameter. The first plot shows the MCMC iterations for each of 3 chains after 
+removing the burn-in iterations. Good convergence is indicated if all chains are 
+well mixed and without trends. The second plot shows the histogram of the 
+parameter's posterior distribution. Ideally the histogram will look 
+approximately normal centered on the converged parameter value. If the histogram 
+is extremely skewed towards the edge of the parameter space, than the true value 
+might be outside the limits imposed on the prior distribution. Consider 
+broadening the prior information. If the histogram is flat across the parameter 
+space, than it is likely there is too little information in data or too poor a 
+model fit to converge, even if convergence checks have otherwise passed. In this 
+case, consider narrowing prior information or removing this distribution from 
+consideration.
+```{r plots,results=FALSE,fig.height=4}
+
+figs_list
+
+```

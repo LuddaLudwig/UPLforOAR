@@ -1,0 +1,386 @@
+---
+title: "UPL calculations"
+author: "OAR-OAQPS-SPPD-MPG"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+runtime: shiny
+geometry: left = 2cm, right = 2cm, top = 2cm, bottom = 2cm
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, error=TRUE,warning=FALSE, message=FALSE)
+
+library(tidyverse)
+library(kableExtra)
+library(EPA.MACT.floor.UPL)
+```
+
+```{r inputs, echo=FALSE}
+inputPanel(
+        selectInput("CAA_section", label="CAA Section:", selected=112,
+                choices=c(112,129)),
+        fileInput('data','Upload csv file with "emissions" column of numeric 
+                  data and "sources" column of corresponding source names',
+                  accept='.csv'),
+        numericInput("future_tests",label="Number of future test runs",
+                     value=3,min=1),
+        numericInput("signficance",label="Level of significance",
+                     value=0.99,min=0,max=1)
+)
+downloadButton('Sourcedownload','Download top sources')
+downloadButton('UPLdownload','Download UPL results')
+
+```
+
+## Emission dataset
+
+Check Table 1 below to ensure you have loaded the correct emission data set and 
+that the values are generally what you expect.
+```{r load data}
+dat_emiss <- reactive({
+    req(input$data)
+    ext <- tools::file_ext(input$data$name)
+    switch(ext,
+      csv = read.csv(input$data$datapath),
+      validate("Invalid file; Please upload a .csv file")
+    )
+})
+
+
+output$dat_display=reactive({
+  validate(
+    need(("emissions" %in% names(dat_emiss())),
+         "data must have numeric column named 'emissions'"),
+    need(("sources" %in% names(dat_emiss())),
+         "data must have a column named 'sources'")
+  )
+  summary(dat_emiss())%>%knitr::kable('html',caption='Summary of dataset')%>%
+                kable_styling("striped",full_width=T)
+})
+  
+tableOutput('dat_display')
+
+CAA_text=reactive(
+  if (input$CAA_section==112){
+  'CAA Section 112(d)(3)'
+} else if (input$CAA_section==129){
+  'CAA Section 129(a)(2)'
+}
+)
+```
+
+## Source calculation
+
+For existing source standards calculations, `r CAA_text` is used to determine 
+the top sources, either the best 5 performers or the best 12\% performers. The 
+number of future tests for calculating the UPL is 
+`r reactive(input$future_tests)`, using a 
+`r (reactive(input$signficance*100))`\% limit.
+
+##### The best performer for the new source calculation is `r reactive(best_source())` with an average emission of `r reactive(signif(emission_mean_new(),digits=4))` from `r reactive(nrow(dat_top_new()))` test runs.
+
+```{r source settings}
+dat_top_exist_raw=reactive(MACT_EG(CAA_section=input$CAA_section,
+                                   data=dat_emiss()))
+dat_top_new_raw=reactive(MACT_NSPS(data=dat_emiss()))
+
+emission_mean_exist=reactive({
+  dat1=dat_top_exist()
+  results1=mean(dat1$emissions)
+  results1
+  })
+emission_mean_new=reactive({
+  dat2=dat_top_new_raw()
+  results2=mean(dat2$emissions)
+  results2
+  })
+
+dat_topmeans_exist_raw=reactive(dat_top_exist_raw()%>%group_by(sources)%>%
+                              summarize(means=mean(emissions),counts=n()))
+dat_topmeans_exist=reactive({
+  ordered=dat_topmeans_exist_raw()
+  ordered$sources=as.factor(ordered$sources)
+  ordered$sources=fct_reorder(ordered$sources,
+                              ordered$means,.desc = FALSE)
+  ordered=arrange(ordered,means)
+  ordered=ordered%>%mutate(across(where(is.numeric),~signif(.,digits=4)))
+  names(ordered)=c('sources','means','counts')
+  ordered
+})
+
+dat_topmeans_new=reactive(dat_top_new_raw()%>%group_by(sources)%>%
+                            summarize(means=mean(emissions)))
+dat_top_exist=reactive({
+  ordered2=dat_top_exist_raw()
+  ordered2$ln_emiss=log(ordered2$emissions)
+  ordered2$ln_emiss=replace(ordered2$ln_emiss,
+                               !is.finite(ordered2$ln_emiss),NA)
+  ordered2
+})
+
+dat_top_new=reactive({
+  ordered2=dat_top_new_raw()
+  ordered2$ln_emiss=log(ordered2$emissions)
+  ordered2$ln_emiss=replace(ordered2$ln_emiss,
+                               !is.finite(ordered2$ln_emiss),NA)
+  ordered2
+})
+
+best_source=reactive({
+  dat3=dat_topmeans_new()
+  result3=dat3$sources
+  result3
+})
+output$Sourcedownload <- downloadHandler(
+  filename = function() {
+    paste0(str_remove(input$data$name,".csv"),"_TopSources_v",Sys.Date(), ".csv")
+  },
+  content = function(file) {
+    write.csv(dat_top_exist(), file)
+  }
+)
+output$mean_display=reactive(dat_topmeans_exist()%>%knitr::kable('html',caption="Top sources for existing source calculation",digits=12,
+             col.names=c('Source','Average emission','No. of Runs'))%>%
+                kable_styling("striped",full_width=T))
+tableOutput('mean_display')
+```
+
+```{r figure1}
+renderPlot({
+  ggplot(data=dat_top_exist(),aes(emissions,fill=sources))+
+          geom_density(alpha=0.75,bounds=c(0,Inf))+
+          ylab("Density")+xlab("Emissions")+
+          ggtitle("Top sources observed populations")+
+          multi_source_theme()+labs(fill='Top sources',color='Top sources')+
+          geom_vline(aes(xintercept=means,color=sources),
+             data=dat_topmeans_exist(),linewidth=1)+
+          guides(fill=guide_legend(nrow=2,byrow=TRUE),
+                color=guide_legend(nrow=2,byrow=TRUE))+
+          scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+          scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+          coord_cartesian(clip='off')+
+          geom_rug(sides='b',aes(x=emissions,color=sources),
+                   data=dat_top_exist(),alpha=0.5,outside=TRUE)
+})
+```
+
+Figure 1. Observation density of emissions by source type. Source averages are 
+indicated by vertical lines.
+
+```{r frequentist}
+distribution_result_exist=reactive(distribution_type(data=dat_top_exist()))
+distribution_result_new=reactive(distribution_type(data=dat_top_new()))
+
+PI99_normal_exist=reactive(
+  Normal_UPL(data=dat_top_exist(),future_tests = input$future_tests,
+                  significance=input$signficance)
+)
+PI99_lognorm_exist=reactive({
+  df2=dat_top_exist()
+  out1=Lognormal_UPL(data=df2,future_tests = input$future_tests,
+                             significance=input$signficance)
+  out1
+  })
+PI99_skew_exist=reactive({
+  df3=dat_top_exist()
+  out2=Skewed_UPL(data=df3,future_tests = input$future_tests,
+                             significance=input$signficance)
+  out2
+  })
+
+PI99_normal_new=reactive({
+  df4=dat_top_new()
+  out3=Normal_UPL(data=df4,future_tests = input$future_tests,
+                             significance=input$signficance)
+  out3
+  })
+PI99_lognorm_new=reactive({
+  df5=dat_top_new()
+  out4=Lognormal_UPL(data=df5,future_tests = input$future_tests,
+                             significance=input$signficance)
+  out4
+  })
+PI99_skew_new=reactive({
+  df6=dat_top_new()
+  out5=Skewed_UPL(data=df6,future_tests = input$future_tests,
+                             significance=input$signficance)
+  out5
+  })
+
+dat_freq1=reactive({
+  pi1=PI99_normal_exist()
+  pi2=PI99_skew_exist()
+  pi3=PI99_lognorm_exist()
+  pi4=PI99_normal_new()
+  pi5=PI99_skew_new()
+  pi6=PI99_lognorm_new()
+  tibble(distribution=c('Normal','Skew','Lognormal'),
+                UPL_exist=c(pi1,pi2,pi3),
+                UPL_new=c(pi4,pi5,pi6))
+  })
+dat_freq=reactive({
+  dat_freq2=dat_freq1()
+  dat_freq3=dat_freq2%>%mutate(across(where(is.numeric),~signif(.,digits=4)))
+  dat_freq3
+  })
+
+x_hat=reactive({
+  df=dat_top_exist()
+  seq(0,3*max(df$emissions),length.out=1024)
+})
+x_hat_new=reactive({
+  df=dat_top_new()
+  seq(0,3*max(df$emissions),length.out=1024)
+})
+obs_dens_results=reactive(
+  obs_density(data=dat_top_exist(),xvals=x_hat())
+)
+Obs_onPoint=reactive({
+  out1=obs_dens_results()
+  out1$Obs_onPoint
+})
+obs_den_df=reactive({
+  out1=obs_dens_results()
+  out1$obs_den_df
+})
+obs_dens_results_new=reactive(
+  obs_density(data=dat_top_new(),xvals=x_hat_new())
+)
+Obs_onPoint_new=reactive({
+  out1=obs_dens_results_new()
+  out1$Obs_onPoint
+})
+obs_den_df_new=reactive({
+  out1=obs_dens_results_new()
+  out1$obs_den_df
+}) 
+pred_dat=reactive({
+  df=dat_top_exist()
+  pdf_norm=dnorm(x_hat(),mean=emission_mean_exist(),sd=sd(df$emissions))
+  pdf_ln=dlnorm(x_hat(),mean=mean(df$ln_emiss,na.rm=T),
+              sd=sd(df$ln_emiss,na.rm=T))
+  tibble(pdf_norm=pdf_norm,pdf_ln=pdf_ln,x_hat=x_hat())
+})
+pred_dat_new=reactive({
+  df=dat_top_new()
+  pdf_norm=dnorm(x_hat_new(),mean=emission_mean_new(),sd=sd(df$emissions))
+  pdf_ln=dlnorm(x_hat_new(),mean=mean(df$ln_emiss,na.rm=T),
+              sd=sd(df$ln_emiss,na.rm=T))
+  tibble(pdf_norm=pdf_norm,pdf_ln=pdf_ln,x_hat=x_hat_new())
+})
+
+
+```
+
+## UPL results
+
+The following calculations replicate the results from the UPL excel workbook. 
+The best distribution for the existing source UPL calculation is 
+`r reactive(distribution_result_exist())`, and the best distribution for the 
+NSPS UPL calculation is `r reactive(distribution_result_new())`.
+
+```{r freq table}
+output$UPLdownload <- downloadHandler(
+  filename = function() {
+    paste0(str_remove(input$data$name,".csv"),"_UPL_v",Sys.Date(), ".csv")
+  },
+  content = function(file) {
+    write.csv(dat_freq(), file)
+  }
+)
+output$upl_display=reactive(dat_freq()%>%knitr::kable('html',
+                            caption=paste0("UPL results from frequentist excel 
+                                           workbook using a significance of ",
+                                           input$signficance*100,'% and ',
+                                           input$future_tests,' future tests.'),
+              col.names=c('Distribution','Existing source','New source'))%>%
+                kable_styling("striped",full_width=T))
+tableOutput('upl_display')
+```
+
+\vspace{1cm}
+
+```{r figure2}
+renderPlot({
+  # dataset=dat_top_exist()
+  # Ymax=1.1*max(c(PI99_lognorm_exist(),PI99_normal_exist(),PI99_skew_exist(),
+  # dataset$emissions))
+  # Ymin=min(pred_dat())
+  ggplot(data=Obs_onPoint())+
+  geom_line(data=obs_den_df(),aes(y=ydens,x=x_hat,color='a'),linewidth=0.75)+
+  geom_area(data=obs_den_df(),aes(y=ydens,x=x_hat,fill='a'),alpha=0.25)+
+  geom_point(aes(y=ydens,x=emissions),
+             size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),
+               data = pred_dat(),linewidth=0.75,linetype=3)+
+  geom_area(aes(y=pdf_norm,x=x_hat,fill='c'),alpha=0.25,
+            data = pred_dat())+
+  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),
+               data = pred_dat(),linewidth=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=x_hat,fill='b'),alpha=0.25,
+            data = pred_dat())+
+  ylab("Density")+xlab("Emissions")+
+  ggtitle("Existing source test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(emission_mean_exist()),color='a'),
+             linewidth=1,linetype=1)+
+  geom_vline(aes(xintercept=(PI99_normal_exist()),color='c'),
+             linewidth=1,linetype=3)+
+  geom_vline(aes(xintercept=(PI99_lognorm_exist()),color='b'),
+             linewidth=1,linetype=2)+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  coord_cartesian(clip='off')+labs(color='Distribution:',fill='Distribution:')+
+  geom_rug(sides='b',aes(x=(emissions)),data=dat_top_exist(),
+           alpha=0.5,outside=TRUE,color='black')+
+  scale_color_manual(values=c('black','#984EA3','#FF7F00'),
+                     labels=c('Observations','Lognormal','Normal'))+
+  scale_fill_manual(values=c('black','#984EA3','#FF7F00'),
+                    labels=c('Observations','Lognormal','Normal'))
+})
+```
+Figure 2. Observation density of emission test run population. Test run average 
+and existing source UPL calculations are indicated by vertical lines.
+
+\vspace{1cm}
+```{r figure3}
+renderPlot({
+  # dataset=dat_top_exist()
+  # Ymax=1.1*max(c(PI99_lognorm_exist(),PI99_normal_exist(),PI99_skew_exist(),dataset$emissions))
+  # Ymin=min(pred_dat())
+  ggplot(data=Obs_onPoint_new())+
+  geom_line(data=obs_den_df_new(),aes(y=ydens,x=(x_hat),color='a'),linewidth=0.75)+
+  geom_area(data=obs_den_df_new(),aes(y=ydens,x=(x_hat),fill='a'),alpha=0.25)+
+  geom_point(aes(y=ydens,x=(emissions)),
+             size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(aes(y=pdf_norm,x=(x_hat),color='c'),
+               data = pred_dat_new(),linewidth=0.75,linetype=3)+
+  geom_area(aes(y=pdf_norm,x=(x_hat),fill='c'),alpha=0.25,
+            data = pred_dat_new())+
+  geom_line(aes(y=pdf_ln,x=(x_hat),color='b'),
+               data = pred_dat_new(),linewidth=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=(x_hat),fill='b'),alpha=0.25,
+            data = pred_dat_new())+
+  ylab("Density")+xlab("Emissions")+
+  ggtitle("New source test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(emission_mean_new()),color='a'),
+             linewidth=1,linetype=1)+
+  geom_vline(aes(xintercept=(PI99_normal_new()),color='c'),
+             linewidth=1,linetype=3)+
+  geom_vline(aes(xintercept=(PI99_lognorm_new()),color='b'),
+             linewidth=1,linetype=2)+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  coord_cartesian(clip='off')+labs(color='Distribution:',fill='Distribution:')+
+  geom_rug(sides='b',aes(x=(emissions)),data=dat_top_new(),
+           alpha=0.5,outside=TRUE,color='black')+
+  scale_color_manual(values=c('black','#984EA3','#FF7F00'),
+                     labels=c('Observations','Lognormal','Normal'))+
+  scale_fill_manual(values=c('black','#984EA3','#FF7F00'),
+                    labels=c('Observations','Lognormal','Normal'))
+})
+```
+Figure 3. Observation density of best performer (`r reactive(best_source())`) 
+test run population. Best performer average and new source UPL calculations are 
+indicated by vertical lines.
+\vspace{2cm}

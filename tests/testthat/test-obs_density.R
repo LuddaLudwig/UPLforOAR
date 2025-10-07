@@ -9,14 +9,14 @@ test_that("obs_density() calculate densities for emissions observations", {
                         rep('C',3),
                         rep('D',6),
                         rep('E',6)))
-  dat_topmeans=top5%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),
-                                                    counts=dplyr::n())
+  dat_topmeans=dplyr::summarize(top5,means=mean(emissions),.by='sources',
+                                counts=dplyr::n())
   dat_topmeans$sources=as.factor(dat_topmeans$sources)
   dat_topmeans$sources=forcats::fct_reorder(dat_topmeans$sources,
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  xhat=seq(0,3*max(top5$emissions),length.out=1024)
+  xhat=seq(0,3.1*max(top5$emissions),length.out=1050)
   test_result=obs_density(data=top5,low=0,xvals=xhat)
   # ggplot(data=test_result$Obs_onPoint)+
   #   geom_line(data=test_result$obs_den_df,aes(y=y,x=(x),color='red'),size=0.75)+
@@ -32,12 +32,22 @@ test_that("obs_density() calculate densities for emissions observations", {
   #   coord_cartesian(clip='off')+
   #   geom_rug(sides='b',aes(x=(emissions)),data=top5,
   #            alpha=0.5,outside=TRUE,color='black')
-  # write_csv(test_result$Obs_onPoint,"test-Obs_onPoint.csv")
-  # write_csv(test_result$obs_den_df,"test-obs_den_df.csv")
+  # write_csv(test_result$Obs_onPoint,test_path("test_obs_densities",
+  #                                             "test-Obs_onPoint.csv"))
+  # write_csv(test_result$obs_den_df,test_path("test_obs_densities",
+  #                                            "test-obs_den_df.csv"))
 
-  compare1 <- readr::read_csv(test_path("test_obs_densities", "test-Obs_onPoint.csv"),show_col_types = FALSE)
-  compare2 <- readr::read_csv(test_path("test_obs_densities", "test-obs_den_df.csv"),show_col_types = FALSE)
+  compare1 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-Obs_onPoint.csv"),
+                              show_col_types = FALSE)
+  compare2 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-obs_den_df.csv"),
+                              show_col_types = FALSE)
 
   expect_equal(test_result$Obs_onPoint,compare1)
   expect_equal(test_result$obs_den_df,compare2)
+  expect_equal(length(test_result$obs_den_df$x_hat),length(xhat))
+  test_null=obs_density(data=top5,low=0)
+  expect_equal(length(test_null$obs_den_df$x_hat),1024)
+
 })

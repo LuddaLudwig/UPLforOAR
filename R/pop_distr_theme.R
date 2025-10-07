@@ -1,6 +1,7 @@
 #' Custom theme for ggplot overall density distributions
 #' @description
 #' This function sets ggplot2 theme elements
+#' @importFrom ggplot2 %+replace%
 #' @export
 pop_distr_theme <- function () {
   ggplot2::theme_bw() %+replace%
