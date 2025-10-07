@@ -149,13 +149,19 @@ ggplot()+
                     labels=c('Observations','Lognormal'))
 ```
 
-![Observation density of Hg for the overall population. The obseration
-data are indicated in black as points and a rug along the axis, with the
-observation density distribution as a black line. The fitted lognormal
-distribution that is the basis of the UPL estimate is colored purple.
-The average of the Hg emissions is the vertical black line and the UPL
-result is the vertical purple line.](man/figures/README-plot1-1.png) \##
-Disclaimer
+<figure>
+<img src="man/figures/README-plot1-1.png"
+alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line." />
+<figcaption aria-hidden="true">Observation density of Hg for the overall
+population. The obseration data are indicated in black as points and a
+rug along the axis, with the observation density distribution as a black
+line. The fitted lognormal distribution that is the basis of the UPL
+estimate is colored purple. The average of the Hg emissions is the
+vertical black line and the UPL result is the vertical purple
+line.</figcaption>
+</figure>
+
+## Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project
 code is provided on an “as is” basis and the user assumes responsibility
