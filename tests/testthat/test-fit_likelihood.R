@@ -9,8 +9,8 @@ test_that("fit_likelihood() compares predicted and observed density distribution
                                 rep('C',3),
                                 rep('D',6),
                                 rep('E',6)))
-  dat_topmeans=top5%>%dplyr::group_by(sources)%>%dplyr::summarize(means=mean(emissions),
-                                                                  counts=dplyr::n())
+  dat_topmeans=dplyr::summarize(top5,means=mean(emissions),.by='sources',
+                                counts=dplyr::n())
   dat_topmeans$sources=as.factor(dat_topmeans$sources)
   dat_topmeans$sources=forcats::fct_reorder(dat_topmeans$sources,
                                             dat_topmeans$means,.desc = FALSE)
