@@ -1,45 +1,65 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# EPA.MACT.floor.UPL
+# UPLforOAR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of EPA.MACT.floor.UPL is to provide a set of functions for
-handling NESHAP emissions datasets for MACT floor analysis and UPL
-calculations. These functions include selecting the best and top
+The goal of UPLforOAR is to provide a set of functions for supporting
+National Emissions Standards for Hazardous Air Pollutants (NESHAP)
+analyses. This includes organizing data sets for Maximum Achievable
+Control Technology (MACT) floor analysis and Upper Predictive Limit
+(UPL) calculations. These functions include selecting the best and top
 performing sources from emissions data based on appropriate Clean Air
 Act sections, determining the appropriate distributions for the
-emissions data, and calculating the UPL for EG and NSPS standards.
+emissions data, and calculating the UPL for Existing source Guidance
+(EG) and New Source Performance Standards (NSPS).
+
+The UPLforOAR R package replicates all of the functionality of the
+UPL.xlsx workbook while streamlining its use. Using R instead of Excel
+avoids common sources of user-error such as copy-paste mistakes,
+cell-dragging, and inter-sheet references. Furthermore, the R package
+adds clarity to UPL standards calculations by plotting the distribution
+probability densities and emissions data underlying the methods. This
+allows the user to verify visually that the emissions data are well
+represented and the assumptions of the probability distribution are
+reasonable. Furthermore, the UPLforOAR can be used through an R shiny
+app for quick and reproducible UPL calculations, and also generate pdf
+reports directly from uploading emissions data without user input
+required.
 
 ## Installation
 
-You can install the development version of EPA.MACT.floor.UPL from
-[GitHub](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL) with:
+You can install the most recent development version of `UPLforOAR` from
+[GitHub](https://github.com/USEPA/UPLforOAR) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("LuddaLudwig/EPA.MACT.floor.UPL")
+pak::pak("USEPA/UPLforOAR")
 ```
+
+## Contact
+
+If you have any questions please reach out to <Ludwig.Ludda@epa.gov>
 
 ## Example emissions data
 
 This is example uses Hg emissions data from the recent [EPA
 rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132)
-National Emission Standards for Hazardous Air Pollutants for Coal- and
-Oil-fired Electric Utility Steam Generating Units. This data set
-contains a lot of test report information, but only columns for
-‘emissions’ and ‘sources’ are needed for the MACT floor UPL analysis.
-The ‘emissions’ and ‘sources’ need to be named such explicitly. The
-emissions should all be in consistent units, and the sources should be
-unique at the unit-level (e.g. a single boiler), not including
-sub-categories.
+NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units.
+This data set contains a lot of test report information, but only
+columns for ‘emissions’ and ‘sources’ are needed for the MACT floor UPL
+analysis. The ‘emissions’ and ‘sources’ need to be named such
+explicitly. The emissions should all be in consistent units, and the
+sources should be unique at the unit-level (e.g. a single boiler), not
+including sub-categories.
 
 ``` r
 library(EPA.MACT.floor.UPL)
 dat_emiss=read_csv("man/data_example/MATS_Hg.csv",col_names=TRUE)
-dat_emiss$sources=paste0(dat_emiss$`Plant Name`,"_",dat_emiss$`Unit Number`,"_",dat_emiss$boiler_id)
+dat_emiss$sources=paste0(dat_emiss$`Plant Name`,"_",dat_emiss$`Unit Number`,
+                         "_",dat_emiss$boiler_id)
 dat_emiss$emissions=dat_emiss$Mercury_min_lb_MMBtu
 dat_emiss=subset(dat_emiss,select=c(sources,emissions))
 nrow(dat_emiss) # number of tests in data set
@@ -133,3 +153,16 @@ ggplot()+
 #> Caused by error:
 #> ! object 'x' not found
 ```
+
+## Disclaimer
+
+The United States Environmental Protection Agency (EPA) GitHub project
+code is provided on an “as is” basis and the user assumes responsibility
+for its use. EPA has relinquished control of the information and no
+longer has responsibility to protect the integrity , confidentiality, or
+availability of the information. Any reference to specific commercial
+products, processes, or services by service mark, trademark,
+manufacturer, or otherwise, does not constitute or imply their
+endorsement, recommendation or favoring by EPA. The EPA seal and logo
+shall not be used in any manner to imply endorsement of any commercial
+product or activity by EPA or the United States Government.
