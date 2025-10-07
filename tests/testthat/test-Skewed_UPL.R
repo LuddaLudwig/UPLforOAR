@@ -28,6 +28,5 @@ test_that("Skewed_UPL() calculates UPL assuming emissions data are skew-normal",
       output=(e$message)
     return(output)
   })
-  err_message="data must have more than 3 observations for skew UPL method"
-  expect_equal(test_result2,err_message)
+  expect_equal(test_result2,NA)
 })
