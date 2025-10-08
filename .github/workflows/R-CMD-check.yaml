@@ -2,7 +2,7 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
 
 name: R-CMD-check.yaml
@@ -13,7 +13,8 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    # name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: R-CMD-check
 
     strategy:
       fail-fast: false
