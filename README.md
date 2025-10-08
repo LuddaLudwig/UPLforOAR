@@ -10,7 +10,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- [![Codecov test coverage](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL) -->
 [![codecov](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
-[![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check)
+[![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--08-green.svg)](/commits/main)
 <!-- badges: end --> The goal of `UPLforOAR` is to provide a set of
