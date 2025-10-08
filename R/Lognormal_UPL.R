@@ -7,7 +7,7 @@
 #' @returns Upper predictive limit at significance level for the average of the
 #' number of future test runs
 #' @description
-#' Uses Gram-Charlmier Series-A distribution approximation to determine the
+#' Uses Gram-Charlier Series-A distribution approximation to determine the
 #' lognormal UPL.
 #'
 #' @export
