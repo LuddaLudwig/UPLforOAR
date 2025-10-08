@@ -5,20 +5,24 @@
 
 <!-- badges: start -->
 
-[![Codecov test
-coverage](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+<!-- [![Codecov test coverage](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL) -->
+[![codecov](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
 [![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
-
-The goal of `UPLforOAR` is to provide a set of functions for supporting
-National Emissions Standards for Hazardous Air Pollutants (NESHAP)
-analyses. This includes organizing data sets for Maximum Achievable
-Control Technology (MACT) floor analysis and Upper Predictive Limit
-(UPL) calculations. These functions include selecting the best and top
-performing sources from emissions data based on appropriate Clean Air
-Act sections, determining the appropriate distributions for the
-emissions data, and calculating the UPL for Existing source Guidance
-(EG) and New Source Performance Standards (NSPS).
+[![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--08-green.svg)](/commits/main)
+<!-- badges: end --> The goal of `UPLforOAR` is to provide a set of
+functions for supporting National Emissions Standards for Hazardous Air
+Pollutants (NESHAP) analyses. This includes organizing data sets for
+Maximum Achievable Control Technology (MACT) floor analysis and Upper
+Predictive Limit (UPL) calculations. These functions include selecting
+the best and top performing sources from emissions data based on
+appropriate Clean Air Act sections, determining the appropriate
+distributions for the emissions data, and calculating the UPL for
+Existing source Guidance (EG) and New Source Performance Standards
+(NSPS).
 
 The `UPLforOAR` R package replicates all of the functionality of the
 UPL.xlsx workbook while streamlining its use. Using R instead of Excel
