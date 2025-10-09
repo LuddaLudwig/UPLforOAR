@@ -12,17 +12,18 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
 [![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--08-green.svg)](/commits/main)
-<!-- badges: end --> The goal of `UPLforOAR` is to provide a set of
-functions for supporting National Emissions Standards for Hazardous Air
-Pollutants (NESHAP) analyses. This includes organizing data sets for
-Maximum Achievable Control Technology (MACT) floor analysis and Upper
-Predictive Limit (UPL) calculations. These functions include selecting
-the best and top performing sources from emissions data based on
-appropriate Clean Air Act sections, determining the appropriate
-distributions for the emissions data, and calculating the UPL for
-Existing source Guidance (EG) and New Source Performance Standards
-(NSPS).
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--09-green.svg)](/commits/main)
+<!-- badges: end -->
+
+The goal of `UPLforOAR` is to provide a set of functions for supporting
+National Emissions Standards for Hazardous Air Pollutants (NESHAP)
+analyses. This includes organizing data sets for Maximum Achievable
+Control Technology (MACT) floor analysis and Upper Predictive Limit
+(UPL) calculations. These functions include selecting the best and top
+performing sources from emissions data based on appropriate Clean Air
+Act sections, determining the appropriate distributions for the
+emissions data, and calculating the UPL for Existing source Guidance
+(EG) and New Source Performance Standards (NSPS).
 
 The `UPLforOAR` R package replicates all of the functionality of the
 UPL.xlsx workbook while streamlining its use. Using R instead of Excel
@@ -57,8 +58,8 @@ This is example uses Hg emissions data from the recent [EPA
 rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132)
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units.
 This data set contains a lot of test report information, but only
-columns for ‘emissions’ and ‘sources’ are needed for the MACT floor UPL
-analysis. The ‘emissions’ and ‘sources’ need to be named such
+columns for `emissions` and `sources` are needed for the MACT floor UPL
+analysis. The `emissions` and `sources` need to be named such
 explicitly. The emissions should all be in consistent units, and the
 sources should be unique at the unit-level (e.g. a single boiler), not
 including sub-categories.

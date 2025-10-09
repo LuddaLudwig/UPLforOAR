@@ -19,20 +19,24 @@ between 0 and 3*max(data$emissions)}
 \item{low}{Optional lower limit to bound density, default is 0.}
 
 \item{kernel}{Kernel choice for density function, default is 'gamma' defined
-on (0,Inf). Other options include.
+on (0,Inf). Other options include:
 c("gaussian1","gaussian2","beta1","beta2","fb","fbl","fbu","rigaussian")}
 
 \item{bw}{Optional bandwidth, default is NULL in which case
-bw = sd(emissions)*n^(-2/5), where n is number of emissions.}
+bw = sd(emissions)*n^(-2/5), where n is number of emissions. The bandwidth
+can also be provided manually, or searched for using least squares cross-validation
+by bw = "cv.ls" or likelihood cross-validation with bw = "cv.ml".}
 }
 \value{
-A list containing two tibbles, Obs_onPoint with exact emission
-observations and densities, and obs_den_df with densities for every
+A list containing two tibbles, "Obs_onPoint" with exact emission
+observations and densities, and "obs_den_df" with densities for every
 position given in xvals.
 }
 \description{
 Calculates the density of emissions observations
 }
 \references{
-Bandwidth is set following
+Bandwidth is set following Renault O. & O. Scaillet. On the way
+to recovery: A parametric bias free estimation of recovery rate densities.
+2004. Journal of Banking and Finance. 28:12 p. 2915-2931.
 }

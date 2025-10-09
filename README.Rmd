@@ -33,6 +33,7 @@ library(sfsmisc)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-green.svg)](/commits/main)
 <!-- badges: end -->
+
 The goal of `UPLforOAR` is to provide a set of functions for supporting 
 National Emissions Standards for Hazardous Air Pollutants (NESHAP) analyses. 
 This includes organizing data sets for Maximum Achievable Control Technology 
@@ -71,8 +72,8 @@ If you have any questions please reach out to <Ludwig.Ludda@epa.gov>
 This is example uses Hg emissions data from the recent [EPA rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132) 
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. This 
 data set contains a lot of test report information, but only columns for 
-'emissions' and 'sources' are needed for the MACT floor UPL analysis. The 
-'emissions' and 'sources' need to be named such explicitly. The emissions 
+`emissions` and `sources` are needed for the MACT floor UPL analysis. The 
+`emissions` and `sources` need to be named such explicitly. The emissions 
 should all be in consistent units, and the sources should be unique at the 
 unit-level (e.g. a single boiler), not including sub-categories. 
 
