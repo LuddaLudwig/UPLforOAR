@@ -202,7 +202,13 @@ distributions=c('Beta','Gamma','Lognormal','Normal','Skewed')
 results=Bayesian_UPL(data=dat_emiss, distr_list=distributions)
 ```
 
-First, let's look at plots of the resulting distributions. 
+First, let's look at plots of the resulting distributions. The points and error 
+bars on these figures represent the median and 95\% confidence interval around 
+the predicted probability for each emission observation, using the associated 
+likelihood distribution. The colored probability line and areas indicate the 
+predicted likelihood for the expected range of emissions, which by default is 
+`seq(0,3*max(data$emissions,length.out=1024))`, but can be changed by supplying 
+the `xvals` argurment to `Byaesian_UPL()`.
 
 ```{r figure3, fig.dim=c(5,3), fig.align = 'center', fig.cap="Fitted likelihood distributions for IIS HCl emissions."}
 palette_line=c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
