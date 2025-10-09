@@ -123,9 +123,9 @@ Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta')
   }
   fit_table=tibble::tibble(distr=unlist(lapply(mod_output_list,'[[','distr')),
                    UPL=(as.numeric(lapply(mod_output_list,'[[','UPL_Bayes'))),
-                   pdf_integral=(as.numeric(lapply(mod_output_list,'[[','pdf_integral'))),
                    SSE=(as.numeric(lapply(mod_output_list,'[[','SSE'))),
-                   Obs_in_CI=(as.numeric(lapply(mod_output_list,'[[','good_vals')))
+                   Obs_in_CI=(as.numeric(lapply(mod_output_list,'[[','good_vals'))),
+                   pdf_integral=(as.numeric(lapply(mod_output_list,'[[','pdf_integral')))
                    )
   obs_pdf_dat=tibble::tibble()
   for (i in 1:length(distr_list)){
