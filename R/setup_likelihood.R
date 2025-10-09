@@ -75,9 +75,9 @@ setup_likelihood=function(distribution,data,manual_prior=FALSE,prior_list=NULL,
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
              'xi'=xi,'omega'=omega,'alpha'=alpha),
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 12,
-             'xi'=1.5*xi, 'omega'=0.5*omega, 'alpha'=0.01),
+             'xi'=1.5*xi, 'omega'=0.5*omega, 'alpha'=0.5*alpha),
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
-             'xi'=0.5*xi, 'omega'=1.5*omega,'alpha'=-alpha))
+             'xi'=0.5*xi, 'omega'=1.5*omega,'alpha'=1.5*alpha))
     } else if (distribution=='Gamma'){
       shape=mu^2/sigma^2
       rate=mu/sigma^2
