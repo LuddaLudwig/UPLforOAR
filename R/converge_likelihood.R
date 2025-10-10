@@ -46,6 +46,7 @@ converge_likelihood=function(jags_model_run){
   results=tibble::tibble(params=params_list,
                          gelman_diag=gelman_list,
                          convYN=convYN)
-  results$distr=rep(distribution,nrow(results))
+  distr_names=tibble::tibble(distr=rep(distribution,nrow(results)))
+  results=cbind(distr_names,results)
   return(results)
 }
