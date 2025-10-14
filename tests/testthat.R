@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(EPA.MACT.floor.UPL)
+library(UPLforOAR)
 
-test_check("EPA.MACT.floor.UPL")
+test_check("UPLforOAR")
