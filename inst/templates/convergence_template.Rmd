@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE)
 ```
 Convergence results from Bayesian UPL analysis using `UPLforOAR` version
-`r packageVersion('EPA.MACT.floor.UPL')`. Convergence is assessed quantitatively
+`r packageVersion('UPLforOAR')`. Convergence is assessed quantitatively
 with Gelman-Rubin diagnostics, and visually with convergence plots. Gelman-Rubin 
 diagnostic values of less than 1.1 indicate good convergence. Values greater 
 than 1.1 but less than 1.2 indicate weak convergence. Values greater than 1.2 
