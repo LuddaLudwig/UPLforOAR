@@ -36,7 +36,7 @@ will use random values for .RNG.name and .RNG.seed instead.}
 \value{
 Object model_code, which is a string for the written R script that
 JAGS can call, par_list which is the list of parameters traced while running
-the JAGS model, dat_inits which is a list of initial parameter values and
+the JAGS model, "dat_inits" which is a list of initial parameter values and
 random seeds for 3 chains, and the distribution used in likelihood model.
 }
 \description{

@@ -8,11 +8,11 @@
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-<!-- [![Codecov test coverage](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL) -->
-[![codecov](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/EPA.MACT.floor.UPL)
-[![R-CMD-check](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/EPA.MACT.floor.UPL/actions/workflows/R-CMD-check.yaml)
+<!-- [![Codecov test coverage](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/UPLforOAR) -->
+[![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
+[![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--09-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--14-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -65,7 +65,7 @@ sources should be unique at the unit-level (e.g. a single boiler), not
 including sub-categories.
 
 ``` r
-library(EPA.MACT.floor.UPL)
+library(UPLforOAR)
 dat_emiss=read_csv("man/data_example/MATS_Hg.csv",col_names=TRUE)
 dat_emiss$sources=paste0(dat_emiss$`Plant Name`,"_",dat_emiss$`Unit Number`,
                          "_",dat_emiss$boiler_id)

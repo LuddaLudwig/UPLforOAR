@@ -28,15 +28,15 @@
 #' or be uninformative calculated from range of emissions data. Note that if you
 #' are supplying priors manually than you can only run one type of distribution
 #' at a time.
-#' @returns A list of tibble results from setup_likelihood(), run_likelihood(),
-#' output_likelihood(), obs_density(), fit_likelihood(), and
-#' converge_likelihood() for each distribution in 'distr_list'.
+#' @returns A list of tibble results from [setup_likelihood()], [run_likelihood()],
+#' [output_likelihood()], [obs_density()], [fit_likelihood()], and
+#' [converge_likelihood()] for each distribution in 'distr_list'.
 #' @export
 #' @description
-#' For each distribution in 'distr_list', Bayesian_UPL() will setup_likelihood(),
-#' run_likelihood(), organize mcmc results in output_likelihood(), test for
-#' convergence of likelihood parameters using converge_likelihood(), and
-#' calculate goodness of fit metrics using fit_likelihood(). Results include
+#' For each distribution in 'distr_list', Bayesian_UPL() will [setup_likelihood()],
+#' [run_likelihood()], organize mcmc results in [output_likelihood()], test for
+#' convergence of likelihood parameters using [converge_likelihood()], and
+#' calculate goodness of fit metrics using [fit_likelihood()]. Results include
 #' $fit_table: a tibble with the UPL, pdf_integral, SSE, and count of
 #' observations within 95\% CI for each distribution in 'distr_list',
 #' $conv_output: a tibble with the parameters, Gelman-Rubin diagnostics, and if
@@ -50,13 +50,14 @@
 #' emissions to predict to 'xvals', and the prior distributions and initial
 #' values are all automatically supplied from the emissions data to be fully
 #' encompassing and uninformative by default. They can be supplied manually
-#' instead however by supplying 'maxY', 'xvals', or setting manual_prior=TRUE
+#' instead however by supplying 'maxY', 'xvals', or setting manual_prior = TRUE
 #' with corresponding lower and upper limits in 'prior_list'. If manual priors
 #' are used, only a single distribution can be run at a time in 'distr_list'.
 #'
 Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
-                      data,future_tests=3,significance=0.99,xvals=NULL,
-                      convergence_report=FALSE, maxY=NULL,
+                      data,future_tests=3,significance=0.99,
+                      xvals=NULL,maxY=NULL,
+                      convergence_report=FALSE,
                       manual_prior=FALSE,prior_list=NULL){
   if (convergence_report==TRUE){
     figs_list=list()
