@@ -11,8 +11,8 @@ Bayesian_UPL(
   future_tests = 3,
   significance = 0.99,
   xvals = NULL,
-  convergence_report = FALSE,
   maxY = NULL,
+  convergence_report = FALSE,
   manual_prior = FALSE,
   prior_list = NULL
 )
@@ -34,14 +34,14 @@ is 3 since compliance uses 1 test average of 3 runs.}
 density. Default is NULL, in which case x_hat is a 1024 length sequence
 between 0 and 3*max(data$emissions).}
 
+\item{maxY}{The maximum emission value possible, used to truncate likelihood
+distributions and set upper ranges on prior distributions, not specified
+manually. Default is 3*maximum(data$emissions).}
+
 \item{convergence_report}{Default is FALSE, if a report containing
 convergence figures should be generated with results. If TRUE, a document
 Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
 working directory.}
-
-\item{maxY}{The maximum emission value possible, used to truncate likelihood
-distributions and set upper ranges on prior distributions, not specified
-manually. Default is 3*maximum(data$emissions).}
 
 \item{manual_prior}{Default is FALSE, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you
@@ -56,15 +56,15 @@ For 'Gamma' they are ordered c(rate_low, rate_high, shape_low, shape_high). For
 'Beta' they are ordered c(alpha_low, alpha_high, beta_low, beta_high).}
 }
 \value{
-A list of tibble results from setup_likelihood(), run_likelihood(),
-output_likelihood(), obs_density(), fit_likelihood(), and
-converge_likelihood() for each distribution in 'distr_list'.
+A list of tibble results from [setup_likelihood()], [run_likelihood()],
+[output_likelihood()], [obs_density()], [fit_likelihood()], and
+[converge_likelihood()] for each distribution in 'distr_list'.
 }
 \description{
-For each distribution in 'distr_list', Bayesian_UPL() will setup_likelihood(),
-run_likelihood(), organize mcmc results in output_likelihood(), test for
-convergence of likelihood parameters using converge_likelihood(), and
-calculate goodness of fit metrics using fit_likelihood(). Results include
+For each distribution in 'distr_list', Bayesian_UPL() will [setup_likelihood()],
+[run_likelihood()], organize mcmc results in [output_likelihood()], test for
+convergence of likelihood parameters using [converge_likelihood()], and
+calculate goodness of fit metrics using [fit_likelihood()]. Results include
 $fit_table: a tibble with the UPL, pdf_integral, SSE, and count of
 observations within 95\% CI for each distribution in 'distr_list',
 $conv_output: a tibble with the parameters, Gelman-Rubin diagnostics, and if
@@ -78,7 +78,7 @@ the observation density 'ydens' for each value in the range of emissions in
 emissions to predict to 'xvals', and the prior distributions and initial
 values are all automatically supplied from the emissions data to be fully
 encompassing and uninformative by default. They can be supplied manually
-instead however by supplying 'maxY', 'xvals', or setting manual_prior=TRUE
+instead however by supplying 'maxY', 'xvals', or setting manual_prior = TRUE
 with corresponding lower and upper limits in 'prior_list'. If manual priors
 are used, only a single distribution can be run at a time in 'distr_list'.
 }
