@@ -13,7 +13,7 @@
 #' Output_likelihood() takes the jags_model_run produced by run_likelihood(),
 #' merges the mcmc chains and calculates the UPL as well as
 #' providing the predicted pdf and metrics.
-#'
+#' @export
 output_likelihood=function(jags_model_run,significance=0.99){
   distribution=jags_model_run$distribution
   data=jags_model_run$data

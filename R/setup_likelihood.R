@@ -21,7 +21,7 @@
 #' JAGS can call, par_list which is the list of parameters traced while running
 #' the JAGS model, "dat_inits" which is a list of initial parameter values and
 #' random seeds for 3 chains, and the distribution used in likelihood model.
-#'
+#' @export
 setup_likelihood=function(distribution,data,manual_prior=FALSE,prior_list=NULL,
                           random=FALSE){
   JAGS_path=system.file("JAGS",package="UPLforOAR",mustWork=TRUE)

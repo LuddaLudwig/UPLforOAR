@@ -16,6 +16,7 @@
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
 #' Default is 3*maximum(data$emissions).
+#' @export
 
 run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
   manual_prior=model_input$manual_prior

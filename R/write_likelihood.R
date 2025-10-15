@@ -13,7 +13,7 @@
 #' or be uninformative calculated from range of emissions data.
 #' @returns object model_code, which is a string for the written R script that
 #' JAGS can call and the distribution used in likelihood model.
-#'
+#' @export
 write_likelihood=function(distribution,manual_prior=FALSE,write_wd=NULL){
   current_wd=getwd()
   if (is.null(write_wd)){

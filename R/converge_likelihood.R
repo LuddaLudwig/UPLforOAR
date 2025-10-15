@@ -9,7 +9,7 @@
 #' @description
 #' Gelman-Rubin convergence tests for each defining parameter in the likelihood
 #' distribution.
-#'
+#' @export
 #'
 converge_likelihood=function(jags_model_run){
   distribution=jags_model_run$distribution
