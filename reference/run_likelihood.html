@@ -47,7 +47,7 @@ Traces all variables in <code>par_list</code> running 3 chains in parallel with 
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_likelihood</span><span class="op">(</span><span class="va">model_input</span>, xvals <span class="op">=</span> <span class="cn">NULL</span>, maxY <span class="op">=</span> <span class="cn">NULL</span>, future_tests <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_likelihood</span><span class="op">(</span><span class="va">model_input</span>, xvals <span class="op">=</span> <span class="cn">NULL</span>, maxY <span class="op">=</span> <span class="cn">NULL</span>, future_runs <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,7 +72,7 @@ distributions and set upper ranges on prior distributions.
 Default is <code>NULL</code>, in which cas it is calculated as <code>3*maximum(data$emissions)</code>.</p></dd>
 
 
-<dt id="arg-future-tests">future_tests<a class="anchor" aria-label="anchor" href="#arg-future-tests"></a></dt>
+<dt id="arg-future-runs">future_runs<a class="anchor" aria-label="anchor" href="#arg-future-runs"></a></dt>
 <dd><p>Integer of future runs to use in prediction, the default
 is <code>3</code> since compliance uses 1 test average of 3 runs.</p></dd>
 

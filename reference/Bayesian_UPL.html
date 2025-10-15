@@ -101,7 +101,7 @@ are used, only a single distribution can be run at a time in <code>distr_list</c
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Bayesian_UPL</span><span class="op">(</span></span>
 <span>  distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span>, <span class="st">"Skewed"</span>, <span class="st">"Lognormal"</span>, <span class="st">"Gamma"</span>, <span class="st">"Beta"</span><span class="op">)</span>,</span>
 <span>  <span class="va">data</span>,</span>
-<span>  future_tests <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  future_runs <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  significance <span class="op">=</span> <span class="fl">0.99</span>,</span>
 <span>  xvals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  maxY <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -126,7 +126,7 @@ are supplied manually, only one distribution can be used.</p></dd>
 must have a column named 'emissions'.</p></dd>
 
 
-<dt id="arg-future-tests">future_tests<a class="anchor" aria-label="anchor" href="#arg-future-tests"></a></dt>
+<dt id="arg-future-runs">future_runs<a class="anchor" aria-label="anchor" href="#arg-future-runs"></a></dt>
 <dd><p>Integer of future runs to use in prediction, the default
 is <code>3</code> since compliance uses 1 test average of 3 runs.</p></dd>
 

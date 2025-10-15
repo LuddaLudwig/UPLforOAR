@@ -261,7 +261,7 @@ needed.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Beta'</span>,<span class="st">'Gamma'</span>,<span class="st">'Lognormal'</span>,<span class="st">'Normal'</span>,<span class="st">'Skewed'</span><span class="op">)</span></span>
 <span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">dat_emiss</span>, distr_list<span class="op">=</span><span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
-<p>First, let’s look at plots of the resulting distributions. The points
+First, let’s look at plots of the resulting distributions. The points
 and error bars on these figures represent the median and 95% confidence
 interval around the predicted probability for each emission observation,
 using the associated likelihood distribution. The colored probability
@@ -269,11 +269,11 @@ curves indicate the predicted likelihood across a range of expected
 emissions, which by default is
 <code>seq(0,3*max(data$emissions,length.out=1024))</code>, but can be
 changed by supplying the <code>xvals</code> argument to
-<code>Byaesian_UPL()</code>. The results for plotting the densities at
+<code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>. The results for plotting the densities at
 observations including error bars are stored in
 <code>results$obs_pdf_dat</code>, and those for plotting the densities
 along the range of <code>xvals</code> are stored in
-<code>results$pred_pdf_dat</code>.</p>
+<code>results$pred_pdf_dat</code>.
 <div class="figure" style="text-align: center">
 <img src="Bayesian-UPL_files/figure-html/figure3-1.png" alt="Fitted likelihood distributions for IIS HCl emissions." width="100%"><p class="caption">
 Fitted likelihood distributions for IIS HCl emissions.
@@ -377,7 +377,7 @@ is an unnecessary constraint.</p>
 UPL results. The default values in <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> assume a
 significance of 0.99 and an average of 3 future runs (as is typical in a
 compliance test). The <code>significance</code> and
-<code>future_tests</code> arguments can be set to other values if
+<code>future_runs</code> arguments can be set to other values if
 desired, which will not affect the fitted likelihood distribution but
 will change the UPL calculation. The UPL results are the variable
 <code>UPL</code> stored in <code>results$fit_table</code>:</p>
@@ -520,9 +520,11 @@ will be saved in your active working directory as
 <span><span class="co">#&gt; 'localhost'</span></span>
 <span><span class="co">#&gt; Simulation complete</span></span>
 <span><span class="co">#&gt; Finished running the simulation</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `method(update_ggplot, list(class_any, ggplot2::ggplot))`:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Can't add `p2` to a <span style="color: #0000BB;">&lt;ggplot&gt;</span> object.</span></span>
-<span><span class="co">#&gt; Error: object 'part3' not found</span></span></code></pre>
+<span><span class="co">#&gt; [[1]]</span></span></code></pre>
+<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" width="700" style="display: block; margin: auto;"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span></code></pre>
+<p><img src="Bayesian-UPL_files/figure-html/figure4-2.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -576,7 +578,7 @@ sequence of densities across a range of possible emission values
 emissions <code>xvals</code> can be supplied manually, and by default is
 <code>seq(0,3*max(data$emissions,length.out=1024))</code>.</p>
 <p>Run <code><a href="../reference/obs_density.html">?obs_density</a></code> in the console for detailed information
-in the hlpe pages.</p>
+in the help pages.</p>
 </div>
 <div class="section level3">
 <h3 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
