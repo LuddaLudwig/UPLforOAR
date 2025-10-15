@@ -152,7 +152,7 @@ ggplot()+
   geom_area(aes(y=pdf_n,x=(x_hat),fill='b'),alpha=0.25,
             data = pred_dat)+
   geom_line(aes(y=pdf_ln,x=(x_hat),color='c'),
-               data = pred_dat,size=0.75,linetype=2)+
+               data = pred_dat,size=0.75,linetype=3)+
   geom_area(aes(y=pdf_ln,x=(x_hat),fill='c'),alpha=0.25,
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
@@ -161,7 +161,7 @@ ggplot()+
   geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
                  color='a'),size=1,linetype=1)+
   geom_vline(aes(xintercept=(UPL1_EG),color='b'),size=1,linetype=2)+
-  geom_vline(aes(xintercept=(UPL2_EG),color='c'),size=1,linetype=2)+
+  geom_vline(aes(xintercept=(UPL2_EG),color='c'),size=1,linetype=3)+
   scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
   scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
   coord_cartesian(clip='off')+
