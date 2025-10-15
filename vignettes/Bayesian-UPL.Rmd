@@ -287,7 +287,7 @@ of out observations are well below 1, this is an unnecessary constraint.
 Now that we have fit the likelihood distributions we can examine the UPL results. 
 The default values in `Bayesian_UPL()` assume a significance of 0.99 and an 
 average of 3 future runs (as is typical in a compliance test). The `significance` 
-and `future_tests` arguments can be set to other values if desired, which will 
+and `future_runs` arguments can be set to other values if desired, which will 
 not affect the fitted likelihood distribution but will change the UPL calculation. 
 The UPL results are the variable `UPL` stored in `results$fit_table`:
 ```{r table3}
