@@ -3,7 +3,7 @@ test_that("mcmc_theme() contains ggplot theme for converge_figs()", {
   set.seed(1)
   iter1=rnorm(10000,0,1)
 
-  p1=ggplot2::ggplot()+ggplot2::geom_line(aes(x=1:10000,y=iter1))+mcmc_theme()+
+  p1=ggplot2::ggplot()+ggplot2::geom_line(ggplot2::aes(x=1:10000,y=iter1))+mcmc_theme()+
     ggplot2::xlab("Iterations")+ggplot2::ylab("Parameter")+ggplot2::ggtitle("Distribution")
 
   p1@theme

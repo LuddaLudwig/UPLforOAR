@@ -9,7 +9,7 @@ test_that("multi_source_theme() contains ggplot theme for density figures", {
   emissions=c(emiss1,emiss2,emiss3,emiss4,emiss5)
   sources=c(rep("A",12),rep("B",3),rep("C",24),rep("D",12),rep("E",6))
   dat_emiss=tibble::tibble(emissions=emissions,sources=sources)
-  p1=ggplot2::ggplot(data=dat_emiss)+ggplot2::geom_density(aes(emissions,fill=sources),
+  p1=ggplot2::ggplot(data=dat_emiss)+ggplot2::geom_density(ggplot2::aes(emissions,fill=sources),
                                                   bounds=c(0,Inf),alpha=0.5)+
     multi_source_theme()+
     ggplot2::xlab("Emissions")+ggplot2::ylab("Density")+ggplot2::ggtitle("Sources")
