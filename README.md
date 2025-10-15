@@ -8,12 +8,13 @@
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-<!-- [![Codecov test coverage](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg)](https://app.codecov.io/gh/LuddaLudwig/UPLforOAR) -->
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--14-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--15-green.svg)](/commits/main)
 <!-- badges: end -->
+
+<a href="https://github.com/LuddaLudwig/UPLforOAR"><img src="man/figures/UPLforOAR_sticker.png" width="200" align="right" /></a>
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
 National Emissions Standards for Hazardous Air Pollutants (NESHAP)
