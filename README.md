@@ -3,6 +3,8 @@
 
 # UPLforOAR
 
+[<img src="UPLforOAR_sticker.png" height="120"/>](https://github.com/LuddaLudwig/UPLforOAR)
+
 <!-- badges: start -->
 
 [![Project Status: WIP – Initial development is in progress, but there
@@ -12,7 +14,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--14-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--15-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
