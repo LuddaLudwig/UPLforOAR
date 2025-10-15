@@ -21,13 +21,17 @@ test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
-                        xvals=xvals,future_tests=runcount)
+                        xvals=xvals,future_runs=runcount)
   expect_equal(runmod$distribution,'Lognormal')
   run_results=runmod$run_results
   run_mcmc=as.matrix(runmod$run_results$mcmc[[1]])
   # saveRDS(run_mcmc,test_path('test_run','test_mcmc.rds'))
   load_results=readRDS(test_path('test_run','test_mcmc.rds'))
   expect_equal(run_mcmc,load_results)
+  expect_equal(runmod$manual_prior,FALSE)
+  expect_equal(runmod$data,top5)
+  expect_equal(runmod$xvals,xvals)
+  expect_equal(runmod$future_runs,runcount)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+
                                               runcount+nrow(top5)+2))
   expect_equal(run_results$burnin,20000)

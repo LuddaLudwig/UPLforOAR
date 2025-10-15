@@ -8,7 +8,7 @@
 Bayesian_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   data,
-  future_tests = 3,
+  future_runs = 3,
   significance = 0.99,
   xvals = NULL,
   maxY = NULL,
@@ -25,7 +25,7 @@ are supplied manually, only one distribution can be used.}
 \item{data}{Emissions data from either the best source or top performers,
 must have a column named 'emissions'.}
 
-\item{future_tests}{Integer of future runs to use in prediction, the default
+\item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
 
 \item{significance}{Level of significance from 0 to 1, the default is \code{0.99}.}

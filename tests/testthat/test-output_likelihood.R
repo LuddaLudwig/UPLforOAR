@@ -21,7 +21,7 @@ test_that("output_likelihood() organizes mcmc results and calculates UPL", {
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
-                        xvals=xvals,future_tests=runcount)
+                        xvals=xvals,future_runs=runcount)
   outputresult=output_likelihood(runmod)
   # write.csv(outputresult$obs_pdf,test_path('test_output','test-obs_pdf.csv'))
   # write.csv(outputresult$pred_pdf,test_path('test_output','test-pred_pdf.csv'))

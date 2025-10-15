@@ -1,4 +1,4 @@
-test_that("fit_likelihood() compares predicted and observed density distributions", {
+test_that("converge_figs() makes posterior plots of mcmc iter and histogram", {
   top5=tibble::tibble(emissions=c(1,2,1.5,
                                   1.2,3,2.2,
                                   0.2,0.4,0.7,
@@ -16,18 +16,19 @@ test_that("fit_likelihood() compares predicted and observed density distribution
                                             dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
-  runcount=4
-  runmod=run_likelihood(model_input=JAGS_model_stuff,
-                        xvals=xvals,future_runs=runcount)
-  outputresult=output_likelihood(runmod)
-  fit_results=fit_likelihood(outputresult)
-  expect_equal(round(fit_results$pdf_integral,3),0.921)
-  expect_equal(fit_results$distr,'Lognormal')
-  expect_equal(round(fit_results$SSE,3),0.371)
-  expect_equal(nrow(fit_results$obs_pdf_dat),nrow(top5))
-  expect_equal(nrow(fit_results$xhat_pdf_dat),length(xvals))
-})
 
+  part1=setup_likelihood(distribution = "Gamma",data = top5)
+  part2=run_likelihood(model_input = part1)
+  part3=converge_figs(distribution = "Gamma",jags_model_run = part2)
+  expect_equal(length(part3),2)
+  fig1=part3[[1]]
+  expect_equal(length(fig1),2)
+  fig1a=fig1[[1]]
+  expect_equal(names(fig1a@layers),c("geom_line","geom_line...2","geom_line...3"))
+  expect_equal(fig1a@labels$x,"Iterations")
+  fig2=part3[[2]]
+  fig2b=fig2[[2]]
+  expect_equal(fig2b@labels$x,"shape_em")
+  expect_equal(fig2@meta$patches$annotation$title,"Gamma")
+
+})
