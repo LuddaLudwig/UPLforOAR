@@ -195,7 +195,7 @@ the predicted probability for each emission observation, using the associated
 likelihood distribution. The colored probability curves indicate the 
 predicted likelihood across a range of expected emissions, which by default is 
 `seq(0,3*max(data$emissions,length.out=1024))`, but can be changed by supplying 
-the `xvals` argument to `Byaesian_UPL()`. The results for plotting the densities 
+the `xvals` argument to `Bayesian_UPL()`. The results for plotting the densities 
 at observations including error bars are stored in `results$obs_pdf_dat`, and 
 those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_dat`.
 ```{r figure3, echo=FALSE, out.width="100%", fig.height=7, fig.align = "center", fig.cap="Fitted likelihood distributions for IIS HCl emissions."}
