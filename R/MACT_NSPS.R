@@ -1,6 +1,6 @@
 #' Selects best performer from emissions data
-#' @param data Data.frame or tibble with columns for emissions (numeric)
-#' and sources (character or factor)
+#' @param data Data.frame or tibble with columns for `emissions` (numeric)
+#' and `sources` (character or factor)
 #' @returns Data set (tibble) containing the emissions data for the best
 #' performing source for New Source Performance Standards.
 #' @export

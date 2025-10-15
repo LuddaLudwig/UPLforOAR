@@ -1,8 +1,8 @@
 #' Selects top sources from emissions data
 #' @param CAA_section Applicable Clean Air Act section, either 112 or 129
-#' @param data Data.frame or tibble with columns for emissions (numeric) and
-#' sources (character or factor)
-#' @returns Data set (tibble) of the top 5 or 12% of sources, depending on the
+#' @param data Data.frame or tibble with columns for `emissions` (numeric) and
+#' `sources` (character or factor)
+#' @returns Data set (tibble) of the top 5 or 12\% of sources, depending on the
 #' number of sources, to be used in UPL calculations for Maximum Achievable
 #' Control Technology (MACT) floor analysis for Existing Source Guidelines.
 #' @export

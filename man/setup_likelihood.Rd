@@ -13,30 +13,28 @@ setup_likelihood(
 )
 }
 \arguments{
-\item{distribution}{Any of 'Normal', 'Gamma', 'Skewed', 'Lognormal', or 'Beta'.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
 
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'.}
+must have a column named \code{emissions}.}
 
-\item{manual_prior}{Default is FALSE, priors are uninformative and calculated
-from range of emissions data. if TRUE priors should be specified manually in
-'prior_list'.}
+\item{manual_prior}{Default is \code{FALSE}, priors are uninformative and calculated
+from range of emissions data. if \code{TRUE} priors should be specified manually in
+\code{prior_list}.}
 
-\item{prior_list}{Optional list of dunif() upper and lower bounds for prior
-distributions. For normal they are ordered c(sd_low, sd_high, mean_low, mean_high).
-For lognormal they are ordered c(log_sd_low, log_sd_high, log_mean_low, log_mean_high).
-For skewed they are ordered c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high).
-For gamma they are ordered c(rate_low, rate_high, shape_low, shape_high). For
-beta they are ordered c(alpha_low, alpha_high, beta_low, beta_high).}
+\item{prior_list}{Optional list of \code{\link[stats:Uniform]{stats::dunif()}} upper and lower bounds for prior
+distributions. For \code{'Normal'} they are ordered \code{c(sd_low, sd_high, mean_low, mean_high)}.
+For \code{'Lognormal'} they are ordered \code{c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)}.
+For \code{'Skewed'} they are ordered \verb{c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high). For }'Gamma'\verb{they are ordered}c(rate_low, rate_high, shape_low, shape_high)\verb{. For }'Beta'\verb{they are ordered}c(alpha_low, alpha_high, beta_low, beta_high)`.}
 
-\item{random}{Default is FALSE where random seeds are defined via .RNG.name
-and .RNG.seed so JAGS runs will be exactly reproducible. Changing to TRUE
-will use random values for .RNG.name and .RNG.seed instead.}
+\item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
+and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
+will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
 }
 \value{
-Object model_code, which is a string for the written R script that
-JAGS can call, par_list which is the list of parameters traced while running
-the JAGS model, "dat_inits" which is a list of initial parameter values and
+Object \code{model_code}, which is a string for the written R script that
+JAGS can call, \code{par_list} which is the list of parameters traced while running
+the JAGS model, \code{dat_inits} which is a list of initial parameter values and
 random seeds for 3 chains, and the distribution used in likelihood model.
 }
 \description{

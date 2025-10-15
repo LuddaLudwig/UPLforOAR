@@ -7,8 +7,8 @@
 MACT_NSPS(data)
 }
 \arguments{
-\item{data}{Data.frame or tibble with columns for emissions (numeric)
-and sources (character or factor)}
+\item{data}{Data.frame or tibble with columns for \code{emissions} (numeric)
+and \code{sources} (character or factor)}
 }
 \value{
 Data set (tibble) containing the emissions data for the best

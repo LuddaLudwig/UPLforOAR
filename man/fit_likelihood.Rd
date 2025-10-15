@@ -8,21 +8,21 @@ observed density distributions}
 fit_likelihood(likelihood_result)
 }
 \arguments{
-\item{likelihood_result}{Output list from output_likelihood()}
+\item{likelihood_result}{Output list from \code{\link[=output_likelihood]{output_likelihood()}}}
 }
 \value{
 The sum of squared error (SSE) between predicted and observed
-probability densities, and the count of emissions whose 95\% CI around
+probability densities, and the count of emissions whose 95\\% CI around
 predicted probability densities overlaps observed probability densities.
 Also includes the integration of predicted pdf, distribution type used, and
 merged data sets of observed and predicted densities at each emission value
-and each xval, named obs_pdf_dat and xhat_pdf_dat respectively. The
-obs_pdf_dat also includes the upper and lower 95\% and median around predicted
-pdf. The UPL estimate from the output_likelihood() as well.
+and each \code{xval}, named \code{obs_pdf_dat} and \code{xhat_pdf_dat} respectively. The
+\code{obs_pdf_dat} also includes the upper and lower 95\\% and median around predicted
+pdf. The UPL estimate from \code{\link[=output_likelihood]{output_likelihood()}} is included as well.
 }
 \description{
-This function takes the list of results from output_likelihood() and compares
+This function takes the list of results from \code{\link[=output_likelihood]{output_likelihood()}} and compares
 the predicted density distributions to observed density distributions,
-estimating the SSE (sum of squared errors) and counts the number of emissions
-observations with densities that have overlapping 95\% CI with predicted densities.
+estimating the \code{SSE} (sum of squared errors) and counts the number of emissions
+observations with densities that have overlapping 95\\% CI with predicted densities.
 }

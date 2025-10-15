@@ -1,6 +1,6 @@
 #' Tests for convergence in likelihood parameters
-#' @param jags_model_run The output list returned from run_likelihood().
-#' @returns A tibble of parameters and convergence results from gelman.diag(),
+#' @param jags_model_run The output list returned from [run_likelihood()].
+#' @returns A tibble of parameters and convergence results from [coda::gelman.diag()],
 #' Values greater than 1.2 indicate problems in convergence. Values between 1.1
 #' and 1.2 indicate weak convergence. Values less than 1.1 indicate good
 #' convergence. This test indicates if the 3 mcmc chains are will mixed and
