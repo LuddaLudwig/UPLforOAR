@@ -21,7 +21,7 @@ test_that("converge_likelihood() runs gelman diagnostics for convergence tests",
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
-                        xvals=xvals,future_tests=runcount)
+                        xvals=xvals,future_runs=runcount)
   conv_results=converge_likelihood(runmod)
   expect_equal(round(conv_results$gelman_diag,3),c(1.074,1.041))
   expect_equal(conv_results$params,c('u_ln','sd_ln'))

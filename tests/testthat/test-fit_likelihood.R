@@ -21,7 +21,7 @@ test_that("fit_likelihood() compares predicted and observed density distribution
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
-                        xvals=xvals,future_tests=runcount)
+                        xvals=xvals,future_runs=runcount)
   outputresult=output_likelihood(runmod)
   fit_results=fit_likelihood(outputresult)
   expect_equal(round(fit_results$pdf_integral,3),0.921)

@@ -32,6 +32,9 @@ test_that("setup_likelihood() calls JAGS model scripts with initial values and p
          'u_ln'=0.5*mean(ln_emiss,na.rm=TRUE),
          'sd_ln'=1.5*stats::sd(ln_emiss,na.rm=TRUE))))
   expect_equal(JAGS_model_stuff$distribution,'Lognormal')
+  expect_equal(length(JAGS_model_stuff),6)
+  expect_equal(JAGS_model_stuff$data,top5)
+  expect_equal(JAGS_model_stuff$manual_prior,FALSE)
   readjags=runjags::read.jagsfile(test_path('test_JAGS','test-Emission_lnorm_JAGS.R'))
   expect_equal(JAGS_model_stuff$model_code$model,readjags$model)
 })
