@@ -12,8 +12,17 @@ knitr::opts_chunk$set(
   echo = FALSE,
   error=TRUE,
   warning=FALSE,
-  message=FALSE
+  message=FALSE,
+    fig.align = "center"
 )
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -93,13 +102,11 @@ dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 
 ```
-<center>
-```{r EG table}
+```{r EGtable, fig.align = "center"}
 knitr::kable(dat_EG_avg%>%mutate(across(c(2),~signif(.,digits=4)))%>%head(),
              caption="Top 5 of 42 sources for EG standard UPL calculation",
              col.names=c('Source','Average emission','No. of Tests'),digits=12)
 ```
-</center>
 
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
 ```{r UPL, echo=TRUE}
@@ -128,7 +135,6 @@ pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
               sd=sd(log(dat_EG$emissions),na.rm=T))
 pred_dat=tibble(x_hat,pdf_ln,pdf_n)
 ```
-<center>
 ```{r plot1, echo=TRUE, fig.dim=c(5,4), fig.align = 'center', fig.cap="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The fitted normal distribution that is the basis of the UPL estimate is colored orange. The average of the Hg emissions is the vertical black line and the UPL results are the vertical purple and orange lines."}
 ggplot()+
   geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat),color='a'),size=0.75)+
@@ -162,7 +168,6 @@ ggplot()+
                     labels=c('Observations','Lognormal'))
 
 ```
-</center>
 ## Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information.  Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.  The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.

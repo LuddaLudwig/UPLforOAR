@@ -83,8 +83,6 @@ dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 ```
 
-<center>
-
 | Source                           | Average emission | No. of Tests |
 |:---------------------------------|-----------------:|-------------:|
 | Spruance Genco, LLC_GEN2_2A      |         2.63e-09 |            1 |
@@ -95,8 +93,6 @@ distribution_result_EG=distribution_type(dat_EG)
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
 Top 5 of 42 sources for EG standard UPL calculation
-
-</center>
 
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The
@@ -145,8 +141,6 @@ pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
 pred_dat=tibble(x_hat,pdf_ln,pdf_n)
 ```
 
-<center>
-
 ``` r
 ggplot()+
   geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat),color='a'),size=0.75)+
@@ -194,8 +188,6 @@ line and the UPL results are the vertical purple and orange lines.
 </p>
 
 </div>
-
-</center>
 
 ## Disclaimer
 
