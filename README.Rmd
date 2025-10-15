@@ -111,10 +111,10 @@ knitr::kable(dat_EG_avg%>%mutate(across(c(2),~signif(.,digits=4)))%>%head(),
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_EG)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_EG`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
 ```{r UPL, echo=TRUE}
 UPL1_EG=Normal_UPL(data=dat_EG,
-                     future_tests = 1,
+                     future_runs = 1,
                      significance=0.99)
 UPL2_EG=Lognormal_UPL(data=dat_EG,
-                     future_tests = 1,
+                     future_runs = 1,
                      significance=0.99)
 ```
 Next we calculate the UPL using the appropriate distribution, which results in a MACT floor standard of `r UPL1_EG` lb/MMBtu in Hg emissions. Lastly, we will want to plot observation density of emissions data as well as the `r distribution_result_EG` distribution that was used to as the probability density function for the UPL calculation. From the figure below, the Lognormal appears to better represent the data, which would yield a UPL MACT floor standard of `r UPL2_EG` lb/MMBtu in Hg emissions.

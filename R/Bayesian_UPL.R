@@ -3,7 +3,7 @@
 #' @param distr_list A list including one or more of
 #' `c('Normal','Skewed','Lognormal','Gamma','Beta')`. Note that if prior bounds
 #' are supplied manually, only one distribution can be used.
-#' @param future_tests Integer of future runs to use in prediction, the default
+#' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
 #' @param xvals Ordered sequence of emissions at which to predict probability
@@ -55,7 +55,7 @@
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
 Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
-                      data,future_tests=3,significance=0.99,
+                      data,future_runs=3,significance=0.99,
                       xvals=NULL,maxY=NULL,
                       convergence_report=FALSE,
                       manual_prior=FALSE,prior_list=NULL){
@@ -72,7 +72,7 @@ Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta')
     mod_bayes=setup_likelihood(distribution=distribution,data=data,
                                manual_prior=manual_prior,prior_list=prior_list)
     mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,
-                           future_tests =future_tests,xvals=xvals)
+                           future_runs =future_runs,xvals=xvals)
     manual_prior=mod_bayes$manual_prior
 
     mod_output=output_likelihood(jags_model_run=mod_run,
@@ -96,7 +96,7 @@ Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta')
       mod_bayes=setup_likelihood(distribution=distribution,data=data,
                                  manual_prior=FALSE)
       mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,
-                             future_tests =future_tests,xvals=xvals)
+                             future_runs =future_runs,xvals=xvals)
       mod_output=output_likelihood(jags_model_run=mod_run,
                                    significance=significance)
       mod_fit=fit_likelihood(likelihood_result=mod_output)

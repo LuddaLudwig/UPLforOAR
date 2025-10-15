@@ -8,7 +8,7 @@
 #' @param model_input Results from [setup_likelihood()], including JAGS model
 #' script, emissions data, distribution, initial values list, and parameters to
 #' monitor.
-#' @param future_tests Integer of future runs to use in prediction, the default
+#' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param xvals Ordered sequence of emissions at which to predict probability
 #' density. Default is `NULL`, in which case `x_hat` is a 1024 length
@@ -18,7 +18,7 @@
 #' Default is `NULL`, in which cas it is calculated as `3*maximum(data$emissions)`.
 #' @export
 
-run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
+run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_runs=3){
   manual_prior=model_input$manual_prior
   data=model_input$data
   Sys.setenv("_R_CHECK_LIMIT_CORES_" = FALSE)
@@ -44,7 +44,7 @@ run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
   }
   if (!manual_prior){
     data_list=list(emission_xi=data$emissions,
-                   n_draws=future_tests,
+                   n_draws=future_runs,
                    sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
                    maxY=maxY,sdY=stats::sd(data$emissions),
                    meanOfLogY=mean(log(data$emissions),na.rm=T),
@@ -52,7 +52,7 @@ run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
   } else if (manual_prior){
     if (length(model_input$prior_list)==4){
       data_list=list(emission_xi=data$emissions,
-                     n_draws=future_tests,
+                     n_draws=future_runs,
                      sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
                      maxY=maxY,sdY=stats::sd(data$emissions),
                      meanOfLogY=mean(log(data$emissions),na.rm=T),
@@ -63,7 +63,7 @@ run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
                      up2=model_input$prior_list[4])
     } else if (length(model_input$prior_list)==6){
       data_list=list(emission_xi=data$emissions,
-                     n_draws=future_tests,
+                     n_draws=future_runs,
                      sdOfLogY=stats::sd(log(data$emissions),na.rm=T),
                      maxY=maxY,sdY=stats::sd(data$emissions),
                      meanOfLogY=mean(log(data$emissions),na.rm=T),
@@ -88,7 +88,7 @@ run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
                                          inits = model_input$dat_inits))
   output=list(run_results=rjm,distribution=model_input$distribution,
               manual_prior=manual_prior,
-              data=model_input$data, xvals=xvals,future_tests=future_tests)
+              data=model_input$data, xvals=xvals,future_runs=future_runs)
   parallel::stopCluster(cl3)
   return(output)
 }

@@ -9,7 +9,7 @@ output_likelihood(jags_model_run, significance = 0.99)
 \arguments{
 \item{jags_model_run}{The output list returned from \code{\link[=run_likelihood]{run_likelihood()}},
 which includes the jags model \code{run_results}, likelihood distribution type,
-and \code{data}, \code{xvals}, and \code{future_tests} used as inputs to \code{\link[=run_likelihood]{run_likelihood()}}.}
+and \code{data}, \code{xvals}, and \code{future_runs} used as inputs to \code{\link[=run_likelihood]{run_likelihood()}}.}
 
 \item{significance}{Level of significance from 0 to 1, the default is \code{0.99}.}
 }
@@ -17,7 +17,7 @@ and \code{data}, \code{xvals}, and \code{future_tests} used as inputs to \code{\
 A list including \code{distr}, the distribution used in \code{\link[=write_likelihood]{write_likelihood()}},
 \code{predicted_mean}, the mean of the fitted distribution, \code{UPL_Bayes}, the
 upper predictive limit based on the \code{significance} level and average
-distribution of \code{future_tests} number of draws, \code{obs_pdf}, the predicted
+distribution of \code{future_runs} number of draws, \code{obs_pdf}, the predicted
 probability density at each observation, and \code{pred_pdf}, the predicted
 probability density at each point in \code{xvals}.
 }

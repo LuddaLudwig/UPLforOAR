@@ -4,7 +4,7 @@
 \alias{run_likelihood}
 \title{Runs JAGS model scripts for chosen likelihood}
 \usage{
-run_likelihood(model_input, xvals = NULL, maxY = NULL, future_tests = 3)
+run_likelihood(model_input, xvals = NULL, maxY = NULL, future_runs = 3)
 }
 \arguments{
 \item{model_input}{Results from \code{\link[=setup_likelihood]{setup_likelihood()}}, including JAGS model
@@ -19,7 +19,7 @@ sequence between \code{0} and \code{3*max(data$emissions)}.}
 distributions and set upper ranges on prior distributions.
 Default is \code{NULL}, in which cas it is calculated as \code{3*maximum(data$emissions)}.}
 
-\item{future_tests}{Integer of future runs to use in prediction, the default
+\item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
 }
 \value{
