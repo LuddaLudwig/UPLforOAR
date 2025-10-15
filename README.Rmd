@@ -23,7 +23,7 @@ library(np)
 library(sfsmisc)
 ```
 
-# UPLforOAR
+# UPLforOAR <a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/logo.png" align="right" height="139" alt="UPLforOAR website" /></a>
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -32,9 +32,6 @@ library(sfsmisc)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-green.svg)](/commits/main)
 <!-- badges: end -->
-
-<a href="https://github.com/LuddaLudwig/UPLforOAR"><img src="man/figures/UPLforOAR_sticker.png" width="200" align="right" /></a>
-
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting 
 National Emissions Standards for Hazardous Air Pollutants (NESHAP) analyses. 

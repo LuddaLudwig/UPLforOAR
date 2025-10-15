@@ -1,7 +1,7 @@
 #' Determines the type of distribution from skewness and kurtosis ratios
 #' @param data Emissions data from either the best source or top performers,
-#' must have a column named 'emissions'
-#' @returns String with either 'Normal', 'Lognormal', or 'Skewed'
+#' must have a column named `emissions`
+#' @returns String with either `'Normal'`, `'Lognormal'`, or `'Skewed'`
 #' @references  On measuring skewness and kurtosis" Dragan Doric, et al.
 #' Springer Science + Buisness Media B. V. 2007. September 20, 2007
 #' @export

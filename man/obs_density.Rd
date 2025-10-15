@@ -8,29 +8,30 @@ obs_density(data, xvals = NULL, up = Inf, low = 0, kernel = "gamma", bw = NULL)
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'.}
+must have a column named \code{emissions}.}
 
 \item{xvals}{Ordered sequence of emissions to define emission densities along.
-Default is NULL, in which case xvals is a 1024 length sequence.
-between 0 and 3*max(data$emissions)}
+Default is \code{NUL}L, in which case \code{xvals} is a 1024 length sequence.
+between \code{0} and \code{3*max(data$emissions)}.}
 
-\item{up}{Optional upper limit to bound density, default is Inf.}
+\item{up}{Optional upper limit to bound density, default is \code{Inf}.}
 
-\item{low}{Optional lower limit to bound density, default is 0.}
+\item{low}{Optional lower limit to bound density, default is \code{0}.}
 
-\item{kernel}{Kernel choice for density function, default is 'gamma' defined
-on (0,Inf). Other options include:
-c("gaussian1","gaussian2","beta1","beta2","fb","fbl","fbu","rigaussian")}
+\item{kernel}{Kernel choice for density function, default is \code{gamma} defined
+on \verb{(0,Inf)}. Other options include:
+\code{c('gaussian1','gaussian2','beta1','beta2','fb','fbl','fbu','rigaussian')}.
+See \code{\link[np:npuniden.boundary]{np::npuniden.boundary()}} for more information on kernel options.}
 
-\item{bw}{Optional bandwidth, default is NULL in which case
-bw = sd(emissions)*n^(-2/5), where n is number of emissions. The bandwidth
+\item{bw}{Optional bandwidth, default is \code{NULL} in which case
+\code{bw = sd(emissions)*n^(-2/5)}, where \code{n} is number of emissions. The bandwidth
 can also be provided manually, or searched for using least squares cross-validation
-by bw = "cv.ls" or likelihood cross-validation with bw = "cv.ml".}
+by \code{bw = "cv.ls"} or likelihood cross-validation with \code{bw = "cv.ml"}.}
 }
 \value{
-A list containing two tibbles, "Obs_onPoint" with exact emission
-observations and densities, and "obs_den_df" with densities for every
-position given in xvals.
+A list containing two tibbles, \code{Obs_onPoint} with exact emission
+observations and densities, and \code{obs_den_df} with densities for every
+position given in \code{xvals}.
 }
 \description{
 Calculates the density of emissions observations

@@ -8,10 +8,10 @@ distribution_type(data)
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'}
+must have a column named \code{emissions}}
 }
 \value{
-String with either 'Normal', 'Lognormal', or 'Skewed'
+String with either \code{'Normal'}, \code{'Lognormal'}, or \code{'Skewed'}
 }
 \description{
 Determines the type of distribution from skewness and kurtosis ratios

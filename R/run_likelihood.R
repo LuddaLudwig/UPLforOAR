@@ -1,21 +1,22 @@
 #' Runs JAGS model scripts for chosen likelihood
 #' @description
-#' Runs the JAGS model from setup_likelihood() model_code output.
-#' Traces all variables in par_list running 3 chains in parallel with burnin and
-#' adapt of 10,000 each and keeping 10,000 iterations per chain.
-#' @returns runjags object named run_results, likelihood distribution from the
-#' JAGS model script, as well as data and xvals used as inputs.
-#' @param model_input Results from setup_likelihood(), including JAGS model
+#' Runs the JAGS model from [setup_likelihood()] model_code output.
+#' Traces all variables in `par_list` running 3 chains in parallel with `burnin` and
+#' `adapt` of 10,000 each and keeping 10,000 iterations per chain.
+#' @returns `runjags` object named `run_results`, likelihood distribution from the
+#' JAGS model script, as well as `data` and `xval`s used as inputs.
+#' @param model_input Results from [setup_likelihood()], including JAGS model
 #' script, emissions data, distribution, initial values list, and parameters to
 #' monitor.
 #' @param future_tests Integer of future runs to use in prediction, the default
-#' is 3 since compliance uses 1 test average of 3 runs.
+#' is `3` since compliance uses 1 test average of 3 runs.
 #' @param xvals Ordered sequence of emissions at which to predict probability
-#' density. Default is NULL, in which case x_hat is a 1024 length
-#' sequence between 0 and 3*max(data$emissions).
+#' density. Default is `NULL`, in which case `x_hat` is a 1024 length
+#' sequence between `0` and `3*max(data$emissions)`.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
-#' Default is 3*maximum(data$emissions).
+#' Default is `NULL`, in which cas it is calculated as `3*maximum(data$emissions)`.
+#' @export
 
 run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_tests=3){
   manual_prior=model_input$manual_prior

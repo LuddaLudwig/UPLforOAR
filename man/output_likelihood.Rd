@@ -2,27 +2,27 @@
 % Please edit documentation in R/output_likelihood.R
 \name{output_likelihood}
 \alias{output_likelihood}
-\title{Organizes mcmc output from run_likelihood()}
+\title{Organizes mcmc output from \code{\link[=run_likelihood]{run_likelihood()}}}
 \usage{
 output_likelihood(jags_model_run, significance = 0.99)
 }
 \arguments{
-\item{jags_model_run}{The output list returned from run_likelihood(),
-which includes the jags model 'run_results', likelihood distribution type,
-and data, xvals, and future_tests used as inputs to run_likelihood().}
+\item{jags_model_run}{The output list returned from \code{\link[=run_likelihood]{run_likelihood()}},
+which includes the jags model \code{run_results}, likelihood distribution type,
+and \code{data}, \code{xvals}, and \code{future_tests} used as inputs to \code{\link[=run_likelihood]{run_likelihood()}}.}
 
-\item{significance}{Level of significance from 0 to 1, the default is 0.99.}
+\item{significance}{Level of significance from 0 to 1, the default is \code{0.99}.}
 }
 \value{
-A list including 'distr' the distribution used in write_likelihood(),
-the 'predicted_mean' the mean of the fitted distribution, 'UPL_Bayes' the
-upper predictive limit based on the 'significance' level and average
-distribution of 'future_tests' number of draws, 'obs_pdf' the predicted
-probability density at each observation, and 'pred_pdf' the predicted
-probability density at each point in xvals.
+A list including \code{distr}, the distribution used in \code{\link[=write_likelihood]{write_likelihood()}},
+\code{predicted_mean}, the mean of the fitted distribution, \code{UPL_Bayes}, the
+upper predictive limit based on the \code{significance} level and average
+distribution of \code{future_tests} number of draws, \code{obs_pdf}, the predicted
+probability density at each observation, and \code{pred_pdf}, the predicted
+probability density at each point in \code{xvals}.
 }
 \description{
-Output_likelihood() takes the jags_model_run produced by run_likelihood(),
+Output_likelihood() takes the \code{jags_model_run} produced by \code{\link[=run_likelihood]{run_likelihood()}},
 merges the mcmc chains and calculates the UPL as well as
 providing the predicted pdf and metrics.
 }

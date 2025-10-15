@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# UPLforOAR
+# UPLforOAR <a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/logo.png" align="right" height="139" alt="UPLforOAR website" /></a>
 
 <!-- badges: start -->
 
@@ -13,8 +13,6 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--15-green.svg)](/commits/main)
 <!-- badges: end -->
-
-<a href="https://github.com/LuddaLudwig/UPLforOAR"><img src="man/figures/UPLforOAR_sticker.png" width="200" align="right" /></a>
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
 National Emissions Standards for Hazardous Air Pollutants (NESHAP)
