@@ -100,12 +100,13 @@ dat_means=arrange(dat_means,means)
 ```
 
 Take a quick look at the average emission for each source in the data set:
-
+<center>
 ```{r table1}
 knitr::kable(mutate(dat_means,across(c(2),~signif(.,digits=3))),
              caption="Top sources for existing source calculation",
              col.names=c('Source','Average emission','No. of Tests'))
 ```
+</center>
 
 Next we want to look at density plots of the emission observations. Our goal is 
 to fit a probability density that best describes the data, from which we can 
@@ -115,7 +116,7 @@ For this example we will plot the density using `ggplot2::geom_density()` by
 `source` with a lower  bound of 0 since negative emissions are impossible. The 
 `UPLforOAR` package includes several `ggplot2` themes designed for density 
 figures. The figure below uses `multi_source_theme()`.
-
+<center>
 ```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = 'center', fig.cap="Observation density of IIS HCl emissions by top performing source."}
 
 ggplot(aes(emissions,fill=sources),data=dat_emiss)+
@@ -132,6 +133,7 @@ ggplot(aes(emissions,fill=sources),data=dat_emiss)+
   labs(fill='Top sources',color='Top sources')
 
 ```
+</center>
 
 For most cases however, we will want more control over the density results. The 
 default settings in `obs_density()` are designed to be compatible with typical 
@@ -152,7 +154,7 @@ likelihood distribution from which to calculate the UPL. This figures uses
 `pop_distr_theme()` and plots the `obs_density()` results above using 
 `ggplot2::geom_line` and `ggplot2::geom_line`. The emission observations 
 themselves are indicated as points and as a rug underneath the plot.
-
+<center>
 ```{r figure2, echo=TRUE, fig.dim=c(5,3), fig.align = 'center', fig.cap="Observation density of IIS HCl emissions top performers overall population."}
 
 ggplot(data=Obs_onPoint)+
@@ -170,6 +172,7 @@ ggplot(data=Obs_onPoint)+
            alpha=0.5,outside=TRUE,color='black')
 
 ```
+</center>
 ### Step 2: Explore possible likelihood distributions
 You can use an informed decision about which likelihood distributions to investigate. 
 For example, a Beta distribution is only appropriate if the observations are strictly 
@@ -201,7 +204,7 @@ predicted likelihood across a range of expected emissions, which by default is
 the `xvals` argument to `Byaesian_UPL()`. The results for plotting the densities 
 at observations including error bars are stored in `results$obs_pdf_dat`, and 
 those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_dat`.
-
+<center>
 ```{r figure3, echo=FALSE, out.width="100%", fig.height=7, fig.align = 'center', fig.cap="Fitted likelihood distributions for IIS HCl emissions."}
 palette_line=c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
 ggplot()+
@@ -234,6 +237,7 @@ ggplot()+
   facet_wrap(~distr,scales='free_y',nrow=3)+theme(legend.position = 'none')+
   theme(strip.text = element_text(color='black',size=12))
 ```
+</center>
 ### Step 3: Selecting a distribution
 
 Unsurprisingly, the Normal distribution does not look good. All of the other 
@@ -263,6 +267,7 @@ integrates to less than 1.
 ```{r fit, echo=TRUE}
 fit_metrics=results$fit_table
 ```
+<center>
 ``` {r table2}
 fit_metrics=subset(fit_metrics,select=-c(UPL))
 fit_metrics=arrange(fit_metrics,SSE)
@@ -270,6 +275,7 @@ knitr::kable(mutate(fit_metrics,across(c(2,3),~signif(.,digits=3))),
              caption="Goodness of fit results for IIS HCl emissions",
              col.names=c('Distribution','SSE','No. Obs. in 95% CI','integral'))
 ```
+</center>
 
 The Gamma and Beta distributions have the lowest SSE, the most emission 
 observations with densities in the 95\% of the probability density, and both 
@@ -294,7 +300,7 @@ average of 3 future runs (as is typical in a compliance test). The `significance
 and `future_tests` arguments can be set to other values if desired, which will 
 not affect the fitted likelihood distribution but will change the UPL calculation. 
 The UPL results are the variable `UPL` stored in `results$fit_table`:
-
+<center>
 ```{r table3}
 fit_metrics=results$fit_table
 fit_metrics=arrange(fit_metrics,SSE)
@@ -304,6 +310,7 @@ knitr::kable(fit_metrics,
              caption="Upper Predictive Limits for IIS HCl emissions",
              col.names=c("Distribution",'UPL'))
 ```
+</center>
 
 ### Step 5: Check for convergence
 
@@ -318,7 +325,7 @@ parameters for each distribution supplied to `Bayesian_UPL()` are monitored and
 assessed for convergence using the Gelman-Rubin diagnostic, and the corresponding 
 outcome for convergence is in `convYN`. If any distribution's parameters fail 
 the Gelman-Rubin diagnostic checks for convergence, then its results cannot be used. 
-
+<center>
 ``` {r table4}
 conv_metrics=results$conv_output
 conv_metrics=mutate(conv_metrics,across(c(3),~signif(.,digits=4)))
@@ -326,6 +333,7 @@ knitr::kable(conv_metrics,
              caption="Gelman-Rubin convergence tests for likelihood parameters",
              col.names=c("Distribution",'Parameter',"Diagnostic","Converged"))
 ```
+</center>
 
 The Gelman-Rubin diagnostic will test if the 3 separate MCMC chains have become 
 well-mixed and without trends. Passing the Gelman-Rubin convergence test is 

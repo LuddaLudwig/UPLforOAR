@@ -83,6 +83,8 @@ dat_EG_avg=arrange(dat_EG_avg,avg)
 distribution_result_EG=distribution_type(dat_EG)
 ```
 
+<center>
+
 | Source                           | Average emission | No. of Tests |
 |:---------------------------------|-----------------:|-------------:|
 | Spruance Genco, LLC_GEN2_2A      |         2.63e-09 |            1 |
@@ -94,24 +96,36 @@ distribution_result_EG=distribution_type(dat_EG)
 
 Top 5 of 42 sources for EG standard UPL calculation
 
+</center>
+
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The
 data included in this regulatory docket were test averages as opposed to
 individual runs. As such the number of future runs used in UPL
 calculations will be 1 instead of the default, an average of 3 runs. The
-appropriate distribution for the UPL calculation is Normal.
+appropriate distribution for the UPL calculation is Normal, according to
+ratios of skewness and kurtosis. This simple distribution test does not
+take into account that we cannot have negative emissions, so we will
+also calculate the Lognormal UPL for comparison, which is strictly
+positive.
 
 ``` r
-UPL_EG=Lognormal_UPL(data=dat_EG,
+UPL1_EG=Normal_UPL(data=dat_EG,
+                     future_tests = 1,
+                     significance=0.99)
+UPL2_EG=Lognormal_UPL(data=dat_EG,
                      future_tests = 1,
                      significance=0.99)
 ```
 
 Next we calculate the UPL using the appropriate distribution, which
-results in a MACT floor standard of 8.4825717^{-8} lb/MMBtu in Hg
+results in a MACT floor standard of 4.8582101^{-8} lb/MMBtu in Hg
 emissions. Lastly, we will want to plot observation density of emissions
 data as well as the Normal distribution that was used to as the
-probability density function for the UPL calculation.
+probability density function for the UPL calculation. From the figure
+below, the Lognormal appears to better represent the data, which would
+yield a UPL MACT floor standard of 8.4825717^{-8} lb/MMBtu in Hg
+emissions.
 
 ``` r
 # make an ordered sequence of emissions 
@@ -124,10 +138,14 @@ Obs_onPoint=obs_dens_results$Obs_onPoint
 obs_den_df=obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
 # based on estimated distribution parameters
+pdf_n=dnorm(x_hat,mean=mean(dat_EG$emissions,na.rm=T),
+              sd=sd(dat_EG$emissions,na.rm=T))
 pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
               sd=sd(log(dat_EG$emissions),na.rm=T))
-pred_dat=tibble(x_hat,pdf_ln)
+pred_dat=tibble(x_hat,pdf_ln,pdf_n)
 ```
+
+<center>
 
 ``` r
 ggplot()+
@@ -135,39 +153,49 @@ ggplot()+
   geom_area(data=obs_den_df,aes(y=ydens,x=(x_hat),fill='a'),alpha=0.25)+
   geom_point(aes(y=ydens,x=(emissions)),data=Obs_onPoint,
              size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(aes(y=pdf_ln,x=(x_hat),color='b'),
+    geom_line(aes(y=pdf_n,x=(x_hat),color='b'),
                data = pred_dat,size=0.75,linetype=2)+
-  geom_area(aes(y=pdf_ln,x=(x_hat),fill='b'),alpha=0.25,
+  geom_area(aes(y=pdf_n,x=(x_hat),fill='b'),alpha=0.25,
+            data = pred_dat)+
+  geom_line(aes(y=pdf_ln,x=(x_hat),color='c'),
+               data = pred_dat,size=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=(x_hat),fill='c'),alpha=0.25,
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
   geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
                  color='a'),size=1,linetype=1)+
-  geom_vline(aes(xintercept=(UPL_EG),color='b'),size=1,linetype=2)+
+  geom_vline(aes(xintercept=(UPL1_EG),color='b'),size=1,linetype=2)+
+  geom_vline(aes(xintercept=(UPL2_EG),color='c'),size=1,linetype=2)+
   scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
   scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
   coord_cartesian(clip='off')+
   labs(color='Distribution:',fill='Distribution:')+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
            alpha=0.5,outside=TRUE,color='black')+
-  scale_color_manual(values=c('black','#984EA3'),
+  scale_color_manual(values=c('black','#FF7F00','#984EA3'),
                      labels=c('Observations','Lognormal'))+
-  scale_fill_manual(values=c('black','#984EA3'),
+  scale_fill_manual(values=c('black','#FF7F00','#984EA3'),
                     labels=c('Observations','Lognormal'))
 ```
 
-<figure>
-<img src="man/figures/README-plot1-1.png"
-alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The average of the Hg emissions is the vertical black line and the UPL result is the vertical purple line." />
-<figcaption aria-hidden="true">Observation density of Hg for the overall
-population. The obseration data are indicated in black as points and a
-rug along the axis, with the observation density distribution as a black
-line. The fitted lognormal distribution that is the basis of the UPL
-estimate is colored purple. The average of the Hg emissions is the
-vertical black line and the UPL result is the vertical purple
-line.</figcaption>
-</figure>
+<div class="figure" style="text-align: center">
+
+<img src="man/figures/README-plot1-1.png" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The fitted normal distribution that is the basis of the UPL estimate is colored orange. The average of the Hg emissions is the vertical black line and the UPL results are the vertical purple and orange lines."  />
+<p class="caption">
+Observation density of Hg for the overall population. The obseration
+data are indicated in black as points and a rug along the axis, with the
+observation density distribution as a black line. The fitted lognormal
+distribution that is the basis of the UPL estimate is colored purple.
+The fitted normal distribution that is the basis of the UPL estimate is
+colored orange. The average of the Hg emissions is the vertical black
+line and the UPL results are the vertical purple and orange lines.
+</p>
+
+</div>
+
+</center>
 
 ## Disclaimer
 
