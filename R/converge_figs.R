@@ -8,6 +8,7 @@
 #' parameters of the selected distribution
 #' @returns A list of histograms and MCMC chain plots per parameter
 #' @export
+#' @import patchwork
 converge_figs=function(distribution,jags_model_run){
   if (distribution=="Normal"){
     par_list=c('emission_mean','emission_sd')
