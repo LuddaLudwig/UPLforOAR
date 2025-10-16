@@ -15,8 +15,17 @@ knitr::opts_chunk$set(
   warning=FALSE,
   message=FALSE,
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.align = "center"
 )
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
 ```
 
 ```{r setup, message=FALSE}
@@ -337,7 +346,7 @@ working directory as "Bayesian_UPL_convergence_current-date-and-time.pdf".
 
 Below are the convergence plots for the parameters in the Gamma distribution that we fit to the IIS HCl emissions data. The left figures show the 3 MCMC chains (red, blue, and green lines) are well-mixed and without trend, indicating good convergence. The figures on the right are histograms of the posterior distributions of the Gamma parameters. Both indicate good convergence on values for the rate and shape. 
 
-```{r figure4, fig.height=4, fig.align = "center", results=FALSE}
+```{r figure4, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
 part1=setup_likelihood(distribution = "Gamma",data = dat_emiss)
 part2=run_likelihood(model_input = part1)
 part3=converge_figs(distribution = "Gamma",jags_model_run = part2)
@@ -346,7 +355,152 @@ part3
 
 ## Further options for Bayesian UPL analysis
 
-In the example above we used the default settings to automatically control things such as prior distributions, initial values, expected emission range, and observation density evaluation. While the default settings are a great place to start and might be sufficient for most uses, the sections below explain the mechanics under-the-hood and full options in `Bayesian_UPL()`. 
+In the example above we used the default settings to automatically control 
+things such as prior distributions, initial values, expected emission range, and 
+observation density evaluation. While the default settings are a great place to 
+start and might be sufficient for most uses, the sections below explain the 
+mechanics inside and full options in `Bayesian_UPL()`. 
+
+### Under-the-hood of Bayesian_UPL()
+
+Multiple functions are at work inside of `Bayesian_UPL()` to setup, run, and fit 
+likelihood distributions to emissions data, then calculate the UPL as well as 
+provide additional results for plotting, checking fit, and checking convergence. 
+Each of these functions can be accessed individually, `Bayesian_UPL()` simply 
+acts as a wrapper to ensure arguments are passed along correctly and to allow 
+multiple distributions to be fit at once for ease of comparability. Each of the 
+functions within `Bayesian_UPL()` are named with the suffix `_likelihood()`. For 
+each distribution in the list provided, `Bayesian_UPL()` will use the given 
+emissions `data` and manual prior options in `setup_likelihood()`, then run 
+`run_likelihood()` on it with options `future_runs`, `xvals`, and `maxY` if 
+provided, then collect the results from `output_likelihood()` at the `significance` 
+if provided, check for convergence using `converge_likelihood()`, calculate 
+metrics of fit using `fit_likelihood()`, and delete all the intermediate JAGS 
+model objects to reduce memory usage. Finally, the results for each distribution 
+are concatenated in a list of tables for easy comparison and plotting.
+
+- **`write_likelihood`:**
+
+  This first function, `write_likelihood()`, is also the only function in the 
+  `_likelihood()` family that isn't called inside `Bayesian_UPL()`. In order to 
+  run likelihood models we need separate files with model statements, as either 
+  ".txt" or ".R" scripts, for JAGS to load outside of R. The function 
+  `write_likelihood()` creates these .R JAGS model scripts in the path 
+  "inst/JAGS/" inside the package directory. These scripts come already 
+  installed with the `UPLforOAR` package, so `write_likelihood()` should never 
+  need to be run by the typical user. However, if the JAGS model scripts need to 
+  be recreated one can do so using `write_likelihood()`. The location where the 
+  JAGS scripts are written can be changed by setting argument `write_wd` to the 
+  desired path directory. The `distribution` argument takes any of `'Normal'`, 
+  `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`, and creates the model script 
+  using the corresponding likelihood distribution. The last argument is a logical 
+  `manual_prior` which is `FALSE` by default. When `FALSE`, the priors in the 
+  likelihood model are designed to be uninformative based on the mean and variance 
+  of the emissions data. If `TRUE`, then an alternative version of likelihood 
+  model is written where priors are instead defined on `~dunif(low,high)`, where 
+  the lower and upper bounds can be later specified by the user manually. 
+
+- **`setup_likelihood()`:**
+
+  There are several pieces of information that need to be defined and organized 
+  before running a likelihood model, and `setup_likelihood()` handles this for 
+  any given `distribution` choice. First, `setup_likelihood()` will check that you 
+  have a working path to the JAGS script directory in your `UPLforOAR` installation. 
+  Then it will read in the JAGS model script corresponding to the `distribution` 
+  argument, and whether or not you want the version with manual prior distributions 
+  (`FALSE` by default). It will define the list of variables to monitor while 
+  JAGS is running the model, which includes the parameters that define the 
+  likelihood distribution as well as the probability density outcomes needed to 
+  evaluate fit and calculate the UPL. Next it will check if the provided `data` 
+  argument has a column named `emissions` that is numeric. These data are then used 
+  pick initial values for the MCMC parameter chains. These initial values need to 
+  be different enough from one another that we can later tell if they have 
+  converged, but also within the possible bounds the likelihood parameters can 
+  take as defined by the prior distributions. With the default settings, the 
+  initial values use an approximate mean parameter value for one chain, then 50/% 
+  greater and 50/% smaller for the two other chains respectively. In addition to 
+  the list of initial values, `setup_likelihood()` will specify the random seeds 
+  for the MCMC chains in JAGS. This allows the models to be re-run with perfect 
+  reproducibility. You can turn this behavior off by setting the argument 
+  `random = FALSE`, in which case a random number generator will be used in the 
+  MCMC search. 
+
+  If `manual_prior = TRUE`, then `setup_likelihood()` will load the JAGS model 
+  script version with each prior defined on `~dunif(low, high)`. In this case, an 
+  additional argument, `prior_list`, needs to be supplied. This list will need to 
+  include the `low` and `high` bounds for each parameter. For `'Normal'` they are 
+  ordered `c(sd_low, sd_high, mean_low, mean_high)`. For `'Lognormal'` they are 
+  ordered `c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)`. For `'Skewed'` 
+  they are ordered `c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)`. 
+  For `'Gamma'` they are ordered `c(rate_low, rate_high, shape_low, shape_high)`. 
+  For `'Beta'` they are ordered `c(alpha_low, alpha_high, beta_low, beta_high)`. 
+  Examples using manual priors can be found at the end of this vignette.
+
+- **`run_likelihood()`:**
+
+  This is the meat of `Bayesian_UPL()` and is the most time-consuming step. The 
+  result from `setup_likelihood()` is the only required input for `run_likelihood()`. 
+  This will run the chosen likelihood distribution model, with the default or 
+  specified priors, with the emissions data given to `setup_likelihood()`, and 
+  return the completed JAGS simulation. The JAGS model will run 3 MCMC chains in 
+  parallel, using an adapt and burn-in of 10,000 iterations each, and then keep 
+  the next 10,000 iterations. The other arguments include `maxY`, which sets the 
+  upper limit of emissions that can occur when fitting the likelihood distribution. 
+  This will have no or very minimal influence on how the likelihood distribution 
+  is fit, and indeed in most cases this limit will be well past the full extent 
+  of the likelihood distribution. This limit is useful in cases where the fitted 
+  distribution has a very heavy or long tail past the emission observations. In 
+  these cases there is very little certainty in the extent of the tail of the 
+  distribution, but the extremely high emission values that can occur at very low 
+  probability can lead to anomalously high UPL results. Setting `maxY` to a 
+  reasonable upper boundary can prevent this behavior. It defaults to `NULL`, in 
+  which case it is calculated as `3*max(data$emissions)`. Examples of `maxY` 
+  affects on UPL estimates are given at the end of this vignette. You can also 
+  specify the number of future test runs to average in the UPL calculation by 
+  setting `future_runs`, which defaults to `3`. This has no effect on likelihood 
+  fit, but does change the UPL calculation. Lastly, you can specify `xvals`, the 
+  range of possible emission values at which you want the likelihood to return a 
+  probability. This is `seq(0, 3*max(data$emissions), length.out=1024)` by default. 
+
+- **`converge_likelihood()`:**
+
+  The JAGS model object produced by `run_likelihood()` is used by the function 
+  `converge_likelihood()` to test if the fitted parameters properly converged. 
+  This function will pull the MCMC chains for the defining parameters of the 
+  likelihood distribution, run a Gelman-Rubin diagnostic test, and interpret 
+  the results of that test. The result is a table of parameter values with their 
+  corresponding diagnostic and if they have converged as a `"Yes"`, `"No"`, or 
+  `"Weak convergence"`. More details on convergence can be found in a later section. 
+
+- **`output_likelihood()`:**
+
+  The JAGS model object produced by `run_likelihood()` can be memory intensive 
+  with 3 chains of 10,000 iterations for every variable that we have set up to 
+  monitor, so we want an efficient way to work with the results, which 
+  `output_likelihood()` provides. The only required argument is `jags_model_run`, 
+  the result from `run_likelihood()`. The other argument is `significance` which 
+  defaults to `0.99`. Two numeric values are returned with `output_likelihood()`: 
+  the predicted mean of the distribution and the UPL calculated at the specified 
+  `significance` for the average of `future_runs` used in `run_likelihood()`. 
+  Two data sets are also returned, including `obs_pdf`, which provides the 
+  emissions data and corresponding predicting probability densities at each point 
+  as well as the 95/% confidence interval around those predictions, and `pred_pdf`, 
+  which has the predicted probability densities at each position in `xvals`.
+
+- **`fit_likelihood()`:**
+
+  Lastly, `fit_likelihood()` takes the results from `output_likelihood()` and 
+  compares them to empirical emission observation densities to determine metrics 
+  of fit. The empirical densities are determined using `obs_density()`, and more 
+  details on this function are given in the following section. The `obs_pdf` 
+  result from `out_put_likelihood()` is compared to the empirical observation 
+  densities to determine the Sum of Squared Errors (SSE) and whether or not a 
+  given emission observation has densities inside the 95/% CI around the predicted 
+  density. Furthermore, the empirical density from the emission observations is 
+  used to determine the density function at each point in `xvals` so the entire 
+  curve can be compared to the predicted density function from the Bayesian model 
+  fit. The results, along the UPL determined in the previous step, are returned 
+  by `fit_likelihood()`. 
 
 ### Density
 
@@ -359,14 +513,23 @@ as the bandwidth `bw`, kernel `kernel`, and known upper and lower limits in
 a rule-of-thumb method (not recommended) of arriving at a bandwidth 
 (Silverman B. W. 1986. Density Estimation p.48 eq 3.31).
 
-In most situations, we will want more control over the density than `ggplot2::geom_density()` provides, and we will want to use the observation densities 
+In most situations, we will want more control over the density than `ggplot2::geom_density()` 
+provides, and we will want to use the observation densities 
 outside of the plot later on. For example, all emissions data will be bounded by 
 0 and will often have an upper bound as well. Due to the strictly positive 
-nature of emissions data, a gaussian kernel is not often a good choice. 
+nature of emissions data, a gaussian kernel is not often a good choice. There 
+are numerous types of empirical density functions in R and density estimation is 
+an extensive body of research in its own right. Given an appropriate choice of 
+kernel and bandwidth, the results using different methods are very similar. 
 
-Instead we recommend the `obs_density()` function in `UPLforOAR`, which builds on the `np::npuniden.boundary()` function, a more accurate density function for 
+We recommend the `obs_density()` function in `UPLforOAR`, which builds 
+on the `np::npuniden.boundary()` function, a more accurate density function for 
 bounded data. By default, `obs_density()` will assume a lower bound of 0, no 
-upper bound, and the `kernel` type is gamma. Other kernel types accepted by `np::npuniden.boundary()` can be used, for example if data are percent removals instead of emissions then `"beta1"` or `"beta2"` with an upper bound of 1 are more appropriate. The default bandwidth `bw` is $\sigma*n^{-2/5}$ (Renault & Scaillet 2004), though manual values or a least-squares or likelihood search can be used 
+upper bound, and the `kernel` type is gamma. Other kernel types accepted by 
+`np::npuniden.boundary()` can be used, for example if data are percent removals 
+instead of emissions then `"beta1"` or `"beta2"` with an upper bound of 1 are 
+more appropriate. The default bandwidth `bw` is $\sigma*n^{-2/5}$ (Renault & Scaillet 2004), 
+though manual values or a least-squares or likelihood search can be used 
 instead by setting `bw = "cv.ls"` or `bw = "cv.ml"`.
 
 The results of `obs_density()` include `ObsonPoint`, with the observation densities 
@@ -381,7 +544,7 @@ Run `?obs_density` in the console for detailed information in the help pages.
 
 Bayesian inference uses prior information to derive posterior distributions of 
 model parameters. The default behavior in `Bayesian_UPL()` is to use uninformative 
-priors which is calculated based on the range and variance of the emissions data. 
+priors which are calculated based on the range and variance of the emissions data. 
 The prior information can be manually supplied to either increase the parameter 
 space to search wider, or to provide more specific information, which might be 
 particularly useful in circumstances where there are very few observations (i.e. 
