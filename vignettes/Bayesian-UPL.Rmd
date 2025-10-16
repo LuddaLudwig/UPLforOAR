@@ -540,16 +540,6 @@ by default is `seq(0,3*max(data$emissions,length.out=1024))`.
 
 Run `?obs_density` in the console for detailed information in the help pages.
 
-### Priors
-
-Bayesian inference uses prior information to derive posterior distributions of 
-model parameters. The default behavior in `Bayesian_UPL()` is to use uninformative 
-priors which are calculated based on the range and variance of the emissions data. 
-The prior information can be manually supplied to either increase the parameter 
-space to search wider, or to provide more specific information, which might be 
-particularly useful in circumstances where there are very few observations (i.e. 
-`n = 3`). 
-
 ### Convergence
 
 Convergence of distribution parameters is assessed quantitatively using the 
@@ -579,6 +569,41 @@ posterior histogram is highly skewed towards the end of the allowed range. In
 this case, the priors will need to be set manually to a wider uninformative range.
 
 *add example of bad posterior*
+
+### Priors
+
+Bayesian inference uses prior information to derive posterior distributions of 
+model parameters. The default behavior in `Bayesian_UPL()` is to use uninformative 
+priors which are calculated based on the range and variance of the emissions data. 
+The prior information can be manually supplied to either increase the parameter 
+space to search wider, or to provide more specific information, which might be 
+particularly useful in circumstances where there are very few observations (i.e. 
+`n = 3`). 
+
+It is inadvisable to use manual priors without good justification. A situation 
+where one might use the manual prior option is after running `Bayesian_UPL()` 
+with the default uninformative priors, the parameters showed issues with 
+convergence. For example, if the posterior histogram is completely flat across 
+the default parameter space, and information from the data are limited by a low 
+sample size, then a narrower parameter range might need to be provided manually 
+to promote convergence. Alternatively, if the posterior histogram appears to be 
+stacked up along one side of the parameter space, then a wider prior range might 
+need to be provided manually if applicable. Some parameters can only exist above 
+0, or -1, or between -1 and 1, and in these cases it is not abnormal behavior 
+for their posterior distributions to be heavily skewed when close to a boundary, 
+and setting further limits manually will not change any outcomes.
+
+In the section above we tried to fit a Normal distribution to an emission data set with `n = 3` and fully uninformed priors, and did not achieve good convergence. We could then decide to follow up with another Normal distribution where we provide slightly narrower but still largely uninformative priors manually.
+
+```{r manual, echo = TRUE}
+
+```
+
+In some cases there might be specific prior information about the distributions 
+that can be used to set informative priors. Examples could include an operational 
+lower or upper limit to emissions that physically cannot be surpassed, or the 
+results from a previous decade of emissions that technology has improved on since. 
+Caution should be exercised if using stricter priors, and needs to be very well justified. 
 
 ### Long- and Heavy-Tailed Distributions 
 
