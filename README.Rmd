@@ -163,9 +163,9 @@ ggplot()+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
            alpha=0.5,outside=TRUE,color='black')+
   scale_color_manual(values=c('black','#FF7F00','#984EA3'),
-                     labels=c('Observations','Lognormal'))+
+                     labels=c('Observations','Normal','Lognormal'))+
   scale_fill_manual(values=c('black','#FF7F00','#984EA3'),
-                    labels=c('Observations','Lognormal'))
+                    labels=c('Observations','Normal','Lognormal'))
 
 ```
 ## Disclaimer
