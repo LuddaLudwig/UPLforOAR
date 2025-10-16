@@ -21,7 +21,7 @@ inputPanel(
         fileInput('data','Upload csv file with "emissions" column of numeric 
                   data and "sources" column of corresponding source names',
                   accept='.csv'),
-        numericInput("future_tests",label="Number of future test runs",
+        numericInput("future_runs",label="Number of future test runs",
                      value=3,min=1),
         numericInput("signficance",label="Level of significance",
                      value=0.99,min=0,max=1)
@@ -73,7 +73,7 @@ CAA_text=reactive(
 For existing source standards calculations, `r CAA_text` is used to determine 
 the top sources, either the best 5 performers or the best 12\% performers. The 
 number of future tests for calculating the UPL is 
-`r reactive(input$future_tests)`, using a 
+`r reactive(input$future_runs)`, using a 
 `r (reactive(input$signficance*100))`\% limit.
 
 ##### The best performer for the new source calculation is `r reactive(best_source())` with an average emission of `r reactive(signif(emission_mean_new(),digits=4))` from `r reactive(nrow(dat_top_new()))` test runs.
@@ -171,37 +171,37 @@ distribution_result_exist=reactive(distribution_type(data=dat_top_exist()))
 distribution_result_new=reactive(distribution_type(data=dat_top_new()))
 
 PI99_normal_exist=reactive(
-  Normal_UPL(data=dat_top_exist(),future_tests = input$future_tests,
+  Normal_UPL(data=dat_top_exist(),future_runs = input$future_runs,
                   significance=input$signficance)
 )
 PI99_lognorm_exist=reactive({
   df2=dat_top_exist()
-  out1=Lognormal_UPL(data=df2,future_tests = input$future_tests,
+  out1=Lognormal_UPL(data=df2,future_runs = input$future_runs,
                              significance=input$signficance)
   out1
   })
 PI99_skew_exist=reactive({
   df3=dat_top_exist()
-  out2=Skewed_UPL(data=df3,future_tests = input$future_tests,
+  out2=Skewed_UPL(data=df3,future_runs = input$future_runs,
                              significance=input$signficance)
   out2
   })
 
 PI99_normal_new=reactive({
   df4=dat_top_new()
-  out3=Normal_UPL(data=df4,future_tests = input$future_tests,
+  out3=Normal_UPL(data=df4,future_runs = input$future_runs,
                              significance=input$signficance)
   out3
   })
 PI99_lognorm_new=reactive({
   df5=dat_top_new()
-  out4=Lognormal_UPL(data=df5,future_tests = input$future_tests,
+  out4=Lognormal_UPL(data=df5,future_runs = input$future_runs,
                              significance=input$signficance)
   out4
   })
 PI99_skew_new=reactive({
   df6=dat_top_new()
-  out5=Skewed_UPL(data=df6,future_tests = input$future_tests,
+  out5=Skewed_UPL(data=df6,future_runs = input$future_runs,
                              significance=input$signficance)
   out5
   })
@@ -291,7 +291,7 @@ output$upl_display=reactive(dat_freq()%>%knitr::kable('html',
                             caption=paste0("UPL results from frequentist excel 
                                            workbook using a significance of ",
                                            input$signficance*100,'% and ',
-                                           input$future_tests,' future tests.'),
+                                           input$future_runs,' future test runs.'),
               col.names=c('Distribution','Existing source','New source'))%>%
                 kable_styling("striped",full_width=T))
 tableOutput('upl_display')
