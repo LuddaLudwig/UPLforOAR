@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# UPLforOAR <a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/UPLforOAR_sticker.png" align="right" height="200" alt="UPLforOAR website" /></a>
+# UPLforOAR
+
+<a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/logo.png" align="right" height="139" alt="UPLforOAR website" /></a>
 
 <!-- badges: start -->
 

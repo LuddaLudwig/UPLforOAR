@@ -200,7 +200,7 @@ bars on these figures represent the median and 95\% confidence interval around
 the predicted probability for each emission observation, using the associated 
 likelihood distribution. The colored probability curves indicate the 
 predicted likelihood across a range of possible emission values, which by default is 
-`seq(0,3*max(data$emissions,length.out=1024))`, but can be changed by supplying 
+`seq(0, 3*max(data$emissions, length.out=1024))`, but can be changed by supplying 
 the `xvals` argument to `Bayesian_UPL()`. The results for plotting the densities 
 at observations including error bars are stored in `results$obs_pdf_dat`, and 
 those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_dat`.
@@ -258,7 +258,7 @@ emission observations (black points on the plots above) have densities within
 the 95\% CI of the predicted probability densities (the error bars on the plots 
 above). We can also quantify how different the observed and predicted densities 
 are by looking at the Sum of Squared Errors (SSE): $SSE=\displaystyle\sum(y_i-\hat{y_i})^2$, 
-where $y_i$ is the empirical observation probability density and $\hat{y_i}$ is the predicted observation probability density. Lastly, we might want to check if the area under 
+where $y_i$ is the empirical observation probability density and  $\hat{y_i}$ is the predicted observation probability density. Lastly, we might want to check if the area under 
 the curve of the probability distribution is close to 1. If it doesn't integrate 
 to 1, than it isn't a proper probability density. This is the case for the 
 Normal distribution in our example, since some of it would extend below 0 where 
@@ -366,20 +366,20 @@ mechanics inside and full options in `Bayesian_UPL()`.
 Multiple functions are at work inside of `Bayesian_UPL()` to setup, run, and fit 
 likelihood distributions to emissions data, then calculate the UPL as well as 
 provide additional results for plotting, checking fit, and checking convergence. 
-Each of these functions can be accessed individually, `Bayesian_UPL()` simply 
+Each of these functions can be accessed individually; `Bayesian_UPL()` simply 
 acts as a wrapper to ensure arguments are passed along correctly and to allow 
 multiple distributions to be fit at once for ease of comparability. Each of the 
 functions within `Bayesian_UPL()` are named with the suffix `_likelihood()`. For 
 each distribution in the list provided, `Bayesian_UPL()` will use the given 
-emissions `data` and manual prior options in `setup_likelihood()`, then run 
-`run_likelihood()` on it with options `future_runs`, `xvals`, and `maxY` if 
+emissions `data` and manual prior options in `setup_likelihood()`, then execute 
+`run_likelihood()` with options `future_runs`, `xvals`, and `maxY` if 
 provided, then collect the results from `output_likelihood()` at the `significance` 
 if provided, check for convergence using `converge_likelihood()`, calculate 
 metrics of fit using `fit_likelihood()`, and delete all the intermediate JAGS 
 model objects to reduce memory usage. Finally, the results for each distribution 
 are concatenated in a list of tables for easy comparison and plotting.
 
-- **`write_likelihood`:**
+- **`write_likelihood()`:**
 
   This first function, `write_likelihood()`, is also the only function in the 
   `_likelihood()` family that isn't called inside `Bayesian_UPL()`. In order to 
@@ -417,8 +417,8 @@ are concatenated in a list of tables for easy comparison and plotting.
   be different enough from one another that we can later tell if they have 
   converged, but also within the possible bounds the likelihood parameters can 
   take as defined by the prior distributions. With the default settings, the 
-  initial values use an approximate mean parameter value for one chain, then 50/% 
-  greater and 50/% smaller for the two other chains respectively. In addition to 
+  initial values use an approximate mean parameter value for one chain, then 50\% 
+  greater and 50\% smaller for the two other chains respectively. In addition to 
   the list of initial values, `setup_likelihood()` will specify the random seeds 
   for the MCMC chains in JAGS. This allows the models to be re-run with perfect 
   reproducibility. You can turn this behavior off by setting the argument 
@@ -434,13 +434,16 @@ are concatenated in a list of tables for easy comparison and plotting.
   they are ordered `c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)`. 
   For `'Gamma'` they are ordered `c(rate_low, rate_high, shape_low, shape_high)`. 
   For `'Beta'` they are ordered `c(alpha_low, alpha_high, beta_low, beta_high)`. 
-  Examples using manual priors can be found at the end of this vignette.
+  With manually provide priors, the intial values are set to be 10\% below the 
+  upper bound and 10\% above the lower bound. Examples using manual priors can 
+  be found at the end of this vignette.
 
 - **`run_likelihood()`:**
 
   This is the meat of `Bayesian_UPL()` and is the most time-consuming step. The 
   result from `setup_likelihood()` is the only required input for `run_likelihood()`. 
-  This will run the chosen likelihood distribution model, with the default or 
+  First, `run_likelihood()` will check if you have JAGS installed properly. Then 
+  it will run the chosen likelihood distribution model, with the default or 
   specified priors, with the emissions data given to `setup_likelihood()`, and 
   return the completed JAGS simulation. The JAGS model will run 3 MCMC chains in 
   parallel, using an adapt and burn-in of 10,000 iterations each, and then keep 
@@ -484,7 +487,7 @@ are concatenated in a list of tables for easy comparison and plotting.
   `significance` for the average of `future_runs` used in `run_likelihood()`. 
   Two data sets are also returned, including `obs_pdf`, which provides the 
   emissions data and corresponding predicting probability densities at each point 
-  as well as the 95/% confidence interval around those predictions, and `pred_pdf`, 
+  as well as the 95\% confidence interval around those predictions, and `pred_pdf`, 
   which has the predicted probability densities at each position in `xvals`.
 
 - **`fit_likelihood()`:**
@@ -495,7 +498,7 @@ are concatenated in a list of tables for easy comparison and plotting.
   details on this function are given in the following section. The `obs_pdf` 
   result from `out_put_likelihood()` is compared to the empirical observation 
   densities to determine the Sum of Squared Errors (SSE) and whether or not a 
-  given emission observation has densities inside the 95/% CI around the predicted 
+  given emission observation has densities inside the 95\% CI around the predicted 
   density. Furthermore, the empirical density from the emission observations is 
   used to determine the density function at each point in `xvals` so the entire 
   curve can be compared to the predicted density function from the Bayesian model 
