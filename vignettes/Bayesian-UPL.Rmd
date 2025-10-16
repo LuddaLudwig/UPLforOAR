@@ -32,6 +32,7 @@ library(parallel)
 library(rjags)
 library(runjags)
 library(sn)
+library(patchwork)
 ```
 
 
@@ -102,8 +103,8 @@ dat_means=arrange(dat_means,means)
 Take a quick look at the average emission for each source in the data set:
 ```{r table1}
 knitr::kable(mutate(dat_means,across(c(2),~signif(.,digits=3))),
-             caption="Top sources for existing source calculation",
-             col.names=c('Source','Average emission','No. of Tests'))
+             caption="Top sources for existing source UPL calculation",
+             col.names=c('Source','Average emission','No. of test runs'))
 ```
 
 Next we want to look at density plots of the emission observations. Our goal is 
@@ -115,7 +116,6 @@ For this example we will plot the density using `ggplot2::geom_density()` by
 `UPLforOAR` package includes several `ggplot2` themes designed for density 
 figures. The figure below uses `multi_source_theme()`.
 ```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of IIS HCl emissions by top performing source."}
-
 ggplot(aes(emissions,fill=sources),data=dat_emiss)+
   geom_density(alpha=0.5,trim=FALSE,bounds=c(0,Inf))+
   multi_source_theme()+theme(legend.text = element_text(size=8))+
@@ -128,7 +128,6 @@ ggplot(aes(emissions,fill=sources),data=dat_emiss)+
   ggtitle("Source observed populations")+
   ylab("Density")+xlab("IIS HCl emissions")+
   labs(fill='Top sources',color='Top sources')
-
 ```
 
 For most cases however, we will want more control over the density results. The 
@@ -151,7 +150,6 @@ likelihood distribution from which to calculate the UPL. This figures uses
 `ggplot2::geom_line` and `ggplot2::geom_line`. The emission observations 
 themselves are indicated as points and as a rug underneath the plot.
 ```{r figure2, echo=TRUE, fig.dim=c(5,3), fig.align = "center", fig.cap="Observation density of IIS HCl emissions top performers overall population."}
-
 ggplot(data=Obs_onPoint)+
   geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
   geom_area(data=obs_den_df,aes(y=ydens,x=(x_hat)),alpha=0.25,fill='black')+
@@ -165,14 +163,13 @@ ggplot(data=Obs_onPoint)+
   coord_cartesian(clip='off')+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_emiss,
            alpha=0.5,outside=TRUE,color='black')
-
 ```
 ### Step 2: Explore possible likelihood distributions
 You can use an informed decision about which likelihood distributions to investigate. 
 For example, a Beta distribution is only appropriate if the observations are strictly 
 between 0 and 1. In this case, you might see that a Normal distribution is a poor 
 choice given asymmetric shape of the observations clustered above 0. However, 
-for the purposes of the vignette, we will look at all distributions currently supported.
+for the purposes of this vignette, we will look at all distributions currently supported.
 
 We will fit likelihood models for the following distributions: Beta, Gamma, 
 Lognormal, Normal, and Skewed. Using the default settings of `Bayesian_UPL()` the 
@@ -193,11 +190,12 @@ First, let's look at plots of the resulting distributions. The points and error
 bars on these figures represent the median and 95\% confidence interval around 
 the predicted probability for each emission observation, using the associated 
 likelihood distribution. The colored probability curves indicate the 
-predicted likelihood across a range of expected emissions, which by default is 
+predicted likelihood across a range of possible emission values, which by default is 
 `seq(0,3*max(data$emissions,length.out=1024))`, but can be changed by supplying 
 the `xvals` argument to `Bayesian_UPL()`. The results for plotting the densities 
 at observations including error bars are stored in `results$obs_pdf_dat`, and 
 those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_dat`.
+
 ```{r figure3, echo=FALSE, out.width="100%", fig.height=7, fig.align = "center", fig.cap="Fitted likelihood distributions for IIS HCl emissions."}
 palette_line=c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
 ggplot()+
@@ -245,16 +243,17 @@ between 0 and the lowest emission measurement is due to testing detection limits
 not a true 0 probability that emissions could occur that low. 
 
 We can also use quantitative metrics to decide on the best distribution. All of 
-these metrics can be accessed in `fit_table` in the `Bayesian_UPL()` results. We 
-can leverage the Bayesian abilities to quantify uncertainty and count how many  
+these metrics can be accessed in `results$fit_table` in the `Bayesian_UPL()` results. We 
+can leverage the Bayesian abilities to quantify uncertainty and count how many 
 emission observations (black points on the plots above) have densities within 
 the 95\% CI of the predicted probability densities (the error bars on the plots 
 above). We can also quantify how different the observed and predicted densities 
-are by looking at the Sum of Squared Errors (SSE): $SSE=\displaystyle\sum(y_i-\hat{y_i})^2$. Lastly, we might want to check if the area under the curve of the probability 
-distribution is close to 1. If it doesn't integrate to 1, than it isn't a proper 
-probability density. This is the case for the Normal distribution in our example, 
-since some of it would extend below 0 where emissions are not defined, it 
-integrates to less than 1. 
+are by looking at the Sum of Squared Errors (SSE): $SSE=\displaystyle\sum(y_i-\hat{y_i})^2$, 
+where $y_i$ is the empirical observation probability density and $\hat{y_i}$ is the predicted observation probability density. Lastly, we might want to check if the area under 
+the curve of the probability distribution is close to 1. If it doesn't integrate 
+to 1, than it isn't a proper probability density. This is the case for the 
+Normal distribution in our example, since some of it would extend below 0 where 
+emissions are not defined, so it integrates to less than 1. 
 
 ```{r fit, echo=TRUE}
 fit_metrics=results$fit_table
@@ -278,9 +277,9 @@ The quantitative results provided in `results$fit_table` agree with the visual
 comparison in the figure above. 
 
 We will select the Gamma distribution, because it is both the best ranked and 
-aligns well in a visual assessment, and because Gamma is defined from (0, Inf) 
-whereas Beta (which is almost as good) is defined from (0, 1). Even though all 
-of out observations are well below 1, this is an unnecessary constraint. 
+aligns well in a visual assessment, and because Gamma is defined from `(0, Inf)` 
+whereas Beta (which is ver similar in fit and shape) is defined from `(0, 1)`. 
+Even though all of the observations are well below 1, this is an unnecessary constraint. 
 
 ### Step 4: Upper Predictive Limits (UPL) results
 
@@ -295,23 +294,28 @@ fit_metrics=results$fit_table
 fit_metrics=arrange(fit_metrics,SSE)
 fit_metrics=subset(fit_metrics,select=c(distr,UPL))
 fit_metrics=mutate(fit_metrics,across(c(2),~signif(.,digits=3)))
+fit_metrics=subset(fit_metrics,select=-c(distr))
+fit_metrics=t(fit_metrics)
+# knitr::kable(fit_metrics,
+#              caption="Upper Predictive Limits for IIS HCl emissions",
+#              col.names=c("Distribution",'UPL'))
 knitr::kable(fit_metrics,
              caption="Upper Predictive Limits for IIS HCl emissions",
-             col.names=c("Distribution",'UPL'))
+             col.names=c("Gamma",'Beta','Skewed','Lognormal','Normal'))
 ```
 
 ### Step 5: Check for convergence
 
 One last step before we can accept the UPL result is to check for convergence. 
 Given how well the Gamma likelihood fit the probability distribution, it is 
-highly unlikely that we have any convergence issues. However, we will need to 
+highly unlikely that we have any convergence issues. However, we do need to 
 verify and document the convergence every time. We will check for convergence 
 both quantitatively and qualitatively. 
 
 The quantitative convergence results are stored in `results$conv_output`. The 
 parameters for each distribution supplied to `Bayesian_UPL()` are monitored and 
 assessed for convergence using the Gelman-Rubin diagnostic, and the corresponding 
-outcome for convergence is in `convYN`. If any distribution's parameters fail 
+outcome for convergence is in the variable `convYN`. If any distribution's parameters fail 
 the Gelman-Rubin diagnostic checks for convergence, then its results cannot be used. 
 ``` {r table4, fig.align = "center"}
 conv_metrics=results$conv_output
@@ -329,9 +333,11 @@ show evenly mixed iterations across all chains and an approximately normal
 histogram for the parameter's posterior distribution. A report with the figures 
 needed to assess convergence can be generated by `Bayesian_UPL()` by setting the 
 argument `convergence_report = TRUE`. This report will be saved in your active 
-working directory as "Bayesian_UPL_convergence_current-date-and-time.pdf"
+working directory as "Bayesian_UPL_convergence_current-date-and-time.pdf".
 
-```{r figure4, fig.height=4, fig.align = "center"}
+Below are the convergence plots for the parameters in the Gamma distribution that we fit to the IIS HCl emissions data. The left figures show the 3 MCMC chains (red, blue, and green lines) are well-mixed and without trend, indicating good convergence. The figures on the right are histograms of the posterior distributions of the Gamma parameters. Both indicate good convergence on values for the rate and shape. 
+
+```{r figure4, fig.height=4, fig.align = "center", results=FALSE}
 part1=setup_likelihood(distribution = "Gamma",data = dat_emiss)
 part2=run_likelihood(model_input = part1)
 part3=converge_figs(distribution = "Gamma",jags_model_run = part2)
@@ -340,7 +346,7 @@ part3
 
 ## Further options for Bayesian UPL analysis
 
-In the example above we used the default settings to automatically control things such as the prior distribution, initial values, expected emission range, and observation density evaluation. While the default settings are a great place to start and might be sufficient for most uses, the sections below explain the mechanics under-the-hood and full options in `Bayesian_UPL()`. 
+In the example above we used the default settings to automatically control things such as prior distributions, initial values, expected emission range, and observation density evaluation. While the default settings are a great place to start and might be sufficient for most uses, the sections below explain the mechanics under-the-hood and full options in `Bayesian_UPL()`. 
 
 ### Density
 
@@ -360,7 +366,7 @@ nature of emissions data, a gaussian kernel is not often a good choice.
 
 Instead we recommend the `obs_density()` function in `UPLforOAR`, which builds on the `np::npuniden.boundary()` function, a more accurate density function for 
 bounded data. By default, `obs_density()` will assume a lower bound of 0, no 
-upper bound, and the `kernel` type is gamma. Other kernel types accepted by `np::npuniden.boundary()` can be used, for example if data are percent removals instead of emissions then "beta1" or "beta2" with an upper bound of 1 are more appropriate. The default bandwidth `bw` is $\sigma*n^{-2/5}$ (Renault & Scaillet 2004), though manual values or a least-squares or likelihood search can be used 
+upper bound, and the `kernel` type is gamma. Other kernel types accepted by `np::npuniden.boundary()` can be used, for example if data are percent removals instead of emissions then `"beta1"` or `"beta2"` with an upper bound of 1 are more appropriate. The default bandwidth `bw` is $\sigma*n^{-2/5}$ (Renault & Scaillet 2004), though manual values or a least-squares or likelihood search can be used 
 instead by setting `bw = "cv.ls"` or `bw = "cv.ml"`.
 
 The results of `obs_density()` include `ObsonPoint`, with the observation densities 
