@@ -30,6 +30,7 @@ Imports:
     forcats,
     ggplot2,
     grid,
+    kableExtra,
     matrixStats,
     np,
     parallel,
@@ -41,7 +42,7 @@ Imports:
     scales,
     sfsmisc,
     sn,
-    tibble,
+    tibble
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Suggests: 
