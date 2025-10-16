@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# UPLforOAR <a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/logo.png" align="right" height="139" alt="UPLforOAR website" /></a>
+# UPLforOAR <a href="https://luddaludwig.github.io/UPLforOAR/"><img src="man/figures/UPLforOAR_sticker.png" align="right" height="200" alt="UPLforOAR website" /></a>
 
 <!-- badges: start -->
 
@@ -11,7 +11,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--15-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--16-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -107,10 +107,10 @@ positive.
 
 ``` r
 UPL1_EG=Normal_UPL(data=dat_EG,
-                     future_tests = 1,
+                     future_runs = 1,
                      significance=0.99)
 UPL2_EG=Lognormal_UPL(data=dat_EG,
-                     future_tests = 1,
+                     future_runs = 1,
                      significance=0.99)
 ```
 
@@ -169,9 +169,9 @@ ggplot()+
   geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
            alpha=0.5,outside=TRUE,color='black')+
   scale_color_manual(values=c('black','#FF7F00','#984EA3'),
-                     labels=c('Observations','Lognormal'))+
+                     labels=c('Observations','Normal','Lognormal'))+
   scale_fill_manual(values=c('black','#FF7F00','#984EA3'),
-                    labels=c('Observations','Lognormal'))
+                    labels=c('Observations','Normal','Lognormal'))
 ```
 
 <div class="figure" style="text-align: center">

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   error=TRUE,
   warning=FALSE,
   message=FALSE,
-    fig.align = "center"
+  fig.align = "center"
 )
 library(htmltools)
 knitr::knit_hooks$set(imgcenter = function(before, options, envir){
