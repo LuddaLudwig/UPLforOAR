@@ -58,7 +58,7 @@ By operating in a Bayesian framework, we can use the same method of deriving the
 UPL while agnostic to the type of distribution, but also dramatically increase the 
 choices for the distribution. Bayesian inference also benefits from fewer 
 assumptions and better uncertainty quantification. This allows for more accurate 
-representation of emissions data and better transparency and metrics of fitness 
+representation of emissions data and better transparency and metrics of fit 
 to support the UPL calculation. 
 
 The `Bayesian_UPL()` uses a Monte Carlo Markov Chain (MCMC) sampler (a Gibbs 
@@ -67,14 +67,14 @@ For example, when using a Normal distribution, this entails estimating the mean
 and standard deviation which define the distribution. Unlike the `Normal_UPL()` 
 analytical solution, we don't merely get a point-estimate of the mean and 
 standard deviation, but instead derive a posterior distribution that describes 
-the full probability for the mean and standard deviation. This allows us to 
+the full probability for the mean and standard deviation. This allows us to better 
 quantify the uncertainty in the predicted probability distribution for any 
 future emission observation. 
 
 Numerous probability distributions are already implemented in R `stats` and JAGS, 
 and any distribution that isn't, or any combination of distributions, can be 
 coded manually in JAGS if needed. For any probability distribution, the UPL is 
-calculated by taking the 99^{th} percentile of the average of new draws (usually 3 
+calculated by taking the 99<sup>th</sup> percentile of the average of new draws (usually 3 
 new runs to be comparative to a typical compliance test).
 
 ## Example: HCl Emissions from Integrated Iron and Steel
@@ -413,7 +413,7 @@ this case, the priors will need to be set manually to a wider uninformative rang
 
 ### Long- and Heavy-Tailed Distributions 
 
-For example some Lognormal. The 99^{th} percentile can be unreasonably large 
+For example some Lognormal. The 99<sup>th</sup> percentile can be unreasonably large 
 emission number when long or heavy tail. This is often an issue when the 
 observations themselves are no where near the tail, and thus the tail is largely 
 unsupported by any data. In such circumstances, the UPL can be a value larger 
