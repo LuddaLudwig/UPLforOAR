@@ -15,10 +15,16 @@
 #' sequence between `0` and `3*max(data$emissions)`.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
-#' Default is `NULL`, in which cas it is calculated as `3*maximum(data$emissions)`.
+#' Default is `NULL`, in which case it is calculated as `3*maximum(data$emissions)`.
 #' @export
 
 run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_runs=3){
+  if (!is.integer(future_runs)){
+    stop("future_runs must be a positive integer")
+  }
+  if (future_runs<1){
+    stop("future_runs must be a positive integer")
+  }
   manual_prior=model_input$manual_prior
   data=model_input$data
   Sys.setenv("_R_CHECK_LIMIT_CORES_" = FALSE)
