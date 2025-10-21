@@ -197,8 +197,9 @@ to generate the sample of emissions data, then comparing the empirical densities
 to the actual probability density function. There is little difference between 
 the default calculated bandwidth and the two options to search for the correct 
 bandwidth using least squares or maximum likelihood. The manual option we 
-supplied is also similar, though slightly over fit. Run `?obs_density` in the 
-console for detailed information in the help pages.
+supplied is also similar, though slightly over fit. 
+
+Run `?obs_density` in the console for detailed information in the help pages.
 
 ```{r obs_example, echo=TRUE}
 # Generate some data to use:
