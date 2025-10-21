@@ -19,6 +19,7 @@
 #' @export
 
 run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_runs=3){
+  future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }

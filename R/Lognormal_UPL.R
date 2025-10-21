@@ -14,6 +14,7 @@
 #' @references "An upper prediction limit for the arithmetic mean of a lognormal
 #' random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
 Lognormal_UPL=function(data,future_runs=3,significance=0.99){
+  future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }

@@ -8,6 +8,7 @@
 #' of the number of future test runs.
 #' @export
 Normal_UPL=function(data,future_runs=3,significance=0.99){
+  future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }
