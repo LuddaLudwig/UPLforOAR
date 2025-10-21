@@ -97,21 +97,23 @@ so there is no need to run `MACT_EG()` to select the data. The first step is to
 load and plot the emissions data. 
 
 ```{r load, echo=TRUE}
-dat_emiss=read.csv('IIS_HCl.csv')
+dat_emiss = read.csv('IIS_HCl.csv')
 
-emission_mean=mean(dat_emiss$emissions)
-dat_means=summarize(dat_emiss,means=mean(emissions),counts=n(),.by='sources')
+emission_mean = mean(dat_emiss$emissions)
+dat_means = summarize(dat_emiss, means = mean(emissions), counts = n(),
+                      .by = 'sources')
 
-dat_means$sources=as.factor(dat_means$sources)
-dat_means$sources=fct_reorder(dat_means$sources,
-                              dat_means$means,.desc = FALSE)
-dat_emiss$sources=factor(dat_emiss$sources,levels=levels(dat_means$sources))
-dat_means=arrange(dat_means,means)
+dat_means$sources = as.factor(dat_means$sources)
+dat_means$sources = fct_reorder(dat_means$sources,
+                              dat_means$means, .desc = FALSE)
+dat_emiss$sources = factor(dat_emiss$sources, 
+                           levels = levels(dat_means$sources))
+dat_means = arrange(dat_means, means)
 ```
 
 Take a quick look at the average emission for each source in the data set:
 ```{r table1}
-knitr::kable(mutate(dat_means,across(c(2),~signif(.,digits=3))),
+knitr::kable(mutate(dat_means, across(c(2), ~signif(., digits=3))),
              caption="Top sources for existing source UPL calculation",
              col.names=c('Source','Average emission','No. of test runs'))
 ```
@@ -125,18 +127,18 @@ For this example we will plot the density using `ggplot2::geom_density()` by
 `UPLforOAR` package includes several `ggplot2` themes designed for density 
 figures. The figure below uses `multi_source_theme()`.
 ```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of IIS HCl emissions by top performing source."}
-ggplot(aes(emissions,fill=sources),data=dat_emiss)+
-  geom_density(alpha=0.5,trim=FALSE,bounds=c(0,Inf))+
-  multi_source_theme()+theme(legend.text = element_text(size=8))+
-  guides(fill=guide_legend(nrow=2,byrow=TRUE),
-         color=guide_legend(nrow=2,byrow=TRUE))+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  geom_rug(sides='b',aes(x=emissions,color=sources),
-           alpha=0.5,outside=TRUE)+coord_cartesian(clip='off')+
+ggplot(aes(emissions, fill = sources), data = dat_emiss)+
+  geom_density(alpha = 0.5, trim = FALSE, bounds = c(0,Inf))+
+  multi_source_theme()+theme(legend.text = element_text(size = 8))+
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+         color = guide_legend(nrow = 2, byrow = TRUE))+
+  scale_x_continuous(expand = expansion(mult =c (0,0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  geom_rug(sides = 'b', aes(x = emissions, color = sources),
+           alpha = 0.5, outside = TRUE)+coord_cartesian(clip = 'off')+
   ggtitle("Source observed populations")+
   ylab("Density")+xlab("IIS HCl emissions")+
-  labs(fill='Top sources',color='Top sources')
+  labs(fill = 'Top sources', color = 'Top sources')
 ```
 
 For most cases however, we will want more control over the density results. The 
@@ -144,12 +146,13 @@ default settings in `obs_density()` are designed to be compatible with typical
 emissions data, such as appropriate kernel types, bandwidths, bounds, and 
 estimators, for non-zero data, as well as a better default bandwidth estimator. 
 Furthermore, we can store the results directly in our environment rather than 
-them being inside the `ggplot` object.
+them being inside the `ggplot` object. See the `vignette("Density")` article for 
+a thorough description of how `obs_density()` works.
 
 ```{r obs_density, echo=TRUE}
-obs_dens_results=obs_density(data=dat_emiss)
-Obs_onPoint=obs_dens_results$Obs_onPoint
-obs_den_df=obs_dens_results$obs_den_df
+obs_dens_results = obs_density(data = dat_emiss)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
 ```
 
 The figure below shows the overall observation density of the top performing source 
@@ -159,19 +162,21 @@ likelihood distribution from which to calculate the UPL. This figures uses
 `ggplot2::geom_line` and `ggplot2::geom_line`. The emission observations 
 themselves are indicated as points and as a rug underneath the plot.
 ```{r figure2, echo=TRUE, fig.dim=c(5,3), fig.align = "center", fig.cap="Observation density of IIS HCl emissions top performers overall population."}
-ggplot(data=Obs_onPoint)+
-  geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
-  geom_area(data=obs_den_df,aes(y=ydens,x=(x_hat)),alpha=0.25,fill='black')+
-  geom_point(aes(y=ydens,x=(emissions)),
-             size=3,alpha=0.5,shape=19,color='black')+
+ggplot(data = Obs_onPoint)+
+  geom_line(data = obs_den_df, aes(y = ydens, x = x_hat), 
+            size = 0.75, color = 'black')+
+  geom_area(data = obs_den_df, aes(y = ydens, x = x_hat), 
+            alpha = 0.25, fill = 'black')+
+  geom_point(aes(y = ydens,x = emissions),
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
   ylab("Density")+xlab("IIS HCl emissions")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+
-  geom_rug(sides='b',aes(x=(emissions)),data=dat_emiss,
-           alpha=0.5,outside=TRUE,color='black')
+  scale_x_continuous(expand = expansion(mult = c(0,0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  coord_cartesian(clip = 'off')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_emiss,
+           alpha = 0.5, outside = TRUE, color = 'black')
 ```
 ### Step 2: Explore possible likelihood distributions
 You can use an informed decision about which likelihood distributions to investigate. 
@@ -191,8 +196,8 @@ can be adjusted manually or evaluated step-wise, but `Bayesian_UPL()` is
 designed to run with minimal user input needed.
 
 ```{r bayesian_UPL, echo=TRUE, results=FALSE}
-distributions=c('Beta','Gamma','Lognormal','Normal','Skewed')
-results=Bayesian_UPL(data=dat_emiss, distr_list=distributions)
+distributions = c('Beta', 'Gamma', 'Lognormal', 'Normal', 'Skewed')
+results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
 ```
 
 First, let's look at plots of the resulting distributions. The points and error 
@@ -206,7 +211,7 @@ at observations including error bars are stored in `results$obs_pdf_dat`, and
 those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_dat`.
 
 ```{r figure3, echo=FALSE, out.width="100%", fig.height=7, fig.align = "center", fig.cap="Fitted likelihood distributions for IIS HCl emissions."}
-palette_line=c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
+palette_line =c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
 ggplot()+
   geom_line(data=results$pred_pdf_dat,
             aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
@@ -265,7 +270,7 @@ Normal distribution in our example, since some of it would extend below 0 where
 emissions are not defined, so it integrates to less than 1. 
 
 ```{r fit, echo=TRUE}
-fit_metrics=results$fit_table
+fit_metrics = results$fit_table
 ```
 ``` {r table2, fig.align = "center"}
 fit_metrics=subset(fit_metrics,select=-c(UPL))
@@ -504,44 +509,6 @@ are concatenated in a list of tables for easy comparison and plotting.
   curve can be compared to the predicted density function from the Bayesian model 
   fit. The results, along the UPL determined in the previous step, are returned 
   by `fit_likelihood()`. 
-
-### Density
-
-In order to know the probability density is a good match for 
-our emissions data, we want to look at the empirical density of the observations. 
-This is easy to do with `ggplot2::geom_density()`, which uses `stats::density()` 
-and can take additional arguments related to how the density is determined such 
-as the bandwidth `bw`, kernel `kernel`, and known upper and lower limits in 
-`bounds`. By default, `geom_density()` uses no bounds, a gaussian kernel, and 
-a rule-of-thumb method (not recommended) of arriving at a bandwidth 
-(Silverman B. W. 1986. Density Estimation p.48 eq 3.31).
-
-In most situations, we will want more control over the density than `ggplot2::geom_density()` 
-provides, and we will want to use the observation densities 
-outside of the plot later on. For example, all emissions data will be bounded by 
-0 and will often have an upper bound as well. Due to the strictly positive 
-nature of emissions data, a gaussian kernel is not often a good choice. There 
-are numerous types of empirical density functions in R and density estimation is 
-an extensive body of research in its own right. Given an appropriate choice of 
-kernel and bandwidth, the results using different methods are very similar. 
-
-We recommend the `obs_density()` function in `UPLforOAR`, which builds 
-on the `np::npuniden.boundary()` function, a more accurate density function for 
-bounded data. By default, `obs_density()` will assume a lower bound of 0, no 
-upper bound, and the `kernel` type is gamma. Other kernel types accepted by 
-`np::npuniden.boundary()` can be used, for example if data are percent removals 
-instead of emissions then `"beta1"` or `"beta2"` with an upper bound of 1 are 
-more appropriate. The default bandwidth `bw` is $\sigma*n^{-2/5}$ (Renault & Scaillet 2004), 
-though manual values or a least-squares or likelihood search can be used 
-instead by setting `bw = "cv.ls"` or `bw = "cv.ml"`.
-
-The results of `obs_density()` include `ObsonPoint`, with the observation densities 
-paired with each emission value in the provided data set, and `obs_den_df`, a 
-sequence of densities across a range of possible emission values (`xvals`) based on the 
-observed emissions. The range of emissions `xvals` can be supplied manually, and 
-by default is `seq(0,3*max(data$emissions,length.out=1024))`. 
-
-Run `?obs_density` in the console for detailed information in the help pages.
 
 ### Convergence
 
