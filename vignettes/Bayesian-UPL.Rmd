@@ -528,7 +528,16 @@ example, a poorly converged Normal distribution might have an even probability
 of the mean being any emission value, in which case the histogram will be flat 
 across the entire parameter-space. 
 
-*add example of bad convergence*
+In the example below, there are only 3 runs used to fit a Normal distribution. Even though the Gelman-Rubin diagnostics passed, and indeed the MCMC chains look well-mixed (left figures), it has not converged well. The histograms on the right show the posterior is too flat. Note that there is a slight peak for the `emission_mean` posterior around 0.01, which is indeed the average of the 3 points, but there is not enough information to definitely say this is much more likely than any other value searched.  
+```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+dat_emiss2=read.csv("Lime_data.csv")
+small_dat = MACT_NSPS(dat_emiss2)
+part1 = setup_likelihood(distribution = "Normal", data = small_dat)
+part2 = run_likelihood(model_input = part1)
+part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
+part3
+```
+
 
 The visual assessment will also catch any issues with the prior distribution 
 settings. Ideally, we are using uninformative priors for UPL calculations that 
