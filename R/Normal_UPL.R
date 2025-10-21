@@ -8,6 +8,18 @@
 #' of the number of future test runs.
 #' @export
 Normal_UPL=function(data,future_runs=3,significance=0.99){
+  if (!is.integer(future_runs)){
+    stop("future_runs must be a positive integer")
+  }
+  if (future_runs<1){
+    stop("future_runs must be a positive integer")
+  }
+  if (significance>=1){
+    stop("significance must be greater then 0 and less than 1")
+  }
+  if (significance<=0){
+    stop("significance must be greater then 0 and less than 1")
+  }
   n=length(data$emissions)
   df=n-1
   tscore=stats::qt(significance,df)
