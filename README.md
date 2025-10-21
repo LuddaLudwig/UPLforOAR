@@ -67,22 +67,22 @@ including sub-categories.
 
 ``` r
 library(UPLforOAR)
-dat_emiss=read_csv("man/data_example/MATS_Hg.csv",col_names=TRUE)
-dat_emiss$sources=paste0(dat_emiss$`Plant Name`,"_",dat_emiss$`Unit Number`,
-                         "_",dat_emiss$boiler_id)
-dat_emiss$emissions=dat_emiss$Mercury_min_lb_MMBtu
-dat_emiss=subset(dat_emiss,select=c(sources,emissions))
+dat_emiss = read_csv("man/data_example/MATS_Hg.csv", col_names = TRUE)
+dat_emiss$sources = paste0(dat_emiss$`Plant Name`, "_", dat_emiss$`Unit Number`,
+                         "_", dat_emiss$boiler_id)
+dat_emiss$emissions = dat_emiss$Mercury_min_lb_MMBtu
+dat_emiss = subset(dat_emiss, select = c(sources, emissions))
 nrow(dat_emiss) # number of tests in data set
 #> [1] 387
 summary(dat_emiss$emissions)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
-dat_EG=MACT_EG(CAA_section=112,dat_emiss)
-dat_EG_avg=dat_EG%>%group_by(sources)%>%
-  summarize(avg=mean(emissions),counts=n())
-dat_EG_avg=arrange(dat_EG_avg,avg)
-distribution_result_EG=distribution_type(dat_EG)
+dat_EG = MACT_EG(CAA_section=112, dat_emiss)
+dat_EG_avg = dat_EG%>%group_by(sources)%>%
+  summarize(avg = mean(emissions), counts = n())
+dat_EG_avg = arrange(dat_EG_avg, avg)
+distribution_result_EG = distribution_type(dat_EG)
 ```
 
 | Source                           | Average emission | No. of Tests |
@@ -108,12 +108,12 @@ also calculate the Lognormal UPL for comparison, which is strictly
 positive.
 
 ``` r
-UPL1_EG=Normal_UPL(data=dat_EG,
+UPL1_EG = Normal_UPL(data = dat_EG,
                      future_runs = 1,
-                     significance=0.99)
-UPL2_EG=Lognormal_UPL(data=dat_EG,
-                     future_runs = 1,
-                     significance=0.99)
+                     significance = 0.99)
+UPL2_EG = Lognormal_UPL(data = dat_EG,
+                        future_runs = 1,
+                        significance = 0.99)
 ```
 
 Next we calculate the UPL using the appropriate distribution, which
@@ -128,52 +128,56 @@ emissions.
 ``` r
 # make an ordered sequence of emissions 
 # for which we will define the probability density
-x_hat=seq(0,3*max(dat_EG$emissions),length.out=1024)
+x_hat = seq(0, 3*max(dat_EG$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
-obs_dens_results=obs_density(dat_EG,xvals=x_hat)
-Obs_onPoint=obs_dens_results$Obs_onPoint
-obs_den_df=obs_dens_results$obs_den_df
+obs_dens_results = obs_density(dat_EG, xvals = x_hat)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
 # based on estimated distribution parameters
-pdf_n=dnorm(x_hat,mean=mean(dat_EG$emissions,na.rm=T),
-              sd=sd(dat_EG$emissions,na.rm=T))
-pdf_ln=dlnorm(x_hat,mean=log(mean(dat_EG$emissions,na.rm=T)),
-              sd=sd(log(dat_EG$emissions),na.rm=T))
-pred_dat=tibble(x_hat,pdf_ln,pdf_n)
+pdf_n = dnorm(x_hat, mean = mean(dat_EG$emissions, na.rm = T),
+              sd=sd(dat_EG$emissions, na.rm = T))
+pdf_ln = dlnorm(x_hat,mean = log(mean(dat_EG$emissions, na.rm = T)),
+              sd = sd(log(dat_EG$emissions), na.rm = T))
+pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ```
 
 ``` r
 ggplot()+
-  geom_line(data=obs_den_df,aes(y=ydens,x=(x_hat),color='a'),size=0.75)+
-  geom_area(data=obs_den_df,aes(y=ydens,x=(x_hat),fill='a'),alpha=0.25)+
-  geom_point(aes(y=ydens,x=(emissions)),data=Obs_onPoint,
-             size=3,alpha=0.5,shape=19,color='black')+
-    geom_line(aes(y=pdf_n,x=(x_hat),color='b'),
-               data = pred_dat,size=0.75,linetype=2)+
-  geom_area(aes(y=pdf_n,x=(x_hat),fill='b'),alpha=0.25,
+  geom_line(data = obs_den_df, size=0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = obs_den_df, alpha=0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_n, x = x_hat, color = 'b'),
+               data = pred_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
             data = pred_dat)+
-  geom_line(aes(y=pdf_ln,x=(x_hat),color='c'),
-               data = pred_dat,size=0.75,linetype=3)+
-  geom_area(aes(y=pdf_ln,x=(x_hat),fill='c'),alpha=0.25,
+  geom_line(aes(y = pdf_ln, x = x_hat, color = 'c'),
+               data = pred_dat, size = 0.75, linetype = 3)+
+  geom_area(aes(y = pdf_ln, x = x_hat, fill = 'c'), alpha = 0.25,
             data = pred_dat)+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept=(mean(dat_EG$emissions)),
-                 color='a'),size=1,linetype=1)+
-  geom_vline(aes(xintercept=(UPL1_EG),color='b'),size=1,linetype=2)+
-  geom_vline(aes(xintercept=(UPL2_EG),color='c'),size=1,linetype=3)+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+
-  labs(color='Distribution:',fill='Distribution:')+
-  geom_rug(sides='b',aes(x=(emissions)),data=dat_EG,
-           alpha=0.5,outside=TRUE,color='black')+
-  scale_color_manual(values=c('black','#FF7F00','#984EA3'),
-                     labels=c('Observations','Normal','Lognormal'))+
-  scale_fill_manual(values=c('black','#FF7F00','#984EA3'),
-                    labels=c('Observations','Normal','Lognormal'))
+  geom_vline(aes(xintercept = (mean(dat_EG$emissions)),
+                 color = 'a'), size = 1, linetype = 1)+
+  geom_vline(aes(xintercept = UPL1_EG, color = 'b'), 
+             linewidth = 1, linetype = 2)+
+  geom_vline(aes(xintercept = UPL2_EG, color = 'c'), 
+             linewidth = 1, linetype = 3)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_EG,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00', '#984EA3'),
+                     labels = c('Observations', 'Normal', 'Lognormal'))+
+  scale_fill_manual(values = c('black', '#FF7F00', '#984EA3'),
+                    labels = c('Observations', 'Normal', 'Lognormal'))
 ```
 
 <div class="figure" style="text-align: center">
