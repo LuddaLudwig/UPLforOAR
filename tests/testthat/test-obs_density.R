@@ -18,6 +18,7 @@ test_that("obs_density() calculate densities for emissions observations", {
   top5=dplyr::arrange(top5,sources)
   xhat=seq(0,3.1*max(top5$emissions),length.out=1050)
   test_result=obs_density(data=top5,low=0,xvals=xhat)
+  test_result2=obs_density(data=top5,low=0,xvals=xhat, bw="cv.ml")
   # ggplot(data=test_result$Obs_onPoint)+
   #   geom_line(data=test_result$obs_den_df,aes(y=y,x=(x),color='red'),size=0.75)+
   #   geom_area(data=test_result$obs_den_df,aes(y=y,x=(x),fill='red'),alpha=0.25)+
@@ -36,16 +37,26 @@ test_that("obs_density() calculate densities for emissions observations", {
   #                                             "test-Obs_onPoint.csv"))
   # write_csv(test_result$obs_den_df,test_path("test_obs_densities",
   #                                            "test-obs_den_df.csv"))
-
+  # write_csv(test_result2$Obs_onPoint,test_path("test_obs_densities",
+  #                                             "test-Obs_onPoint2.csv"))
+  # write_csv(test_result2$obs_den_df,test_path("test_obs_densities",
+  #                                            "test-obs_den_df2.csv"))
   compare1 <- readr::read_csv(test_path("test_obs_densities",
                                         "test-Obs_onPoint.csv"),
                               show_col_types = FALSE)
   compare2 <- readr::read_csv(test_path("test_obs_densities",
                                         "test-obs_den_df.csv"),
                               show_col_types = FALSE)
-
+  compare3 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-Obs_onPoint2.csv"),
+                              show_col_types = FALSE)
+  compare4 <- readr::read_csv(test_path("test_obs_densities",
+                                        "test-obs_den_df2.csv"),
+                              show_col_types = FALSE)
   expect_equal(test_result$Obs_onPoint,compare1)
   expect_equal(test_result$obs_den_df,compare2)
+  expect_equal(test_result2$Obs_onPoint,compare3)
+  expect_equal(test_result2$obs_den_df,compare3)
   expect_equal(length(test_result$obs_den_df$x_hat),length(xhat))
   test_null=obs_density(data=top5,low=0)
   expect_equal(length(test_null$obs_den_df$x_hat),1024)
