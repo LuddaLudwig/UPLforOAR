@@ -1,0 +1,68 @@
+---
+title: "Distributions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Distributions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  error=TRUE,
+  warning=FALSE,
+  message=FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+```
+
+```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(UPLforOAR)
+library(matrixStats)
+library(EnvStats)
+library(np)
+library(sfsmisc)
+library(parallel)
+library(rjags)
+library(runjags)
+library(sn)
+library(patchwork)
+```
+
+## Introduction
+
+Vignette about distributions and things you should know to help pick the best one.
+
+Include some useful links to JAGS and BUGS distribution sites, as well as how to code a distribution manually.
+
+## Long- and Heavy-Tailed Distributions 
+
+For example some Lognormal. The 99<sup>th</sup> percentile can be unreasonably large 
+emission number when long or heavy tail. This is often an issue when the 
+observations themselves are no where near the tail, and thus the tail is largely 
+unsupported by any data. In such circumstances, the UPL can be a value larger 
+than any in the observation data set, or larger than is physically possible. In 
+such cases it is necessary to truncate the probability distribution to physically 
+reasonable bounds. This is done by default as 3 times the maximum emissions value 
+in the training data, but can be adjusted by setting `maxY`. 
+
+*show example of two distributions, one long-tailed one not, where maxY is varied*
+
+
+
+
+

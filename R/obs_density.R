@@ -28,10 +28,18 @@ obs_density=function(data,xvals=NULL,up=Inf,low=0,kernel='gamma',bw=NULL){
   if (is.null(xvals)){
     xvals=seq(0,3*max(data$emissions),length.out=1024)
   }
-  Obs_onPoint=np::npuniden.boundary(X=data$emissions,Y=data$emissions,
-                                a=low,b=up,proper=TRUE,kertype = kernel,h=bw)
-  obs_den_df=np::npuniden.boundary(X=data$emissions,Y=xvals,a=low,b=up,
-                               proper=TRUE,kertype = kernel,h=bw)
+  if (is.numeric(bw)){
+    Obs_onPoint=np::npuniden.boundary(X=data$emissions,Y=data$emissions,
+                                      a=low,b=up,proper=TRUE,kertype = kernel,h=bw)
+    obs_den_df=np::npuniden.boundary(X=data$emissions,Y=xvals,a=low,b=up,
+                                     proper=TRUE,kertype = kernel,h=bw)
+  } else if (is.character(bw)){
+    Obs_onPoint=np::npuniden.boundary(X=data$emissions,Y=data$emissions, bwmethod=bw,
+                                      a=low,b=up,proper=TRUE,kertype = kernel)
+    obs_den_df=np::npuniden.boundary(X=data$emissions,Y=xvals,a=low,b=up,
+                                     proper=TRUE,kertype = kernel, bwmethod=bw)
+  }
+
   obs_den_df=tibble::tibble(x_hat=xvals,ydens=obs_den_df$f)
   Obs_onPoint=tibble::tibble(emissions=data$emissions,ydens=Obs_onPoint$f)
   test_int=sfsmisc::integrate.xy(obs_den_df$x_hat,obs_den_df$ydens)

@@ -17,7 +17,7 @@ sequence between \code{0} and \code{3*max(data$emissions)}.}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
 distributions and set upper ranges on prior distributions.
-Default is \code{NULL}, in which cas it is calculated as \code{3*maximum(data$emissions)}.}
+Default is \code{NULL}, in which case it is calculated as \code{3*maximum(data$emissions)}.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}

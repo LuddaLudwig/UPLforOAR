@@ -15,6 +15,12 @@
 #' providing the predicted pdf and metrics.
 #' @export
 output_likelihood=function(jags_model_run,significance=0.99){
+  if (significance>=1){
+    stop("significance must be greater then 0 and less than 1")
+  }
+  if (significance<=0){
+    stop("significance must be greater then 0 and less than 1")
+  }
   distribution=jags_model_run$distribution
   data=jags_model_run$data
   future_runs=jags_model_run$future_runs

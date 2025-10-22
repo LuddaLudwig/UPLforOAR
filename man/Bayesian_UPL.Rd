@@ -66,12 +66,12 @@ For each distribution in \code{distr_list}, \code{\link[=Bayesian_UPL]{Bayesian_
 convergence of likelihood parameters using \code{\link[=converge_likelihood]{converge_likelihood()}}, and
 calculate goodness of fit metrics using \code{\link[=fit_likelihood]{fit_likelihood()}}. Results include
 \verb{$fit_table}: a tibble with the \code{UPL}, \code{pdf_integral}, \code{SSE}, and count of
-observations within 95\\% CI for each distribution in \code{'distr_list'},
+observations within 95 percent CI for each distribution in \code{'distr_list'},
 \verb{$conv_output}: a tibble with the parameters, Gelman-Rubin diagnostics, and if
 the converged for distribution in \code{distr_list}, \verb{$obs_pdf_dat}: a tibble with
 the emissions observations, corresponding observation densities, median,
-upper, and lower 95\\% CI around predicted densities for the distribution in
-\code{distr_list}, and a 1 if the observation is within the 95\\% CI, a 0 otherwise,
+upper, and lower 95 percent CI around predicted densities for the distribution in
+\code{distr_list}, and a 1 if the observation is within the 95 percent CI, a 0 otherwise,
 and \verb{$pred_pdf_dat}:a tibble with the predicted probability density \code{pdf_hat},
 the observation density \code{ydens} for each value in the range of emissions in
 \code{x_hat}. The maximum emission value of distributions, \code{maxY}, the ordered range
