@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Bayesian UPL • UPLforOAR</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -34,6 +39,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
+    <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence-and-Priors</a></li>
+    <li><a class="dropdown-item" href="../articles/Density.html">Density</a></li>
+    <li><a class="dropdown-item" href="../articles/Distributions.html">Distributions</a></li>
   </ul>
 </li>
       </ul>
@@ -89,8 +97,8 @@ deriving the UPL while agnostic to the type of distribution, but also
 dramatically increase the choices for the distribution. Bayesian
 inference also benefits from fewer assumptions and better uncertainty
 quantification. This allows for more accurate representation of
-emissions data and better transparency and metrics of fitness to support
-the UPL calculation.</p>
+emissions data and better transparency and metrics of fit to support the
+UPL calculation.</p>
 <p>The <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> uses a Monte Carlo Markov Chain
 (MCMC) sampler (a Gibbs sampler implemented via JAGS) to fit probability
 distributions to emissions data. For example, when using a Normal
@@ -99,14 +107,14 @@ which define the distribution. Unlike the <code><a href="../reference/Normal_UPL
 analytical solution, we don’t merely get a point-estimate of the mean
 and standard deviation, but instead derive a posterior distribution that
 describes the full probability for the mean and standard deviation. This
-allows us to quantify the uncertainty in the predicted probability
-distribution for any future emission observation.</p>
+allows us to better quantify the uncertainty in the predicted
+probability distribution for any future emission observation.</p>
 <p>Numerous probability distributions are already implemented in R
 <code>stats</code> and JAGS, and any distribution that isn’t, or any
 combination of distributions, can be coded manually in JAGS if needed.
 For any probability distribution, the UPL is calculated by taking the
-99^{th} percentile of the average of new draws (usually 3 new runs to be
-comparative to a typical compliance test).</p>
+99<sup>th</sup> percentile of the average of new draws (usually 3 new
+runs to be comparative to a typical compliance test).</p>
 </div>
 <div class="section level2">
 <h2 id="example-hcl-emissions-from-integrated-iron-and-steel">Example: HCl Emissions from Integrated Iron and Steel<a class="anchor" aria-label="anchor" href="#example-hcl-emissions-from-integrated-iron-and-steel"></a>
@@ -120,29 +128,29 @@ performers in the industry, so there is no need to run
 <code><a href="../reference/MACT_EG.html">MACT_EG()</a></code> to select the data. The first step is to load and
 plot the emissions data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat_emiss</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">'IIS_HCl.csv'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">emission_mean</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span></span>
-<span><span class="va">dat_means</span><span class="op">=</span><span class="fu">summarize</span><span class="op">(</span><span class="va">dat_emiss</span>,means<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span>,counts<span class="op">=</span><span class="fu">n</span><span class="op">(</span><span class="op">)</span>,.by<span class="op">=</span><span class="st">'sources'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span></span>
-<span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">=</span><span class="fu">fct_reorder</span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span>,</span>
-<span>                              <span class="va">dat_means</span><span class="op">$</span><span class="va">means</span>,.desc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span>,levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">dat_means</span><span class="op">=</span><span class="fu">arrange</span><span class="op">(</span><span class="va">dat_means</span>,<span class="va">means</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">'IIS_HCl.csv'</span><span class="op">)</span></span>
+<span><span class="va">emission_mean</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span></span>
+<span><span class="va">dat_means</span> <span class="op">=</span> <span class="fu">summarize</span><span class="op">(</span><span class="va">dat_emiss</span>, means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span>, counts <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                      .by <span class="op">=</span> <span class="st">'sources'</span><span class="op">)</span></span>
+<span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span></span>
+<span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu">fct_reorder</span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span>,</span>
+<span>                              <span class="va">dat_means</span><span class="op">$</span><span class="va">means</span>, .desc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span>, </span>
+<span>                           levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dat_means</span> <span class="op">=</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">dat_means</span>, <span class="va">means</span><span class="op">)</span></span></code></pre></div>
 <p>Take a quick look at the average emission for each source in the data
 set:</p>
 <table class="table">
-<caption>Top sources for existing source calculation</caption>
+<caption>Top sources for existing source UPL calculation</caption>
 <colgroup>
-<col width="60%">
-<col width="22%">
-<col width="17%">
+<col width="56%">
+<col width="21%">
+<col width="21%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Source</th>
 <th align="right">Average emission</th>
-<th align="right">No. of Tests</th>
+<th align="right">No. of test runs</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -178,19 +186,18 @@ impossible. The <code>UPLforOAR</code> package includes several
 <code>ggplot2</code> themes designed for density figures. The figure
 below uses <code><a href="../reference/multi_source_theme.html">multi_source_theme()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">emissions</span>,fill<span class="op">=</span><span class="va">sources</span><span class="op">)</span>,data<span class="op">=</span><span class="va">dat_emiss</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_density</span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">0.5</span>,trim<span class="op">=</span><span class="cn">FALSE</span>,bounds<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/multi_source_theme.html">multi_source_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu">theme</span><span class="op">(</span>legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size<span class="op">=</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">guides</span><span class="op">(</span>fill<span class="op">=</span><span class="fu">guide_legend</span><span class="op">(</span>nrow<span class="op">=</span><span class="fl">2</span>,byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>         color<span class="op">=</span><span class="fu">guide_legend</span><span class="op">(</span>nrow<span class="op">=</span><span class="fl">2</span>,byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand<span class="op">=</span><span class="fu">expansion</span><span class="op">(</span>mult<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand<span class="op">=</span><span class="fu">expansion</span><span class="op">(</span>mult<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_rug</span><span class="op">(</span>sides<span class="op">=</span><span class="st">'b'</span>,<span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">emissions</span>,color<span class="op">=</span><span class="va">sources</span><span class="op">)</span>,</span>
-<span>           alpha<span class="op">=</span><span class="fl">0.5</span>,outside<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu">coord_cartesian</span><span class="op">(</span>clip<span class="op">=</span><span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">emissions</span>, fill <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_density</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span>, trim <span class="op">=</span> <span class="cn">FALSE</span>, bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/multi_source_theme.html">multi_source_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu">theme</span><span class="op">(</span>legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">guides</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>         color <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span> <span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_rug</span><span class="op">(</span>sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span>, color <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>,</span>
+<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Source observed populations"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"IIS HCl emissions"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>fill<span class="op">=</span><span class="st">'Top sources'</span>,color<span class="op">=</span><span class="st">'Top sources'</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">labs</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">'Top sources'</span>, color <span class="op">=</span> <span class="st">'Top sources'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="Bayesian-UPL_files/figure-html/figure1-1.png" alt="Observation density of IIS HCl emissions by top performing source." width="528"><p class="caption">
 Observation density of IIS HCl emissions by top performing source.
@@ -202,11 +209,13 @@ to be compatible with typical emissions data, such as appropriate kernel
 types, bandwidths, bounds, and estimators, for non-zero data, as well as
 a better default bandwidth estimator. Furthermore, we can store the
 results directly in our environment rather than them being inside the
-<code>ggplot</code> object.</p>
+<code>ggplot</code> object. See the <code><a href="../articles/Density.html">vignette("Density")</a></code>
+article for a thorough description of how <code><a href="../reference/obs_density.html">obs_density()</a></code>
+works.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obs_dens_results</span><span class="op">=</span><span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">dat_emiss</span><span class="op">)</span></span>
-<span><span class="va">Obs_onPoint</span><span class="op">=</span><span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
-<span><span class="va">obs_den_df</span><span class="op">=</span><span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
+<span><span class="va">Obs_onPoint</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
+<span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
 <p>The figure below shows the overall observation density of the top
 performing source population, of which it is our goal to determine an
 appropriately representative likelihood distribution from which to
@@ -216,20 +225,21 @@ plots the <code><a href="../reference/obs_density.html">obs_density()</a></code>
 emission observations themselves are indicated as points and as a rug
 underneath the plot.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span>data<span class="op">=</span><span class="va">Obs_onPoint</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_line</span><span class="op">(</span>data<span class="op">=</span><span class="va">obs_den_df</span>,<span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">ydens</span>,x<span class="op">=</span><span class="op">(</span><span class="va">x_hat</span><span class="op">)</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">0.75</span>,color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_area</span><span class="op">(</span>data<span class="op">=</span><span class="va">obs_den_df</span>,<span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">ydens</span>,x<span class="op">=</span><span class="op">(</span><span class="va">x_hat</span><span class="op">)</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">0.25</span>,fill<span class="op">=</span><span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">ydens</span>,x<span class="op">=</span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>             size<span class="op">=</span><span class="fl">3</span>,alpha<span class="op">=</span><span class="fl">0.5</span>,shape<span class="op">=</span><span class="fl">19</span>,color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">Obs_onPoint</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span>, </span>
+<span>            size <span class="op">=</span> <span class="fl">0.75</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span>, </span>
+<span>            alpha <span class="op">=</span> <span class="fl">0.25</span>, fill <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>,x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, shape <span class="op">=</span> <span class="fl">19</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"IIS HCl emissions"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Overall observed population"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pop_distr_theme.html">pop_distr_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand<span class="op">=</span><span class="fu">expansion</span><span class="op">(</span>mult<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand<span class="op">=</span><span class="fu">expansion</span><span class="op">(</span>mult<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">coord_cartesian</span><span class="op">(</span>clip<span class="op">=</span><span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_rug</span><span class="op">(</span>sides<span class="op">=</span><span class="st">'b'</span>,<span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span><span class="op">)</span>,data<span class="op">=</span><span class="va">dat_emiss</span>,</span>
-<span>           alpha<span class="op">=</span><span class="fl">0.5</span>,outside<span class="op">=</span><span class="cn">TRUE</span>,color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_rug</span><span class="op">(</span>sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="Bayesian-UPL_files/figure-html/figure2-1.png" alt="Observation density of IIS HCl emissions top performers overall population." width="480"><p class="caption">
 Observation density of IIS HCl emissions top performers overall
@@ -244,7 +254,7 @@ population.
 to investigate. For example, a Beta distribution is only appropriate if
 the observations are strictly between 0 and 1. In this case, you might
 see that a Normal distribution is a poor choice given asymmetric shape
-of the observations clustered above 0. However, for the purposes of the
+of the observations clustered above 0. However, for the purposes of this
 vignette, we will look at all distributions currently supported.</p>
 <p>We will fit likelihood models for the following distributions: Beta,
 Gamma, Lognormal, Normal, and Skewed. Using the default settings of
@@ -259,21 +269,21 @@ adjusted manually or evaluated step-wise, but
 <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> is designed to run with minimal user input
 needed.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">distributions</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Beta'</span>,<span class="st">'Gamma'</span>,<span class="st">'Lognormal'</span>,<span class="st">'Normal'</span>,<span class="st">'Skewed'</span><span class="op">)</span></span>
-<span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">dat_emiss</span>, distr_list<span class="op">=</span><span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
-First, let’s look at plots of the resulting distributions. The points
+<code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Beta'</span>, <span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Normal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
+<p>First, let’s look at plots of the resulting distributions. The points
 and error bars on these figures represent the median and 95% confidence
 interval around the predicted probability for each emission observation,
 using the associated likelihood distribution. The colored probability
-curves indicate the predicted likelihood across a range of expected
-emissions, which by default is
-<code>seq(0,3*max(data$emissions,length.out=1024))</code>, but can be
+curves indicate the predicted likelihood across a range of possible
+emission values, which by default is
+<code>seq(0, 3*max(data$emissions, length.out=1024))</code>, but can be
 changed by supplying the <code>xvals</code> argument to
 <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>. The results for plotting the densities at
 observations including error bars are stored in
 <code>results$obs_pdf_dat</code>, and those for plotting the densities
 along the range of <code>xvals</code> are stored in
-<code>results$pred_pdf_dat</code>.
+<code>results$pred_pdf_dat</code>.</p>
 <div class="figure" style="text-align: center">
 <img src="Bayesian-UPL_files/figure-html/figure3-1.png" alt="Fitted likelihood distributions for IIS HCl emissions." width="100%"><p class="caption">
 Fitted likelihood distributions for IIS HCl emissions.
@@ -297,21 +307,26 @@ and the lowest emission measurement is due to testing detection limits,
 not a true 0 probability that emissions could occur that low.</p>
 <p>We can also use quantitative metrics to decide on the best
 distribution. All of these metrics can be accessed in
-<code>fit_table</code> in the <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> results. We
-can leverage the Bayesian abilities to quantify uncertainty and count
-how many<br>
-emission observations (black points on the plots above) have densities
-within the 95% CI of the predicted probability densities (the error bars
-on the plots above). We can also quantify how different the observed and
-predicted densities are by looking at the Sum of Squared Errors (SSE):
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi><mo>=</mo><mo>∑</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">SSE=\displaystyle\sum(y_i-\hat{y_i})^2</annotation></semantics></math>.
-Lastly, we might want to check if the area under the curve of the
-probability distribution is close to 1. If it doesn’t integrate to 1,
-than it isn’t a proper probability density. This is the case for the
-Normal distribution in our example, since some of it would extend below
-0 where emissions are not defined, it integrates to less than 1.</p>
+<code>results$fit_table</code> in the <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>
+results. We can leverage the Bayesian abilities to quantify uncertainty
+and count how many emission observations (black points on the plots
+above) have densities within the 95% CI of the predicted probability
+densities (the error bars on the plots above). We can also quantify how
+different the observed and predicted densities are by looking at the Sum
+of Squared Errors (SSE):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi><mo>=</mo><mo>∑</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">SSE=\displaystyle\sum(y_i-\hat{y_i})^2</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">y_i</annotation></semantics></math>
+is the empirical observation probability density and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{y_i}</annotation></semantics></math>
+is the predicted observation probability density. Lastly, we might want
+to check if the area under the curve of the probability distribution is
+close to 1. If it doesn’t integrate to 1, than it isn’t a proper
+probability density. This is the case for the Normal distribution in our
+example, since some of it would extend below 0 where emissions are not
+defined, so it integrates to less than 1.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_metrics</span><span class="op">=</span><span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
 <table class="table">
 <caption>Goodness of fit results for IIS HCl emissions</caption>
 <thead><tr class="header">
@@ -366,9 +381,12 @@ accounts. The quantitative results provided in
 figure above.</p>
 <p>We will select the Gamma distribution, because it is both the best
 ranked and aligns well in a visual assessment, and because Gamma is
-defined from (0, Inf) whereas Beta (which is almost as good) is defined
-from (0, 1). Even though all of out observations are well below 1, this
-is an unnecessary constraint.</p>
+defined from <code>(0, Inf)</code> whereas Beta (which is ver similar in
+fit and shape) is defined from <code>(0, 1)</code>. Even though all of
+the observations are well below 1, this is an unnecessary constraint.
+Further information on distributions and their qualities that might help
+inform the best choice can be found in the
+<code><a href="../articles/Distributions.html">vignette("Distributions")</a></code> article.</p>
 </div>
 <div class="section level3">
 <h3 id="step-4-upper-predictive-limits-upl-results">Step 4: Upper Predictive Limits (UPL) results<a class="anchor" aria-label="anchor" href="#step-4-upper-predictive-limits-upl-results"></a>
@@ -384,31 +402,21 @@ will change the UPL calculation. The UPL results are the variable
 <table class="table">
 <caption>Upper Predictive Limits for IIS HCl emissions</caption>
 <thead><tr class="header">
-<th align="left">Distribution</th>
-<th align="right">UPL</th>
+<th align="left"></th>
+<th align="right">Gamma</th>
+<th align="right">Beta</th>
+<th align="right">Skewed</th>
+<th align="right">Lognormal</th>
+<th align="right">Normal</th>
 </tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Gamma</td>
+<tbody><tr class="odd">
+<td align="left">UPL</td>
 <td align="right">0.00261</td>
-</tr>
-<tr class="even">
-<td align="left">Beta</td>
-<td align="right">0.00260</td>
-</tr>
-<tr class="odd">
-<td align="left">Skewed</td>
+<td align="right">0.0026</td>
 <td align="right">0.00246</td>
-</tr>
-<tr class="even">
-<td align="left">Lognormal</td>
 <td align="right">0.00342</td>
-</tr>
-<tr class="odd">
-<td align="left">Normal</td>
 <td align="right">0.00291</td>
-</tr>
-</tbody>
+</tr></tbody>
 </table>
 </div>
 <div class="section level3">
@@ -417,15 +425,15 @@ will change the UPL calculation. The UPL results are the variable
 <p>One last step before we can accept the UPL result is to check for
 convergence. Given how well the Gamma likelihood fit the probability
 distribution, it is highly unlikely that we have any convergence issues.
-However, we will need to verify and document the convergence every time.
+However, we do need to verify and document the convergence every time.
 We will check for convergence both quantitatively and qualitatively.</p>
 <p>The quantitative convergence results are stored in
 <code>results$conv_output</code>. The parameters for each distribution
 supplied to <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> are monitored and assessed for
 convergence using the Gelman-Rubin diagnostic, and the corresponding
-outcome for convergence is in <code>convYN</code>. If any distribution’s
-parameters fail the Gelman-Rubin diagnostic checks for convergence, then
-its results cannot be used.</p>
+outcome for convergence is in the variable <code>convYN</code>. If any
+distribution’s parameters fail the Gelman-Rubin diagnostic checks for
+convergence, then its results cannot be used.</p>
 <table class="table">
 <caption>Gelman-Rubin convergence tests for likelihood
 parameters</caption>
@@ -514,128 +522,210 @@ parameter’s posterior distribution. A report with the figures needed to
 assess convergence can be generated by <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> by
 setting the argument <code>convergence_report = TRUE</code>. This report
 will be saved in your active working directory as
-“Bayesian_UPL_convergence_current-date-and-time.pdf”</p>
-<pre><code><span><span class="co">#&gt; Compiling rjags model...</span></span>
-<span><span class="co">#&gt; Starting 3 rjags simulations using a PSOCK cluster with 3 nodes on host</span></span>
-<span><span class="co">#&gt; 'localhost'</span></span>
-<span><span class="co">#&gt; Simulation complete</span></span>
-<span><span class="co">#&gt; Finished running the simulation</span></span>
-<span><span class="co">#&gt; [[1]]</span></span></code></pre>
-<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" width="700" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span></code></pre>
-<p><img src="Bayesian-UPL_files/figure-html/figure4-2.png" width="700" style="display: block; margin: auto;"></p>
+“Bayesian_UPL_convergence_current-date-and-time.pdf”.</p>
+<p>Below are the convergence plots for the parameters in the Gamma
+distribution that we fit to the IIS HCl emissions data. The left figures
+show the 3 MCMC chains (red, blue, and green lines) are well-mixed and
+without trend, indicating good convergence. The figures on the right are
+histograms of the posterior distributions of the Gamma parameters. Both
+indicate good convergence on values for the rate and shape.</p>
+<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" width="100%" style="display: block; margin: auto;"><img src="Bayesian-UPL_files/figure-html/figure4-2.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="further-options-for-bayesian-upl-analysis">Further options for Bayesian UPL analysis<a class="anchor" aria-label="anchor" href="#further-options-for-bayesian-upl-analysis"></a>
+<h2 id="under-the-hood-of-bayesian_upl">Under-the-hood of Bayesian_UPL()<a class="anchor" aria-label="anchor" href="#under-the-hood-of-bayesian_upl"></a>
 </h2>
 <p>In the example above we used the default settings to automatically
-control things such as the prior distribution, initial values, expected
+control things such as prior distributions, initial values, expected
 emission range, and observation density evaluation. While the default
 settings are a great place to start and might be sufficient for most
-uses, the sections below explain the mechanics under-the-hood and full
-options in <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>.</p>
+uses, the sections below explain the mechanics inside and full options
+in <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>.</p>
+<p>Multiple functions are at work inside of <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>
+to setup, run, and fit likelihood distributions to emissions data, then
+calculate the UPL as well as provide additional results for plotting,
+checking fit, and checking convergence. Each of these functions can be
+accessed individually; <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> simply acts as a
+wrapper to ensure arguments are passed along correctly and to allow
+multiple distributions to be fit at once for ease of comparability. Each
+of the functions within <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> are named with the
+suffix <code>_likelihood()</code>. For each distribution in the list
+provided, <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> will use the given emissions
+<code>data</code> and manual prior options in
+<code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code>, then execute
+<code><a href="../reference/run_likelihood.html">run_likelihood()</a></code> with options <code>future_runs</code>,
+<code>xvals</code>, and <code>maxY</code> if provided, then collect the
+results from <code><a href="../reference/output_likelihood.html">output_likelihood()</a></code> at the
+<code>significance</code> if provided, check for convergence using
+<code><a href="../reference/converge_likelihood.html">converge_likelihood()</a></code>, calculate metrics of fit using
+<code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code>, and delete all the intermediate JAGS
+model objects to reduce memory usage. Finally, the results for each
+distribution are concatenated in a list of tables for easy comparison
+and plotting.</p>
 <div class="section level3">
-<h3 id="density">Density<a class="anchor" aria-label="anchor" href="#density"></a>
+<h3 id="write_likelihood">- <strong><code>write_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#write_likelihood"></a>
 </h3>
-<p>In order to know the probability density is a good match for our
-emissions data, we want to look at the empirical density of the
-observations. This is easy to do with
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">ggplot2::geom_density()</a></code>, which uses
-<code><a href="https://rdrr.io/r/stats/density.html" class="external-link">stats::density()</a></code> and can take additional arguments related
-to how the density is determined such as the bandwidth <code>bw</code>,
-kernel <code>kernel</code>, and known upper and lower limits in
-<code>bounds</code>. By default, <code>geom_density()</code> uses no
-bounds, a gaussian kernel, and a rule-of-thumb method (not recommended)
-of arriving at a bandwidth (Silverman B. W. 1986. Density Estimation
-p.48 eq 3.31).</p>
-<p>In most situations, we will want more control over the density than
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">ggplot2::geom_density()</a></code> provides, and we will want to use
-the observation densities outside of the plot later on. For example, all
-emissions data will be bounded by 0 and will often have an upper bound
-as well. Due to the strictly positive nature of emissions data, a
-gaussian kernel is not often a good choice.</p>
-<p>Instead we recommend the <code><a href="../reference/obs_density.html">obs_density()</a></code> function in
-<code>UPLforOAR</code>, which builds on the
-<code><a href="https://rdrr.io/pkg/np/man/npuniden.boundary.html" class="external-link">np::npuniden.boundary()</a></code> function, a more accurate density
-function for bounded data. By default, <code><a href="../reference/obs_density.html">obs_density()</a></code> will
-assume a lower bound of 0, no upper bound, and the <code>kernel</code>
-type is gamma. Other kernel types accepted by
-<code><a href="https://rdrr.io/pkg/np/man/npuniden.boundary.html" class="external-link">np::npuniden.boundary()</a></code> can be used, for example if data
-are percent removals instead of emissions then “beta1” or “beta2” with
-an upper bound of 1 are more appropriate. The default bandwidth
-<code>bw</code> is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>*</mo><msup><mi>n</mi><mrow><mo>−</mo><mn>2</mn><mi>/</mi><mn>5</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\sigma*n^{-2/5}</annotation></semantics></math>
-(Renault &amp; Scaillet 2004), though manual values or a least-squares
-or likelihood search can be used instead by setting
-<code>bw = "cv.ls"</code> or <code>bw = "cv.ml"</code>.</p>
-<p>The results of <code><a href="../reference/obs_density.html">obs_density()</a></code> include
-<code>ObsonPoint</code>, with the observation densities paired with each
-emission value in the provided data set, and <code>obs_den_df</code>, a
-sequence of densities across a range of possible emission values
-(<code>xvals</code>) based on the observed emissions. The range of
-emissions <code>xvals</code> can be supplied manually, and by default is
-<code>seq(0,3*max(data$emissions,length.out=1024))</code>.</p>
-<p>Run <code><a href="../reference/obs_density.html">?obs_density</a></code> in the console for detailed information
-in the help pages.</p>
+<p>This first function, <code><a href="../reference/write_likelihood.html">write_likelihood()</a></code>, is also the
+only function in the <code>_likelihood()</code> family that isn’t called
+inside <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>. In order to run likelihood models we
+need separate files with model statements, as either “.txt” or “.R”
+scripts, for JAGS to load outside of R. The function
+<code><a href="../reference/write_likelihood.html">write_likelihood()</a></code> creates these .R JAGS model scripts in
+the path “inst/JAGS/” inside the package directory. These scripts come
+already installed with the <code>UPLforOAR</code> package, so
+<code><a href="../reference/write_likelihood.html">write_likelihood()</a></code> should never need to be run by the
+typical user. However, if the JAGS model scripts need to be recreated
+one can do so using <code><a href="../reference/write_likelihood.html">write_likelihood()</a></code>. The location where
+the JAGS scripts are written can be changed by setting argument
+<code>write_wd</code> to the desired path directory. The
+<code>distribution</code> argument takes any of <code>'Normal'</code>,
+<code>'Gamma'</code>, <code>'Skewed'</code>, <code>'Lognormal'</code>,
+or <code>'Beta'</code>, and creates the model script using the
+corresponding likelihood distribution. The last argument is a logical
+<code>manual_prior</code> which is <code>FALSE</code> by default. When
+<code>FALSE</code>, the priors in the likelihood model are designed to
+be uninformative based on the mean and variance of the emissions data.
+If <code>TRUE</code>, then an alternative version of likelihood model is
+written where priors are instead defined on
+<code>~dunif(low,high)</code>, where the lower and upper bounds can be
+later specified by the user manually.</p>
 </div>
 <div class="section level3">
-<h3 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
+<h3 id="setup_likelihood">- <strong><code>setup_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#setup_likelihood"></a>
 </h3>
-<p>Bayesian inference uses prior information to derive posterior
-distributions of model parameters. The default behavior in
-<code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> is to use uninformative priors which is
-calculated based on the range and variance of the emissions data. The
-prior information can be manually supplied to either increase the
-parameter space to search wider, or to provide more specific
-information, which might be particularly useful in circumstances where
-there are very few observations (i.e.  <code>n = 3</code>).</p>
+<p>There are several pieces of information that need to be defined and
+organized before running a likelihood model, and
+<code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code> handles this for any given
+<code>distribution</code> choice. First, <code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code>
+will check that you have a working path to the JAGS script directory in
+your <code>UPLforOAR</code> installation. Then it will read in the JAGS
+model script corresponding to the <code>distribution</code> argument,
+and whether or not you want the version with manual prior distributions
+(<code>FALSE</code> by default). It will define the list of variables to
+monitor while JAGS is running the model, which includes the parameters
+that define the likelihood distribution as well as the probability
+density outcomes needed to evaluate fit and calculate the UPL. Next it
+will check if the provided <code>data</code> argument has a column named
+<code>emissions</code> that is numeric. These data are then used pick
+initial values for the MCMC parameter chains. These initial values need
+to be different enough from one another that we can later tell if they
+have converged, but also within the possible bounds the likelihood
+parameters can take as defined by the prior distributions. With the
+default settings, the initial values use an approximate mean parameter
+value for one chain, then 50% greater and 50% smaller for the two other
+chains respectively. In addition to the list of initial values,
+<code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code> will specify the random seeds for the
+MCMC chains in JAGS. This allows the models to be re-run with perfect
+reproducibility. You can turn this behavior off by setting the argument
+<code>random = FALSE</code>, in which case a random number generator
+will be used in the MCMC search.</p>
+<p>If <code>manual_prior = TRUE</code>, then
+<code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code> will load the JAGS model script version
+with each prior defined on <code>~dunif(low, high)</code>. In this case,
+an additional argument, <code>prior_list</code>, needs to be supplied.
+This list will need to include the <code>low</code> and
+<code>high</code> bounds for each parameter. For <code>'Normal'</code>
+they are ordered <code>c(sd_low, sd_high, mean_low, mean_high)</code>.
+For <code>'Lognormal'</code> they are ordered
+<code>c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)</code>.
+For <code>'Skewed'</code> they are ordered
+<code>c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)</code>.
+For <code>'Gamma'</code> they are ordered
+<code>c(rate_low, rate_high, shape_low, shape_high)</code>. For
+<code>'Beta'</code> they are ordered
+<code>c(alpha_low, alpha_high, beta_low, beta_high)</code>. With
+manually provide priors, the initial values are set to be 10% below the
+upper bound and 10% above the lower bound. Further information on using
+manual priors can be found in the
+<code><a href="../articles/Convergence-and-Priors.html">vignette("Convergence-and-Priors")</a></code> article.</p>
 </div>
 <div class="section level3">
-<h3 id="convergence">Convergence<a class="anchor" aria-label="anchor" href="#convergence"></a>
+<h3 id="run_likelihood">- <strong><code>run_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#run_likelihood"></a>
 </h3>
-<p>Convergence of distribution parameters is assessed quantitatively
-using the Gelman-Rubin diagnostic and qualitatively by producing figures
-in a convergence report pdf document.</p>
-<p>and the corresponding outcome for convergence is in
-<code>convYN</code>. This will be a “Yes” for diagnostics less than 1.1,
-“weak convergence” for values between 1.1 and 1.2, and “No” convergence
-for values greater than 1.2.</p>
-<p>It is possible for a parameter to pass the Gelman-Rubin test and
-indeed be well-mixed, but not arrive at a clear posterior distribution.
-This can happen when there is too little data (for example extremely
-small data sets where <code>n = 3</code>), and the parameter posterior
-is simply returning the prior distribution. For example, a poorly
-converged Normal distribution might have an even probability of the mean
-being any emission value, in which case the histogram will be flat
-across the entire parameter-space.</p>
-<p><em>add example of bad convergence</em></p>
-<p>The visual assessment will also catch any issues with the prior
-distribution settings. Ideally, we are using uninformative priors for
-UPL calculations that have equal probability across a parameter-space
-that is much wider than the posterior result. This is determined
-automatically from the data, but in some cases that range might not wide
-enough. This will be apparent if the parameter’s posterior histogram is
-highly skewed towards the end of the allowed range. In this case, the
-priors will need to be set manually to a wider uninformative range.</p>
-<p><em>add example of bad posterior</em></p>
+<p>This is the meat of <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> and is the most
+time-consuming step. The result from <code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code> is
+the only required input for <code><a href="../reference/run_likelihood.html">run_likelihood()</a></code>. First,
+<code><a href="../reference/run_likelihood.html">run_likelihood()</a></code> will check if you have JAGS installed
+properly. Then it will run the chosen likelihood distribution model,
+with the default or specified priors, with the emissions data given to
+<code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code>, and return the completed JAGS
+simulation. The JAGS model will run 3 MCMC chains in parallel, using an
+adapt and burn-in of 10,000 iterations each, and then keep the next
+10,000 iterations. The other arguments include <code>maxY</code>, which
+sets the upper limit of emissions that can occur when fitting the
+likelihood distribution. This will have no or very minimal influence on
+how the likelihood distribution is fit, and indeed in most cases this
+limit will be well past the full extent of the likelihood distribution.
+This limit is useful in cases where the fitted distribution has a very
+heavy or long tail past the emission observations. In these cases there
+is very little certainty in the extent of the tail of the distribution,
+but the extremely high emission values that can occur at very low
+probability can lead to anomalously high UPL results. Setting
+<code>maxY</code> to a reasonable upper boundary can prevent this
+behavior. It defaults to <code>NULL</code>, in which case it is
+calculated as <code>3*max(data$emissions)</code>. Examples of
+<code>maxY</code> affects on UPL estimates are given at the end of this
+vignette. You can also specify the number of future test runs to average
+in the UPL calculation by setting <code>future_runs</code>, which
+defaults to <code>3</code>. This has no effect on likelihood fit, but
+does change the UPL calculation. Lastly, you can specify
+<code>xvals</code>, the range of possible emission values at which you
+want the likelihood to return a probability. This is
+<code>seq(0, 3*max(data$emissions), length.out=1024)</code> by
+default.</p>
 </div>
 <div class="section level3">
-<h3 id="long--and-heavy-tailed-distributions">Long- and Heavy-Tailed Distributions<a class="anchor" aria-label="anchor" href="#long--and-heavy-tailed-distributions"></a>
+<h3 id="converge_likelihood">- <strong><code>converge_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#converge_likelihood"></a>
 </h3>
-<p>For example some Lognormal. The 99^{th} percentile can be
-unreasonably large emission number when long or heavy tail. This is
-often an issue when the observations themselves are no where near the
-tail, and thus the tail is largely unsupported by any data. In such
-circumstances, the UPL can be a value larger than any in the observation
-data set, or larger than is physically possible. In such cases it is
-necessary to truncate the probability distribution to physically
-reasonable bounds. This is done by default as 3 times the maximum
-emissions value in the training data, but can be adjusted by setting
-<code>maxY</code>.</p>
-<p><em>show example of two distributions, one long-tailed one not, where
-maxY is varied</em></p>
+<p>The JAGS model object produced by <code><a href="../reference/run_likelihood.html">run_likelihood()</a></code> is
+used by the function <code><a href="../reference/converge_likelihood.html">converge_likelihood()</a></code> to test if the
+fitted parameters properly converged. This function will pull the MCMC
+chains for the defining parameters of the likelihood distribution, run a
+Gelman-Rubin diagnostic test, and interpret the results of that test.
+The result is a table of parameter values with their corresponding
+diagnostic and if they have converged as a <code>"Yes"</code>,
+<code>"No"</code>, or <code>"Weak convergence"</code>. More details and
+examples on convergence can be found in the
+<code><a href="../articles/Convergence-and-Priors.html">vignette("Convergence-and-Priors")</a></code> article.</p>
+</div>
+<div class="section level3">
+<h3 id="output_likelihood">- <strong><code>output_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#output_likelihood"></a>
+</h3>
+<p>The JAGS model object produced by <code><a href="../reference/run_likelihood.html">run_likelihood()</a></code> can
+be memory intensive with 3 chains of 10,000 iterations for every
+variable that we have set up to monitor, so we want an efficient way to
+work with the results, which <code><a href="../reference/output_likelihood.html">output_likelihood()</a></code> provides.
+The only required argument is <code>jags_model_run</code>, the result
+from <code><a href="../reference/run_likelihood.html">run_likelihood()</a></code>. The other argument is
+<code>significance</code> which defaults to <code>0.99</code>. Two
+numeric values are returned with <code><a href="../reference/output_likelihood.html">output_likelihood()</a></code>: the
+predicted mean of the distribution and the UPL calculated at the
+specified <code>significance</code> for the average of
+<code>future_runs</code> used in <code><a href="../reference/run_likelihood.html">run_likelihood()</a></code>. Two data
+sets are also returned, including <code>obs_pdf</code>, which provides
+the emissions data and corresponding predicting probability densities at
+each point as well as the 95% confidence interval around those
+predictions, and <code>pred_pdf</code>, which has the predicted
+probability densities at each position in <code>xvals</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="fit_likelihood">- <strong><code>fit_likelihood()</code>:</strong><a class="anchor" aria-label="anchor" href="#fit_likelihood"></a>
+</h3>
+<p>Lastly, <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code> takes the results from
+<code><a href="../reference/output_likelihood.html">output_likelihood()</a></code> and compares them to empirical emission
+observation densities to determine metrics of fit. The empirical
+densities are determined using <code><a href="../reference/obs_density.html">obs_density()</a></code>, and more
+details on this function can be found in the
+<code><a href="../articles/Density.html">vignette("Density")</a></code> article. The <code>obs_pdf</code>
+result from <code>out_put_likelihood()</code> is compared to the
+empirical observation densities to determine the Sum of Squared Errors
+(SSE) and whether or not a given emission observation has densities
+inside the 95% CI around the predicted density. Furthermore, the
+empirical density from the emission observations is used to determine
+the density function at each point in <code>xvals</code> so the entire
+curve can be compared to the predicted density function from the
+Bayesian model fit. The results, along the UPL determined in the
+previous step, are returned by <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
