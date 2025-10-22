@@ -82,8 +82,8 @@ emiss_n4 = rnorm(18, mean = 0.02, sd = 0.01)
 source4 = rep("D", 18)
 emiss_n5 = rnorm(12, mean = 0.03, sd = 0.01)
 source5 = rep("E", 12)
-emissions=c(emiss_ln1, emiss_ln2, emiss_ln3, emiss_n4, emiss_n5)
-sources=c(source1, source2, source3, source4, source5)
+emissions = c(emiss_ln1, emiss_ln2, emiss_ln3, emiss_n4, emiss_n5)
+sources = c(source1, source2, source3, source4, source5)
 dat_emiss = tibble(emissions = emissions, sources = sources)
 ```
 
@@ -100,16 +100,16 @@ figures. The figure below uses `multi_source_theme()`.
 ```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
   geom_density(alpha = 0.5, trim = FALSE)+
-  multi_source_theme()+theme(legend.text = element_text(size = 8))+
-  scale_x_continuous(limits =c(-0.05,0.25))+
-  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  multi_source_theme()+
+  scale_x_continuous(limits =c(-0.05, 0.25))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   ggtitle("Source Densities")+
   ylab("Density")+xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
 ```
 
 Note that the density curves for some sources extend below zero, even though all of the emissions are positive. This is not ideal, since we know that emissions cannot be negative. 
-Let's plot this again but set a lower bound with `bounds = c(0,Inf)`. Note the 
+Let's plot this again but set a lower bound with `bounds = c(0, Inf)`. Note the 
 change in the shape of the density curve now that there isn't any extrapolation 
 past zero. The behavior that `ggplot` uses to accommodate bounds for 
 `geom_density()` involves reflecting the density back across the boundary. This 
@@ -117,10 +117,10 @@ is alright, but there are better methods that use density estimators specific
 for bounded circumstances.
 ```{r figure2, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source, bounded strictly by 0."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
-  geom_density(alpha = 0.5, trim = FALSE, bounds = c(0,Inf))+
-  multi_source_theme()+theme(legend.text = element_text(size = 8))+
-  scale_x_continuous(limits =c(-0.05,0.25))+
-  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  geom_density(alpha = 0.5, trim = FALSE, bounds = c(0, Inf))+
+  multi_source_theme()+
+  scale_x_continuous(limits = c(-0.05, 0.25))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   ggtitle("Source Densities")+
   ylab("Density")+xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
@@ -139,7 +139,7 @@ Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 ```
 
-The figure below shows the overall observation density of the top performing source 
+The figure below shows the overall observation density of the combined source 
 population, of which it is our goal to determine an appropriately representative 
 likelihood distribution from which to calculate the UPL. This figures uses 
 `pop_distr_theme()` and plots the `obs_density()` results above using 
@@ -156,8 +156,8 @@ ggplot(data = Obs_onPoint)+
   ylab("Density")+xlab("Emissions")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
-  scale_x_continuous(expand = expansion(mult = c(0,0.05)))+
-  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   coord_cartesian(clip = 'off')+
   geom_rug(sides = 'b', aes(x = emissions), data = dat_emiss,
            alpha = 0.5, outside = TRUE, color = 'black')
