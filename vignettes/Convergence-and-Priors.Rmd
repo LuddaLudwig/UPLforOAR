@@ -56,23 +56,66 @@ Convergence of distribution parameters is assessed quantitatively using the
 Gelman-Rubin diagnostic and qualitatively by producing figures in a convergence 
 report pdf document. 
 
-and the corresponding outcome for convergence is in `convYN`. 
-This will be a "Yes" for diagnostics less than 1.1, "weak convergence" for 
-values between 1.1 and 1.2, and "No" convergence for values greater than 1.2. 
-
-It is possible for a parameter to pass the Gelman-Rubin test and indeed be 
-well-mixed, but not arrive at a clear posterior distribution. This can happen 
-when there is too little data (for example extremely small data sets where `n = 3`), 
-and the parameter posterior is simply returning the prior distribution. For 
-example, a poorly converged Normal distribution might have an even probability 
-of the mean being any emission value, in which case the histogram will be flat 
-across the entire parameter-space. 
+The diagnostics are available in the `$conv_output` table from `Bayesian_UPL()` 
+or from using `converge_likelihood()` directly on the results of `run_likelihood()`. 
+There are several variables in the `conv_output` table: the distribution as `distr`, 
+its corresponding parameters in `params`, the diagnostic in `gelman_diag`, and 
+if it converged in `convYN`. For example, a Normal distribution will have both 
+mean and standard deviation parameters in the table, where as a Gamma distribution 
+will have shape and rate. For `gelman_diag` less than 1.1, the outcome is `"Yes"` 
+it converged in `convYN`. For diagnostic values between 1.1 and 1.2 it is "weak 
+convergence", and "No" convergence for values greater than 1.2. 
 
 ### Problems: Failing Gelman-Rubin diagnostic
 
+Things have to go really wrong for the Gelman-Rubin diagnostics to fail. You can 
+fail these checks if you do not have a long enough number of iterations in the 
+burn-in or a long enough number of kept iterations. However `Bayesian_UPL()` is 
+set up so that the 10,000 iterations for burn-in and sampling should be sufficient 
+as long as the likelihood model is somewhat reasonable. The diagnostic also relies 
+on comparing multiple MCMC chains with substantially different initial values, 
+which again is handled automatically in `Bayesian_UPL()`. Below is an example 
+where we generated 30 random emissions between 0 and 100 and then tried to fit 
+a Lognormal likelihood distribution. Unsurprisingly, it fails to converge.
+
+```{r noise, echo = TRUE, results = FALSE}
+set.seed(1)
+emissions = runif(30, min = 0, max = 100)
+results = Bayesian_UPL(distr_list = c("Lognormal"),
+                       data = tibble(emissions = emissions))
+```
+``` {r table1, fig.align = "center"}
+conv_metrics=results$conv_output
+conv_metrics=mutate(conv_metrics,across(c(3),~signif(.,digits=4)))
+knitr::kable(conv_metrics,
+             caption="Gelman-Rubin convergence tests for likelihood parameters",
+             col.names=c("Distribution",'Parameter',"Diagnostic","Converged"))
+```
+
+We can take a look at the figures generated in the convergence report as well. 
+Note that for both parameters, the left figures show one of the chains is off on 
+a tangent and they are clearly not well-mixed or without trend. This is the kind 
+of behavior that will result in the Gelman-Rubin diagnostic failing.
+```{r figure1, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+part1=setup_likelihood(distribution = "Lognormal",
+                       data = tibble(emissions = emissions))
+part2=run_likelihood(model_input = part1)
+part3=converge_figs(distribution = "Lognormal",jags_model_run = part2)
+part3
+```
+
+It is possible for a parameter to pass the Gelman-Rubin test and indeed have chains 
+well-mixed, but not arrive at a clear posterior distribution. That is why passing 
+the Gelman-Rubin diagnostic is necessary but insufficient to indicate convergence. 
+This can happen when there is too little data (for example extremely small data 
+sets where `n = 3`), and the parameter posterior is simply returning the prior 
+distribution. For example, a poorly converged Normal distribution might have an 
+even probability of the mean being any emission value, in which case the histogram 
+will be flat across the entire parameter-space. 
+
 ### Problems: Flat posterior
 
-In the example below, there are only 3 observations used to fit a Normal distribution. 
+In the example below, we use only 3 observations used to fit a Normal distribution. 
 This is as small a data set as one could conceivably use, and with only 3 runs 
 there is not likely to be enough information to pick an appropriate distribution 
 or determine its defining parameters with high confidence. Even though the 
@@ -82,7 +125,7 @@ show the posterior is too flat. Note that there is a slight peak for the
 `emission_mean` posterior around 0.01, which is indeed the average of the 3 points, 
 but there is not enough information to definitely say this is much more likely 
 than any other value searched.  
-```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r figure2, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
 dat_emiss2=read.csv("Lime_data.csv")
 small_dat = MACT_NSPS(dat_emiss2)
 part1 = setup_likelihood(distribution = "Normal", data = small_dat)
@@ -108,7 +151,7 @@ though it does pass the Gelman-Rubin check as well. Even though the MCMC chains
 are well mixed, they are clearly stacking up against the lower bound and trying 
 to converge on a lower mean than we have allowed. This skew in the chains (left) 
 and histogram (right) indicate improper prior distribution bounds. 
-```{r figure6, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r figure3, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
 part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
                          manual_prior = TRUE, 
                          prior_list = c(0.0001, 0.001, 0.01, 0.05))
@@ -155,7 +198,6 @@ resulting fitted probability density distributions below. Note that both have
 very large error bars around the probability density at the emission observations. 
 This is expected given how little information we actually get from 3 observations. 
 The ability to quantify this uncertainty is a nice outcome of using a Bayesian approach.
-
 ```{r manual, echo = TRUE, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
                                manual_prior = TRUE, future_runs = 3,
@@ -165,8 +207,7 @@ result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
                                  future_runs = 3,
                                  significance = 0.99)
 ```
-
-```{r figure7, echo = FALSE}
+```{r figure4, echo = FALSE}
 result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
                                           nrow(result_uninformed$obs_pdf_dat))
 result_uninformed$pred_pdf_dat$distr = rep("Uninformed", 
@@ -217,9 +258,14 @@ ggplot()+
   theme(strip.text = element_text(color='black',size=12))
 ```
 
-We can look at how the convergence figures are different in the case where we provided slightly more prior information. Note that the histograms are much more converged than the flat horizontal coverage they were when using the automated uninformed priors. Even though we provided the prior distributions manually, they are still considered to be uninformative. We have restricted the parameter space with lower and upper bounds, but it is still a wide accommodation, and within that all parameter outcomes are equally likely before we consider the data.
-
-```{r figure8, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE}
+We can look at how the convergence figures are different in the case where we 
+provided slightly more prior information. Note that the histograms are much more 
+converged than the flat horizontal coverage they were when using the automated 
+uninformed priors. Even though we provided the prior distributions manually, they 
+are still considered to be uninformative. We have restricted the parameter space 
+with lower and upper bounds, but it is still a wide accommodation, and within 
+that all parameter outcomes are equally likely before we consider the data.
+```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE}
 part1 = setup_likelihood(distribution = "Normal", data = small_dat,
                          manual_prior = TRUE,
                          prior_list = c(0.0001, 0.01, 0.005, 0.03))

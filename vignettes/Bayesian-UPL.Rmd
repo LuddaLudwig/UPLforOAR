@@ -515,6 +515,3 @@ are concatenated in a list of tables for easy comparison and plotting.
   curve can be compared to the predicted density function from the Bayesian model 
   fit. The results, along the UPL determined in the previous step, are returned 
   by `fit_likelihood()`. 
-
-
-

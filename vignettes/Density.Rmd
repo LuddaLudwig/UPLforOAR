@@ -68,18 +68,23 @@ to empirical densities.
 
 ## Example 
 
-We will load an example data set of HCl emissions from Integrated Iron and Steel.
-This data set as provided is already the set of top performers in the industry, 
-so there is no need to run `MACT_EG()` to select the data.
+We will look at some synthetic data generated with a mixture of Normal and 
+Lognormal distributions for 5 sources.
 ```{r load, echo=TRUE}
-dat_emiss = read.csv('IIS_HCl.csv')
-dat_means = summarize(dat_emiss, means = mean(emissions), counts = n(),
-                      .by = 'sources')
-dat_means$sources = as.factor(dat_means$sources)
-dat_means$sources = fct_reorder(dat_means$sources,
-                              dat_means$means, .desc = FALSE)
-dat_emiss$sources = factor(dat_emiss$sources, 
-                           levels = levels(dat_means$sources))
+set.seed(1)
+emiss_ln1 = rlnorm(18, meanlog = log(0.01), sdlog = 2)
+source1 = rep("A", 18)
+emiss_ln2 = rlnorm(6, meanlog = log(0.02), sdlog = 1.2)
+source2 = rep("B", 6)
+emiss_ln3 = rlnorm(3, meanlog = log(0.025), sdlog = 0.5)
+source3 = rep("C", 3)
+emiss_n4 = rnorm(18, mean = 0.02, sd = 0.01)
+source4 = rep("D", 18)
+emiss_n5 = rnorm(12, mean = 0.03, sd = 0.01)
+source5 = rep("E", 12)
+emissions=c(emiss_ln1, emiss_ln2, emiss_ln3, emiss_n4, emiss_n5)
+sources=c(source1, source2, source3, source4, source5)
+dat_emiss = tibble(emissions = emissions, sources = sources)
 ```
 
 First we want to look at density plots of the emission observations by source.
@@ -92,36 +97,32 @@ a rule-of-thumb method (not recommended) of arriving at a bandwidth
 will plot the density using `ggplot2::geom_density()` by `source`. The 
 `UPLforOAR` package includes several `ggplot2` themes designed for density 
 figures. The figure below uses `multi_source_theme()`.
-```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of IIS HCl emissions by top performing source."}
+```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
   geom_density(alpha = 0.5, trim = FALSE)+
   multi_source_theme()+theme(legend.text = element_text(size = 8))+
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE),
-         color = guide_legend(nrow = 2, byrow = TRUE))+
-  scale_x_continuous(limits =c(-0.001,0.006))+
+  scale_x_continuous(limits =c(-0.05,0.25))+
   scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
-  ggtitle("Source observed populations")+
-  ylab("Density")+xlab("IIS HCl emissions")+
+  ggtitle("Source Densities")+
+  ylab("Density")+xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
 ```
 
-Note that the density curves for some sources extend below zero. This is not 
-ideal, since we know that emissions cannot be negative. Let's plot this again 
-but set a lower bound with `bounds = c(0,Inf)`. Note the change in the shape of 
-the density curve now that there isn't any extrapolation past zero. The behavior 
-that `ggplot` uses to accommodate bounds for `geom_density()` involves reflecting 
-the density back across the boundary. This alright, but there are better methods 
-that use density estimators specific for bounded circumstances.
-```{r figure2, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of IIS HCl emissions by top performing source, bounded strictly by 0."}
+Note that the density curves for some sources extend below zero, even though all of the emissions are positive. This is not ideal, since we know that emissions cannot be negative. 
+Let's plot this again but set a lower bound with `bounds = c(0,Inf)`. Note the 
+change in the shape of the density curve now that there isn't any extrapolation 
+past zero. The behavior that `ggplot` uses to accommodate bounds for 
+`geom_density()` involves reflecting the density back across the boundary. This 
+is alright, but there are better methods that use density estimators specific 
+for bounded circumstances.
+```{r figure2, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source, bounded strictly by 0."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
   geom_density(alpha = 0.5, trim = FALSE, bounds = c(0,Inf))+
   multi_source_theme()+theme(legend.text = element_text(size = 8))+
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE),
-         color = guide_legend(nrow = 2, byrow = TRUE))+
-  scale_x_continuous(limits =c(-0.001,0.006))+
+  scale_x_continuous(limits =c(-0.05,0.25))+
   scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
-  ggtitle("Source observed populations")+
-  ylab("Density")+xlab("IIS HCl emissions")+
+  ggtitle("Source Densities")+
+  ylab("Density")+xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
 ```
 
@@ -152,7 +153,7 @@ ggplot(data = Obs_onPoint)+
             alpha = 0.25, fill = 'black')+
   geom_point(aes(y = ydens,x = emissions),
              size = 3, alpha = 0.5, shape = 19, color = 'black')+
-  ylab("Density")+xlab("IIS HCl emissions")+
+  ylab("Density")+xlab("Emissions")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
   scale_x_continuous(expand = expansion(mult = c(0,0.05)))+
