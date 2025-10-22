@@ -98,11 +98,9 @@ load and plot the emissions data.
 
 ```{r load, echo=TRUE}
 dat_emiss = read.csv('IIS_HCl.csv')
-
 emission_mean = mean(dat_emiss$emissions)
 dat_means = summarize(dat_emiss, means = mean(emissions), counts = n(),
                       .by = 'sources')
-
 dat_means$sources = as.factor(dat_means$sources)
 dat_means$sources = fct_reorder(dat_means$sources,
                               dat_means$means, .desc = FALSE)
