@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--21-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--22-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -34,10 +34,27 @@ adds clarity to UPL standards calculations by plotting the distribution
 probability densities and emissions data underlying the methods. This
 allows the user to verify visually that the emissions data are well
 represented and the assumptions of the probability distribution are
-reasonable. Furthermore, `UPLforOAR` can be used through an R shiny app
-for quick and reproducible UPL calculations, and also generate pdf
-reports directly from uploading emissions data without user input
-required.
+reasonable.
+
+You can use `UPLforOAR` in R as demonstrated in the example below. For
+those unfamiliar with R, or if you want quick and reproducible UPL
+calculations, you can use the [UPL shiny
+app](https://github.com/LuddaLudwig/UPLforOAR/blob/main/inst/UPL_app.Rmd)
+which will launch an interactive browser where your emissions data can
+be uploaded. The UPL shiny app will determine your top performing
+sources and replicate the results of the Excel workbook, including
+determining the best distribution and calculate the corresponding UPL.
+It will also plot your distribution and you can choose to download the
+resulting data set of top performers, UPL calculations, and a report of
+the results as a PDF document. Using the UPL app will still require the
+installation of `UPLforOAR` and its dependencies.
+
+A more advanced and robust way to calculate UPL’s is included with the
+`Bayesian_UPL()`
+[function](https://luddaludwig.github.io/UPLforOAR/articles/Bayesian-UPL.html).
+Please explore the documentation on all of the functions in `UPLforOAR`,
+user guides, references, and worked examples included at the `UPLforOAR`
+[website](https://luddaludwig.github.io/UPLforOAR/).
 
 ## Installation
 
