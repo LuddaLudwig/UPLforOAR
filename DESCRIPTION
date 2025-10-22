@@ -30,6 +30,7 @@ Imports:
     forcats,
     ggplot2,
     grid,
+    htmltools,
     kableExtra,
     matrixStats,
     np,
