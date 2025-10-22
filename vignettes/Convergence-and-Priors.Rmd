@@ -1,0 +1,240 @@
+---
+title: "Convergence-and-Priors"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Convergence-and-Priors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  error=TRUE,
+  warning=FALSE,
+  message=FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+```
+
+```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(UPLforOAR)
+library(matrixStats)
+library(EnvStats)
+library(np)
+library(sfsmisc)
+library(parallel)
+library(rjags)
+library(runjags)
+library(sn)
+library(patchwork)
+```
+
+## Introduction
+
+This vignette provides further details on convergence and prior distributions 
+for `Bayesian_UPL()`. We recommend already having some familiarity with using 
+the default settings of `Bayesian_UPL()` and working through the examples in the 
+`vignette("Bayesian-UPL")` before reading further. 
+
+## Convergence
+
+Convergence of distribution parameters is assessed quantitatively using the 
+Gelman-Rubin diagnostic and qualitatively by producing figures in a convergence 
+report pdf document. 
+
+and the corresponding outcome for convergence is in `convYN`. 
+This will be a "Yes" for diagnostics less than 1.1, "weak convergence" for 
+values between 1.1 and 1.2, and "No" convergence for values greater than 1.2. 
+
+It is possible for a parameter to pass the Gelman-Rubin test and indeed be 
+well-mixed, but not arrive at a clear posterior distribution. This can happen 
+when there is too little data (for example extremely small data sets where `n = 3`), 
+and the parameter posterior is simply returning the prior distribution. For 
+example, a poorly converged Normal distribution might have an even probability 
+of the mean being any emission value, in which case the histogram will be flat 
+across the entire parameter-space. 
+
+### Problems: Failing Gelman-Rubin diagnostic
+
+### Problems: Flat posterior
+
+In the example below, there are only 3 observations used to fit a Normal distribution. 
+This is as small a data set as one could conceivably use, and with only 3 runs 
+there is not likely to be enough information to pick an appropriate distribution 
+or determine its defining parameters with high confidence. Even though the 
+Gelman-Rubin diagnostics passed in this case, and indeed the MCMC chains look 
+well-mixed (left figures), it has not converged well. The histograms on the right 
+show the posterior is too flat. Note that there is a slight peak for the 
+`emission_mean` posterior around 0.01, which is indeed the average of the 3 points, 
+but there is not enough information to definitely say this is much more likely 
+than any other value searched.  
+```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+dat_emiss2=read.csv("Lime_data.csv")
+small_dat = MACT_NSPS(dat_emiss2)
+part1 = setup_likelihood(distribution = "Normal", data = small_dat)
+part2 = run_likelihood(model_input = part1)
+part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
+part3
+```
+
+### Problems: Bad prior limits
+
+The visual assessment will also catch any issues with the prior distribution 
+settings. Ideally, we are using uninformative priors for UPL calculations that 
+have equal probability across a parameter-space that is much wider than the 
+posterior result. This is determined automatically from the data, but in some 
+cases that range might not wide enough. This will be apparent if the parameter's 
+posterior histogram is highly skewed towards the end of the allowed range. In 
+this case, the priors will need to be set manually to a wider uninformative range. 
+As an example, we've fit a Normal distribution to the HCl emissions from 
+Integrated Iron and Steel but manually set the prior range so the mean is equally 
+likely between `~dunif(0.01, 0.05)`. Given that the average emission is much lower 
+than this range at 0.001, this is likely to cause issues for convergence even 
+though it does pass the Gelman-Rubin check as well. Even though the MCMC chains 
+are well mixed, they are clearly stacking up against the lower bound and trying 
+to converge on a lower mean than we have allowed. This skew in the chains (left) 
+and histogram (right) indicate improper prior distribution bounds. 
+```{r figure6, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
+                         manual_prior = TRUE, 
+                         prior_list = c(0.0001, 0.001, 0.01, 0.05))
+part2 = run_likelihood(model_input = part1)
+part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
+part3[[1]]
+```
+
+## Priors
+
+Bayesian inference uses prior information to derive posterior distributions of 
+model parameters. The default behavior in `Bayesian_UPL()` is to use uninformative 
+priors which are calculated based on the range and variance of the emissions data. 
+The prior information can be manually supplied to either increase the parameter 
+space to search wider, or to provide more specific information, which might be 
+particularly useful in circumstances where there are very few observations (i.e. 
+`n = 3`). 
+
+It is inadvisable to use manual priors without good justification. A situation 
+where one might use the manual prior option is after running `Bayesian_UPL()` 
+with the default uninformative priors, the parameters showed issues with 
+convergence. For example, if the posterior histogram is completely flat across 
+the default parameter space, and information from the data are limited by a low 
+sample size, then a narrower parameter range might need to be provided manually 
+to promote convergence. Alternatively, if the posterior histogram appears to be 
+stacked up along one side of the parameter space, then a wider prior range might 
+need to be provided manually if applicable. Some parameters can only exist above 
+0, or -1, or between -1 and 1, and in these cases it is not abnormal behavior 
+for their posterior distributions to be heavily skewed when close to a boundary, 
+and setting further limits manually will not change any outcomes.
+
+### Manual limits on priors
+
+In the section above we tried to fit a Normal distribution to an emission data 
+set with `n = 3` and fully uninformed priors, and did not achieve good convergence. 
+We could then decide to follow up with another Normal distribution where we 
+provide slightly narrower but still largely uninformative priors manually. The 
+first pair are the bounds on standard deviation and encompass several orders of 
+magnitude around the actual standard deviation of the 3 observations. The second 
+pair of bounds encompass the actual mean of 0.01, but aren't quite as wide as 
+the automated uninformative priors uses. This slight restriction on the prior 
+search is enough to promote better convergence, as can be seen in the two 
+resulting fitted probability density distributions below. Note that both have 
+very large error bars around the probability density at the emission observations. 
+This is expected given how little information we actually get from 3 observations. 
+The ability to quantify this uncertainty is a nice outcome of using a Bayesian approach.
+
+```{r manual, echo = TRUE, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                               manual_prior = TRUE, future_runs = 3,
+                               significance = 0.99,
+                               prior_list = c(0.0001, 0.01, 0.005, 0.03))
+result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                                 future_runs = 3,
+                                 significance = 0.99)
+```
+
+```{r figure7, echo = FALSE}
+result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
+                                          nrow(result_uninformed$obs_pdf_dat))
+result_uninformed$pred_pdf_dat$distr = rep("Uninformed", 
+                                          nrow(result_uninformed$pred_pdf_dat))
+result_uninformed$fit_table$distr = rep("Uninformed", 
+                                          nrow(result_informed$fit_table))
+result_informed$obs_pdf_dat$distr = rep("Informed", 
+                                          nrow(result_informed$obs_pdf_dat))
+result_informed$pred_pdf_dat$distr = rep("Informed", 
+                                          nrow(result_informed$pred_pdf_dat))
+result_informed$fit_table$distr = rep("Informed", 
+                                          nrow(result_informed$fit_table))
+combined_pdf=rbind(result_uninformed$pred_pdf_dat,result_informed$pred_pdf_dat)
+combined_obs=rbind(result_uninformed$obs_pdf_dat,result_informed$obs_pdf_dat)
+combined_fit=rbind(result_uninformed$fit_table,result_informed$fit_table)
+
+palette_line =c("#377EB8","#E41A1C")
+ggplot()+
+  geom_line(data=combined_pdf,
+            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
+  geom_area(data=combined_pdf,
+            aes(y=ydens,x=(x_hat)),fill='grey')+
+  geom_point(data=combined_obs,
+            aes(y=ydens,x=(emissions)),
+            size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(data=combined_pdf,
+            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
+  geom_area(data=combined_pdf,
+            aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
+  geom_errorbar(data=combined_obs,
+                aes(ymin=low,ymax=up,x=(emissions),color=distr),
+                alpha=0.5)+
+  geom_point(data=combined_obs,
+             aes(x=(emissions),y=med,fill=distr),
+             size=3,alpha=0.5,shape=21,color='black')+
+  geom_vline(aes(xintercept = UPL, color = distr), data = combined_fit,
+             linewidth = 1)+
+  ylab("Density")+xlab("Emissions")+
+  pop_distr_theme()+labs(color='Distribution',fill="Distribution")+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  geom_rug(data=combined_obs,
+           sides='b',aes(x=(emissions)),
+           alpha=0.5,outside=TRUE,color='black')+
+  coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
+  scale_fill_manual(values=palette_line)+
+  facet_wrap(~distr,scales='free_y',nrow=3)+theme(legend.position = 'none')+
+  theme(strip.text = element_text(color='black',size=12))
+```
+
+We can look at how the convergence figures are different in the case where we provided slightly more prior information. Note that the histograms are much more converged than the flat horizontal coverage they were when using the automated uninformed priors. Even though we provided the prior distributions manually, they are still considered to be uninformative. We have restricted the parameter space with lower and upper bounds, but it is still a wide accommodation, and within that all parameter outcomes are equally likely before we consider the data.
+
+```{r figure8, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE}
+part1 = setup_likelihood(distribution = "Normal", data = small_dat,
+                         manual_prior = TRUE,
+                         prior_list = c(0.0001, 0.01, 0.005, 0.03))
+part2 = run_likelihood(model_input = part1)
+part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
+part3
+```
+
+### Specific priors
+
+In some cases there might be specific prior information about the distributions 
+that can be used to set informative priors. Examples could include an operational 
+lower or upper limit to emissions that physically cannot be surpassed, or the 
+results from a previous decade of emissions that technology has improved on since. 
+Specific prior information could be in the form of an informative distribution, 
+such as `~dnorm(5, 0.1)`, rather than lower and upper bounds. In this case, the 
+JAGS scripts will need to be edited to reflect the specifically defined distributions. 
+Caution should be exercised if using stricter priors, and needs to be very well justified. 
