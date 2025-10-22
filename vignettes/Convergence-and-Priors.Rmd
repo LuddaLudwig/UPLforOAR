@@ -96,7 +96,7 @@ We can take a look at the figures generated in the convergence report as well.
 Note that for both parameters, the left figures show one of the chains is off on 
 a tangent and they are clearly not well-mixed or without trend. This is the kind 
 of behavior that will result in the Gelman-Rubin diagnostic failing.
-```{r figure1, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r figure1, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence in MCMC chains."}
 part1=setup_likelihood(distribution = "Lognormal",
                        data = tibble(emissions = emissions))
 part2=run_likelihood(model_input = part1)
@@ -125,7 +125,7 @@ show the posterior is too flat. Note that there is a slight peak for the
 `emission_mean` posterior around 0.01, which is indeed the average of the 3 points, 
 but there is not enough information to definitely say this is much more likely 
 than any other value searched.  
-```{r figure2, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r figure2, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence where posterior is too flat."}
 dat_emiss2=read.csv("Lime_data.csv")
 small_dat = MACT_NSPS(dat_emiss2)
 part1 = setup_likelihood(distribution = "Normal", data = small_dat)
@@ -151,7 +151,7 @@ though it does pass the Gelman-Rubin checks. Even though the MCMC chains
 are well mixed, they are clearly stacking up against the lower bound and trying 
 to converge on a lower mean than we have allowed. This skew in the chains (left) 
 and histogram (right) indicate improper prior distribution bounds. 
-```{r figure3, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r figure3, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence, where the prior limits are too restrictive."}
 dat_emiss = read.csv('IIS_HCl.csv')
 part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
                          manual_prior = TRUE, 
@@ -205,7 +205,7 @@ result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
 result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat)
 ```
-```{r figure4, echo = FALSE}
+```{r figure4, echo = FALSE, fig.height=5, fig.width=4, fig.align="center", fig.cap="Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well."}
 result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
                                           nrow(result_uninformed$obs_pdf_dat))
 result_uninformed$pred_pdf_dat$distr = rep("Uninformed", 
@@ -263,7 +263,7 @@ uninformed priors. Even though we provided the prior distributions manually, the
 are still considered to be uninformative. We have restricted the parameter space 
 with lower and upper bounds, but it is still a wide accommodation, and within 
 that all parameter outcomes are equally likely before we consider the data.
-```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE}
+```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE, fig.cap="Improved convergence of parameters by providing slightly more restrictive bounds as priors."}
 part1 = setup_likelihood(distribution = "Normal", data = small_dat,
                          manual_prior = TRUE,
                          prior_list = c(0.0001, 0.01, 0.005, 0.03))
