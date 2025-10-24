@@ -44,7 +44,7 @@ run_likelihood=function(model_input,xvals=NULL,maxY=NULL,future_runs=3){
   n.update=10000
   n.iter=10000
   if (is.null(xvals)){
-    xvals=seq(0,3*max(data$emissions),length.out=1024)
+    xvals=seq(0,maxY,length.out=1024)
   }
   if ((model_input$distribution=='Beta')&(max(xvals)>1)){
     stop('Cannot use beta distribution with max xvals greater than 1')

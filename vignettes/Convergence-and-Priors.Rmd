@@ -1,5 +1,5 @@
 ---
-title: "Convergence-and-Priors"
+title: "Convergence and Priors"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Convergence-and-Priors}
