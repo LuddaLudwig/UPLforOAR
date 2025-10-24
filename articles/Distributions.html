@@ -39,7 +39,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
-    <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence-and-Priors</a></li>
+    <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence and Priors</a></li>
     <li><a class="dropdown-item" href="../articles/Density.html">Density</a></li>
     <li><a class="dropdown-item" href="../articles/Distributions.html">Distributions</a></li>
   </ul>
@@ -74,26 +74,777 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Vignette about distributions and things you should know to help pick
-the best one.</p>
-<p>Include some useful links to JAGS and BUGS distribution sites, as
-well as how to code a distribution manually.</p>
+<p>Picking a probability distribution to represent your emissions data
+is a necessary step to calculating a UPL, regardless of the method you
+use or any other parameters you change. If you are using the frequentist
+methods behind <code><a href="../reference/Normal_UPL.html">Normal_UPL()</a></code>, <code><a href="../reference/Lognormal_UPL.html">Lognormal_UPL()</a></code>,
+and <code><a href="../reference/Skewed_UPL.html">Skewed_UPL()</a></code>, than you are picking the distribution
+based on ratios of skewness and kurtosis and it is explicitly assumed to
+be correct in the UPL calculations. If you are using the
+<code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> method, then you can compare as many
+distributions as you like and choose the best based on quantitative and
+qualitative comparisons to the actual observation density. At the
+moment, the <code>UPLforOAR</code> package supports Beta, Gamma,
+Lognormal, Normal, and Skewed for <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>. However,
+there are many more distributions already supported in R and JAGS (also
+known as BUGS, a slightly different version of the same software). This
+vignette describes the supported distributions and links to resources
+for more that can be included in future development as needed. Much of
+the content on distributions comes from either <a href="https://www.multibugs.org/documentation/latest/Distributions.html" class="external-link">BUGS
+documentation</a> or the reference book “Bayesian Models: A Statistical
+Primer for Ecologists” by N. Thompson Hobbs and Mevin B. Hooten,
+Princeton University Press 2015.</p>
+<div class="section level3">
+<h3 id="beta">Beta<a class="anchor" aria-label="anchor" href="#beta"></a>
+</h3>
+<p>The Beta distribution models random variables that can only take on
+values between 0 and 1. It is often used for probabilities and
+proportions, and is a good choice to consider for emissions variables
+that are represented as destruction or removal efficiencies. The
+probability density,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
+of Beta distributed emissions,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
+is dependent on parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>Γ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>+</mo><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>Γ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>Γ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mi>x</mi><mrow><mi>α</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>β</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}x^{\alpha -1}(1-x)^{\beta-1}
+</annotation></semantics></math></p>
+<p>Note that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Γ</mi><annotation encoding="application/x-tex">\Gamma</annotation></semantics></math>
+in this case is the gamma <em>function</em> not the Gamma probability
+distribution. Using moment-matching, you can calculate the mean and
+variance of the Beta distribution as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi><mo>=</mo><mfrac><mi>α</mi><mrow><mi>α</mi><mo>+</mo><mi>β</mi></mrow></mfrac><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msup><mi>σ</mi><mn>2</mn></msup><mo>=</mo><mfrac><mrow><mi>α</mi><mi>β</mi></mrow><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>+</mo><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>+</mo><mi>β</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\mu = \frac{\alpha}{\alpha + \beta},~~ \sigma^{2} = \frac{\alpha \beta}{(\alpha + \beta)^{2}(\alpha + \beta +1)}
+</annotation></semantics></math></p>
+<p>The parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
+can be positive and negative, though shouldn’t be able to take on values
+below -1. In JAGS the distribution is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mi>d</mi><mi>b</mi><mi>e</mi><mi>t</mi><mi>a</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sim dbeta(\alpha, ~\beta)</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="gamma">Gamma<a class="anchor" aria-label="anchor" href="#gamma"></a>
+</h3>
+<p>The Gamma distribution is very useful for emissions data because it
+represents strictly positive skewed continuous data. The probability
+density,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
+of Gamma distributed emissions,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
+is dependent on parameters <em>shape</em>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
+and <em>rate</em>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><msup><mi>β</mi><mi>α</mi></msup><mrow><mi>Γ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mi>x</mi><mrow><mi>α</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>x</mi></mrow></msup></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}
+</annotation></semantics></math></p>
+<p>Note that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Γ</mi><annotation encoding="application/x-tex">\Gamma</annotation></semantics></math>
+in this case is the gamma <em>function</em> not the Gamma probability
+distribution. Both the <em>shape</em> and <em>rate</em> must be positive
+real numbers. Using moment-matching, you can calculate the mean and
+variance of the Gamma distribution as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi><mo>=</mo><mfrac><mi>α</mi><mi>β</mi></mfrac><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msup><mi>σ</mi><mn>2</mn></msup><mo>=</mo><mfrac><mi>α</mi><msup><mi>β</mi><mn>2</mn></msup></mfrac></mrow><annotation encoding="application/x-tex">
+\mu = \frac{\alpha}{\beta},~~\sigma^{2} = \frac{\alpha}{\beta^{2}}
+</annotation></semantics></math></p>
+<p>In JAGS the distribution is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mi>d</mi><mi>g</mi><mi>a</mi><mi>m</mi><mi>m</mi><mi>a</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sim dgamma(\alpha, ~\beta)</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="lognormal">Lognormal<a class="anchor" aria-label="anchor" href="#lognormal"></a>
+</h3>
+<p>If a variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
+is Normally distributed, then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>e</mi><mi>z</mi></msup><annotation encoding="application/x-tex">e^z</annotation></semantics></math>
+is Lognormally distributed. If a variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is Lognormally distributed, than a variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">log(x)</annotation></semantics></math>
+is Normally distributed. The product of large numbers of random
+variables is Lognormally distributed regardless of the distributions of
+the individual variables. It is often used to model growth or products
+of states or parameters. It is continuous and strictly positive, and can
+be asymmetric, which can be well suited to describe emissions data. The
+probability for the Lognormal distribution is dependent on parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>,
+the mean of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">log(x)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>,
+the standard deviation of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">log(x)</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mi>x</mi><msqrt><mrow><mn>2</mn><mi>π</mi><msup><mi>σ</mi><mn>2</mn></msup></mrow></msqrt></mrow></mfrac><msup><mi>e</mi><mrow><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>μ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac></mrow></msup></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{1}{x\sqrt{2\pi \sigma^{2}}}e^{-\frac{(log(x)-\mu)^{2}}{2\sigma^2}}
+</annotation></semantics></math></p>
+<p>Using moment-matching, you can calculate the mean and variance of the
+Lognormal distribution as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>e</mi><mi>a</mi><mi>n</mi><mo>=</mo><msup><mi>e</mi><mrow><mi>μ</mi><mo>+</mo><msup><mi>σ</mi><mn>2</mn></msup><mi>/</mi><mn>2</mn></mrow></msup><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mi>v</mi><mi>a</mi><mi>r</mi><mi>i</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>e</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>e</mi><msup><mi>σ</mi><mn>2</mn></msup></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>μ</mi><mo>+</mo><msup><mi>σ</mi><mn>2</mn></msup></mrow></msup></mrow><annotation encoding="application/x-tex">
+mean = e^{\mu+\sigma^2/2}, ~~variance = (e^{\sigma^2}-1)e^{2\mu+\sigma^2}
+</annotation></semantics></math></p>
+<p>Note that the variance and mean are interdependent, which makes the
+Lognormal particularly useful in cases where the variance of the data
+increases with the mean. In JAGS the distribution is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mi>d</mi><mi>l</mi><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>μ</mi><mo>,</mo><mspace width="0.222em"></mspace><mfrac><mn>1</mn><msup><mi>σ</mi><mn>2</mn></msup></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sim dlnorm(\mu, ~\frac{1}{\sigma^{2}})</annotation></semantics></math>.
+Note that rather than variance like R uses, JAGS takes the precision as
+the second input. There is no analytical solution for the arithmetic
+mean of future samples from the Lognormal distribution, so the UPL has
+to be calculated using an approximation in <code><a href="../reference/Lognormal_UPL.html">Lognormal_UPL()</a></code>
+based on Gram-Charlier Series-A expansion (for more details see “An
+upper prediction limit for the arithmetic mean of a lognormal random
+variable” by Dulal Kumar Bhaumik and Robert David Gibbons, 2004.). Using
+the Bayesian methods in <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>, the UPL can be
+calculated the same as it would be for any distribution; by drawing the
+future samples from the posterior distributions. Given that the
+Lognormal distribution is often heavy-tailed, and that the
+99<sup>th</sup> UPL is by definition going to be in that tail, the
+distribution will often need to be truncated by some upper bound such
+that emissions beyond it unreasonable to consider. See the section below
+on heavy and long tailed distributions for more information.</p>
+</div>
+<div class="section level3">
+<h3 id="normal">Normal<a class="anchor" aria-label="anchor" href="#normal"></a>
+</h3>
+<p>The Normal distribution applies to continuous random variables across
+the entire number line, and has been widely used in statistics because
+it has properties allowing many results to be derived analytically. In
+addition, because the sum of a large number of samples from any
+distribution will be normally distributed, there are many situations it
+is suited to. However, the Normal distribution is not often a good
+choice for emissions data, which tend not to be symmetric, are strictly
+positive, and the variance is often related to the mean. The probability
+density,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
+of Normally distributed emissions,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
+is dependent on parameters <em>mean</em>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>,
+and <em>standard deviation</em>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mi>σ</mi><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mrow></mfrac><msup><mi>e</mi><mrow><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac></mrow></msup></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^{2}}{2\sigma^{2}}}
+</annotation></semantics></math></p>
+<p>In JAGS the distribution is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mi>d</mi><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>μ</mi><mo>,</mo><mspace width="0.222em"></mspace><mfrac><mn>1</mn><msup><mi>σ</mi><mn>2</mn></msup></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sim dnorm(\mu, ~\frac{1}{\sigma^{2}})</annotation></semantics></math>.
+Note that rather than variance like R uses, JAGS takes the precision as
+the second input. Since the mean and variance can be solved for
+analytically, <code><a href="../reference/Normal_UPL.html">Normal_UPL()</a></code> uses these fixed-point estimates
+to calculate the UPL based on the desired number of future samples and
+significance. The Bayesian method employed in
+<code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> will arrive at the same estimates of mean,
+variance, and UPL, but will incorporate uncertainty in the mean and
+variance and offers more ways to evaluate if the Normal distribution is
+the best choice to represent the data.</p>
+</div>
+<div class="section level3">
+<h3 id="skewed">Skewed<a class="anchor" aria-label="anchor" href="#skewed"></a>
+</h3>
+<p>The Skewed or skew-normal distribution is a generalization of the
+Normal distribution that allows for skewness. As such, it also exists
+the entire number line, but it is not symmetric. The Skew-normal
+distribution is defined by three parameters; location
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ξ</mi><annotation encoding="application/x-tex">\xi</annotation></semantics></math>,
+scale
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>,
+and skewness
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
+This equivalent to a Normal distribution when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha = 0</annotation></semantics></math>,
+it is right-skewed if
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha &gt; 0</annotation></semantics></math>,
+and left=skewed if
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha &lt; 0</annotation></semantics></math>.
+The probability density,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
+of Skewed distributed emissions is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>2</mn><mi>ω</mi></mfrac><mi>ϕ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{2}{\omega}\phi \left(\frac{x-\xi}{\omega}\right) \Phi \left(\alpha\left(\frac{x-\xi}{\omega}\right)\right)
+</annotation></semantics></math></p>
+<p>Where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\phi(x)</annotation></semantics></math>
+is the standard normal probability distribution, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi(x)</annotation></semantics></math>
+is its cumulative probability distribution function, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is transformed to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><annotation encoding="application/x-tex">\frac{x-\xi}{\omega}</annotation></semantics></math>.
+This can be expanded to:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>2</mn><mi>ω</mi></mfrac><mfrac><mn>1</mn><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mfrac><msup><mi>e</mi><mrow><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mn>2</mn></mfrac></mrow></msup><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo stretchy="true" form="prefix">[</mo><mn>1</mn><mo>+</mo><mfrac><mn>2</mn><msqrt><mi>π</mi></msqrt></mfrac><msubsup><mo>∫</mo><mn>0</mn><mrow><mi>α</mi><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mrow><mi>ω</mi><msqrt><mn>2</mn></msqrt></mrow></mfrac></mrow></msubsup><msup><mi>e</mi><mrow><mo>−</mo><msup><mi>t</mi><mn>2</mn></msup></mrow></msup><mi>d</mi><mi>t</mi><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+p(x) = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\alpha\frac{x-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
+</annotation></semantics></math></p>
+<p>Unlike the Normal distribution, there is no closed-form expression
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ξ</mi><annotation encoding="application/x-tex">\xi</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>.
+The method of moments can be used for approximations when sample
+skewness is not too large, which is useful for determining initial
+values for MCMC chains for these parameters, but not as a solution for
+parameterization. Since there is no analytical solution, the approach in
+<code><a href="../reference/Skewed_UPL.html">Skewed_UPL()</a></code> uses iterative shifting of the t-score until
+the desired significance is achieved.</p>
+<p>The Skew-normal distribution is not included in JAGS, but it is in R
+via the <code>sn</code> package. However, any distribution can be coded
+manually in JAGS by using the ‘zero poisson’ <a href="https://www.multibugs.org/documentation/latest/Tricks.html#GenericDistribution" class="external-link">method</a>.
+This approach is equivalent to any standard distribution in how the
+parameters are solved for using MCMC and posterior distributions are
+returned. The main difference in implementation is that for the standard
+distributions already defined in JAGS, we can draw the ‘future’ samples
+and probability density at any emission observation value from within
+JAGS, whereas with a manually defined distribution like Skew-normal we
+need to use the posterior distributions of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ξ</mi><annotation encoding="application/x-tex">\xi</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
+to define the probability density in R using <code><a href="https://rdrr.io/pkg/sn/man/dsn.html" class="external-link">sn::dsn()</a></code> and
+take those future draws using <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code>. There is no
+difference in results either way as long as we are controlling for
+stochasticity.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="long--and-heavy-tailed-distributions">Long- and Heavy-Tailed Distributions<a class="anchor" aria-label="anchor" href="#long--and-heavy-tailed-distributions"></a>
 </h2>
-<p>For example some Lognormal. The 99<sup>th</sup> percentile can be
-unreasonably large emission number when long or heavy tail. This is
-often an issue when the observations themselves are no where near the
-tail, and thus the tail is largely unsupported by any data. In such
-circumstances, the UPL can be a value larger than any in the observation
-data set, or larger than is physically possible. In such cases it is
-necessary to truncate the probability distribution to physically
-reasonable bounds. This is done by default as 3 times the maximum
-emissions value in the training data, but can be adjusted by setting
-<code>maxY</code>.</p>
-<p><em>show example of two distributions, one long-tailed one not, where
-maxY is varied</em></p>
+<p>Some probability distributions, for example some Lognormal, can have
+long or heavy tails. This means that there is some tiny probability of
+extreme values that can occur, and the range of these extreme values,
+i.e. the tail, can be very long. Where exactly the tail ends is quite
+uncertain because we usually don’t have any data supporting the
+probability estimates along these tails. The vast majority of the
+probability and emission values are in the body of the distribution,
+which is well supported by the parameter estimates and data. To put it
+another way, you can have very similar mean and standard deviations
+defining two Lognormal distributions, and the bulk of their probability
+density curves will be very similar, but the extent of the tails might
+be quite different. Furthermore, any method that involves a stochastic
+component in solving for parameters (for example MCMC in JAGS) can end
+up with very different extents of the tails due to randomness, rather
+than as a result of process or data. While we can control the randomness
+to have exactly reproducible results, we still want the stochastic
+component of any Bayesian method to be minuscule in its contribution to
+the final result.</p>
+<p>This matters quite a lot when the UPL is the 99<sup>th</sup>
+percentile of a long-tailed distribution, because it is going to be
+within that tail. The UPL of a long-tailed distribution, whether it’s
+solved for using <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> or
+<code><a href="../reference/Lognormal_UPL.html">Lognormal_UPL()</a></code>, can end up being unrealistically large.
+Sometimes the 99<sup>th</sup> percentile of a long-tailed distribution
+will be past the range of all emissions data, not just the top
+performers used to calculate the UPL, and sometimes it might be beyond
+what is physically possible. These are obvious situations where the UPL
+of such a long-tailed distribution should not be used, and either a
+different distribution should be used or measures should be taken to
+truncate the tail to physically reasonable bounds. This is done by
+default in <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> with an upper limit of 3 times
+the maximum emissions value in the training data, but can be adjusted by
+setting <code>maxY</code>. Any distribution that does not have an
+unsupported long-tail will be unaffected by this setting.</p>
+<div class="section level3">
+<h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h3>
+<p>Let’s look at an example using HCl emissions from Lime processing.
+First we will load the data and use the Excel workbook methods to pick a
+distribution and calculate the UPL.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Lime_data.csv"</span><span class="op">)</span></span>
+<span><span class="va">distr_choice</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
+<span><span class="va">UPL_excel</span> <span class="op">=</span> <span class="fu"><a href="../reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span></code></pre></div>
+<p>The emissions are a Lognormal distribution with a corresponding UPL
+of 2.57 (Lb/ton of stone fed Lime). Next we will plot the density of the
+emission observations along with the corresponding Lognormal probability
+density distribution to see how it looks.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, size<span class="op">=</span><span class="fl">0.75</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span>, color <span class="op">=</span> <span class="st">'a'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, alpha<span class="op">=</span><span class="fl">0.25</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span>, fill <span class="op">=</span> <span class="st">'a'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">Obs_onPoint</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, shape <span class="op">=</span> <span class="fl">19</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">pdf_ln</span>, x <span class="op">=</span> <span class="va">x_hat</span>, color <span class="op">=</span> <span class="st">'c'</span><span class="op">)</span>,</span>
+<span>               data <span class="op">=</span> <span class="va">pred_dat</span>, size <span class="op">=</span> <span class="fl">0.75</span>, linetype <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">pdf_ln</span>, x <span class="op">=</span> <span class="va">x_hat</span>, fill <span class="op">=</span> <span class="st">'c'</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>            data <span class="op">=</span> <span class="va">pred_dat</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"HCl emissions (lb/ton stone fed lime)"</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Excel-based distribution and UPL"</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/pop_distr_theme.html">pop_distr_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_vline</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">UPL_excel</span>, color <span class="op">=</span> <span class="st">'c'</span><span class="op">)</span>, </span>
+<span>             linewidth <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>color <span class="op">=</span> <span class="st">'Density:'</span>, fill <span class="op">=</span> <span class="st">'Density:'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_rug</span><span class="op">(</span>sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'black'</span>, <span class="st">'#FF7F00'</span><span class="op">)</span>,</span>
+<span>                     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Observations'</span>, <span class="st">'Lognormal'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'black'</span>, <span class="st">'#FF7F00'</span><span class="op">)</span>,</span>
+<span>                    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Observations'</span>, <span class="st">'Lognormal'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure1-1.png" alt="Observation density of HCl emissions. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored orange. The UPL result is the vertical orange line." width="480"><p class="caption">
+Observation density of HCl emissions. The obseration data are indicated
+in black as points and a rug along the axis, with the observation
+density distribution as a black line. The fitted lognormal distribution
+that is the basis of the UPL estimate is colored orange. The UPL result
+is the vertical orange line.
+</p>
+</div>
+<p>It is clear why the distribution is Lognormal over Normal or Skewed,
+since is a high density of very low emissions near zero that needs to be
+accommodated by the probability density distribution. However, it has a
+very long tail that results in an unreasonably large UPL that is 4.5
+times larger than the largest emission. Instead, we will use a Bayesian
+approach that can do a better job representing the emissions.</p>
+</div>
+<div class="section level3">
+<h3 id="again-with-bayes">Again with Bayes<a class="anchor" aria-label="anchor" href="#again-with-bayes"></a>
+</h3>
+<p>Normally we would investigate multiple distributions because it is
+possible that a Gamma or a Beta might be better than the Lognormal and
+not have such a long tail. But for the sake of demonstrating how the
+tail affects the UPL, we will stick with the Lognormal. The methods in
+<code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> allow you to set a value at which to
+truncate the upper limit of emission probabilities, called
+<code>maxY</code>. By default, this is
+<code>3*max(data$emissions)</code>. We will also look setting
+<code>maxY</code> to <code>2*max(data$emissions)</code> and
+<code>25*max(data$emissions)</code> to see how the UPL estimate
+changes.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                           maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure2-1.png" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds." width="480"><p class="caption">
+Example of three Lognormal distributions fit to the same data, but with
+different maximum emission thresholds.
+</p>
+</div>
+<p>Clearly, the longer the tail the larger the UPL: when the tail limit
+increases from 1.15, to 1.72, and then 5.74 we get UPL estimates of
+0.68, 0.83, and 3.01. However, not all of these results are equal in
+terms of performance.</p>
+<p>Let’s look at the results from <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code> to
+evaluate which distribution did a better job representing the actual
+observations. The distribution with the lowest upper limit of 1.15 did
+the best at actually fitting the data: it has the lowest SSE and the
+most observations within the 95% CI around predicted probability
+densities. The next higher limit had as many observations in agreement
+but a higher SSE. Lastly, the distribution with an extremely high upper
+limit that is unlikely to cause any truncation of probabilities, has the
+worst fit in terms of substantially higher SSE and more than half of the
+observations are outside the 95% CI on predicted density. Note that in
+all cases the area under the curve sums to less than 1, but the more the
+probability density function is truncated, the farther below 1.</p>
+<table class="table">
+<caption>Performance of Lognormal distributions with different MaxY
+limits</caption>
+<thead><tr class="header">
+<th align="left">Upper Limit</th>
+<th align="right">UPL</th>
+<th align="right">SSE</th>
+<th align="right">No. Obs. in 95% CI</th>
+<th align="right">pdf integral</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2X Max</td>
+<td align="right">0.68</td>
+<td align="right">110</td>
+<td align="right">15</td>
+<td align="right">0.65</td>
+</tr>
+<tr class="even">
+<td align="left">3X Max</td>
+<td align="right">0.83</td>
+<td align="right">190</td>
+<td align="right">15</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="odd">
+<td align="left">25X Max</td>
+<td align="right">3.00</td>
+<td align="right">570</td>
+<td align="right">10</td>
+<td align="right">0.93</td>
+</tr>
+</tbody>
+</table>
+Next we ought to check the convergence of all of the parameters. The
+model with <code>maxY = 3*max(data$emissions)</code> has one parameter
+with weak convergence according to the Gelman-Rubin diagnostics, so we
+will want to check all of the convergence figures. Issues with
+convergence can indicate that a distribution is not a good choice to
+represent the emissions data. The parameters technically passed the
+Gelman-Rubin diagnostic checks for all of them. However, for the 2X and
+3X limits they do not look as well mixed as we would like, and you can
+see the histograms aren’t as Gaussian as can expect with good
+convergence. It is not so bad as to invalidate the results, but you can
+imagine that if we tried limits that were too small the model would
+fail.
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3a-1.png" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
+Convergence figures from maxY = 2X.
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3a-2.png" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
+Convergence figures from maxY = 2X.
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3b-1.png" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
+Convergence figures from maxY = 3X.
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3b-2.png" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
+Convergence figures from maxY = 3X.
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3c-1.png" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
+Convergence figures from maxY = 25X.
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure3c-2.png" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
+Convergence figures from maxY = 25X.
+</p>
+</div>
+<p>Picking an appropriate upper limit for <code>maxY</code> might not be
+an easy choice, and you should always vary it to check if you think your
+UPL results are in an unsupported long-tail. The alternative to using
+<code>maxY</code> to truncate the probability distribution is to use a
+different significance level. One that is lower than 0.99 might not be
+sensitive to the tail, and will be much less affected by u ncertainty
+and stochasticity in the tail of the distribution.</p>
+</div>
+<div class="section level3">
+<h3 id="alternative-significance-levels">Alternative significance levels<a class="anchor" aria-label="anchor" href="#alternative-significance-levels"></a>
+</h3>
+<p>Let’s investigate the sensitivity of different UPL significance
+levels to <code>maxY</code>. Ideally we will find a level that is
+insensitive to <code>maxY</code> and converges well.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results_3X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_3X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_3X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_3X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+The fitted probability density distribution won’t change with
+significance level, just the resulting UPL. The figure below shows the
+same distributions as before with the different <code>maxY</code>
+limits, but now we’ve added the UPL when calculated using 80%, 85%, 90%,
+95% and 99% significance as vertical lines. As expected, lower
+significance has a lower UPL. The important outcome here is that at 80%
+and 85% significance the UPL doesn’t change no matter how we vary
+<code>maxY</code>. The UPL changes slightly at the highest
+<code>maxY</code> for 90%, and quite a lot as we increase
+<code>maxY</code> for 95% and 99% significance.
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure4-1.png" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL." width="480"><p class="caption">
+Example of three Lognormal distributions fit to the same data, but with
+different maximum emission thresholds and levels of significance. THe
+significnace only changes the UPL outcome, and each level has a
+different line type as a vertical line at the UPL.
+</p>
+</div>
+<p>Based on these results, we would conclude that at 85% significance
+the UPL is stable with regards to long-tail effects in the distribution.
+It is also worth pointing out that this area of the distribution also
+has data underlying it, increasing our confidence. Adjusting the
+significance to a stable level or changing <code>maxY</code>
+distribution limits are both ways to handle the unstable nature of
+long-tailed distributions, but both have draw backs. The best path
+forward is to avoid using UPL’s from long-tailed distributions all
+together. If you have a similar or almost as good fit to another
+distribution without the tail that will be a better choice for the UPL.
+You can always test the sensitivity to find out if your fitted
+distribution has a problematic tail by varying <code>maxY</code> across
+a range of high values outside your data as we did in this demo.
+Fundamentally, the 99<sup>th</sup> percentile of a long tail is an
+unrealistic emission value. If no other distributions can be fit without
+a long tail, than the issue is likely a lack of representative data.
+More data will always go a long ways towards improving the distribution
+fit, and a lack of data can lead to one weird point forcing bad
+behavior.</p>
+<table class="table">
+<caption>Performance of Lognormal distributions with different MaxY
+limits and different significance levels.</caption>
+<colgroup>
+<col width="18%">
+<col width="7%">
+<col width="6%">
+<col width="28%">
+<col width="19%">
+<col width="19%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Upper Limit</th>
+<th align="right">UPL</th>
+<th align="right">SSE</th>
+<th align="right">No. Obs. in 95% CI</th>
+<th align="right">pdf integral</th>
+<th align="left">Significance</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2X Max</td>
+<td align="right">0.33</td>
+<td align="right">110</td>
+<td align="right">15</td>
+<td align="right">0.65</td>
+<td align="left">80th</td>
+</tr>
+<tr class="even">
+<td align="left">3X Max</td>
+<td align="right">0.33</td>
+<td align="right">190</td>
+<td align="right">15</td>
+<td align="right">0.86</td>
+<td align="left">80th</td>
+</tr>
+<tr class="odd">
+<td align="left">25X Max</td>
+<td align="right">0.31</td>
+<td align="right">570</td>
+<td align="right">10</td>
+<td align="right">0.93</td>
+<td align="left">80th</td>
+</tr>
+<tr class="even">
+<td align="left">2X Max</td>
+<td align="right">0.37</td>
+<td align="right">110</td>
+<td align="right">15</td>
+<td align="right">0.65</td>
+<td align="left">85th</td>
+</tr>
+<tr class="odd">
+<td align="left">3X Max</td>
+<td align="right">0.40</td>
+<td align="right">190</td>
+<td align="right">15</td>
+<td align="right">0.86</td>
+<td align="left">85th</td>
+</tr>
+<tr class="even">
+<td align="left">25X Max</td>
+<td align="right">0.42</td>
+<td align="right">570</td>
+<td align="right">10</td>
+<td align="right">0.93</td>
+<td align="left">85th</td>
+</tr>
+<tr class="odd">
+<td align="left">2X Max</td>
+<td align="right">0.42</td>
+<td align="right">110</td>
+<td align="right">15</td>
+<td align="right">0.65</td>
+<td align="left">90th</td>
+</tr>
+<tr class="even">
+<td align="left">3X Max</td>
+<td align="right">0.48</td>
+<td align="right">190</td>
+<td align="right">15</td>
+<td align="right">0.86</td>
+<td align="left">90th</td>
+</tr>
+<tr class="odd">
+<td align="left">25X Max</td>
+<td align="right">0.61</td>
+<td align="right">570</td>
+<td align="right">10</td>
+<td align="right">0.93</td>
+<td align="left">90th</td>
+</tr>
+<tr class="even">
+<td align="left">2X Max</td>
+<td align="right">0.51</td>
+<td align="right">110</td>
+<td align="right">15</td>
+<td align="right">0.65</td>
+<td align="left">95th</td>
+</tr>
+<tr class="odd">
+<td align="left">3X Max</td>
+<td align="right">0.58</td>
+<td align="right">190</td>
+<td align="right">15</td>
+<td align="right">0.86</td>
+<td align="left">95th</td>
+</tr>
+<tr class="even">
+<td align="left">25X Max</td>
+<td align="right">1.10</td>
+<td align="right">570</td>
+<td align="right">10</td>
+<td align="right">0.93</td>
+<td align="left">95th</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="alternative-distributions">Alternative distributions<a class="anchor" aria-label="anchor" href="#alternative-distributions"></a>
+</h3>
+<p>Logically the next step is to try other distributions and see if we
+can find something better. We won’t bother with the Normal distribution
+since the data are so heavily skewed. We also won’t look at the Beta
+distribution since it has an upper limit of 1, and while the emissions
+observations are all less than that in our set of top performing
+sources, theoretically there could emissions higher than 1.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="Distributions_files/figure-html/figure5-1.png" alt="Fitted likelihood distributions for Lime HCl emissions." width="100%"><p class="caption">
+Fitted likelihood distributions for Lime HCl emissions.
+</p>
+</div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
+<table class="table">
+<caption>Comparing goodness of fit results for other
+distributions</caption>
+<thead><tr class="header">
+<th align="left">Distribution</th>
+<th align="right">UPL</th>
+<th align="right">SSE</th>
+<th align="right">No. Obs. in 95% CI</th>
+<th align="right">integral</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Gamma</td>
+<td align="right">0.609</td>
+<td align="right">40.9</td>
+<td align="right">15</td>
+<td align="right">0.8966921</td>
+</tr>
+<tr class="even">
+<td align="left">Lognormal</td>
+<td align="right">0.830</td>
+<td align="right">194.0</td>
+<td align="right">15</td>
+<td align="right">0.8558586</td>
+</tr>
+<tr class="odd">
+<td align="left">Skewed</td>
+<td align="right">0.508</td>
+<td align="right">840.0</td>
+<td align="right">4</td>
+<td align="right">0.9450102</td>
+</tr>
+</tbody>
+</table>
+<p>The Gamma distribution looks the best and also has the lowest SSE.
+Furthermore, the Gamma distribution converges well. It still has a bit
+of a tail so we might want to repeat our experiments with increasingly
+larger values of <code>maxY</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results_25X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                           maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The outcome shows the tail is way more stable at the 99<sup>th</sup>
+percentile for Gamma than it was for Lognormal. Furthermore, the fit is
+just as good (SSE barely changes) and the UPL hardly changes. This is
+all great news, and leads us to finally recommend a UPL of 0.66.</p>
+<table class="table">
+<caption>Performance of Gamma distributions with different MaxY
+limits</caption>
+<thead><tr class="header">
+<th align="left">Upper Limit</th>
+<th align="right">UPL</th>
+<th align="right">SSE</th>
+<th align="right">No. Obs. in 95% CI</th>
+<th align="right">pdf integral</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2X Max</td>
+<td align="right">0.54</td>
+<td align="right">43</td>
+<td align="right">15</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">3X Max</td>
+<td align="right">0.61</td>
+<td align="right">41</td>
+<td align="right">15</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="odd">
+<td align="left">25X Max</td>
+<td align="right">0.66</td>
+<td align="right">41</td>
+<td align="right">15</td>
+<td align="right">0.87</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
