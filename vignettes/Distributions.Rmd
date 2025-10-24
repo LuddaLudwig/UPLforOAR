@@ -178,7 +178,7 @@ distribution that allows for skewness. As such, it also exists the entire number
 line, but it is not symmetric. The Skew-normal distribution is defined by three 
 parameters; location $\xi$, scale $\omega$, and skewness $\alpha$. This 
 equivalent to a Normal distribution when $\alpha = 0$, it is right-skewed if 
-$\alpha > 0$, and left=skewed if $\alpha < 0$. The probability 
+$\alpha > 0$, and left-skewed if $\alpha < 0$. The probability 
 density, $p(x)$, of Skewed distributed emissions is:
 
 $$
@@ -491,7 +491,7 @@ results_25X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                              xvals = seq(0, 3, length.out = 1000))
 ```
 The fitted probability density distribution won't change with significance level, just the resulting UPL. The figure below shows the same distributions as before with the different `maxY` limits, but now we've added the UPL when calculated using 80\%, 85\%, 90\%, 95\% and 99\% significance as vertical lines. As expected, lower significance has a lower UPL. The important outcome here is that at 80\% and 85\% significance the UPL doesn't change no matter how we vary `maxY`. The UPL changes slightly at the highest `maxY` for 90\%, and quite a lot as we increase `maxY` for 95\% and 99\% significance. 
-```{r figure4, echo = FALSE, fig.height=5, fig.width=5, fig.align="center", fig.cap="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL."}
+```{r figure4, echo = FALSE, fig.height=7, fig.width=5, fig.align="center", fig.cap="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL."}
 results_3X95$fit_table$distr = rep("3X Max", 
                                           nrow(results_3X95$fit_table))
 results_2X95$fit_table$distr = rep("2X Max", 
