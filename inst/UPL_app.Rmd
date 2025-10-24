@@ -18,9 +18,10 @@ library(UPLforOAR)
 inputPanel(
         selectInput("CAA_section", label="CAA Section:", selected=112,
                 choices=c(112,129)),
-        fileInput('data','Upload csv file with "emissions" column of numeric 
-                  data and "sources" column of corresponding source names',
+        fileInput('data','Upload csv file with "emissions" 
+                   and "sources" as columns',
                   accept='.csv'),
+        checkboxInput('runMACT','Subset data to top performers', FALSE),
         numericInput("future_runs",label="Number of future test runs",
                      value=3,min=1),
         numericInput("signficance",label="Level of significance",
@@ -79,8 +80,17 @@ number of future tests for calculating the UPL is
 ##### The best performer for the new source calculation is `r reactive(best_source())` with an average emission of `r reactive(signif(emission_mean_new(),digits=4))` from `r reactive(nrow(dat_top_new()))` test runs.
 
 ```{r source settings}
-dat_top_exist_raw=reactive(MACT_EG(CAA_section=input$CAA_section,
-                                   data=dat_emiss()))
+
+dat_top_exist_raw=reactive({
+  if (input$runMACT){
+    dat_out=MACT_EG(CAA_section=input$CAA_section,
+                                   data=dat_emiss())
+  } else {
+    dat_out=dat_emiss()
+  }
+  dat_out
+})
+  
 dat_top_new_raw=reactive(MACT_NSPS(data=dat_emiss()))
 
 emission_mean_exist=reactive({
