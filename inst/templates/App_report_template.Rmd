@@ -2,7 +2,9 @@
 title: "UPL Results"
 author: "Ludda Ludwig"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: pdf_document
+output:
+  pdf_document:
+    extra_dependencies: ["float"]
 params:
   data: "NA"
   future_runs: "NA"
@@ -14,7 +16,8 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE,
+                      fig.pos="H",out.extra = "")
 library(tidyverse)
 library(kableExtra)
 library(UPLforOAR)
@@ -69,6 +72,11 @@ number of future tests for calculating the UPL is
 
 ##### The best performer for the new source calculation is `r best_source` with an average emission of `r signif(emission_mean_new,digits=4)` from `r nrow(dat_top_new)` test runs.
 
+```{r mean_table}
+dat_topmeans_exist%>%head(5)%>%knitr::kable(caption="Top five sources for existing source calculation",digits=12,
+             col.names=c('Source','Average emission','No. of Runs'))
+```
+
 ## UPL Results
 
 Based on the kurtosis and skewness ratio test methods from the UPL excel workbook,
@@ -86,11 +94,8 @@ UPL_table%>%knitr::kable(caption=paste0("UPL results from frequentist excel
               col.names=c('Distribution','Existing source UPL','NSPS UPL'), digits = 10)
 ```
 
-For each distribution used, a pair of plots is generated for each defining 
-parameter. 
-
 ```{r plot1, results=FALSE, fig.height=4, fig.cap="Figure 1. Observation density of emissions by source type. Source averages are indicated by vertical lines."}
-  ggplot(data=dat_top_exist,aes(emissions,fill=sources))+
+ggplot(data=dat_top_exist,aes(emissions,fill=sources))+
           geom_density(alpha=0.75,bounds=c(0,Inf))+
           ylab("Density")+xlab("Emissions")+
           ggtitle("Top sources observed populations")+
@@ -135,7 +140,7 @@ ggplot(data=Obs_onPoint)+
   ylab("Density")+xlab("Emissions")+
   ggtitle("Existing source test run population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept=(emission_mean_exist),color='a'),
+  geom_vline(aes(xintercept=emission_mean_exist,color='a'),
              linewidth=1,linetype=1,key_glyph='rect')+
   geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Normal"],color='c'),
              linewidth=1,linetype=3,key_glyph='rect')+
@@ -153,7 +158,7 @@ ggplot(data=Obs_onPoint)+
   guides(fill='none')
 ```
 
-```{r plot3, fig.height=4, fig.cap="Figure 3. Observation density of best performer (`r best_source`) test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
+```{r plot3, fig.height=4, fig.cap="Figure 3. Observation density of best performer test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
 
 x_hat_new=seq(0,3*max(dat_top_new$emissions),length.out=1024)
 obs_dens_results_new=obs_density(data=dat_top_new,xvals=x_hat_new)
@@ -200,3 +205,71 @@ ggplot(data=Obs_onPoint_new)+
   guides(fill='none')
 ```
 
+\newpage
+## Appendix A: EG data table
+
+Below is the table containing all of emissions data used in the existing source 
+UPL calculation. Note that you can download a .csv version of these data while
+using the UPL_app.Rmd webpage. 
+
+```{r dat_EG, results=TRUE}
+dat_top_exist%>%knitr::kable(caption="Top performering source emissions data used in Existing source UPL calculations.",digits=12,
+             col.names=names(dat_top_exist))
+```
+
+\newpage
+## Appendix B: NSPS data table
+
+Below is the table containing all of emissions data used in the NSPS 
+UPL calculation. Note that you can download a .csv version of these data while
+using the UPL_app.Rmd webpage. 
+
+```{r dat_NSPS}
+dat_top_new%>%knitr::kable(caption="Best performering source emissions data used in Existing source UPL calculations.",digits=12,
+             col.names=names(dat_top_new))
+```
+
+\newpage
+
+## Appendix C: R code
+
+### MACT_EG()
+```{r function_docs1, results=TRUE, message=TRUE}
+MACT_EG
+```
+
+### MACT_NSPS()
+```{r function_docs2, results=TRUE, message=TRUE}
+MACT_NSPS
+```
+
+### distribution_type()
+```{r function_docs3, results=TRUE, message=TRUE}
+distribution_type
+```
+
+### Normal_UPL()
+```{r function_docs4, results=TRUE, message=TRUE}
+Normal_UPL
+```
+
+### Lognormal_UPL()
+```{r function_docs5, results=TRUE, message=TRUE}
+Lognormal_UPL
+```
+
+### Skewed_UPL()
+```{r function_docs6, results=TRUE, message=TRUE}
+Skewed_UPL
+```
+
+### obs_density()
+```{r function_docs7, results=TRUE, message=TRUE}
+obs_density
+```        
+
+\newpage
+## Appendix D: System and package versions
+```{r versions, results=TRUE}
+sessionInfo()
+```
