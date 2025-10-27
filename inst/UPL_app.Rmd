@@ -24,7 +24,7 @@ inputPanel(
         checkboxInput('runMACT','Subset data to top performers', FALSE),
         numericInput("future_runs",label="Number of future test runs",
                      value=3,min=1),
-        numericInput("signficance",label="Level of significance",
+        numericInput("significance",label="Level of significance",
                      value=0.99,min=0,max=1)
 )
 downloadButton('Sourcedownload','Download top sources')
@@ -77,7 +77,7 @@ For existing source standards calculations, `r CAA_text` is used to determine
 the top sources, either the best 5 performers or the best 12\% performers. The 
 number of future tests for calculating the UPL is 
 `r reactive(input$future_runs)`, using a 
-`r (reactive(input$signficance*100))`\% limit.
+`r (reactive(input$significance*100))`\% limit.
 
 ##### The best performer for the new source calculation is `r reactive(best_source())` with an average emission of `r reactive(signif(emission_mean_new(),digits=3))` from `r reactive(nrow(dat_top_new_raw()))` test runs.
 
@@ -126,6 +126,8 @@ best_source=reactive({
 
 dat_top_exist=reactive({
   ordered2=dat_top_exist_raw()
+  ordered3=dat_topmeans_exist()
+  ordered2$sources=factor(ordered2$sources,levels=levels(ordered3$sources))
   ordered2$ln_emiss=log(ordered2$emissions)
   ordered2$ln_emiss=replace(ordered2$ln_emiss,
                                !is.finite(ordered2$ln_emiss),NA)
@@ -165,19 +167,19 @@ distribution_result_new=reactive({
 PI99_normal_new=reactive({
   df4=dat_top_new()
   out3=Normal_UPL(data=df4,future_runs = input$future_runs,
-                             significance=input$signficance)
+                             significance=input$significance)
   out3
   })
 PI99_lognorm_new=reactive({
   df5=dat_top_new()
   out4=Lognormal_UPL(data=df5,future_runs = input$future_runs,
-                             significance=input$signficance)
+                             significance=input$significance)
   out4
   })
 PI99_skew_new=reactive({
   df6=dat_top_new()
   out5=Skewed_UPL(data=df6,future_runs = input$future_runs,
-                             significance=input$signficance)
+                             significance=input$significance)
   out5
   })
 
@@ -186,10 +188,10 @@ dat_freq1_new=reactive({
   pi5=PI99_skew_new()
   pi6=PI99_lognorm_new()
   if (is.numeric(pi4)){
-    output=tibble(distribution=c('Normal','Skew','Lognormal'),
+    output=tibble(distribution=c('Normal','Skewed','Lognormal'),
                 UPL_new=c(pi4,pi5,pi6))
   } else {
-    output=tibble(distribution=c('Normal','Skew','Lognormal'),
+    output=tibble(distribution=c('Normal','Skewed','Lognormal'),
                 UPL_new=c(NA,NA,NA))
   }
   output
@@ -276,18 +278,18 @@ distribution_result_exist=reactive(distribution_type(data=dat_top_exist()))
 
 PI99_normal_exist=reactive(
   Normal_UPL(data=dat_top_exist(),future_runs = input$future_runs,
-                  significance=input$signficance)
+                  significance=input$significance)
 )
 PI99_lognorm_exist=reactive({
   df2=dat_top_exist()
   out1=Lognormal_UPL(data=df2,future_runs = input$future_runs,
-                             significance=input$signficance)
+                             significance=input$significance)
   out1
   })
 PI99_skew_exist=reactive({
   df3=dat_top_exist()
   out2=Skewed_UPL(data=df3,future_runs = input$future_runs,
-                             significance=input$signficance)
+                             significance=input$significance)
   out2
   })
 
@@ -295,7 +297,7 @@ dat_freq1=reactive({
   pi1=PI99_normal_exist()
   pi2=PI99_skew_exist()
   pi3=PI99_lognorm_exist()
-  tibble(distribution=c('Normal','Skew','Lognormal'),
+  tibble(distribution=c('Normal','Skewed','Lognormal'),
                 UPL_exist=c(pi1,pi2,pi3))
   })
 dat_freq=reactive({
@@ -362,7 +364,7 @@ output$UPLdownload <- downloadHandler(
 output$upl_display=reactive(dat_UPL()%>%knitr::kable('html',
                             caption=paste0("UPL results from frequentist excel 
                                            workbook using a significance of ",
-                                           input$signficance*100,'% and ',
+                                           input$significance*100,'% and ',
                                            input$future_runs,' future test runs.'),
               col.names=c('Distribution','Existing source UPL','NSPS UPL'), digits = 10)%>%
                 kable_styling("striped",full_width=T))
@@ -432,11 +434,11 @@ renderPlot({
             fill='black')+
   geom_point(aes(y=ydens,x=(emissions)),
              size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(aes(y=pdf_norm,x=(x_hat),color='c',key_glyph='rect'),
+  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),key_glyph='rect',
                data = pred_dat_new(),linewidth=0.75,linetype=3)+
-  geom_area(aes(y=pdf_norm,x=(x_hat)),alpha=0.25,
+  geom_area(aes(y=pdf_norm,x=x_hat),alpha=0.25,
             data = pred_dat_new(),fill='#FF7F00')+
-  geom_line(aes(y=pdf_ln,x=(x_hat),color='b',key_glyph='rect'),
+  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),key_glyph='rect',
                data = pred_dat_new(),linewidth=0.75,linetype=2)+
   geom_area(aes(y=pdf_ln,x=(x_hat)),alpha=0.25,
             data = pred_dat_new(),fill='#984EA3')+
