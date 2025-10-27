@@ -29,6 +29,7 @@ inputPanel(
 )
 downloadButton('Sourcedownload','Download top sources')
 downloadButton('UPLdownload','Download UPL results')
+downloadButton("pdf_report",'Download PDF report')
 
 ```
 
@@ -119,7 +120,7 @@ emission_mean_new=reactive({
   })
 best_source=reactive({
   dat3=dat_top_new_raw()
-  result3=as.character(dat3$sources)
+  result3=as.character(dat3$sources)[1]
   result3
 })
 
@@ -464,3 +465,23 @@ test run population. Best performer average and new source UPL calculations are
 indicated by vertical lines.
 
 \vspace{2cm}
+```{r render_pdf}
+output$pdf_report = downloadHandler(
+  filename = function() {
+    paste0('UPL_report_v',Sys.Date(),'.pdf')
+  },
+  content =function(file){
+    rmarkdown::render("templates/App_report_template.Rmd",
+                      output_file=file,
+                      params = list(
+                          data = dat_top_exist(),
+                          future_runs = input$future_runs,
+                          significance = input$significance,
+                          CAA_section = input$CAA_section,
+                          runMACT = input$runMACT,
+                          data_nsps = dat_top_new(),
+                          dat_UPL = dat_UPL()
+                      ))
+  }
+)
+```
