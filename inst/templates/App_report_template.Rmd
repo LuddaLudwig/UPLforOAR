@@ -1,0 +1,202 @@
+---
+title: "UPL Results"
+author: "Ludda Ludwig"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+params:
+  data: "NA"
+  future_runs: "NA"
+  significance: "NA"
+  CAA_section: "NA"
+  runMACT: "NA"
+  data_nsps: "NA"
+  dat_UPL: "NA"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,error=TRUE,warning=FALSE, message=FALSE)
+library(tidyverse)
+library(kableExtra)
+library(UPLforOAR)
+```
+
+```{r data}
+dat_top_exist = params$data
+
+if (params$CAA_section==112){
+  CAA_text='CAA Section 112(d)(3)'
+} else if (params$CAA_section==129){
+  CAA_text='CAA Section 129(a)(2)'
+}
+
+emission_mean_exist=results1=mean(dat_top_exist$emissions)
+dat_topmeans_exist=dat_top_exist%>%group_by(sources)%>%
+                              summarize(means=mean(emissions),counts=n())
+dat_topmeans_exist$sources=as.factor(dat_topmeans_exist$sources)
+dat_topmeans_exist$sources=fct_reorder(dat_topmeans_exist$sources,
+                              dat_topmeans_exist$means,.desc = FALSE)
+dat_topmeans_exist=arrange(dat_topmeans_exist,means)
+dat_topmeans_exist=dat_topmeans_exist%>%mutate(across(where(is.numeric),~signif(.,digits=4)))
+names(dat_topmeans_exist)=c('sources','means','counts')
+
+dat_top_new=params$data_nsps
+emission_mean_new=mean(dat_top_new$emissions)
+best_source=as.character(dat_top_new$sources)[1]
+
+distribution_result_new=distribution_type(data=dat_top_new)
+distribution_result_exist=distribution_type(data=dat_top_exist)
+
+UPL_table=params$dat_UPL
+
+best_UPL=UPL_table$UPL_exist[UPL_table$distribution==distribution_result_exist]
+best_UPL_NSPS=UPL_table$UPL_new[UPL_table$distribution==distribution_result_new]
+
+
+```
+
+Upper Predictive Limit (UPL) results were provided following the frequentist 
+framework and methods previously used by Excel workbooks, now implemented in 
+`UPLforOAR` version `r packageVersion('UPLforOAR')`. Density figures were 
+generated using `ggplot2` and `obs_density()` with a bandwidth of `r signif(sd(dat_top_exist$emissions)*nrow(dat_top_exist)^(-2/5),3)`, the `gamma` kernel, and 
+an upper boundary of `r signif(3*max(dat_top_exist$emissions),3)` emissions. 
+
+## Source calculation
+
+For existing source standards calculations, `r CAA_text` was used to determine 
+the top sources, either the best 5 performers or the best 12\% performers. The 
+number of future tests for calculating the UPL is 
+`r params$future_runs`, using a `r (params$significance*100)`\% limit.
+
+##### The best performer for the new source calculation is `r best_source` with an average emission of `r signif(emission_mean_new,digits=4)` from `r nrow(dat_top_new)` test runs.
+
+## UPL Results
+
+Based on the kurtosis and skewness ratio test methods from the UPL excel workbook,
+The best distribution for the existing source UPL calculation is 
+`r distribution_result_exist`, with the corresponding UPL: `r best_UPL`, and 
+the best distribution for the NSPS UPL calculation is 
+`r distribution_result_new`, and the corresponding UPL is `r best_UPL_NSPS`.
+
+
+```{r UPL_table}
+UPL_table%>%knitr::kable(caption=paste0("UPL results from frequentist excel 
+                                           workbook using a significance of ",
+                                           (params$significance*100),'% and ',
+                                           params$future_runs,' future test runs.'),
+              col.names=c('Distribution','Existing source UPL','NSPS UPL'), digits = 10)
+```
+
+For each distribution used, a pair of plots is generated for each defining 
+parameter. 
+
+```{r plot1, results=FALSE, fig.height=4, fig.cap="Figure 1. Observation density of emissions by source type. Source averages are indicated by vertical lines."}
+  ggplot(data=dat_top_exist,aes(emissions,fill=sources))+
+          geom_density(alpha=0.75,bounds=c(0,Inf))+
+          ylab("Density")+xlab("Emissions")+
+          ggtitle("Top sources observed populations")+
+          multi_source_theme()+labs(fill='Top sources',color='Top sources')+
+          geom_vline(aes(xintercept=means,color=sources),
+             data=dat_topmeans_exist,linewidth=1)+
+          guides(fill=guide_legend(nrow=2,byrow=TRUE),
+                color=guide_legend(nrow=2,byrow=TRUE))+
+          scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+          scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+          coord_cartesian(clip='off')+
+          geom_rug(sides='b',aes(x=emissions,color=sources),
+                   data=dat_top_exist,alpha=0.5,outside=TRUE)
+```
+
+```{r plot2, fig.height=4, fig.cap="Figure 2. Observation density of emission test run population. Test run average and existing source UPL calculations are indicated by vertical lines."}
+
+x_hat=seq(0,3*max(dat_top_exist$emissions),length.out=1024)
+obs_dens_results=obs_density(data=dat_top_exist,xvals=x_hat)
+Obs_onPoint=obs_dens_results$Obs_onPoint
+obs_den_df=obs_dens_results$obs_den_df
+pdf_norm=dnorm(x_hat,mean=emission_mean_exist,sd=sd(dat_top_exist$emissions))
+pdf_ln=dlnorm(x_hat,mean=mean(dat_top_exist$ln_emiss,na.rm=T),
+              sd=sd(dat_top_exist$ln_emiss,na.rm=T))
+pred_dat=tibble(pdf_norm=pdf_norm,pdf_ln=pdf_ln,x_hat=x_hat)
+
+ggplot(data=Obs_onPoint)+
+  geom_line(data=obs_den_df,aes(y=ydens,x=x_hat,color='a'),
+            key_glyph='rect',linewidth=0.75)+
+  geom_area(data=obs_den_df,aes(y=ydens,x=x_hat),alpha=0.25,
+            fill='black')+
+  geom_point(aes(y=ydens,x=emissions),
+             size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),key_glyph='rect',
+               data = pred_dat,linewidth=0.75,linetype=3)+
+  geom_area(aes(y=pdf_norm,x=x_hat),alpha=0.25,
+            data = pred_dat,fill='#FF7F00')+
+  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),key_glyph='rect',
+               data = pred_dat,linewidth=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=x_hat),alpha=0.25,
+            data = pred_dat,fill='#984EA3')+
+  ylab("Density")+xlab("Emissions")+
+  ggtitle("Existing source test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(emission_mean_exist),color='a'),
+             linewidth=1,linetype=1,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Normal"],color='c'),
+             linewidth=1,linetype=3,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Lognormal"],color='b'),
+             linewidth=1,linetype=2,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Skewed"],color='d'),
+             linewidth=1,linetype=4,key_glyph='rect')+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  coord_cartesian(clip='off')+labs(color="Distribution:")+
+  geom_rug(sides='b',aes(x=emissions),data=dat_top_exist,
+           alpha=0.5,outside=TRUE,color='black')+
+  scale_color_manual(values=c('black','#984EA3','#FF7F00','#377EB8'),
+                     labels=c('Observations','Lognormal','Normal','Skewed'))+
+  guides(fill='none')
+```
+
+```{r plot3, fig.height=4, fig.cap="Figure 3. Observation density of best performer (`r best_source`) test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
+
+x_hat_new=seq(0,3*max(dat_top_new$emissions),length.out=1024)
+obs_dens_results_new=obs_density(data=dat_top_new,xvals=x_hat_new)
+Obs_onPoint_new=obs_dens_results_new$Obs_onPoint
+obs_den_df_new=obs_dens_results_new$obs_den_df
+pdf_norm_new=dnorm(x_hat_new,mean=emission_mean_new,sd=sd(dat_top_new$emissions))
+pdf_ln_new=dlnorm(x_hat_new,mean=mean(dat_top_new$ln_emiss,na.rm=T),
+              sd=sd(dat_top_new$ln_emiss,na.rm=T))
+pred_dat_new=tibble(pdf_norm=pdf_norm_new,pdf_ln=pdf_ln_new,x_hat=x_hat_new)
+
+ggplot(data=Obs_onPoint_new)+
+  geom_line(data=obs_den_df_new,aes(y=ydens,x=x_hat,color='a'),
+            key_glyph='rect',linewidth=0.75)+
+  geom_area(data=obs_den_df_new,aes(y=ydens,x=x_hat),alpha=0.25,
+            fill='black')+
+  geom_point(aes(y=ydens,x=emissions),
+             size=3,alpha=0.5,shape=19,color='black')+
+  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),key_glyph='rect',
+               data = pred_dat_new,linewidth=0.75,linetype=3)+
+  geom_area(aes(y=pdf_norm,x=x_hat),alpha=0.25,
+            data = pred_dat_new,fill='#FF7F00')+
+  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),key_glyph='rect',
+               data = pred_dat_new,linewidth=0.75,linetype=2)+
+  geom_area(aes(y=pdf_ln,x=x_hat),alpha=0.25,
+            data = pred_dat_new,fill='#984EA3')+
+  ylab("Density")+xlab("Emissions")+
+  ggtitle("NSPS test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept=(emission_mean_new),color='a'),
+             linewidth=1,linetype=1,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Normal"],color='c'),
+             linewidth=1,linetype=3,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Lognormal"],color='b'),
+             linewidth=1,linetype=2,key_glyph='rect')+
+  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Skewed"],color='d'),
+             linewidth=1,linetype=4,key_glyph='rect')+
+  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+  coord_cartesian(clip='off')+labs(color="Distribution:")+
+  geom_rug(sides='b',aes(x=emissions),data=dat_top_new,
+           alpha=0.5,outside=TRUE,color='black')+
+  scale_color_manual(values=c('black','#984EA3','#FF7F00','#377EB8'),
+                     labels=c('Observations','Lognormal','Normal','Skewed'))+
+  guides(fill='none')
+```
+
