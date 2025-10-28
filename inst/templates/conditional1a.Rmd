@@ -1,0 +1,10 @@
+
+
+Upper Predictive Limit (UPL) results were provided following the frequentist 
+framework and methods previously used by Excel workbooks, now implemented in 
+`UPLforOAR` version `r packageVersion('UPLforOAR')`. Density figures were 
+generated using `ggplot2` and `obs_density()` with the `gamma` 
+kernel, a bandwidth of `r signif(sd(dat_top_exist$emissions)*nrow(dat_top_exist)^(-2/5),3)`, 
+and an upper boundary of `r signif(3*max(dat_top_exist$emissions),3)` 
+emissions for existing source figures, and a bandwidth of `r signif(sd(dat_top_new$emissions)*nrow(dat_top_new)^(-2/5),3)` and upper boundary 
+of `r signif(3*max(dat_top_new$emissions),3)` emissions for NSPS figures.

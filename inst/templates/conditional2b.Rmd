@@ -1,0 +1,5 @@
+
+The emissions data were pre-selected to the top performing sources to use for 
+the UPL calculation, thus the entire uploaded data set was used to characterize 
+the emissions distribution. The number of future tests for calculating the UPL was 
+`r params$future_runs`, using a `r (params$significance*100)`\% limit.

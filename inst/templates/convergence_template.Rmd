@@ -15,7 +15,7 @@ diagnostic values of less than 1.1 indicate good convergence. Values greater
 than 1.1 but less than 1.2 indicate weak convergence. Values greater than 1.2 
 indicate there is no convergence, and the results should be rejected and the model
 or distribution reassessed for appropriateness to the data.
-```{r gelamn}
+```{r gelman}
 knitr::kable(conv_output,caption="Gelman-Rubin diagnostic results",
              col.names=c('Parameter','Diagnostic','Converged?','Distribution'),
              digits = 4)

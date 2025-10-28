@@ -54,7 +54,7 @@ Skewed_UPL=function(data,future_runs=3,significance=0.99){
     if (abs(current_prob-0.99)<0.0001){
       PI99_skew=mean(data$emissions)+tscore*sqrt(var.s*(1/n+1/future_runs))
     } else if ((current_prob-0.99)>0){
-      tstat_list=seq(from=tscore,length.out=20000,by=0.0001)
+      tstat_list=seq(from=tscore,length.out=20000,by=-0.0001)
       new_prob=c()
       for (t in 1:length(tstat_list)){
 
