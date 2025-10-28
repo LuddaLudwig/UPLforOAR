@@ -75,18 +75,18 @@ if (is.null(params$runMACT)){
 
 ```
 
-```{r cond1a, child='conditional1a.Rmd', eval=nsps_EVAL}
+```{r cond1a, child='App_report_children/conditional1a.Rmd', eval=nsps_EVAL}
 ```
 
-```{r cond1b, child='conditional1b.Rmd', eval=(!nsps_EVAL)}
+```{r cond1b, child='App_report_children/conditional1b.Rmd', eval=(!nsps_EVAL)}
 ```
 
 ## Source population calculation
 
-```{r cond2a, child='conditional2a.Rmd', eval=(mact_EVAL)}
+```{r cond2a, child='App_report_children/conditional2a.Rmd', eval=(mact_EVAL)}
 ```
 
-```{r cond2b, child='conditional2b.Rmd', eval=(!mact_EVAL)}
+```{r cond2b, child='App_report_children/conditional2b.Rmd', eval=(!mact_EVAL)}
 ```
 
 ##### The best performer for the new source calculation was `r best_source` with an average emission of `r signif(emission_mean_new,digits=4)` from `r nrow(dat_top_new)` test runs.
@@ -97,10 +97,10 @@ dat_topmeans_exist%>%head(5)%>%knitr::kable(caption="Top five sources for existi
 ```
 
 ## UPL Results
-```{r cond3a, child='conditional3a.Rmd', eval=nsps_EVAL}
+```{r cond3a, child='App_report_children/conditional3a.Rmd', eval=nsps_EVAL}
 ```
 
-```{r cond3b, child='conditional3b.Rmd', eval=(!nsps_EVAL)}
+```{r cond3b, child='App_report_children/conditional3b.Rmd', eval=(!nsps_EVAL)}
 ```
 
 ```{r UPL_table, echo=FALSE, eval=nsps_EVAL}
@@ -243,7 +243,7 @@ dat_top_exist%>%knitr::kable(caption="Top performering source emissions data use
              col.names=names(dat_top_exist))
 ```
 
-```{r cond4, child='conditional4.Rmd', eval=nsps_EVAL}
+```{r cond4, child='App_report_children/conditional4.Rmd', eval=nsps_EVAL}
 
 ```
 ```{r dat_NSPS, echo=FALSE, eval=nsps_EVAL}
