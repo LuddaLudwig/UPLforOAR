@@ -376,15 +376,23 @@ pred_dat=reactive({
 ## UPL Results
 
 The following calculations replicate the results from the UPL excel workbook. 
+
 The best distribution for the existing source UPL calculation is 
 `r reactive(distribution_result_exist())`, and the corresponding UPL is `r reactive(best_UPL())`.
 
-<!-- # ```{r text1} -->
-<!-- # The best distribution for the NSPS UPL calculation is  -->
-<!-- # `r reactive(distribution_result_new())`, and the corresponding UPL is `r reactive(best_UPL_NSPS())`. -->
-<!-- # output$text1 =rendertext() -->
-<!-- # htmlOutput('text1') -->
-<!-- # ``` -->
+```{r text2, echo=FALSE}
+output$text2=renderText(paste0("The best distribution for the NSPS UPL calculation is ",
+                               distribution_result_new(),
+                               " and the corresponding UPL is ",
+                               best_UPL_NSPS(),"."))
+
+output$uitext2=renderUI({
+  if (source_fig()){
+    htmlOutput(outputId='text2')
+  }
+})
+uiOutput(outputId = 'uitext2')
+```
 
 ```{r freqtable}
 dat_UPL=reactive({
