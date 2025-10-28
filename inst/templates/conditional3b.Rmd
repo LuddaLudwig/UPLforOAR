@@ -1,0 +1,3 @@
+Based on the kurtosis and skewness ratio test methods from the UPL excel workbook,
+The best distribution for the existing source UPL calculation was 
+`r distribution_result_exist` with the corresponding UPL: `r best_UPL`.

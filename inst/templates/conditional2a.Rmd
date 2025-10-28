@@ -1,0 +1,5 @@
+For existing source standards calculations, `r CAA_text` was used to determine 
+the top sources, resulting in `r nrow(dat_topmeans_exist)` sources with 
+`r nrow(dat_top_exist)` total emissions observations. The number of future tests 
+for calculating the UPL was `r params$future_runs`, using a 
+`r (params$significance*100)`\% limit.
