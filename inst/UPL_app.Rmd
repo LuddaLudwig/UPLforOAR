@@ -27,7 +27,8 @@ inputPanel(
         numericInput("significance",label="Level of significance",
                      value=0.99,min=0,max=1)
 )
-downloadButton('Sourcedownload','Download top sources')
+downloadButton('Sourcedownload1','Download top performers EG data')
+downloadButton('Sourcedownload2','Download best performer NSPS data')
 downloadButton('UPLdownload','Download UPL results')
 downloadButton("pdf_report",'Download PDF report')
 
@@ -134,7 +135,7 @@ dat_top_exist=reactive({
   ordered2
 })
 
-output$Sourcedownload <- downloadHandler(
+output$Sourcedownload1 <- downloadHandler(
   filename = function() {
     paste0(str_remove(input$data$name,".csv"),"_TopSources_v",Sys.Date(), ".csv")
   },
@@ -142,6 +143,7 @@ output$Sourcedownload <- downloadHandler(
     write.csv(dat_top_exist(), file)
   }
 )
+
 output$mean_display=reactive(dat_topmeans_exist()%>%knitr::kable('html',caption="Top sources for existing source calculation",digits=12,
              col.names=c('Source','Average emission','No. of Runs'))%>%
                 kable_styling("striped",full_width=T))
@@ -156,7 +158,14 @@ dat_top_new=reactive({
                                !is.finite(ordered2$ln_emiss),NA)
   ordered2
 })
-
+output$Sourcedownload2 <- downloadHandler(
+  filename = function() {
+    paste0(str_remove(input$data$name,".csv"),"_BestSource_v",Sys.Date(), ".csv")
+  },
+  content = function(file) {
+    write.csv(dat_top_new(), file)
+  }
+)
 distribution_result_new=reactive({
     validate(
     need((nrow(dat_top_new_raw())>=3),
@@ -470,7 +479,7 @@ indicated by vertical lines.
 ```{r render_pdf}
 output$pdf_report = downloadHandler(
   filename = function() {
-    paste0('UPL_report_v',Sys.Date(),'.pdf')
+    paste0(str_remove(input$data$name,".csv"),'_UPL_report_v',Sys.Date(),'.pdf')
   },
   content =function(file){
     rmarkdown::render("templates/App_report_template.Rmd",
