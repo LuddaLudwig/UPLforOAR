@@ -69,16 +69,47 @@ CAA_text=reactive(
   'CAA Section 129(a)(2)'
 }
 )
-
+mact_EVAL=reactive({
+  if (is.null(input$runMACT)){
+    out=FALSE
+  } else if (!input$runMACT){
+    out=FALSE
+  } else if (input$runMACT){
+    out=TRUE
+  }
+  out
+})
 ```
 
 ## Source calculation
 
-For existing source standards calculations, `r CAA_text` is used to determine 
-the top sources, either the best 5 performers or the best 12\% performers. The 
-number of future tests for calculating the UPL is 
-`r reactive(input$future_runs)`, using a 
-`r (reactive(input$significance*100))`\% limit.
+```{r text0a}
+output$text0a=renderText(paste0("For existing source standards calculations, ",
+                               CAA_text(),
+                               " is used to determine the top sources, either the best 5 performers or the best 12% performers. The number of future tests for calculating the UPL is ",
+                               input$future_runs,
+                               " using a ", input$significance*100,
+                               "% limit."))
+output$uitext0a=renderUI({
+  if (mact_EVAL()){
+    htmlOutput(outputId='text0a')
+  }
+})
+uiOutput(outputId = 'uitext0a')
+```
+
+```{r text0b}
+output$text0b=renderText(paste0("The emissions data were pre-selected to the top performing sources to use for the UPL calculation, thus the entire uploaded data set was used to characterize the emissions distribution. The number of future tests for calculating the UPL was ",
+                               input$future_runs,
+                               " using a ", input$significance*100,
+                               "% limit."))
+output$uitext0b=renderUI({
+  if (!mact_EVAL()){
+    htmlOutput(outputId='text0b')
+  }
+})
+uiOutput(outputId = 'uitext0b')
+```
 
 ##### The best performer for the new source calculation is `r reactive(best_source())` with an average emission of `r reactive(signif(emission_mean_new(),digits=3))` from `r reactive(nrow(dat_top_new_raw()))` test runs.
 
@@ -144,7 +175,7 @@ output$Sourcedownload1 <- downloadHandler(
   }
 )
 
-output$mean_display=reactive(dat_topmeans_exist()%>%knitr::kable('html',caption="Top sources for existing source calculation",digits=12,
+output$mean_display=reactive(dat_topmeans_exist()%>%head(5)%>%knitr::kable('html',caption="Top five sources for existing source calculation",digits=12,
              col.names=c('Source','Average emission','No. of Runs'))%>%
                 kable_styling("striped",full_width=T))
 tableOutput('mean_display')
@@ -185,37 +216,41 @@ distribution_result_new=reactive({
   })
 
 PI99_normal_new=reactive({
-  req(nsps_EVAL())
-  df4=dat_top_new()
-  out3=Normal_UPL(data=df4,future_runs = input$future_runs,
+  if (nsps_EVAL()){
+      df4=dat_top_new()
+      out3=Normal_UPL(data=df4,future_runs = input$future_runs,
                              significance=input$significance)
+  } else {
+    out3=NA
+  }
   out3
   })
 PI99_lognorm_new=reactive({
-  req(nsps_EVAL())
-  df5=dat_top_new()
-  out4=Lognormal_UPL(data=df5,future_runs = input$future_runs,
-                             significance=input$significance)
+  if (nsps_EVAL()){
+    df5=dat_top_new()
+    out4=Lognormal_UPL(data=df5,future_runs = input$future_runs,
+                             significance=input$significance)    
+  } else{
+    out4=NA
+  }
   out4
   })
 PI99_skew_new=reactive({
-  req(nsps_EVAL())
-  df6=dat_top_new()
-  out5=Skewed_UPL(data=df6,future_runs = input$future_runs,
-                             significance=input$significance)
+  if (nsps_EVAL()){
+    df6=dat_top_new()
+    out5=Skewed_UPL(data=df6,future_runs = input$future_runs,
+                             significance=input$significance)    
+  } else{
+    out5=NA
+  }
   out5
   })
 
 dat_freq1_new=reactive({
-  if (is.numeric(PI99_normal_new())){
     output=tibble(distribution=c('Normal','Skewed','Lognormal'),
                 UPL_new=c(PI99_normal_new(),
                           PI99_skew_new(),
                           PI99_lognorm_new()))
-  } else {
-    output=tibble(distribution=c('Normal','Skewed','Lognormal'),
-                UPL_new=c(NA,NA,NA))
-  }
   output
   })
 dat_freq_new=reactive({
@@ -225,51 +260,33 @@ dat_freq_new=reactive({
   })
 
 best_UPL_NSPS=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #       "data must have at least 3 observations"))
   req(nsps_EVAL())
   dat_freq1=dat_freq_new()
   dat_freq1$UPL_new[dat_freq1$distribution==distribution_result_new()]
 })
 
 x_hat_new=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #        "data must have at least 3 observations"))
   req(nsps_EVAL())
   df=dat_top_new()
   seq(0,3*max(df$emissions),length.out=1024)
 })
 obs_dens_results_new=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #       "data must have at least 3 observations"))
   req(nsps_EVAL())
   obs_density(data=dat_top_new(),xvals=x_hat_new())
 }
 
 )
 Obs_onPoint_new=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #       "data must have at least 3 observations"))
   req(nsps_EVAL())
   out1=obs_dens_results_new()
   out1$Obs_onPoint
 })
 obs_den_df_new=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #       "data must have at least 3 observations"))
   req(nsps_EVAL())
   out1=obs_dens_results_new()
   out1$obs_den_df
 }) 
 pred_dat_new=reactive({
-  # validate(
-  # need((nrow(dat_top_new_raw())>=3),
-  #       "data must have at least 3 observations"))
   req(nsps_EVAL())
   df=dat_top_new()
   pdf_norm=dnorm(x_hat_new(),mean=emission_mean_new(),sd=sd(df$emissions))
@@ -315,7 +332,7 @@ output$uiplot1=renderUI({
 uiOutput(outputId = 'uiplot1')
 ```
 
-```{r label1, echo=FALSE}
+```{r label1}
 output$text1=renderText("Figure 1. Observation density of emissions by source type. Source averages are indicated by vertical lines.")
 
 output$uitext1=renderUI({
@@ -398,7 +415,7 @@ The following calculations replicate the results from the UPL excel workbook.
 The best distribution for the existing source UPL calculation is 
 `r reactive(distribution_result_exist())`, and the corresponding UPL is `r reactive(best_UPL())`.
 
-```{r text2, echo=FALSE}
+```{r text2}
 output$text2=renderText(paste0("The best distribution for the NSPS UPL calculation is ",
                                distribution_result_new(),
                                " and the corresponding UPL is ",
@@ -477,6 +494,7 @@ renderPlot({
   guides(fill='none')
 })
 ```
+
 Figure 2. Observation density of emission test run population. Test run average 
 and existing source UPL calculations are indicated by vertical lines.
 
@@ -526,7 +544,7 @@ output$uiplot2=renderUI({
 uiOutput(outputId = 'uiplot2')
 ```
 
-```{r label3, echo=FALSE}
+```{r label3}
 output$text3=renderText(paste0("Figure 3. Observation density of best performer (",
                         best_source(), 
                         ") test run population. Best performer average and new source UPL calculations are indicated by vertical lines."))
