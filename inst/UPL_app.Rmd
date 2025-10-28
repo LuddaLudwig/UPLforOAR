@@ -166,26 +166,40 @@ output$Sourcedownload2 <- downloadHandler(
     write.csv(dat_top_new(), file)
   }
 )
+nsps_EVAL=reactive({
+  if (nrow(dat_top_new())<3){
+    out=FALSE
+  } else {
+    out = TRUE
+  }
+  out
+})
+
+
 distribution_result_new=reactive({
-    validate(
-    need((nrow(dat_top_new_raw())>=3),
-         "data must have at least 3 observations"))
+    # validate(
+    # need((nrow(dat_top_new_raw())>=3),
+    #      "data must have at least 3 observations"))
+  req(nsps_EVAL())
   distribution_type(data=dat_top_new())
   })
 
 PI99_normal_new=reactive({
+  req(nsps_EVAL())
   df4=dat_top_new()
   out3=Normal_UPL(data=df4,future_runs = input$future_runs,
                              significance=input$significance)
   out3
   })
 PI99_lognorm_new=reactive({
+  req(nsps_EVAL())
   df5=dat_top_new()
   out4=Lognormal_UPL(data=df5,future_runs = input$future_runs,
                              significance=input$significance)
   out4
   })
 PI99_skew_new=reactive({
+  req(nsps_EVAL())
   df6=dat_top_new()
   out5=Skewed_UPL(data=df6,future_runs = input$future_runs,
                              significance=input$significance)
@@ -193,12 +207,11 @@ PI99_skew_new=reactive({
   })
 
 dat_freq1_new=reactive({
-  pi4=PI99_normal_new()
-  pi5=PI99_skew_new()
-  pi6=PI99_lognorm_new()
-  if (is.numeric(pi4)){
+  if (is.numeric(PI99_normal_new())){
     output=tibble(distribution=c('Normal','Skewed','Lognormal'),
-                UPL_new=c(pi4,pi5,pi6))
+                UPL_new=c(PI99_normal_new(),
+                          PI99_skew_new(),
+                          PI99_lognorm_new()))
   } else {
     output=tibble(distribution=c('Normal','Skewed','Lognormal'),
                 UPL_new=c(NA,NA,NA))
@@ -212,46 +225,52 @@ dat_freq_new=reactive({
   })
 
 best_UPL_NSPS=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #       "data must have at least 3 observations"))
+  req(nsps_EVAL())
   dat_freq1=dat_freq_new()
   dat_freq1$UPL_new[dat_freq1$distribution==distribution_result_new()]
 })
 
 x_hat_new=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-         "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #        "data must have at least 3 observations"))
+  req(nsps_EVAL())
   df=dat_top_new()
   seq(0,3*max(df$emissions),length.out=1024)
 })
 obs_dens_results_new=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #       "data must have at least 3 observations"))
+  req(nsps_EVAL())
   obs_density(data=dat_top_new(),xvals=x_hat_new())
 }
 
 )
 Obs_onPoint_new=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #       "data must have at least 3 observations"))
+  req(nsps_EVAL())
   out1=obs_dens_results_new()
   out1$Obs_onPoint
 })
 obs_den_df_new=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #       "data must have at least 3 observations"))
+  req(nsps_EVAL())
   out1=obs_dens_results_new()
   out1$obs_den_df
 }) 
 pred_dat_new=reactive({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
+  # validate(
+  # need((nrow(dat_top_new_raw())>=3),
+  #       "data must have at least 3 observations"))
+  req(nsps_EVAL())
   df=dat_top_new()
   pdf_norm=dnorm(x_hat_new(),mean=emission_mean_new(),sd=sd(df$emissions))
   pdf_ln=dlnorm(x_hat_new(),mean=mean(df$ln_emiss,na.rm=T),
@@ -271,7 +290,6 @@ source_fig=reactive({
     output
 })
 output$plot1=renderPlot({
-  # req(source_fig())
       ggplot(data=dat_top_exist(),aes(emissions,fill=sources))+
           geom_density(alpha=0.75,bounds=c(0,Inf))+
           ylab("Density")+xlab("Emissions")+
@@ -387,7 +405,7 @@ output$text2=renderText(paste0("The best distribution for the NSPS UPL calculati
                                best_UPL_NSPS(),"."))
 
 output$uitext2=renderUI({
-  if (source_fig()){
+  if (nsps_EVAL()){
     htmlOutput(outputId='text2')
   }
 })
@@ -419,14 +437,10 @@ output$upl_display=reactive(dat_UPL()%>%knitr::kable('html',
 tableOutput('upl_display')
 ```
 
-\vspace{1cm}
+\vspace{2cm}
 
 ```{r figure2}
 renderPlot({
-  # dataset=dat_top_exist()
-  # Ymax=1.1*max(c(PI99_lognorm_exist(),PI99_normal_exist(),PI99_skew_exist(),
-  # dataset$emissions))
-  # Ymin=min(pred_dat())
   ggplot(data=Obs_onPoint())+
   geom_line(data=obs_den_df(),aes(y=ydens,x=x_hat,color='a'),
             key_glyph='rect',linewidth=0.75)+
@@ -466,15 +480,10 @@ renderPlot({
 Figure 2. Observation density of emission test run population. Test run average 
 and existing source UPL calculations are indicated by vertical lines.
 
-\vspace{1cm}
+\vspace{2cm}
+
 ```{r figure3}
-renderPlot({
-  validate(
-  need((nrow(dat_top_new_raw())>=3),
-        "data must have at least 3 observations"))
-  # dataset=dat_top_exist()
-  # Ymax=1.1*max(c(PI99_lognorm_exist(),PI99_normal_exist(),PI99_skew_exist(),dataset$emissions))
-  # Ymin=min(pred_dat())
+output$plot2=renderPlot({
   ggplot(data=Obs_onPoint_new())+
   geom_line(data=obs_den_df_new(),aes(y=ydens,x=(x_hat),color='a'),
             key_glyph='rect',linewidth=0.75)+
@@ -509,12 +518,29 @@ renderPlot({
   scale_color_manual(values=c('black','#984EA3','#FF7F00','#377EB8'),
                      labels=c('Observations','Lognormal','Normal','Skewed'))
 })
+output$uiplot2=renderUI({
+  if (nsps_EVAL()){
+    plotOutput(outputId='plot2')
+  }
+})
+uiOutput(outputId = 'uiplot2')
 ```
-Figure 3. Observation density of best performer (`r reactive(best_source())`) 
-test run population. Best performer average and new source UPL calculations are 
-indicated by vertical lines.
 
-\vspace{2cm}
+```{r label3, echo=FALSE}
+output$text3=renderText(paste0("Figure 3. Observation density of best performer (",
+                        best_source(), 
+                        ") test run population. Best performer average and new source UPL calculations are indicated by vertical lines."))
+
+output$uitext3=renderUI({
+  if (nsps_EVAL()){
+    htmlOutput(outputId='text3')
+  }
+})
+uiOutput(outputId = 'uitext3')
+```
+
+\vspace{4cm}
+
 ```{r render_pdf}
 output$pdf_report = downloadHandler(
   filename = function() {
