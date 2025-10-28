@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--22-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--28-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -59,11 +59,11 @@ user guides, references, and worked examples included at the `UPLforOAR`
 ## Installation
 
 You can install the most recent development version of `UPLforOAR` from
-[GitHub](https://github.com/USEPA/UPLforOAR) with:
+[GitHub](https://github.com/LuddaLudwig/UPLforOAR) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("USEPA/UPLforOAR")
+pak::pak("LuddaLudwig/UPLforOAR")
 ```
 
 ## Contact

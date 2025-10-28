@@ -81,11 +81,11 @@ guides, references, and worked examples included at the `UPLforOAR` [website](ht
 ## Installation
 
 You can install the most recent development version of `UPLforOAR` from 
-[GitHub](https://github.com/USEPA/UPLforOAR) with: 
+[GitHub](https://github.com/LuddaLudwig/UPLforOAR) with: 
 
 ``` r
 # install.packages("pak")
-pak::pak("USEPA/UPLforOAR")
+pak::pak("LuddaLudwig/UPLforOAR")
 ```
 ## Contact
 If you have any questions please reach out to <Ludwig.Ludda@epa.gov>

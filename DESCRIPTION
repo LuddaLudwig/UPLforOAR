@@ -20,8 +20,8 @@ Description: National Emission Standards for Hazardous Air Pollutants (NESHAP)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/USEPA/UPLforOAR, https://luddaludwig.github.io/UPLforOAR/
-BugReports: https://github.com/USEPA/UPLforOAR/issues
+URL: https://github.com/LuddaLudwig/UPLforOAR, https://luddaludwig.github.io/UPLforOAR/
+BugReports: https://github.com/LuddaLudwig/UPLforOAR/issues
 SystemRequirements: R >= 3.5.0 , JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
     coda,
