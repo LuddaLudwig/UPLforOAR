@@ -23,7 +23,8 @@
 #' @param convergence_report Default is `FALSE`, if a report containing
 #' convergence figures should be generated with results. If `TRUE`, a document
 #' Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
-#' working directory.
+#' working directory. Note that this is an Rmarkdown document that requires
+#' either LaTex or MikTek installed in order to render the PDF.
 #' @param manual_prior Default is `FALSE`, if priors should be specified manually
 #' or be uninformative calculated from range of emissions data. Note that if you
 #' are supplying priors manually than you can only run one type of distribution

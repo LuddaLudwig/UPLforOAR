@@ -41,7 +41,8 @@ manually. Default is \code{NULL}, in which case is is calculated as \code{3*max(
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document
 Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
-working directory.}
+working directory. Note that this is an Rmarkdown document that requires
+either LaTex or MikTek installed in order to render the PDF.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you
