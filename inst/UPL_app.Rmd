@@ -16,11 +16,11 @@ library(UPLforOAR)
 
 ```{r inputs, echo=FALSE}
 inputPanel(
-        selectInput("CAA_section", label="CAA Section:", selected=112,
-                choices=c(112,129)),
         fileInput('data','Upload csv file with "emissions" 
                    and "sources" as columns',
-                  accept='.csv'),
+                   accept='.csv'),
+        selectInput("CAA_section", label="CAA Section:", selected=112,
+                    choices=c(112,129)),
         checkboxInput('runMACT','Subset data to top performers', FALSE),
         numericInput("future_runs",label="Number of future test runs",
                      value=3,min=1),
