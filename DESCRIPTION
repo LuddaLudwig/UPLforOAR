@@ -26,7 +26,6 @@ SystemRequirements: R >= 3.5.0 , JAGS (https://mcmc-jags.sourceforge.io/)
 Imports: 
     coda,
     dplyr,
-    EnvStats,
     forcats,
     ggplot2,
     grid,
