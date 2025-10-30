@@ -126,7 +126,7 @@ show the posterior is too flat. Note that there is a slight peak for the
 but there is not enough information to definitely say this is much more likely 
 than any other value searched.  
 ```{r figure2, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence where posterior is too flat."}
-dat_emiss2=read.csv("Lime_data.csv")
+dat_emiss2=read.csv("Example_data1.csv")
 small_dat = MACT_NSPS(dat_emiss2)
 part1 = setup_likelihood(distribution = "Normal", data = small_dat)
 part2 = run_likelihood(model_input = part1)
@@ -152,7 +152,7 @@ are well mixed, they are clearly stacking up against the lower bound and trying
 to converge on a lower mean than we have allowed. This skew in the chains (left) 
 and histogram (right) indicate improper prior distribution bounds. 
 ```{r figure3, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence, where the prior limits are too restrictive."}
-dat_emiss = read.csv('IIS_HCl.csv')
+dat_emiss = read.csv('Example_data2.csv')
 part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
                          manual_prior = TRUE, 
                          prior_list = c(0.0001, 0.001, 0.01, 0.05))
