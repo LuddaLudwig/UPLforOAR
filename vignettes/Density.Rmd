@@ -192,7 +192,7 @@ by default is `seq(0,3*max(data$emissions,length.out=1024))`.
 
 ## Bandwidth and kernel options 
 
-Below are some examples of `obs_denisty()` with different bandwidths and 
+Below are some examples of `obs_density()` with different bandwidths and 
 different kernels. For these comparisons, we are using a known gamma distribution 
 to generate the sample of emissions data, then comparing the empirical densities 
 to the actual probability density function. There is little difference between 
