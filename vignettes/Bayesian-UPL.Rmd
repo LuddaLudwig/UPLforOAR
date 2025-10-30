@@ -261,7 +261,7 @@ emission observations (black points on the plots above) have densities within
 the 95\% CI of the predicted probability densities (the error bars on the plots 
 above). We can also quantify how different the observed and predicted densities 
 are by looking at the Sum of Squared Errors (SSE): $SSE=\displaystyle\sum(y_i-\hat{y_i})^2$, 
-where $y_i$ is the empirical observation probability density and  $\hat{y_i}$ is the predicted observation probability density. Lastly, we might want to check if the area under 
+where $y_i$ is the empirical observation probability density and $\hat{y_i}$ is the predicted observation probability density. Lastly, we might want to check if the area under 
 the curve of the probability distribution is close to 1. If it doesn't integrate 
 to 1, than it isn't a proper probability density. This is the case for the 
 Normal distribution in our example, since some of it would extend below 0 where 
