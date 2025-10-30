@@ -235,14 +235,25 @@ The shiny app and PDF report generated from it are designed to quickly provide
 UPL results with little need for input from the user. As such, there also isn't 
 any customization in the text. Once the data set, distribution choice, and any 
 parameters are finalized, you might want to create a PDF report with more 
-content and text specific to your industry, sources, or rule. You can generate 
+content and text specific to your industry, source, or rule. You can generate 
 your results and figures using the `UPLforOAR` package within any R script and 
 copy the results where desired. Alternatively, you can use one of the Rmarkdown 
-blank reports included in the templates folder. Much like the README.Rmd and 
-vignettes, these templates include the analysis and text using an example 
-emissions dataset. However, these templates are designed to be copied and then 
-customized to the specific rule or pollutant, with the places where you might 
-want to make changes pointed out. Optional example text from past MACT floor 
+blank reports included in the templates folder, such as Example_report.Rmd. 
+
+```{r fig9, out.width="80%", fig.cap="In the Example_report.Rmd, click kniw with parameters to create the PDF."}
+knitr::include_graphics("app_template_figs/fig9.png")
+```
+
+To use this template, click "knit with parameters". This will pop up a window 
+allowing you to upload your data and change the significance, number of future 
+test runs to use, select the correct Clean Air Act section to use, and include 
+the name of your source category. Much like the README.Rmd and vignettes, these 
+templates include the analysis and text using an example emissions dataset. 
+However, these templates are designed to be copied and then customized to the 
+specific rule or pollutant, with the places where you might want to make changes 
+pointed out. Often more than one hazardous air pollutant or multiple subcategories 
+will be in the same report. In those cases, you will want to copy the relevant 
+code blacks for each new analysis. Optional example text from past MACT floor 
 analysis memorandums is included that can be expanded on or changed as needed. 
 These also include appendices with the data, functions, and software version for 
 reference. Having the code run inside the same document that produces the report 
