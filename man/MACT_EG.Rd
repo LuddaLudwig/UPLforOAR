@@ -13,10 +13,12 @@ MACT_EG(CAA_section = 112, data)
 \code{sources} (character or factor)}
 }
 \value{
-Data set (tibble) of the top 5 or 12\\% of sources, depending on the
+Data set (tibble) of the top 5 or 12 percent of sources, depending on the
 number of sources, to be used in UPL calculations for Maximum Achievable
 Control Technology (MACT) floor analysis for Existing Source Guidelines.
 }
 \description{
-Selects top sources from emissions data
+Ranks the sources by their average emission from best to worst, then selects
+either the top 5 or top 12 percent depending on the applicable CAA section
+and number of sources with data available.
 }

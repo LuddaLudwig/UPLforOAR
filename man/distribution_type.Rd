@@ -18,9 +18,9 @@ This uses ratios of ratios of kurtosis and skewness to evaluate how Normal or
 non-Normal the emissions data are. For small data sets where \code{n = 3}, kurtosis
 and the standard error of kurtosis are estimated differently and the only
 distribution outcomes are \code{'Normal'} or \code{'Lognormal'}. Note that there are
-multiple methods for evaluating skewness and kurtosis. The fisher method in
-the \code{EnvStats} package is the same as what is used in the old Excel workbook
-and is a good selection for small \code{n < 300} samples from an unknown population.
+multiple methods for evaluating skewness and kurtosis. The Fisher method is
+what is used in the old Excel workbook and is a good selection for small
+\code{n < 300} samples from an unknown population.
 }
 \references{
 On measuring skewness and kurtosis" Dragan Doric, et al.
