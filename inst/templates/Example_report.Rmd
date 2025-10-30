@@ -8,7 +8,7 @@ params:
   source:
     label: "Stationary source category"
     input: text
-    value: "Example industry"
+    value: "Example Industry"
   data:
     label: "Select data set, with named columns of emissions and sources"
     input: file
@@ -277,6 +277,8 @@ ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
                    data = dat_top_exist, alpha = 0.5, outside = TRUE)
 ```
 
+Figures with density plots of emission test run data were created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `gamma` kernel type, a zero lower bound, a bandwidth of $\sigma n^{-2/5}$ where $\sigma$ is the emission value standard deviation and $n$ is the number of runs. For further details see the `R` code in Appendix C. 
+
 \newpage
 ## MACT Floor Analysis Results
 
@@ -424,7 +426,7 @@ dat_top_new %>% knitr::kable(caption = "Best performering source emissions data 
 ```
 
 \newpage
-## Appendix C: R code
+## Appendix C: `R` code
 
 ### Disclaimer
 
