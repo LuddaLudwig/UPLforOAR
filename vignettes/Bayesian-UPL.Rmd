@@ -212,28 +212,28 @@ those for plotting the densities along the range of `xvals` are stored in `resul
 palette_line =c("#377EB8", "#4DAF4A","#FF7F00", "#984EA3", "#E41A1C")
 ggplot()+
   geom_line(data=results$pred_pdf_dat,
-            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
+            aes(y=ydens,x=x_hat),size=0.75,color='black')+
   geom_area(data=results$pred_pdf_dat,
-            aes(y=ydens,x=(x_hat)),fill='grey')+
+            aes(y=ydens,x=x_hat),fill='grey')+
   geom_point(data=results$obs_pdf_dat,
-            aes(y=ydens,x=(emissions)),
+            aes(y=ydens,x=emissions),
             size=3,alpha=0.5,shape=19,color='black')+
   geom_line(data=results$pred_pdf_dat,
-            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
+            aes(x=x_hat,y=pdf_hat,color=distr),size=0.75)+
   geom_area(data=results$pred_pdf_dat,
-            aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
+            aes(x=x_hat,y=pdf_hat,fill=distr),alpha=0.5)+
   geom_errorbar(data=results$obs_pdf_dat,
-                aes(ymin=low,ymax=up,x=(emissions),color=distr),
+                aes(ymin=low,ymax=up,x=emissions,color=distr),
                 alpha=0.5)+
   geom_point(data=results$obs_pdf_dat,
-             aes(x=(emissions),y=med,fill=distr),
+             aes(x=emissions,y=med,fill=distr),
              size=3,alpha=0.5,shape=21,color='black')+
   ylab("Density")+xlab("IIS HCl emissions")+
   pop_distr_theme()+labs(color='Distribution',fill="Distribution")+
   scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
   scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
   geom_rug(data=results$obs_pdf_dat,
-           sides='b',aes(x=(emissions)),
+           sides='b',aes(x=emission)),
            alpha=0.5,outside=TRUE,color='black')+
   coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
   scale_fill_manual(values=palette_line)+

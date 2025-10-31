@@ -176,7 +176,7 @@ Normal distribution is the best choice to represent the data.
 The Skewed or skew-normal distribution is a generalization of the Normal 
 distribution that allows for skewness. As such, it also exists the entire number 
 line, but it is not symmetric. The Skew-normal distribution is defined by three 
-parameters; location $\xi$, scale $\omega$, and skewness $\alpha$. This 
+parameters; location $\xi$, scale $\omega$, and skewness $\alpha$. This is 
 equivalent to a Normal distribution when $\alpha = 0$, it is right-skewed if 
 $\alpha > 0$, and left-skewed if $\alpha < 0$. The probability 
 density, $p(x)$, of Skewed distributed emissions is:
@@ -185,9 +185,9 @@ $$
 p(x) = \frac{2}{\omega}\phi \left(\frac{x-\xi}{\omega}\right) \Phi \left(\alpha\left(\frac{x-\xi}{\omega}\right)\right)
 $$
 
-Where $\phi(x)$ is the standard normal probability distribution, and $\Phi(x)$ 
+Where $\phi(x)$ is the standard normal probability distribution, $\Phi(x)$ 
 is its cumulative probability distribution function, and $x$ is transformed to 
-$\frac{x-\xi}{\omega}$. This can be expanded to:
+$\frac{x-\xi}{\omega}$. Using the error function, this can be expanded to:
 
 $$
 p(x) = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\alpha\frac{x-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
