@@ -198,7 +198,7 @@ In the case of normally distributed data, the MACT floor limit is an UPL calcula
 $$
 UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
 $$
-Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ quantile of the *t*-distribution with $df$ degees of freedom. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
+Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ quantile of the *t*-distribution with $df$ degrees of freedom. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
 
 ### UPL Calculation for Log-normal Data
 
@@ -284,7 +284,9 @@ Figures with density plots of emission test run data were created using `ggplot2
 
 <!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
 
-The distribution that best represents the existing source data set is `r distribution_result_exist` with a corresponding UPL of `r signif(UPL_exist, digits = 4)` *(insert measurement units)*. 
+### Chemical X in Subcategory A
+
+The distribution that best represents the existing source data set for *chemical x* in *subcategory A* is the `r distribution_result_exist` distribution, with a corresponding UPL of `r signif(UPL_exist, digits = 4)` *(insert measurement units)*. 
 
 ```{r plot2, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 x_hat = seq(0, 3*max(dat_top_exist$emissions), length.out = 1024)
@@ -332,7 +334,7 @@ ggplot()+
                     labels = c('Observations', distribution_result_exist))
 ```
 
-The distribution that best represents the new source data set is `r distribution_result_new` with a corresponding UPL of `r signif(UPL_new, digits = 4)` *(insert measurement units)*. 
+The distribution that best represents the new source data set for *chemical x* in *subcategory A* is the `r distribution_result_new` distribution, with a corresponding UPL of `r signif(UPL_new, digits = 4)` *(insert measurement units)*. 
 
 ```{r plot3, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
 x_hat = seq(0, 3*max(dat_top_new$emissions), length.out = 1024)
