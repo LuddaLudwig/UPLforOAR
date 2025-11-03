@@ -219,7 +219,13 @@ nsps_EVAL = reactive({
   if (nrow(dat_top_new()) < 3){
     out = FALSE
   } else {
-    out = TRUE
+    dat = dat_top_new()
+    sigma = stats::sd(dat$emissions, na.rm = TRUE)
+    if (sigma == 0){
+      out = FALSE
+    } else {
+      out = TRUE
+    }
   }
   out
 })

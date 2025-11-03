@@ -60,6 +60,8 @@ best_UPL=UPL_table$UPL_exist[UPL_table$distribution==distribution_result_exist]
 
 if (nrow(dat_top_new)<3){
   nsps_EVAL = FALSE
+} else if (stats::sd(dat_top_new$emissions, na.rm = TRUE) == 0){
+  nsps_EVAL = FALSE
 } else {
   distribution_result_new=distribution_type(data=dat_top_new)
   best_UPL_NSPS=UPL_table$UPL_new[UPL_table$distribution==distribution_result_new]
@@ -84,7 +86,7 @@ if (is.null(params$runMACT)){
 
 ## Source Population Calculation
 
-```{r cond5, child='App_report_children/conditional5.Rmd', eval=zero_warn}
+```{r cond5, child='App_report_children/conditional5.Rmd', eval = params$zero_warn}
 ```
 
 ```{r cond2a, child='App_report_children/conditional2a.Rmd', eval=(mact_EVAL)}

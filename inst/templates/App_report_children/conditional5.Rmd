@@ -1,1 +1,1 @@
-Warning: the data you have uploaded contain emissoins data with a value of zero. These have been removed from the data set prior to analysis, but consider checking for errors or proper significant digit handling.
+Warning: the data you have uploaded contain emissions data with a value of zero. These have been removed from the data set prior to analysis, but consider checking for errors or proper significant digit handling.
