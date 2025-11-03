@@ -52,7 +52,8 @@ obs_density = function(data ,xvals = NULL, up = Inf,
   Obs_onPoint = tibble::tibble(emissions = data$emissions, ydens = Obs_onPoint$f)
   test_int = sfsmisc::integrate.xy(obs_den_df$x_hat, obs_den_df$ydens)
   if (abs(test_int - 1) > 0.05){
-    warning("density distribution does not integrate to 1, consider adjusting xvals, bandwidth, or kernel choice")
+    warning("density distribution does not integrate to 1,
+            consider adjusting xvals, bandwidth, or kernel choice")
   }
   output = list(Obs_onPoint = Obs_onPoint, obs_den_df = obs_den_df)
   return(output)

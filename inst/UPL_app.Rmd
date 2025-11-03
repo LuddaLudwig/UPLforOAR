@@ -14,7 +14,7 @@ library(kableExtra)
 library(UPLforOAR)
 ```
 
-```{r inputs, echo=FALSE}
+```{r inputs, echo = FALSE}
 inputPanel(
         fileInput('data', 'Upload csv file with "emissions" 
                    and "sources" as columns',

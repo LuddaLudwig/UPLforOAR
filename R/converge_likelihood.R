@@ -32,8 +32,8 @@ converge_likelihood = function(jags_model_run){
   }
   for (i in 1:length(params_list)){
       param = params_list[i]
-      result = coda::gelman.diag(coda::as.mcmc.list(jags_model_run$run_results,
-                                                    vars = param))
+      result = coda::gelman.diag(
+        coda::as.mcmc.list(jags_model_run$run_results, vars = param))
       gelman_list[i] = result$psrf[1]
       if (result$psrf[1] > 1.2){
           convYN[i] = "No"

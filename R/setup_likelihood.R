@@ -65,8 +65,10 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
              'u_ln' = 0.5 * ln_mu, 'sd_ln' = 1.5 * ln_sig))
     } else if (distribution == "Skewed"){
-      skew1 = min(0.99, abs((1 / length(data$emissions)) * sum(((data$emissions - mu) / sigma)^3)))
-      delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) / ((abs(skew1)^(2 / 3)) + ((4 - pi) / 2)^(2 / 3))))
+      skew1 = min(0.99, abs((1 / length(data$emissions)) *
+                              sum(((data$emissions - mu) / sigma)^3)))
+      delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) /
+                                 ((abs(skew1)^(2 / 3)) + ((4 - pi) / 2)^(2 / 3))))
       delta = delta * abs(skew1) / skew1
       alpha = delta / sqrt(1 - delta^2)
       omega = sigma / sqrt(1 - 2 * delta^2 / pi) #must be positive
@@ -118,9 +120,12 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
     }
     if (random){
       data_inits = list(
-        data_inits[[1]][names(data_inits[[1]]) %in% c(".RNG.name", ".RNG.seed") == FALSE],
-        data_inits[[2]][names(data_inits[[2]]) %in% c(".RNG.name", ".RNG.seed") == FALSE],
-        data_inits[[3]][names(data_inits[[3]]) %in% c(".RNG.name", ".RNG.seed") == FALSE])
+        data_inits[[1]][names(data_inits[[1]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE],
+        data_inits[[2]][names(data_inits[[2]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE],
+        data_inits[[3]][names(data_inits[[3]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE])
     }
     output = list(model_code = JAGS_model, par_list = par_list, data = data,
                   distribution = distribution, dat_inits = data_inits,
@@ -282,9 +287,12 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
     }
     if (random){
       data_inits = list(
-        data_inits[[1]][names(data_inits[[1]]) %in% c(".RNG.name", ".RNG.seed") == FALSE],
-        data_inits[[2]][names(data_inits[[2]]) %in% c(".RNG.name", ".RNG.seed") == FALSE],
-        data_inits[[3]][names(data_inits[[3]]) %in% c(".RNG.name", ".RNG.seed") == FALSE])
+        data_inits[[1]][names(data_inits[[1]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE],
+        data_inits[[2]][names(data_inits[[2]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE],
+        data_inits[[3]][names(data_inits[[3]]) %in%
+                          c(".RNG.name", ".RNG.seed") == FALSE])
     }
     output = list(model_code = JAGS_model, par_list = par_list, data = data,
                 manual_prior = manual_prior, distribution = distribution,

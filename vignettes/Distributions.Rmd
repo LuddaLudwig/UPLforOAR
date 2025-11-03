@@ -90,8 +90,8 @@ $\sim dbeta(\alpha, ~\beta)$.
 
 The Gamma distribution is very useful for emissions data because it represents 
 strictly positive skewed continuous data. The probability density, $p(x)$, of 
-Gamma distributed emissions, $x$, is dependent on parameters *shape*, $\alpha$, 
-and *rate*, $\beta$:
+Gamma distributed emissions, $x$, is dependent on parameters $\alpha$, the shape, 
+and $\beta$, the rate:
 
 $$
 p(x) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}
@@ -156,7 +156,7 @@ there are many situations it is suited to. However, the Normal distribution is n
 often a good choice for emissions data, which tend not to be symmetric, are 
 strictly positive, and the variance is often related to the mean. The probability 
 density, $p(x)$, of Normally distributed emissions, $x$, is dependent on 
-parameters *mean*, $\mu$, and *standard deviation*, $\sigma$:
+parameters $\mu$, the mean, and $\sigma$, the standard deviation:
 
 $$
 p(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^{2}}{2\sigma^{2}}}

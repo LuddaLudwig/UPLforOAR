@@ -17,7 +17,8 @@
 #' distributions and set upper ranges on prior distributions.
 #' Default is `NULL`, in which case it is calculated as `3 * maximum(data$emissions)`.
 #' @export
-run_likelihood = function(model_input, xvals = NULL, maxY = NULL, future_runs = 3){
+run_likelihood = function(model_input, xvals = NULL,
+                          maxY = NULL, future_runs = 3){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")

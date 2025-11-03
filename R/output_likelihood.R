@@ -52,7 +52,8 @@ output_likelihood = function(jags_model_run, significance = 0.99){
       } else {
         for (k in 1:future_runs){
           set.seed(12)
-          hat_quant[i,k] = sample(x = xvals, size = 1, prob = Fy_sn, replace = T)
+          hat_quant[i,k] = sample(x = xvals, size = 1,
+                                  prob = Fy_sn, replace = T)
         }
       }
     }
