@@ -4,7 +4,7 @@
 #' @returns Data set (tibble) containing the emissions data for the best
 #' performing source for New Source Performance Standards.
 #' @export
-MACT_NSPS = function(data){
+MACT_new = function(data){
   if (("emissions" %in% names(data)) == FALSE){
     stop("data must have numeric column named 'emissions' ")
   }

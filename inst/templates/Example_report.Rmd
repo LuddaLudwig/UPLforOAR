@@ -9,11 +9,11 @@ params:
     label: "Stationary source category"
     input: text
     value: "Example Industry"
-  # data:
-  #   label: "Select data set, with named columns of emissions and sources"
-  #   input: file
-  #   accept: ".csv"
-  #   value: "Example_data1.csv"
+  data:
+    label: "Select data set, with named columns of emissions and sources"
+    input: file
+    accept: ".csv"
+    value: "Example_data1.csv"
   CAA_section: 
     label: "CAA Section"
     value: 112
@@ -40,9 +40,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   echo = FALSE,
-  error=TRUE,
-  warning=FALSE,
-  message=FALSE,
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  appendix = FALSE,
   fig.align = "center",
   fig.pos="H",
   out.extra = ""
@@ -63,27 +64,26 @@ library(grid)
 library(np)
 library(sfsmisc)
 library(UPLforOAR)
+```
+<!-- Repeat the analysis block below with unique names if you have multiple HAPS or subcategories -->
+```{r analysis_1, appendix = TRUE}
+# Below is an example of loading data, sorting and selecting to top performers, 
+# and calculating the correct distribution and UPL for existing source and NSPS. 
+# If there are multiple HAP or subcategories, simply repeat with code block for 
+# those data, making sure to use unique names so you don't overwrite the results.
 if (params$CAA_section == 112){
   CAA_text = 'CAA Section 112(d)(3)'
 } else if (params$CAA_section == 129){
   CAA_text = 'CAA Section 129(a)(2)'
 }
-```
-<!-- Repeat the analysis block below with unique names if you have multiple HAPS or subcategories -->
-```{r analysis_1}
-# Below is an example of loading data, sorting and selecting to top performers, 
-# and calculating the correct distribution and UPL for existing source and NSPS. 
-# If there are multiple HAP or subcategories, simply repeat with code block for 
-# those data, making sure to use unique names so you don't overwrite the results.
-
 dat_emiss = read_csv(params$data)
 if (any(dat_emiss$emissions == 0)){
   zero_warn = TRUE
 } else {
   zero_warn = FALSE
 }
-dat_top_exist = MACT_EG(CAA_section = params$CAA_section, data = dat_emiss)
-dat_top_new = MACT_NSPS(data = dat_emiss)
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss)
+dat_top_new = MACT_new(data = dat_emiss)
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
 dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
                                !is.finite(dat_top_exist$ln_emiss), NA)
@@ -163,7 +163,7 @@ to a common *insert measurement units*.
 
 ## MACT Floor Analysis Methodology
 
-The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_EG()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_NSPS()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
+The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
 
 For the existing-source MACT floors, selection of the MACT floor pool size (i.e., number of units to be included in the determination of the average emission limitation value) was determined on an individual subcategory basis as described below. 
 
@@ -240,7 +240,7 @@ The second step in the process is to calculate three times the RDL to compare wi
 
 *Add any RDL content specific to your source category*
 
-```{r table1, echo=FALSE, out.width="100%"}
+```{r table1, echo = FALSE, out.width = "100%", appendix = TRUE}
 col1=c('Subcategory 1','Subcategory 2','Subcategory 3','Subcategory 4','Subcategory 5')
 col2=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
 col3=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
@@ -258,7 +258,7 @@ table1%>%knitr::kable(caption="Here is an example of a table in case you need on
 
 *describe any data that was excluded here and why*
 
-```{r cond1, child='App_report_children/conditional5.Rmd', eval=zero_warn}
+```{r cond1, child = 'App_report_children/conditional5.Rmd', eval = zero_warn}
 ```
 
 Tables with the full data sets used for each existing source MACT floor analysis can be found listed in Appendix A. Tables with the full data sets used for each new source MACT floor analysis can be found listed in Appendix B.
@@ -267,7 +267,7 @@ Tables with the full data sets used for each existing source MACT floor analysis
 
 The final data set for the *chemical X* existing source MACT floor for *subcategory A* included `r nrow(dat_top_exist)` test runs from `r length(unique(dat_top_exist$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(dat_top_new$emissions), digits = 4)` from `r nrow(dat_top_new)` test runs. 
 
-```{r plot1, echo=FALSE, eval=source_fig, results=FALSE, fig.align = "center", fig.height=4, fig.cap="Observation density of emissions by source type. Source averages are indicated by vertical lines."}
+```{r plot1, echo = FALSE, eval = source_fig, results=FALSE, fig.align = "center", fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
 ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
           geom_density(alpha = 0.75, bounds = c(0, Inf))+
           ylab("Density")+xlab("Chemical X emissions (units)")+
@@ -296,7 +296,7 @@ Figures with density plots of emission test run data were created using `ggplot2
 
 The distribution that best represents the existing source data set for *chemical x* in *subcategory A* is the `r distribution_result_exist` distribution, with a corresponding UPL of `r signif(UPL_exist, digits = 4)` *(insert measurement units)*. 
 
-```{r plot2, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
+```{r plot2, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 x_hat = seq(0, 3*max(dat_top_exist$emissions), length.out = 1024)
 obs_dens_results = obs_density(dat_top_exist, xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
@@ -326,7 +326,7 @@ ggplot()+
   ylab("Density")+xlab("Chemical X emissions (units)")+
   ggtitle("Subcategory A existing source\nMACT floor test run population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_top_exist$emissions)), 
+  geom_vline(aes(xintercept = mean(dat_top_exist$emissions), 
                  color = 'a'), linewidth = 1, linetype = 1)+
   geom_vline(aes(xintercept = UPL_exist, color = 'b'), 
              linewidth = 1, linetype = 2)+
@@ -344,7 +344,7 @@ ggplot()+
 
 The distribution that best represents the new source data set for *chemical x* in *subcategory A* is the `r distribution_result_new` distribution, with a corresponding UPL of `r signif(UPL_new, digits = 4)` *(insert measurement units)*. 
 
-```{r plot3, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
+```{r plot3, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
 x_hat = seq(0, 3*max(dat_top_new$emissions), length.out = 1024)
 obs_dens_results = obs_density(dat_top_new, xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
@@ -374,7 +374,7 @@ ggplot()+
   ylab("Density")+xlab("Chemical X emissions (units)")+
   ggtitle("Subcategory A new source\nMACT floor test run population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_top_new$emissions)), 
+  geom_vline(aes(xintercept = mean(dat_top_new$emissions), 
                  color = 'a'), linewidth = 1, linetype = 1)+
   geom_vline(aes(xintercept = UPL_new, color = 'b'), 
              linewidth = 1, linetype = 2)+
@@ -393,7 +393,7 @@ ggplot()+
 
 The table below includes all UPL calculations for `r params$source` existing and new source MACT floor analyses using a significance of `r (params$significance)*100`\% and `r params$future_runs` future test runs.
 
-```{r UPL_table, out.width="80%"}
+```{r UPL_table, out.width = "80%", appendix = TRUE}
 dat_UPL = tibble(HAP = c("Chemical X"), 
                  Subcategory = c("Type A"), 
                  Existing = c(signif(UPL_exist,4)), 
@@ -412,26 +412,26 @@ Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmet
 Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
 
 \newpage
-## Appendix A: Existing Source data tables
+## Appendix A: Existing Source Data Tables
 
 <!-- Add more tables for additional HAP or subcategories -->
 
 `r params$source` existing source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
 
-```{r dat_EG, echo = FALSE}
+```{r dat_Exist, echo = FALSE, appendix = TRUE}
 dat_top_exist %>% knitr::kable(caption = "Top performering source emissions data used in existing source UPL calculations.", 
                                digits = 12, col.names = names(dat_top_exist))
 ```
 
 \newpage
-## Appendix B: NSPS data tables
+## Appendix B: New Source Data Tables
 
 <!-- Add more tables for additional HAP or subcategories -->
 
 `r params$source` new source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
 
-```{r dat_NSPS, echo=FALSE}
-dat_top_new %>% knitr::kable(caption = "Best performering source emissions data used in NSPS UPL calculations.",
+```{r dat_New, echo=FALSE, appendix = TRUE}
+dat_top_new %>% knitr::kable(caption = "Best performering source emissions data used in new source UPL calculations.",
                              digits = 12, col.names = names(dat_top_new))
 ```
 
@@ -442,46 +442,48 @@ dat_top_new %>% knitr::kable(caption = "Best performering source emissions data 
 
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information.  Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.  The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
 
-### MACT_EG()
-```{r function_docs1, results=TRUE, message=TRUE, echo=FALSE}
-MACT_EG
+### MACT_existing()
+```{r function_docs1, results = TRUE, message = TRUE, echo = FALSE}
+MACT_existing
 ```
 
-### MACT_NSPS()
-```{r function_docs2, results=TRUE, message=TRUE, echo=FALSE}
-MACT_NSPS
+### MACT_new()
+```{r function_docs2, results = TRUE, message = TRUE, echo = FALSE}
+MACT_new
 ```
 
 ### distribution_type()
-```{r function_docs3, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs3, results = TRUE, message = TRUE, echo = FALSE}
 distribution_type
 ```
 
 ### Normal_UPL()
-```{r function_docs4, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs4, results = TRUE, message = TRUE, echo = FALSE}
 Normal_UPL
 ```
 
 ### Lognormal_UPL()
-```{r function_docs5, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs5, results = TRUE, message = TRUE, echo = FALSE}
 Lognormal_UPL
 ```
 
 ### Skewed_UPL()
-```{r function_docs6, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs6, results = TRUE, message = TRUE, echo = FALSE}
 Skewed_UPL
 ```
 
 ### obs_density()
-```{r function_docs7, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs7, results = TRUE, message = TRUE, echo = FALSE}
 obs_density
 ```        
 
 \newpage
-## Appendix D: System and package versions
-```{r versions, results=TRUE, echo=FALSE}
+## Appendix D: System and Package Versions
+```{r versions, results = TRUE, echo = FALSE}
 sessionInfo()
 ```
 
+## Appendix E: Rmd Code Chuncks
 
-
+```{r ref.label = knitr::all_labels(appendix == TRUE)}
+```

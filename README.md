@@ -93,11 +93,11 @@ summary(dat_emiss$emissions)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
-dat_EG = MACT_EG(CAA_section=112, dat_emiss)
-dat_EG_avg = dat_EG %>% group_by(sources) %>% 
+dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist_avg = dat_exist %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
-dat_EG_avg = arrange(dat_EG_avg, avg)
-distribution_result_EG = distribution_type(dat_EG)
+dat_exist_avg = arrange(dat_exist_avg, avg)
+distribution_result_exist = distribution_type(dat_exist)
 ```
 
 | Source                           | Average emission | No. of Tests |
@@ -123,10 +123,10 @@ also calculate the Lognormal UPL for comparison, which is strictly
 positive.
 
 ``` r
-UPL1_EG = Normal_UPL(data = dat_EG,
+UPL1_exist = Normal_UPL(data = dat_exist,
                      future_runs = 1,
                      significance = 0.99)
-UPL2_EG = Lognormal_UPL(data = dat_EG,
+UPL2_exist = Lognormal_UPL(data = dat_exist,
                         future_runs = 1,
                         significance = 0.99)
 ```
@@ -143,18 +143,18 @@ emissions.
 ``` r
 # make an ordered sequence of emissions 
 # for which we will define the probability density
-x_hat = seq(0, 3 * max(dat_EG$emissions), length.out = 1024)
+x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
-obs_dens_results = obs_density(dat_EG, xvals = x_hat)
+obs_dens_results = obs_density(dat_exist, xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
 # based on estimated distribution parameters
-pdf_n = dnorm(x_hat, mean = mean(dat_EG$emissions, na.rm = T),
-              sd = sd(dat_EG$emissions, na.rm = T))
-pdf_ln = dlnorm(x_hat,mean = log(mean(dat_EG$emissions, na.rm = T)),
-              sd = sd(log(dat_EG$emissions), na.rm = T))
+pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
+              sd = sd(dat_exist$emissions, na.rm = T))
+pdf_ln = dlnorm(x_hat,mean = log(mean(dat_exist$emissions, na.rm = T)),
+              sd = sd(log(dat_exist$emissions), na.rm = T))
 pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ```
 
@@ -177,17 +177,17 @@ ggplot()+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_EG$emissions)),
+  geom_vline(aes(xintercept = (mean(dat_exist$emissions)),
                  color = 'a'), size = 1, linetype = 1)+
-  geom_vline(aes(xintercept = UPL1_EG, color = 'b'), 
+  geom_vline(aes(xintercept = UPL1_exist, color = 'b'), 
              linewidth = 1, linetype = 2)+
-  geom_vline(aes(xintercept = UPL2_EG, color = 'c'), 
+  geom_vline(aes(xintercept = UPL2_exist, color = 'c'), 
              linewidth = 1, linetype = 3)+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   coord_cartesian(clip = 'off')+
   labs(color = 'Distribution:', fill = 'Distribution:')+
-  geom_rug(sides = 'b', aes(x = emissions), data = dat_EG,
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_exist,
            alpha = 0.5, outside = TRUE, color = 'black')+
   scale_color_manual(values = c('black', '#FF7F00', '#984EA3'),
                      labels = c('Observations', 'Normal', 'Lognormal'))+

@@ -251,8 +251,8 @@ does not have an unsupported long-tail will be unaffected by this setting.
 Let's look at an example using HCl emissions from Lime processing. First we will 
 load the data and use the Excel workbook methods to pick a distribution and 
 calculate the UPL.
-```{r lime, echo=TRUE}
-dat_emiss = read.csv("Lime_data.csv")
+```{r lime, echo = TRUE}
+dat_emiss = read.csv("Example_data1.csv")
 distr_choice = distribution_type(data = dat_emiss)
 UPL_excel = Lognormal_UPL(data = dat_emiss)
 ```
@@ -269,7 +269,7 @@ pdf_ln = dlnorm(x_hat,mean = log(mean(dat_emiss$emissions, na.rm = T)),
               sd = sd(log(dat_emiss$emissions), na.rm = T))
 pred_dat = tibble(x_hat, pdf_ln)
 ```
-```{r figure1, echo = TRUE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of HCl emissions. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored orange. The UPL result is the vertical orange line."}
+```{r figure1, echo = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of HCl emissions. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored orange. The UPL result is the vertical orange line."}
 ggplot()+
   geom_line(data = obs_den_df, size=0.75,
             aes(y = ydens, x = x_hat, color = 'a'))+
@@ -313,7 +313,7 @@ stick with the Lognormal. The methods in `Bayesian_UPL()` allow you to set a val
 which to truncate the upper limit of emission probabilities, called `maxY`. By 
 default, this is `3*max(data$emissions)`. We will also look setting `maxY` to `2*max(data$emissions)` and `25*max(data$emissions)` to see how the UPL estimate 
 changes.
-```{r maxy, echo=TRUE, results=FALSE}
+```{r maxy, echo = TRUE, results = FALSE}
 results_3X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
@@ -323,7 +323,7 @@ results_25X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                            maxY = 25*max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```
-```{r figure2, echo = FALSE, fig.height=7, fig.width=5, fig.align="center", fig.cap="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds."}
+```{r figure2, echo = FALSE, fig.height = 7, fig.width = 5, fig.align = "center", fig.cap = "Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds."}
 results_3X$obs_pdf_dat$distr = rep("3X Max", 
                                           nrow(results_3X$obs_pdf_dat))
 results_3X$pred_pdf_dat$distr = rep("3X Max", 
@@ -342,42 +342,52 @@ results_25X$pred_pdf_dat$distr = rep("25X Max",
                                           nrow(results_25X$pred_pdf_dat))
 results_25X$fit_table$distr = rep("25X Max", 
                                           nrow(results_25X$fit_table))
-combined_pdf=rbind(results_2X$pred_pdf_dat,results_3X$pred_pdf_dat,results_25X$pred_pdf_dat)
-combined_obs=rbind(results_2X$obs_pdf_dat,results_3X$obs_pdf_dat,results_25X$obs_pdf_dat)
-combined_fit=rbind(results_2X$fit_table,results_3X$fit_table,results_25X$fit_table)
-combined_pdf$distr=factor(combined_pdf$distr,levels = c("2X Max", "3X Max", "25X Max"))
-combined_obs$distr=factor(combined_obs$distr,levels = c("2X Max", "3X Max", "25X Max"))
-combined_fit$distr=factor(combined_fit$distr,levels = c("2X Max", "3X Max", "25X Max"))
+combined_pdf = rbind(results_2X$pred_pdf_dat, 
+                     results_3X$pred_pdf_dat, 
+                     results_25X$pred_pdf_dat)
+combined_obs = rbind(results_2X$obs_pdf_dat, 
+                     results_3X$obs_pdf_dat, 
+                     results_25X$obs_pdf_dat)
+combined_fit = rbind(results_2X$fit_table, 
+                     results_3X$fit_table, 
+                     results_25X$fit_table)
+combined_pdf$distr = factor(combined_pdf$distr, 
+                            levels = c("2X Max", "3X Max", "25X Max"))
+combined_obs$distr = factor(combined_obs$distr, 
+                            levels = c("2X Max", "3X Max", "25X Max"))
+combined_fit$distr = factor(combined_fit$distr, 
+                            levels = c("2X Max", "3X Max", "25X Max"))
 
-palette_line =c("#377EB8","#E41A1C","#4DAF4A")
+palette_line = c("#377EB8", "#E41A1C", "#4DAF4A")
 ggplot()+
-  geom_line(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
-  geom_area(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),fill='grey')+
-  geom_point(data=combined_obs,
-            aes(y=ydens,x=(emissions)),
-            size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(data=combined_pdf,
-            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
+  geom_line(data = combined_pdf,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = combined_pdf,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = combined_obs,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
   geom_area(data=combined_pdf,
             aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
-  geom_errorbar(data=combined_obs,
-                aes(ymin=low,ymax=up,x=(emissions),color=distr),
-                alpha=0.5)+
-  geom_point(data=combined_obs,
-             aes(x=(emissions),y=med,fill=distr),
-             size=3,alpha=0.5,shape=21,color='black')+
+  geom_errorbar(data = combined_obs,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = combined_obs,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
   geom_vline(aes(xintercept = UPL, color = distr), data = combined_fit,
              linewidth = 1)+
-  ylab("Density")+xlab("Emissions")+
-  pop_distr_theme()+labs(color='Distribution',fill="Distribution")+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)), limits = c(0,3.1))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
-  scale_fill_manual(values=palette_line)+
-  facet_wrap(~distr,scales='fixed',nrow=3)+theme(legend.position = 'none')+
-  theme(strip.text = element_text(color='black',size=12))
+  ylab("Density")+ xlab("Emissions")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, 3.1))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap(~distr, scales = 'fixed', nrow = 3)+
+  theme(legend.position = 'none')+
+  theme(strip.text = element_text(color = 'black', size = 12))
 ```
 Clearly, the longer the tail the larger the UPL: when the tail limit increases 
 from `r round(2*max(dat_emiss$emissions),2)`, to `r round(3*max(dat_emiss$emissions),2)`, 
@@ -396,11 +406,11 @@ than half of the observations are outside the 95\% CI on predicted density. Note
 that in all cases the area under the curve sums to less than 1, but the more the 
 probability density function is truncated, the farther below 1.
 ```{r fit1, echo = FALSE}
-fit_metrics=arrange(combined_fit,SSE)
-fit_metrics=mutate(fit_metrics,across(c(2,3,5),~signif(.,digits=2)))
+fit_metrics = arrange(combined_fit, SSE)
+fit_metrics = mutate(fit_metrics, across(c(2, 3, 5), ~signif(., digits = 2)))
 knitr::kable(fit_metrics,
-             caption="Performance of Lognormal distributions with different MaxY limits",
-             col.names=c("Upper Limit",'UPL','SSE','No. Obs. in 95% CI','pdf integral'))
+             caption = "Performance of Lognormal distributions with different MaxY limits",
+             col.names = c("Upper Limit", 'UPL', 'SSE', 'No. Obs. in 95% CI', 'pdf integral'))
 ```
 
 Next we ought to check the convergence of all of the parameters. The model with 
@@ -413,24 +423,24 @@ they do not look as well mixed as we would like, and you can see the histograms
 aren't as Gaussian as can expect with good convergence. It is not so bad as to 
 invalidate the results, but you can imagine that if we tried limits that were 
 too small the model would fail.
-```{r figure3a, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Convergence figures from maxY = 2X."}
+```{r figure3a, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 2X."}
 part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
-part2 = run_likelihood(model_input = part1, maxY = 2*max(dat_emiss$emissions),
+part2 = run_likelihood(model_input = part1, maxY = 2 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
 ```
 
-```{r figure3b, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Convergence figures from maxY = 3X."}
+```{r figure3b, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 3X."}
 part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
-part2 = run_likelihood(model_input = part1, maxY = 3*max(dat_emiss$emissions),
+part2 = run_likelihood(model_input = part1, maxY = 3 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
 ```
-```{r figure3c, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Convergence figures from maxY = 25X."}
+```{r figure3c, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 25X."}
 part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
-part2 = run_likelihood(model_input = part1, maxY = 25*max(dat_emiss$emissions),
+part2 = run_likelihood(model_input = part1, maxY = 25 * max(dat_emiss$emissions),
                           xvals = seq(0, 10, length.out = 3000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
@@ -444,7 +454,7 @@ ncertainty and stochasticity in the tail of the distribution.
 ### Alternative significance levels
 
 Let's investigate the sensitivity of different UPL significance levels to `maxY`. Ideally we will find a level that is insensitive to `maxY` and converges well. 
-```{r sig, echo=TRUE, results=FALSE}
+```{r sig, echo = TRUE, results = FALSE}
 results_3X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                             significance = 0.95,
                             xvals = seq(0, 3, length.out = 1000))
@@ -491,7 +501,7 @@ results_25X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                              xvals = seq(0, 3, length.out = 1000))
 ```
 The fitted probability density distribution won't change with significance level, just the resulting UPL. The figure below shows the same distributions as before with the different `maxY` limits, but now we've added the UPL when calculated using 80\%, 85\%, 90\%, 95\% and 99\% significance as vertical lines. As expected, lower significance has a lower UPL. The important outcome here is that at 80\% and 85\% significance the UPL doesn't change no matter how we vary `maxY`. The UPL changes slightly at the highest `maxY` for 90\%, and quite a lot as we increase `maxY` for 95\% and 99\% significance. 
-```{r figure4, echo = FALSE, fig.height=7, fig.width=5, fig.align="center", fig.cap="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL."}
+```{r figure4, echo = FALSE, fig.height = 7, fig.width = 5, fig.align = "center", fig.cap = "Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL."}
 results_3X95$fit_table$distr = rep("3X Max", 
                                           nrow(results_3X95$fit_table))
 results_2X95$fit_table$distr = rep("2X Max", 
@@ -516,57 +526,63 @@ results_2X80$fit_table$distr = rep("2X Max",
                                           nrow(results_2X80$fit_table))
 results_25X80$fit_table$distr = rep("25X Max", 
                                           nrow(results_25X80$fit_table))
-sig95=rbind(results_2X95$fit_table,results_3X95$fit_table,results_25X95$fit_table)
-sig95$Significance=rep("95th",nrow(sig95))
-sig90=rbind(results_2X90$fit_table,results_3X90$fit_table,results_25X90$fit_table)
-sig90$Significance=rep("90th",nrow(sig90))
-sig85=rbind(results_2X85$fit_table,results_3X85$fit_table,results_25X85$fit_table)
-sig85$Significance=rep("85th",nrow(sig85))
-sig80=rbind(results_2X80$fit_table,results_3X80$fit_table,results_25X80$fit_table)
-sig80$Significance=rep("80th",nrow(sig80))
-combined_fit2=rbind(sig95,sig90,sig85,sig80)
+sig95 = rbind(results_2X95$fit_table, results_3X95$fit_table, 
+              results_25X95$fit_table)
+sig95$Significance = rep("95th", nrow(sig95))
+sig90 = rbind(results_2X90$fit_table, results_3X90$fit_table, 
+              results_25X90$fit_table)
+sig90$Significance = rep("90th", nrow(sig90))
+sig85 = rbind(results_2X85$fit_table, results_3X85$fit_table, 
+              results_25X85$fit_table)
+sig85$Significance = rep("85th", nrow(sig85))
+sig80 = rbind(results_2X80$fit_table, results_3X80$fit_table, 
+              results_25X80$fit_table)
+sig80$Significance = rep("80th", nrow(sig80))
+combined_fit2 = rbind(sig95, sig90, sig85, sig80)
 
-combined_fit2$distr=factor(combined_fit2$distr,
-                           levels = c("2X Max", "3X Max", "25X Max"))
+combined_fit2$distr = factor(combined_fit2$distr,
+                             levels = c("2X Max", "3X Max", "25X Max"))
 
-combined_fit$Significance=rep("99th",nrow(combined_fit))
+combined_fit$Significance = rep("99th", nrow(combined_fit))
 
-combined_fit_all=rbind(combined_fit,combined_fit2)
+combined_fit_all = rbind(combined_fit, combined_fit2)
 
-combined_fit_all$Significance=factor(combined_fit_all$Significance,
-                                     levels = c("99th", "95th", "90th","85th",'80th'))
+combined_fit_all$Significance = factor(combined_fit_all$Significance,
+                                     levels = c("99th", "95th", "90th",
+                                                "85th",'80th'))
 
-palette_line =c("#377EB8","#E41A1C","#4DAF4A")
+palette_line = c("#377EB8", "#E41A1C", "#4DAF4A")
 ggplot()+
-  geom_line(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
-  geom_area(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),fill='grey')+
-  geom_point(data=combined_obs,
-            aes(y=ydens,x=(emissions)),
-            size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(data=combined_pdf,
-            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
-  geom_area(data=combined_pdf,
-            aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
-  geom_errorbar(data=combined_obs,
-                aes(ymin=low,ymax=up,x=(emissions),color=distr),
-                alpha=0.5)+
-  geom_point(data=combined_obs,
-             aes(x=(emissions),y=med,fill=distr),
-             size=3,alpha=0.5,shape=21,color='black')+
+  geom_line(data = combined_pdf,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = combined_pdf,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = combined_obs,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_errorbar(data = combined_obs,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = combined_obs,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
   geom_vline(aes(xintercept = UPL, color = distr, linetype = Significance), 
              data = combined_fit_all,
              linewidth = 1)+
-  ylab("Density")+xlab("Emissions")+
-  pop_distr_theme()+labs(linetype='Significance')+
+  ylab("Density")+ xlab("Emissions")+
+  pop_distr_theme()+ labs(linetype = 'Significance')+
   guides(color = "none", fill = "none")+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)), limits = c(0,3.1))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
-  scale_fill_manual(values=palette_line)+
-  facet_wrap(~distr,scales='fixed',nrow=3)+theme(legend.position = 'top')+
-  theme(strip.text = element_text(color='black',size=12))
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, 3.1))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap(~distr, scales = 'fixed', nrow = 3)+
+  theme(legend.position = 'top')+
+  theme(strip.text = element_text(color = 'black', size = 12))
 ```
 Based on these results, we would conclude that at 85\% significance the UPL is 
 stable with regards to long-tail effects in the distribution. It is also worth 
@@ -585,74 +601,76 @@ lack of representative data. More data will always go a long ways towards
 improving the distribution fit, and a lack of data can lead to one weird point 
 forcing bad behavior. 
 ```{r fit2, echo = FALSE}
-fit_metrics=group_by(combined_fit2,Significance)
-fit_metrics=arrange(fit_metrics,SSE, .by_group = TRUE)
-fit_metrics=mutate(fit_metrics,across(c(2,3,5),~signif(.,digits=2)))
+fit_metrics = group_by(combined_fit2, Significance)
+fit_metrics = arrange(fit_metrics, SSE, .by_group = TRUE)
+fit_metrics = mutate(fit_metrics, across(c(2, 3 ,5), ~signif(., digits = 2)))
 knitr::kable(fit_metrics,
-             caption="Performance of Lognormal distributions with different MaxY limits and different significance levels.",
-             col.names=c("Upper Limit",'UPL','SSE','No. Obs. in 95% CI',
-                         'pdf integral','Significance'))
+             caption = "Performance of Lognormal distributions with different MaxY limits and different significance levels.",
+             col.names = c("Upper Limit", 'UPL', 'SSE', 'No. Obs. in 95% CI', 
+                         'pdf integral', 'Significance'))
 ```
 ### Alternative distributions
 
 Logically the next step is to try other distributions and see if we can find something better. We won't bother with the Normal distribution since the data are so heavily skewed. We also won't look at the Beta distribution since it has an upper limit of 1, and while the emissions observations are all less than that in our set of top performing sources, theoretically there could emissions higher than 1.
-```{r bayesian_UPL, echo=TRUE, results=FALSE}
+```{r bayesian_UPL, echo = TRUE, results = FALSE}
 distributions = c('Gamma', 'Lognormal', 'Skewed')
 results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
 ```
-```{r figure5, echo=FALSE, out.width="100%", fig.height=7, fig.align = "center", fig.cap="Fitted likelihood distributions for Lime HCl emissions."}
-palette_line =c("#377EB8", "#4DAF4A","#FF7F00")
+```{r figure5, echo = FALSE, out.width = "100%", fig.height = 7, fig.align = "center", fig.cap = "Fitted likelihood distributions for Lime HCl emissions."}
+palette_line = c("#377EB8", "#4DAF4A", "#FF7F00")
 ggplot()+
-  geom_line(data=results$pred_pdf_dat,
-            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
-  geom_area(data=results$pred_pdf_dat,
-            aes(y=ydens,x=(x_hat)),fill='grey')+
-  geom_point(data=results$obs_pdf_dat,
-            aes(y=ydens,x=(emissions)),
-            size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(data=results$pred_pdf_dat,
-            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
-  geom_area(data=results$pred_pdf_dat,
-            aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
-  geom_errorbar(data=results$obs_pdf_dat,
-                aes(ymin=low,ymax=up,x=(emissions),color=distr),
-                alpha=0.5)+
-  geom_point(data=results$obs_pdf_dat,
-             aes(x=(emissions),y=med,fill=distr),
-             size=3,alpha=0.5,shape=21,color='black')+
+  geom_line(data = results$pred_pdf_dat,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = results$pred_pdf_dat,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = results$obs_pdf_dat,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = results$pred_pdf_dat,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = results$pred_pdf_dat,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_errorbar(data = results$obs_pdf_dat,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = results$obs_pdf_dat,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
     geom_vline(aes(xintercept = UPL, color = distr), data = results$fit_table,
              linewidth = 1)+
-  ylab("Density")+xlab("Lime HCl emissions")+
-  pop_distr_theme()+labs(color='Distribution',fill="Distribution")+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  geom_rug(data=results$obs_pdf_dat,
-           sides='b',aes(x=(emissions)),
-           alpha=0.5,outside=TRUE,color='black')+
-  coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
-  scale_fill_manual(values=palette_line)+
-  facet_wrap(~distr,scales='free_y',nrow=3)+theme(legend.position = 'none')+
-  theme(strip.text = element_text(color='black',size=12))
+  ylab("Density")+ xlab("Lime HCl emissions")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_rug(data = results$obs_pdf_dat,
+           sides = 'b', aes(x = emissions),
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap(~distr, scales = 'free_y', nrow = 3)+
+  theme(legend.position = 'none')+
+  theme(strip.text = element_text(color = 'black', size = 12))
 ```
-```{r fit3, echo=TRUE}
+```{r fit3, echo = TRUE}
 fit_metrics = results$fit_table
 ```
 ``` {r table2, fig.align = "center"}
-fit_metrics=arrange(fit_metrics,SSE)
-knitr::kable(mutate(fit_metrics,across(c(2,3),~signif(.,digits=3))),
-             caption="Comparing goodness of fit results for other distributions",
-             col.names=c('Distribution','UPL','SSE','No. Obs. in 95% CI','integral'))
+fit_metrics = arrange(fit_metrics, SSE)
+knitr::kable(mutate(fit_metrics, across(c(2, 3), ~signif(., digits = 3))),
+             caption = "Comparing goodness of fit results for other distributions",
+             col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI', 
+                           'pdf integral'))
 ```
 The Gamma distribution looks the best and also has the lowest SSE. Furthermore, 
 the Gamma distribution converges well. It still has a bit of a tail so we might want to repeat our experiments with increasingly larger values of `maxY`:
-```{r maxy2, echo=TRUE, results=FALSE}
+```{r maxy2, echo = TRUE, results = FALSE}
 results_3X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
-                          maxY = 2*max(dat_emiss$emissions),
+                          maxY = 2 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 results_25X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
-                           maxY = 25*max(dat_emiss$emissions),
+                           maxY = 25 * max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```
 The outcome shows the tail is way more stable at the 99<sup>th</sup> percentile for Gamma than it was for Lognormal. Furthermore, the fit is just as good (SSE barely changes) and the UPL hardly changes. This is all great news, and leads us to finally recommend a UPL of `r round(results_25X$fit_table$UPL,2)`. 
@@ -663,11 +681,14 @@ results_2X$fit_table$distr = rep("2X Max",
                                           nrow(results_2X$fit_table))
 results_25X$fit_table$distr = rep("25X Max", 
                                           nrow(results_25X$fit_table))
-combined_fit=rbind(results_2X$fit_table,results_3X$fit_table,results_25X$fit_table)
-combined_fit$distr=factor(combined_fit$distr,levels = c("2X Max", "3X Max", "25X Max"))
+combined_fit = rbind(results_2X$fit_table, results_3X$fit_table, 
+                     results_25X$fit_table)
+combined_fit$distr = factor(combined_fit$distr, 
+                            levels = c("2X Max", "3X Max", "25X Max"))
 
-fit_metrics=mutate(combined_fit,across(c(2,3,5),~signif(.,digits=2)))
+fit_metrics = mutate(combined_fit, across(c(2, 3, 5), ~signif(., digits = 2)))
 knitr::kable(fit_metrics,
-             caption="Performance of Gamma distributions with different MaxY limits",
-             col.names=c("Upper Limit",'UPL','SSE','No. Obs. in 95% CI','pdf integral'))
+             caption = "Performance of Gamma distributions with different MaxY limits",
+             col.names = c("Upper Limit", 'UPL', 'SSE', 'No. Obs. in 95% CI', 
+                           'pdf integral'))
 ```

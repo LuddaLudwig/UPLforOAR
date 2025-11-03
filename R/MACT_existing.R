@@ -10,7 +10,7 @@
 #' either the top 5 or top 12 percent depending on the applicable CAA section
 #' and number of sources with data available.
 #' @export
-MACT_EG = function(CAA_section = 112, data){
+MACT_existing = function(CAA_section = 112, data){
   if (("emissions" %in% names(data)) == FALSE){
     stop("data must have numeric column named 'emissions' ")
   }

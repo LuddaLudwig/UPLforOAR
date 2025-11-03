@@ -82,8 +82,8 @@ if (any(dat_emiss$emissions == 0)){
 } else {
   zero_warn = FALSE
 }
-dat_top_exist = MACT_EG(CAA_section = params$CAA_section, data = dat_emiss)
-dat_top_new = MACT_NSPS(data = dat_emiss)
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss)
+dat_top_new = MACT_new(data = dat_emiss)
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
 dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
                                !is.finite(dat_top_exist$ln_emiss), NA)
@@ -148,7 +148,7 @@ to a common *insert measurement units*.
 
 ## MACT Floor Analysis Methodology
 
-The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_EG()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_NSPS()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
+The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
 
 For the existing-source MACT floors, selection of the MACT floor pool size (i.e., number of units to be included in the determination of the average emission limitation value) was determined on an individual subcategory basis as described below. 
 
@@ -573,7 +573,7 @@ Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmet
 Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
 
 \newpage
-## Appendix A: Existing Source data tables
+## Appendix A: Existing Source Data Tables
 
 <!-- Add more tables for additional HAP or subcategories -->
 
@@ -585,32 +585,32 @@ dat_top_exist %>% knitr::kable(caption = "Top performering source emissions data
 ```
 
 \newpage
-## Appendix B: NSPS data tables
+## Appendix B: New source Data Tables
 
 <!-- Add more tables for additional HAP or subcategories -->
 
 `r params$source` new source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
 
 ```{r dat_NSPS, echo=FALSE}
-dat_top_new %>% knitr::kable(caption = "Best performering source emissions data used in NSPS UPL calculations.",
+dat_top_new %>% knitr::kable(caption = "Best performering source emissions data used in new source UPL calculations.",
                              digits = 12, col.names = names(dat_top_new))
 ```
 
 \newpage
-## Appendix C: `R` code
+## Appendix C: `R` Function Code
 
 ### Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information.  Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.  The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
 
-### MACT_EG()
+### MACT_existing()
 ```{r function_docs1, results=TRUE, message=TRUE, echo=FALSE}
-MACT_EG
+MACT_existing
 ```
 
-### MACT_NSPS()
+### MACT_new()
 ```{r function_docs2, results=TRUE, message=TRUE, echo=FALSE}
-MACT_NSPS
+MACT_new
 ```
 
 ### write_likelihood()

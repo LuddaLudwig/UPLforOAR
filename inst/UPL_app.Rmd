@@ -39,9 +39,9 @@ downloadButton("pdf_report", 'Download PDF report')
 Check Table 1 below to ensure you have loaded the correct emission data set and 
 that the values are generally what you expect.
 ```{r load_data}
-dat_emiss <- reactive({
+dat_emiss = reactive({
     req(input$data)
-    ext <- tools::file_ext(input$data$name)
+    ext = tools::file_ext(input$data$name)
     switch(ext,
       csv = read.csv(input$data$datapath),
       validate("Invalid file; Please upload a .csv file")
@@ -134,7 +134,7 @@ uiOutput(outputId = 'uitext0b')
 
 dat_top_exist_raw = reactive({
   if (input$runMACT){
-    dat_out = MACT_EG(CAA_section = input$CAA_section,
+    dat_out = MACT_existing(CAA_section = input$CAA_section,
                                    data = dat_emiss())
   } else {
     dat_out = dat_emiss()
@@ -162,7 +162,7 @@ dat_topmeans_exist = reactive({
   ordered
 })
 
-dat_top_new_raw = reactive(MACT_NSPS(data = dat_emiss()))
+dat_top_new_raw = reactive(MACT_new(data = dat_emiss()))
 emission_mean_new = reactive({
   dat2 = dat_top_new_raw()
   results2 = mean(dat2$emissions)
@@ -184,7 +184,7 @@ dat_top_exist = reactive({
   ordered2
 })
 
-output$Sourcedownload1 <- downloadHandler(
+output$Sourcedownload1 = downloadHandler(
   filename = function() {
     paste0(str_remove(input$data$name, ".csv"), "_TopSources_v", Sys.Date(), ".csv")
   },
@@ -207,7 +207,7 @@ dat_top_new = reactive({
                                !is.finite(ordered2$ln_emiss), NA)
   ordered2
 })
-output$Sourcedownload2 <- downloadHandler(
+output$Sourcedownload2 = downloadHandler(
   filename = function() {
     paste0(str_remove(input$data$name, ".csv"), "_BestSource_v", Sys.Date(), ".csv")
   },
@@ -454,7 +454,7 @@ dat_UPL = reactive({
   output = full_join(dat1, dat2, by = 'distribution')
   output
 })
-output$UPLdownload <- downloadHandler(
+output$UPLdownload = downloadHandler(
   filename = function() {
     paste0(str_remove(input$data$name, ".csv"),"_UPL_v", Sys.Date(), ".csv")
   },
