@@ -23,14 +23,14 @@ distribution_type = function(data){
   n = length(data$emissions)
   emission_mean = mean(data$emissions)
   S = n / ((n - 1) * (n - 2)) * sum(((data$emissions - emission_mean) / sigma)^3)
-  S_ln = n / ((n - 1) * (n - 2)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^3)
+  S_ln = n / ((n - 1) * (n - 2)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^3, na.rm = T)
   SES = sqrt((6 * n * (n - 1)) / ((n - 2) * (n + 1) * (n + 3)))
   S_SES = abs(S / SES)
   S_SES_ln = abs(S_ln / SES)
 
   if (n == 3){
     K = sum((data$emissions - emission_mean)^4) / ((n - 1) * (sigma)^4) - 3
-    K_ln = sum((data$ln_emiss - mean_ln)^4) / ((n - 1) * (sigma_ln)^4) - 3
+    K_ln = sum((data$ln_emiss - mean_ln)^4, na.rm = T) / ((n - 1) * (sigma_ln)^4) - 3
     SEK = sqrt(24 / n)
     if(S_SES < S_SES_ln){
       distr_choice = "Normal"
@@ -39,7 +39,7 @@ distribution_type = function(data){
     }
   } else if (n > 3){
     K = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$emissions - emission_mean) / sigma)^4) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
-    K_ln = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^4) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
+    K_ln = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^4, na.rm = T) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
     SEK = sqrt(24 * n * (n^2 - 1) / ((n - 2) * (n + 3) * (n - 3) * (n + 5)))
     S_SEK = abs(K / SEK)
     S_SEK_ln = abs(K_ln / SEK)
