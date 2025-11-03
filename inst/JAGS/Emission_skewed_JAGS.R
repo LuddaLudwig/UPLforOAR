@@ -1,4 +1,5 @@
-data {
+# Skewed
+      data {
               for(i in 1:length(emission_xi)){
               zeros[i] = 0
               }

@@ -2,19 +2,23 @@
 #' @description
 #' This function writes an R script for JAGS to call based on the selected
 #' distribution and prior. The priors are uninformative and
-#' set based on emissions data, unless specified manually via [setup_likelihood()].
-#' The likelihood distributions are truncated to `(0, maxY)`, where `maxY` can be
-#' specified or used with the default `maxY = 3 * max(data$emissions)` in [run_likelihood()].
-#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+#' set based on emissions data, unless specified manually via
+#' [setup_likelihood()]. The likelihood distributions are truncated to
+#' `(0, maxY)`, where `maxY` can be specified or used with the default
+#' `maxY = 3 * max(data$emissions)` in [run_likelihood()].
+#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`,
+#' or `'Beta'`.
 #' @param write_wd Default is `NULL`, in which case the JAGS scripts are written
 #' into inst/JAGS folder in package directory. This is the location
-#' [run_likelihood()] will look for the JAGS scripts assigned via [setup_likelihood()].
-#' @param manual_prior Default is `FALSE`, if priors should be specified manually
-#' or be uninformative calculated from range of emissions data.
+#' [run_likelihood()] will look for the JAGS scripts assigned via
+#' [setup_likelihood()].
+#' @param manual_prior Default is `FALSE`, if priors should be specified
+#' manually or be uninformative calculated from range of emissions data.
 #' @returns object `model_code`, which is a string for the written R script that
 #' JAGS can call and the distribution used in likelihood model.
 #' @export
-write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL){
+write_likelihood = function(distribution,
+                            manual_prior = FALSE, write_wd = NULL){
   current_wd = getwd()
   if (is.null(write_wd)){
     write_wd = 'inst/JAGS/'
@@ -23,7 +27,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
   if (!manual_prior){
     if (distribution == "Normal"){
       JAGS_model = "Emission_normal_JAGS.R"
-      cat("model {
+      cat("# Normal
+      model {
       # priors
           emission_sd ~ dunif(0.001 * sdY, 1000 * sdY)
           emission_mean ~ dunif(0,maxY)
@@ -46,11 +51,14 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == "Lognormal"){
       JAGS_model = "Emission_lnorm_JAGS.R"
-      cat("model {
+      cat("# Lognormal
+      model {
       # priors
           sd_ln ~ dunif( 0.001 * sdOfLogY, 1000 * sdOfLogY )
-          u_ln ~ dnorm( meanOfLogY, 0.001 / sdOfLogY^2 ) #this is in log-space, so it can be negative
           tau_ln = 1 / (sd_ln^2)
+
+          #this is in log-space, so it can be negative
+          u_ln ~ dnorm( meanOfLogY, 0.001 / sdOfLogY^2 )
 
       #likelihood
           for (i in 1:length(emission_xi)){
@@ -69,7 +77,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == "Skewed"){
       JAGS_model = "Emission_skewed_JAGS.R"
-      cat("data {
+      cat("# Skewed
+      data {
               for(i in 1:length(emission_xi)){
               zeros[i] = 0
               }
@@ -90,7 +99,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == 'Gamma'){
       JAGS_model = "Emission_gamma_JAGS.R"
-      cat("model {
+      cat("# Gamma
+      model {
       # priors
           rate_em ~ dunif(0, maxY / (sdY^2)) #must be positive
           shape_em ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive
@@ -112,11 +122,13 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == 'Beta'){
       JAGS_model = "Emission_beta_JAGS.R"
-      cat("model {
+      cat("# Beta
+      model {
       # priors
           # note that both can be pos or neg, but the minimum is always -1
-          beta_em ~ dunif(-1, (0.25-1+0.25/sdY^2+0.25^3/sdY^2-2*0.25^2/sdY^2)*1.25)
-          alpha_em ~ dunif(-1, (0.75^2/sdY^2-0.75^3/sdY^2-0.75)*1.25)
+          beta_em ~ dunif(-1, (0.25 - 1 + 0.25 / sdY^2 + 0.25^3 / sdY^2 - 2 *
+            0.25^2 / sdY^2) * 1.25)
+          alpha_em ~ dunif(-1, (0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75) * 1.25)
 
       #likelihood
           for (i in 1:length(emission_xi)) {
@@ -138,7 +150,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
   } else if (manual_prior){
     if (distribution == "Normal"){
       JAGS_model = "Manual_emission_normal_JAGS.R"
-      cat("model {
+      cat("# Normal manual priors
+      model {
       # priors
           emission_sd ~ dunif(low1, up1)
           emission_mean ~ dunif(low2, up2)
@@ -161,7 +174,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == "Lognormal"){
       JAGS_model = "Manual_emission_lnorm_JAGS.R"
-      cat("model {
+      cat("# Lognormal manual priors
+      model {
       # priors
           sd_ln ~ dunif(low1, up1)
           u_ln ~ dnorm(low2, up2) #this is in log-space, so it can be negative
@@ -184,7 +198,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == "Skewed"){
       JAGS_model = "Manual_emission_skewed_JAGS.R"
-      cat("data {
+      cat("# Skewed manual priors
+      data {
               for(i in 1:length(emission_xi)) {
               zeros[i] = 0
               }
@@ -205,7 +220,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == 'Gamma'){
       JAGS_model = "Manual_emission_gamma_JAGS.R"
-      cat("model {
+      cat("# Gamma manual priors
+      model {
       # priors
           rate_em ~ dunif(low1, up1) #must be positive
           shape_em ~ dunif(low2, up2) #must be positive
@@ -227,7 +243,8 @@ write_likelihood = function(distribution, manual_prior = FALSE, write_wd = NULL)
         }", file = JAGS_model)
     } else if (distribution == 'Beta'){
       JAGS_model = "Manual_emission_beta_JAGS.R"
-      cat("model {
+      cat("# Beta manual priors
+      model {
       # priors
           # note that both can be pos or neg, but the minimum is always -1
           alpha_em ~ dunif(low1, up1)

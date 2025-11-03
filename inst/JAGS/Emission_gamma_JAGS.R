@@ -1,4 +1,5 @@
-model {
+# Gamma
+      model {
       # priors
           rate_em ~ dunif(0, maxY / (sdY^2)) #must be positive
           shape_em ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive

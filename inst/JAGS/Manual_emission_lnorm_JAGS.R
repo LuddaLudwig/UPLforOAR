@@ -1,4 +1,5 @@
-model {
+# Lognormal manual priors
+      model {
       # priors
           sd_ln ~ dunif(low1, up1)
           u_ln ~ dnorm(low2, up2) #this is in log-space, so it can be negative

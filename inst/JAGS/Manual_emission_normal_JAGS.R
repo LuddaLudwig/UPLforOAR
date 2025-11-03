@@ -1,4 +1,5 @@
-model {
+# Normal manual priors
+      model {
       # priors
           emission_sd ~ dunif(low1, up1)
           emission_mean ~ dunif(low2, up2)

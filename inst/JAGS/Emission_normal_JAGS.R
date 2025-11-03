@@ -1,4 +1,5 @@
-model {
+# Normal
+      model {
       # priors
           emission_sd ~ dunif(0.001 * sdY, 1000 * sdY)
           emission_mean ~ dunif(0,maxY)

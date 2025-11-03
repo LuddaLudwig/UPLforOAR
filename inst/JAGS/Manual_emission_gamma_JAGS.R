@@ -1,4 +1,5 @@
-model {
+# Gamma manual priors
+      model {
       # priors
           rate_em ~ dunif(low1, up1) #must be positive
           shape_em ~ dunif(low2, up2) #must be positive

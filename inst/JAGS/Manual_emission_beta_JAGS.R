@@ -1,4 +1,5 @@
-model {
+# Beta manual priors
+      model {
       # priors
           # note that both can be pos or neg, but the minimum is always -1
           alpha_em ~ dunif(low1, up1)
