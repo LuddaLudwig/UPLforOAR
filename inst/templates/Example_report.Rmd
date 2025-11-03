@@ -1,5 +1,5 @@
 ---
-author: "OAR-OCAP-NRD-EDAB or author names here"
+author: "OAR-OCAP-NRD-EDAB and/or author names here"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
@@ -241,12 +241,15 @@ The second step in the process is to calculate three times the RDL to compare wi
 *Add any RDL content specific to your source category*
 
 ```{r table1, echo = FALSE, out.width = "100%", appendix = TRUE}
-col1=c('Subcategory 1','Subcategory 2','Subcategory 3','Subcategory 4','Subcategory 5')
+col1=c('Subcategory 1','Subcategory 2','Subcategory 3','Subcategory 4',
+       'Subcategory 5')
 col2=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
 col3=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
-col4=c('HAP 1, HAP 2, X, Y, Z', 'HAP 1, X, Y, Z', 'HAP 1, HAP 2, HAP 3, X, Y, Z', 'None', 'X, Y, Z')
+col4=c('HAP 1, HAP 2, X, Y, Z', 'HAP 1, X, Y, Z', 'HAP 1, HAP 2, HAP 3, X, Y, Z', 
+       'None', 'X, Y, Z')
 table1=tibble(col1=col1,col2=col2,col3=col3,col4=col4)
-table1%>%knitr::kable(caption="Here is an example of a table in case you need one",
+table1%>%knitr::kable(
+  caption="Here is an example of a table in case you need one",
              col.names=c('',
                          'Existing MACT floor (old units)',
                          'Existing MACT floor (new units)',
@@ -398,7 +401,9 @@ dat_UPL = tibble(HAP = c("Chemical X"),
                  Subcategory = c("Type A"), 
                  Existing = c(signif(UPL_exist,4)), 
                  New = c(signif(UPL_new, 4)))
-dat_UPL %>% knitr::kable(caption = "Upper Predictive Limit (UPL) results for existing and new source MACT floors in (measurement units)", digits = 12, 
+dat_UPL %>% knitr::kable(
+  caption = "Upper Predictive Limit (UPL) results for existing and 
+  new source MACT floors in (measurement units)", digits = 12, 
                          col.names = c("HAP", "Subcategory", 
                                        "Existing source UPL", 
                                        "New source UPL"))
@@ -419,8 +424,9 @@ Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science 
 `r params$source` existing source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
 
 ```{r dat_Exist, echo = FALSE, appendix = TRUE}
-dat_top_exist %>% knitr::kable(caption = "Top performering source emissions data used in existing source UPL calculations.", 
-                               digits = 12, col.names = names(dat_top_exist))
+dat_top_exist %>% knitr::kable(
+  caption = "Top performering source emissions data used in existing source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_exist))
 ```
 
 \newpage
@@ -431,12 +437,13 @@ dat_top_exist %>% knitr::kable(caption = "Top performering source emissions data
 `r params$source` new source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
 
 ```{r dat_New, echo=FALSE, appendix = TRUE}
-dat_top_new %>% knitr::kable(caption = "Best performering source emissions data used in new source UPL calculations.",
-                             digits = 12, col.names = names(dat_top_new))
+dat_top_new %>% knitr::kable(
+  caption = "Best performering source emissions data used in new source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_new))
 ```
 
 \newpage
-## Appendix C: `R` code
+## Appendix C: `R` Function Code
 
 ### Disclaimer
 
@@ -483,7 +490,8 @@ obs_density
 sessionInfo()
 ```
 
-## Appendix E: Rmd Code Chuncks
+\newpage
+## Appendix E: Rmd Code Chunks
 
-```{r ref.label = knitr::all_labels(appendix == TRUE)}
+```{r ref.label = knitr::all_labels(appendix == TRUE), echo = TRUE, eval = FALSE}
 ```
