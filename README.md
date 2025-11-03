@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--28-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--03-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -21,10 +21,8 @@ National Emissions Standards for Hazardous Air Pollutants (NESHAP)
 analyses. This includes organizing data sets for Maximum Achievable
 Control Technology (MACT) floor analysis and Upper Predictive Limit
 (UPL) calculations. These functions include selecting the best and top
-performing sources from emissions data based on appropriate Clean Air
-Act sections, determining the appropriate distributions for the
-emissions data, and calculating the UPL for Existing source Guidance
-(EG) and New Source Performance Standards (NSPS).
+performing sources, determining the appropriate distributions for the
+emissions data, and calculating the UPL for existing and new sources.
 
 The `UPLforOAR` R package replicates all of the functionality of the
 UPL.xlsx workbook while streamlining its use. Using R instead of Excel
@@ -111,7 +109,7 @@ distribution_result_EG = distribution_type(dat_EG)
 | Logan Generating Plant_Unit1_B01 |         5.33e-09 |            1 |
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
-Top 5 of 42 sources for EG standard UPL calculation
+Top 5 of 42 sources for existing source UPL calculation
 
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The

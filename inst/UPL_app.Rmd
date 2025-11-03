@@ -27,8 +27,8 @@ inputPanel(
         numericInput("significance",label = "Level of significance",
                      value = 0.99, min = 0, max = 1)
 )
-downloadButton('Sourcedownload1', 'Download top performers EG data')
-downloadButton('Sourcedownload2', 'Download best performer NSPS data')
+downloadButton('Sourcedownload1', 'Download top performers data')
+downloadButton('Sourcedownload2', 'Download best performer data')
 downloadButton('UPLdownload', 'Download UPL results')
 downloadButton("pdf_report", 'Download PDF report')
 
@@ -434,7 +434,7 @@ The best distribution for the existing source UPL calculation is
 `r reactive(distribution_result_exist())`, and the corresponding UPL is `r reactive(best_UPL())`.
 
 ```{r text2}
-output$text2 = renderText(paste0("The best distribution for the NSPS UPL calculation is ",
+output$text2 = renderText(paste0("The best distribution for the new source UPL calculation is ",
                                distribution_result_new(), 
                                " and the corresponding UPL is ", 
                                best_UPL_NSPS(), "."))
@@ -467,7 +467,7 @@ output$upl_display = reactive(dat_UPL() %>% knitr::kable('html',
                                            workbook using a significance of ",
                                            input$significance * 100,'% and ',
                                            input$future_runs, ' future test runs.'),
-              col.names = c('Distribution', 'Existing source UPL', 'NSPS UPL'), digits = 10)%>%
+              col.names = c('Distribution', 'Existing source UPL', 'new source UPL'), digits = 10)%>%
                 kable_styling("striped", full_width = T))
 tableOutput('upl_display')
 ```

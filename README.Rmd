@@ -48,10 +48,9 @@ The goal of `UPLforOAR` is to provide a set of functions for supporting
 National Emissions Standards for Hazardous Air Pollutants (NESHAP) analyses. 
 This includes organizing data sets for Maximum Achievable Control Technology 
 (MACT) floor analysis and Upper Predictive Limit (UPL) calculations. These 
-functions include selecting the best and top performing sources from emissions 
-data based on appropriate Clean Air Act sections, determining the appropriate 
-distributions for the emissions data, and calculating the UPL for Existing 
-source Guidance (EG) and New Source Performance Standards (NSPS).
+functions include selecting the best and top performing sources, determining the 
+appropriate distributions for the emissions data, and calculating the UPL for 
+existing and new sources.
 
 The `UPLforOAR` R package replicates all of the functionality of the UPL.xlsx 
 workbook while streamlining its use. Using R instead of Excel avoids common 
@@ -120,7 +119,7 @@ distribution_result_EG = distribution_type(dat_EG)
 ```
 ```{r EGtable, fig.align = "center"}
 knitr::kable(dat_EG_avg%>%mutate(across(c(2), ~signif(., digits=4)))%>%head(),
-             caption="Top 5 of 42 sources for EG standard UPL calculation",
+             caption="Top 5 of 42 sources for existing source UPL calculation",
              col.names=c('Source', 'Average emission', 'No. of Tests'), digits=12)
 ```
 

@@ -82,7 +82,7 @@ if (is.null(params$runMACT)){
 ```{r cond1b, child='App_report_children/conditional1b.Rmd', eval=(!nsps_EVAL)}
 ```
 
-## Source population calculation
+## Source Population Calculation
 
 ```{r cond5, child='App_report_children/conditional5.Rmd', eval=zero_warn}
 ```
@@ -236,14 +236,14 @@ ggplot(data=Obs_onPoint_new)+
 ```
 
 \newpage
-## Appendix A: EG data table
+## Appendix A: Existing Source Data Table
 
 Below is the table containing all of emissions data used in the existing source 
 UPL calculation. Note that you can download a .csv version of these data while
 using the UPL_app.Rmd webpage. 
 
 ```{r dat_EG, echo = FALSE, results=TRUE}
-dat_top_exist%>%knitr::kable(caption="Top performering source emissions data used in Existing source UPL calculations.",digits=12,
+dat_top_exist%>%knitr::kable(caption="Top performering source emissions data used in existing source UPL calculations.",digits=12,
              col.names=names(dat_top_exist))
 ```
 
@@ -251,13 +251,13 @@ dat_top_exist%>%knitr::kable(caption="Top performering source emissions data use
 
 ```
 ```{r dat_NSPS, echo=FALSE, eval=nsps_EVAL}
-dat_top_new%>%knitr::kable(caption="Best performering source emissions data used in NSPS UPL calculations.",digits=12,
+dat_top_new%>%knitr::kable(caption="Best performering source emissions data used in new source UPL calculations.",digits=12,
              col.names=names(dat_top_new))
 ```
 
 \newpage
 
-## Appendix C: R code
+## Appendix C: R Code
 
 ### MACT_EG()
 ```{r function_docs1, results=TRUE, message=TRUE, echo=FALSE}
