@@ -1,21 +1,21 @@
-#' Bayesian_UPL() wraps [setup_likelihood()], [run_likelihood()],
-#' [output_likelihood()], [converge_likelihood()], and [fit_likelihood()]
+#' Bayesian_UPL() wraps `_likelihood()` functions into results comparable for
+#' multiple distributions
 #' @param distr_list A list including one or more of
-#' `c('Normal','Skewed','Lognormal','Gamma','Beta')`. Note that if prior bounds
-#' are supplied manually, only one distribution can be used.
+#' `c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')`. Note that if prior
+#' bounds are supplied manually, only one distribution can be used.
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
 #' @param xvals Ordered sequence of emissions at which to predict probability
 #' density. Default is `NULL`, in which case `x_hat` is a 1024 length sequence
-#' between `0` and `3*max(data$emissions)`.
+#' between `0` and `3 * max(data$emissions)`.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions, not specified
-#' manually. Default is `NULL`, in which case is is calculated as `3*max(data$emissions)`.
+#' manually. Default is `NULL`, in which case is is calculated as `3 * max(data$emissions)`.
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
-#' distributions. For `'Normal'` they are ordered `c(sd_low, sd_high, mean_low,mean_high')`.
+#' distributions. For `'Normal'` they are ordered `c(sd_low, sd_high, mean_low, mean_high')`.
 #' For `'Lognormal'` they are ordered `c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)`.
 #' For `'Skewed'` they are ordered `c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)`.
 #' For `'Gamma'` they are ordered `c(rate_low, rate_high, shape_low, shape_high)`. For
@@ -55,96 +55,94 @@
 #' with corresponding lower and upper limits in `prior_list`. If manual priors
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
-Bayesian_UPL=function(distr_list=c('Normal','Skewed','Lognormal','Gamma','Beta'),
-                      data,future_runs=3,significance=0.99,
-                      xvals=NULL,maxY=NULL,
-                      convergence_report=FALSE,
-                      manual_prior=FALSE,prior_list=NULL){
-  if (convergence_report==TRUE){
-    figs_list=list()
+Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
+                        data, future_runs = 3, significance = 0.99,
+                        xvals = NULL, maxY = NULL,
+                        convergence_report = FALSE,
+                        manual_prior = FALSE, prior_list = NULL){
+  if (convergence_report == TRUE){
+    figs_list = list()
   }
-  mod_output_list=c()
-  conv_output=tibble::tibble()
+  mod_output_list = c()
+  conv_output = tibble::tibble()
   if (manual_prior){
-    if (length(distr_list)>1){
+    if (length(distr_list) > 1){
       stop('You can only run one distribution at a time if supplying priors manually')
     }
-    distribution=distr_list[1]
-    mod_bayes=setup_likelihood(distribution=distribution,data=data,
-                               manual_prior=manual_prior,prior_list=prior_list)
-    mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,
-                           future_runs =future_runs,xvals=xvals)
-    manual_prior=mod_bayes$manual_prior
-
-    mod_output=output_likelihood(jags_model_run=mod_run,
-                                 significance=significance)
-    mod_fit=fit_likelihood(likelihood_result=mod_output)
-    mod_output_list[[1]]=mod_fit
-    mod_converge=converge_likelihood(mod_run)
-    conv_output=rbind(conv_output,mod_converge)
-    if (convergence_report==TRUE){
-      fig_set=converge_figs(distribution,mod_run)
-      figs_list[[1]]=fig_set
+    distribution = distr_list[1]
+    mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                 manual_prior = manual_prior,
+                                 prior_list = prior_list)
+    mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY,
+                             future_runs = future_runs, xvals = xvals)
+    manual_prior = mod_bayes$manual_prior
+    mod_output = output_likelihood(jags_model_run = mod_run,
+                                   significance = significance)
+    mod_fit = fit_likelihood(likelihood_result = mod_output)
+    mod_output_list[[1]] = mod_fit
+    mod_converge = converge_likelihood(mod_run)
+    conv_output = rbind(conv_output, mod_converge)
+    if (convergence_report == TRUE){
+      fig_set = converge_figs(distribution, mod_run)
+      figs_list[[1]] = fig_set
       rm(fig_set)
     }
-    rm(mod_run,mod_output,mod_fit)
+    rm(mod_run, mod_output, mod_fit)
     gc()
   }
-
   if (!manual_prior){
     for (j in 1:length(distr_list)){
-      distribution=distr_list[j]
-      mod_bayes=setup_likelihood(distribution=distribution,data=data,
-                                 manual_prior=FALSE)
-      mod_run=run_likelihood(model_input=mod_bayes,maxY=maxY,
-                             future_runs =future_runs,xvals=xvals)
-      mod_output=output_likelihood(jags_model_run=mod_run,
-                                   significance=significance)
-      mod_fit=fit_likelihood(likelihood_result=mod_output)
-      mod_output_list[[j]]=mod_fit
-      mod_converge=converge_likelihood(mod_run)
-      conv_output=rbind(conv_output,mod_converge)
-      if (convergence_report==TRUE){
-        fig_set=converge_figs(distribution,mod_run)
-        figs_list[[j]]=fig_set
+      distribution = distr_list[j]
+      mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                   manual_prior = FALSE)
+      mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY,
+                               future_runs = future_runs, xvals = xvals)
+      mod_output = output_likelihood(jags_model_run = mod_run,
+                                     significance = significance)
+      mod_fit = fit_likelihood(likelihood_result = mod_output)
+      mod_output_list[[j]] = mod_fit
+      mod_converge = converge_likelihood(mod_run)
+      conv_output = rbind(conv_output, mod_converge)
+      if (convergence_report == TRUE){
+        fig_set = converge_figs(distribution, mod_run)
+        figs_list[[j]] = fig_set
         rm(fig_set)
       }
-      rm(mod_run,mod_output,mod_fit)
+      rm(mod_run, mod_output, mod_fit)
       gc()
     }
   }
-
-  if (convergence_report==TRUE){
-    current_wd=getwd()
-    template_path=system.file("templates",package="EPA.MACT.floor.UPL",
-                              mustWork=TRUE)
-    rmarkdown::render(paste0(template_path,'/convergence_template.Rmd'),
+  if (convergence_report == TRUE){
+    current_wd = getwd()
+    template_path = system.file("templates", package = "EPA.MACT.floor.UPL",
+                                mustWork = TRUE)
+    rmarkdown::render(paste0(template_path, '/convergence_template.Rmd'),
                       output_dir = current_wd,
                       output_file = paste0('Bayesian_UPL_convergence_',
-                                           format(Sys.time(),"%m%d%Y-%H%M")))
+                                           format(Sys.time(), "%m%d%Y-%H%M")))
   }
-  fit_table=tibble::tibble(distr=unlist(lapply(mod_output_list,'[[','distr')),
-                   UPL=(as.numeric(lapply(mod_output_list,'[[','UPL_Bayes'))),
-                   SSE=(as.numeric(lapply(mod_output_list,'[[','SSE'))),
-                   Obs_in_CI=(as.numeric(lapply(mod_output_list,'[[','good_vals'))),
-                   pdf_integral=(as.numeric(lapply(mod_output_list,'[[','pdf_integral')))
-                   )
-  obs_pdf_dat=tibble::tibble()
+  fit_table = tibble::tibble(distr = unlist(lapply(mod_output_list, '[[','distr')),
+                     UPL = (as.numeric(lapply(mod_output_list, '[[','UPL_Bayes'))),
+                     SSE = (as.numeric(lapply(mod_output_list, '[[','SSE'))),
+                     Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
+                     pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
+                     )
+  obs_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
-    obs_temp=mod_output_list[[i]]$obs_pdf_dat
-    obs_pdf_dat=rbind(obs_pdf_dat,obs_temp)
+    obs_temp = mod_output_list[[i]]$obs_pdf_dat
+    obs_pdf_dat = rbind(obs_pdf_dat, obs_temp)
   }
-  pred_pdf_dat=tibble::tibble()
+  pred_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
-    pred_temp=mod_output_list[[i]]$xhat_pdf_dat
-    pred_pdf_dat=rbind(pred_pdf_dat,pred_temp)
+    pred_temp = mod_output_list[[i]]$xhat_pdf_dat
+    pred_pdf_dat = rbind(pred_pdf_dat, pred_temp)
   }
-  if (any(conv_output$convYN!="Yes")){
+  if (any(conv_output$convYN != "Yes")){
     warning('Some parameters have not converged')
   }
-  return_list=list(fit_table=fit_table,
-                   conv_output=conv_output,
-                   obs_pdf_dat=obs_pdf_dat,
-                   pred_pdf_dat=pred_pdf_dat)
+  return_list = list(fit_table = fit_table,
+                     conv_output = conv_output,
+                     obs_pdf_dat = obs_pdf_dat,
+                     pred_pdf_dat = pred_pdf_dat)
   return(return_list)
 }

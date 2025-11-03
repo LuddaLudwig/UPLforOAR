@@ -9,9 +9,15 @@
 #' @export
 Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
   n = length(data$emissions)
+  if (n < 3){
+    stop("Need at least 3 observations for UPL calculation")
+  }
   future_runs = as.integer(future_runs)
   emission_mean = mean(data$emissions, na.rm = T)
   sigma = stats::sd(data$emissions, na.rm = T)
+  if (sigma == 0){
+    stop("Cannot perform UPL calculation on data with 0 variance")
+  }
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }

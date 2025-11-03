@@ -12,7 +12,6 @@
 #' multiple methods for evaluating skewness and kurtosis. The Fisher method is
 #' what is used in the old Excel workbook and is a good selection for small
 #' `n < 300` samples from an unknown population.
-#'
 #' @export
 distribution_type = function(data){
   data$ln_emiss = log(data$emissions)
@@ -20,7 +19,13 @@ distribution_type = function(data){
   sigma = stats::sd(data$emissions)
   mean_ln = mean(data$ln_emiss, na.rm = TRUE)
   sigma_ln = stats::sd(data$ln_emiss, na.rm = TRUE)
+  if ((sigma == 0) | (sigma_ln == 0)){
+    stop("Cannot perform UPL calculation on data with 0 variance")
+  }
   n = length(data$emissions)
+  if (n < 3){
+    stop("Need at least 3 observations for UPL calculation")
+  }
   emission_mean = mean(data$emissions)
   S = n / ((n - 1) * (n - 2)) * sum(((data$emissions - emission_mean) / sigma)^3)
   S_ln = n / ((n - 1) * (n - 2)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^3, na.rm = T)

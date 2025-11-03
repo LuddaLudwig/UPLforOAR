@@ -29,8 +29,14 @@ Lognormal_UPL = function(data, future_runs = 3, significance = 0.99){
   data$ln_emiss = log(data$emissions)
   data$ln_emiss = replace(data$ln_emiss, !is.finite(data$ln_emiss), NA)
   n = length(data$emissions)
+  if (n < 3){
+    stop("Need at least 3 observations for UPL calculation")
+  }
   mean_log = mean(data$ln_emiss, na.rm = TRUE)
   sd_log = stats::sd(data$ln_emiss, na.rm = TRUE)
+  if (sd_log == 0){
+    stop("Cannot perform UPL calculation on data with 0 variance")
+  }
   beta2 = (exp(4 * sd_log^2) + 2 * exp(3 * sd_log^2) + 3 * exp(2 * sd_log^2) - 3) / (future_runs * (exp(sd_log^2) - 1)^2) + 3 * (1 - 1 / future_runs)
   beta1 = sqrt(exp(sd_log^2) - 1) * (exp(sd_log^2) + 2) / sqrt(future_runs)
   zvals = seq(-5, 5, by = 0.0101)
