@@ -49,7 +49,7 @@ dat_emiss <- reactive({
 })
 zero_warn = reactive({
   dat = dat_emiss()
-  if (any(dat_emiss$emissions == 0)){
+  if (any(dat$emissions == 0)){
     out = TRUE
   } else {
     out = FALSE

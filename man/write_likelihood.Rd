@@ -24,6 +24,6 @@ JAGS can call and the distribution used in likelihood model.
 This function writes an R script for JAGS to call based on the selected
 distribution and prior. The priors are uninformative and
 set based on emissions data, unless specified manually via \code{\link[=setup_likelihood]{setup_likelihood()}}.
-The likelihood distributions are truncated to \verb{(0,maxY)}, where \code{maxY} can be
-specified or used with the default \code{maxY = 3*max(data$emissions)} in \code{\link[=run_likelihood]{run_likelihood()}}.
+The likelihood distributions are truncated to \verb{(0, maxY)}, where \code{maxY} can be
+specified or used with the default \code{maxY = 3 * max(data$emissions)} in \code{\link[=run_likelihood]{run_likelihood()}}.
 }

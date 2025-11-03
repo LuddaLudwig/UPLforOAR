@@ -1,6 +1,6 @@
 #' Runs JAGS model scripts for chosen likelihood
 #' @description
-#' Runs the JAGS model from [setup_likelihood()] model_code output.
+#' Runs the JAGS model from [setup_likelihood()] model_code output using [runjags::run.jags()].
 #' Traces all variables in `par_list` running 3 chains in parallel with `burnin` and
 #' `adapt` of 10,000 each and keeping 10,000 iterations per chain.
 #' @returns `runjags` object named `run_results`, likelihood distribution from the
@@ -12,12 +12,11 @@
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param xvals Ordered sequence of emissions at which to predict probability
 #' density. Default is `NULL`, in which case `x_hat` is a 1024 length
-#' sequence between `0` and `3*max(data$emissions)`.
+#' sequence between `0` and `3 * max(data$emissions)`.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
-#' Default is `NULL`, in which case it is calculated as `3*maximum(data$emissions)`.
+#' Default is `NULL`, in which case it is calculated as `3 * maximum(data$emissions)`.
 #' @export
-
 run_likelihood = function(model_input, xvals = NULL, maxY = NULL, future_runs = 3){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
@@ -99,4 +98,3 @@ run_likelihood = function(model_input, xvals = NULL, maxY = NULL, future_runs = 
   parallel::stopCluster(cl3)
   return(output)
 }
-

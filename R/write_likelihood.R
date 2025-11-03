@@ -3,8 +3,8 @@
 #' This function writes an R script for JAGS to call based on the selected
 #' distribution and prior. The priors are uninformative and
 #' set based on emissions data, unless specified manually via [setup_likelihood()].
-#' The likelihood distributions are truncated to `(0,maxY)`, where `maxY` can be
-#' specified or used with the default `maxY = 3*max(data$emissions)` in [run_likelihood()].
+#' The likelihood distributions are truncated to `(0, maxY)`, where `maxY` can be
+#' specified or used with the default `maxY = 3 * max(data$emissions)` in [run_likelihood()].
 #' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
 #' @param write_wd Default is `NULL`, in which case the JAGS scripts are written
 #' into inst/JAGS folder in package directory. This is the location

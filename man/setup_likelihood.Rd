@@ -25,7 +25,9 @@ from range of emissions data. if \code{TRUE} priors should be specified manually
 \item{prior_list}{Optional list of \code{\link[stats:Uniform]{stats::dunif()}} upper and lower bounds for prior
 distributions. For \code{'Normal'} they are ordered \code{c(sd_low, sd_high, mean_low, mean_high)}.
 For \code{'Lognormal'} they are ordered \code{c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)}.
-For \code{'Skewed'} they are ordered \verb{c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high). For }'Gamma'\verb{they are ordered}c(rate_low, rate_high, shape_low, shape_high)\verb{. For }'Beta'\verb{they are ordered}c(alpha_low, alpha_high, beta_low, beta_high)`.}
+For \code{'Skewed'} they are ordered \code{c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)}.
+For \code{'Gamma'} they are ordered \code{c(rate_low, rate_high, shape_low, shape_high)}. For
+\code{'Beta'} they are ordered \code{c(alpha_low, alpha_high, beta_low, beta_high)}.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
 and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
