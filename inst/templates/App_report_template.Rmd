@@ -13,6 +13,7 @@ params:
   runMACT: "NA"
   data_nsps: "NA"
   dat_UPL: "NA"
+  zero_warn: "NA"
 ---
 
 ```{r setup, include=FALSE}
@@ -82,6 +83,9 @@ if (is.null(params$runMACT)){
 ```
 
 ## Source population calculation
+
+```{r cond5, child='App_report_children/conditional5.Rmd', eval=zero_warn}
+```
 
 ```{r cond2a, child='App_report_children/conditional2a.Rmd', eval=(mact_EVAL)}
 ```

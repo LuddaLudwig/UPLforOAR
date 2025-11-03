@@ -77,6 +77,11 @@ if (params$CAA_section == 112){
 # those data, making sure to use unique names so you don't overwrite the results.
 
 dat_emiss = read_csv(params$data)
+if (any(dat_emiss$emissions == 0)){
+  zero_warn = TRUE
+} else {
+  zero_warn = FALSE
+}
 dat_top_exist = MACT_EG(CAA_section = params$CAA_section, data = dat_emiss)
 dat_top_new = MACT_NSPS(data = dat_emiss)
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
@@ -92,7 +97,7 @@ if (all(dat_topmeans_exist$counts == 1)){
 } else {
   source_fig = TRUE
 }
-best_source=as.character(dat_top_new$sources)[1]
+best_source = as.character(dat_top_new$sources)[1]
 maxY = NULL # this defaults to 3*max(emissions)
 xvals = NULL # this defaults to a sequence from 0 to 3*max(emissions)
 
@@ -410,6 +415,9 @@ table1%>%knitr::kable(caption="Here is an example of a table in case you need on
 ## MACT Floor Data Set
 
 *describe any data that was excluded here and why*
+
+```{r cond1, child='App_report_children/conditional5.Rmd', eval=zero_warn}
+```
 
 Tables with the full data sets used for each existing source MACT floor analysis can be found listed in Appendix A. Tables with the full data sets used for each new source MACT floor analysis can be found listed in Appendix B.
 

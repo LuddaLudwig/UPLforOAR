@@ -17,6 +17,13 @@ MACT_NSPS = function(data){
   if ((!is.character(data$sources)) & (!is.factor(data$sources))){
     stop("Sources must be a character or factor vector")
   }
+  if (any(data$emissions < 0)){
+    warning("emissions data contain negative values")
+  }
+  if (any(data$emissions == 0)){
+    warning("emissions data contain zero values and have been removed")
+    data = subset(data, data$emissions != 0)
+  }
   dat_means = dplyr::summarize(data, means = mean(emissions), .by = 'sources')
   top_list = dat_means[order(dat_means$means, decreasing = F), ]
   top_source = top_list$sources[1]

@@ -11,7 +11,6 @@
 #' and number of sources with data available.
 #'
 #' @export
-
 MACT_EG = function(CAA_section = 112, data){
   if (("emissions" %in% names(data)) == FALSE){
     stop("data must have numeric column named 'emissions' ")
@@ -25,18 +24,21 @@ MACT_EG = function(CAA_section = 112, data){
   if ((!is.character(data$sources)) & (!is.factor(data$sources))){
     stop("Sources must be a character or factor vector")
   }
-
+  if (any(data$emissions < 0)){
+    warning("emissions data contain negative values")
+  }
+  if (any(data$emissions == 0)){
+    warning("emissions data contain zero values and have been removed")
+    data = subset(data, data$emissions != 0)
+  }
   dat_means = dplyr::summarize(data, means = mean(emissions), .by = 'sources')
   n_sources = length(unique(data$sources))
-
   if (CAA_section == 129){
     n_topsources = ceiling(0.12 * n_sources)
     set.seed(1)
     source_index = sample.int(n_sources, n_topsources)
     dat_top = data[source_index,]
-
   } else if (CAA_section == 112){
-    # select top performers
     if (n_sources >= 30){
       n_topsources = ceiling(0.12 * n_sources)
       top_list = dat_means[order(dat_means$means, decreasing = F), ]

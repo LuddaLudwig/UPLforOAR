@@ -9,11 +9,11 @@ params:
     label: "Stationary source category"
     input: text
     value: "Example Industry"
-  data:
-    label: "Select data set, with named columns of emissions and sources"
-    input: file
-    accept: ".csv"
-    value: "Example_data1.csv"
+  # data:
+  #   label: "Select data set, with named columns of emissions and sources"
+  #   input: file
+  #   accept: ".csv"
+  #   value: "Example_data1.csv"
   CAA_section: 
     label: "CAA Section"
     value: 112
@@ -77,6 +77,11 @@ if (params$CAA_section == 112){
 # those data, making sure to use unique names so you don't overwrite the results.
 
 dat_emiss = read_csv(params$data)
+if (any(dat_emiss$emissions == 0)){
+  zero_warn = TRUE
+} else {
+  zero_warn = FALSE
+}
 dat_top_exist = MACT_EG(CAA_section = params$CAA_section, data = dat_emiss)
 dat_top_new = MACT_NSPS(data = dat_emiss)
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
@@ -92,7 +97,7 @@ if (all(dat_topmeans_exist$counts == 1)){
 } else {
   source_fig = TRUE
 }
-best_source=as.character(dat_top_new$sources)[1]
+best_source = as.character(dat_top_new$sources)[1]
 distribution_result_exist = distribution_type(data = dat_top_exist)
 distribution_result_new = distribution_type(data = dat_top_new)
 
@@ -252,6 +257,9 @@ table1%>%knitr::kable(caption="Here is an example of a table in case you need on
 ## MACT Floor Data Set
 
 *describe any data that was excluded here and why*
+
+```{r cond1, child='App_report_children/conditional5.Rmd', eval=zero_warn}
+```
 
 Tables with the full data sets used for each existing source MACT floor analysis can be found listed in Appendix A. Tables with the full data sets used for each new source MACT floor analysis can be found listed in Appendix B.
 
