@@ -10,6 +10,8 @@
 Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
   n = length(data$emissions)
   future_runs = as.integer(future_runs)
+  emission_mean = mean(data$emissions, na.rm = T)
+  sigma = stats::sd(data$emissions, na.rm = T)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }
