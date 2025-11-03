@@ -272,7 +272,7 @@ The final data set for the *chemical X* existing source MACT floor for *subcateg
 
 ```{r plot1, echo = FALSE, eval = source_fig, results=FALSE, fig.align = "center", fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
 ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
-          geom_density(alpha = 0.75, bounds = c(0, Inf))+
+          geom_density(alpha = 0.5, bounds = c(0, Inf))+
           ylab("Density")+xlab("Chemical X emissions (units)")+
           ggtitle("Subcategory A top sources test run densities")+
           multi_source_theme()+labs(fill = 'Top sources', 
@@ -295,7 +295,7 @@ Figures with density plots of emission test run data were created using `ggplot2
 
 <!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
 
-### Chemical X in Subcategory A
+### Existing Source *Chemical X* in *Subcategory A*
 
 The distribution that best represents the existing source data set for *chemical x* in *subcategory A* is the `r distribution_result_exist` distribution, with a corresponding UPL of `r signif(UPL_exist, digits = 4)` *(insert measurement units)*. 
 
@@ -345,6 +345,8 @@ ggplot()+
                     labels = c('Observations', distribution_result_exist))
 ```
 
+### New Source *Chemical X* in *Subcategory A*
+
 The distribution that best represents the new source data set for *chemical x* in *subcategory A* is the `r distribution_result_new` distribution, with a corresponding UPL of `r signif(UPL_new, digits = 4)` *(insert measurement units)*. 
 
 ```{r plot3, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
@@ -393,6 +395,8 @@ ggplot()+
                     labels = c('Observations', distribution_result_new))
 ```
 <!-- If you have multiple HAP emissions or subcategories, consider combining into one table summarizing the UPL -->
+
+### UPL Calculation Summary
 
 The table below includes all UPL calculations for `r params$source` existing and new source MACT floor analyses using a significance of `r (params$significance)*100`\% and `r params$future_runs` future test runs.
 
