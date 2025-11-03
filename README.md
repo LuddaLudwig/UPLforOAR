@@ -94,7 +94,7 @@ summary(dat_emiss$emissions)
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
 dat_EG = MACT_EG(CAA_section=112, dat_emiss)
-dat_EG_avg = dat_EG%>%group_by(sources)%>%
+dat_EG_avg = dat_EG %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
 dat_EG_avg = arrange(dat_EG_avg, avg)
 distribution_result_EG = distribution_type(dat_EG)
@@ -143,7 +143,7 @@ emissions.
 ``` r
 # make an ordered sequence of emissions 
 # for which we will define the probability density
-x_hat = seq(0, 3*max(dat_EG$emissions), length.out = 1024)
+x_hat = seq(0, 3 * max(dat_EG$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
 obs_dens_results = obs_density(dat_EG, xvals = x_hat)
@@ -152,7 +152,7 @@ obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
 # based on estimated distribution parameters
 pdf_n = dnorm(x_hat, mean = mean(dat_EG$emissions, na.rm = T),
-              sd=sd(dat_EG$emissions, na.rm = T))
+              sd = sd(dat_EG$emissions, na.rm = T))
 pdf_ln = dlnorm(x_hat,mean = log(mean(dat_EG$emissions, na.rm = T)),
               sd = sd(log(dat_EG$emissions), na.rm = T))
 pred_dat = tibble(x_hat, pdf_ln, pdf_n)
@@ -162,7 +162,7 @@ pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ggplot()+
   geom_line(data = obs_den_df, size=0.75,
             aes(y = ydens, x = x_hat, color = 'a'))+
-  geom_area(data = obs_den_df, alpha=0.25,
+  geom_area(data = obs_den_df, alpha = 0.25,
             aes(y = ydens, x = x_hat, fill = 'a'))+
   geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
              size = 3, alpha = 0.5, shape = 19, color = 'black')+
