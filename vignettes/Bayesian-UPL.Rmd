@@ -59,8 +59,8 @@ However, there are no equivalent analytical solutions for Skewed or Lognormal
 UPL calculations. Instead, `Lognormal_UPL()` uses a Gram-Charlier Type A Series 
 expansion to approximate the density distribution and determine the arithmetic 
 mean of future samples, and `Skewed_UPL()` uses the skewness and kurtosis 
-moments to iteratively adjust the t-score until the desired significance is 
-achieved. All three UPL methods assume the distribution explicitly and without
+moments to iteratively adjust the *t*-statistic until the desired significance is 
+achieved. All three UPL methods assume the distribution explicitly and without 
 uncertainty, and assume the emissions are observed perfectly and independently.
 
 By operating in a Bayesian framework, we can use the same method of deriving the 
