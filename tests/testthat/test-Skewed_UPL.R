@@ -22,7 +22,7 @@ test_that("Skewed_UPL() calculates UPL assuming emissions data are skew-normal",
   small_dat=tibble::tibble(emissions=c(4.2,5.1,6.7),
                            sources=c("A","A","A"))
   test_result2=tryCatch({
-    result <- Skewed_UPL(data=small_dat)
+    result <- suppressWarnings(Skewed_UPL(data=small_dat))
     print(result)
   }, error = function(e) {
       output=(e$message)
