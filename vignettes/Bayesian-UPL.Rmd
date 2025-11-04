@@ -96,7 +96,7 @@ so there is no need to run `MACT_existing()` to select the data. The first step 
 load and plot the emissions data. 
 
 ```{r load, echo=TRUE}
-dat_emiss = read.csv('Example_data2')
+dat_emiss = read.csv('Example_data2.csv')
 emission_mean = mean(dat_emiss$emissions)
 dat_means = summarize(dat_emiss, means = mean(emissions), counts = n(),
                       .by = 'sources')
