@@ -25,6 +25,8 @@ output_likelihood = function(jags_model_run, significance = 0.99){
   data = jags_model_run$data
   future_runs = jags_model_run$future_runs
   xvals = jags_model_run$xvals
+  minY = jags_model_run$minY
+  maxY = jags_model_run$maxY
   if (distribution == "Skewed"){
     xi_quant = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "xi")))
@@ -83,6 +85,6 @@ output_likelihood = function(jags_model_run, significance = 0.99){
   pred_mean = mean(hat_quant$run1, na.rm = TRUE)
   output = list("predicted_mean" = pred_mean, "UPL_Bayes" = pred_99_3rep,
               "obs_pdf" = pdf_obs_quant, 'pred_pdf' = density_hat,
-              distr = distribution)
+              distr = distribution, minY = minY, maxY = maxY)
   return(output)
 }

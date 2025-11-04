@@ -5,10 +5,30 @@
 \title{fit_likelihood() calculates the error between fitted density and
 observed density distributions}
 \usage{
-fit_likelihood(likelihood_result)
+fit_likelihood(
+  likelihood_result,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL
+)
 }
 \arguments{
 \item{likelihood_result}{Output list from \code{\link[=output_likelihood]{output_likelihood()}}}
+
+\item{up}{Optional upper limit to bound density, default is \code{Inf}.}
+
+\item{low}{Optional lower limit to bound density, default is \code{0}.}
+
+\item{kernel}{Kernel choice for density function, default is \code{gamma} defined
+on \verb{(0,Inf)}. Other options include:
+\code{c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')}.
+See \code{\link[np:npuniden.boundary]{np::npuniden.boundary()}} for more information on kernel options.}
+
+\item{bw}{Optional bandwidth, default is \code{NULL} in which case
+\code{bw = sd(emissions) * n^(-2/5)}, where \code{n} is number of emissions. The bandwidth
+can also be provided manually, or searched for using least squares cross-validation
+by \code{bw = "cv.ls"} or likelihood cross-validation with \code{bw = "cv.ml"}.}
 }
 \value{
 The sum of squared error (SSE) between predicted and observed
@@ -24,5 +44,6 @@ pdf. The UPL estimate from \code{\link[=output_likelihood]{output_likelihood()}}
 This function takes the list of results from \code{\link[=output_likelihood]{output_likelihood()}} and compares
 the predicted density distributions to observed density distributions,
 estimating the \code{SSE} (sum of squared errors) and counts the number of emissions
-observations with densities that have overlapping 95 percent CI with predicted densities.
+observations with densities that have overlapping 95 percent CI with predicted
+densities. Additional parameters can be supplied for use in \code{\link[=obs_density]{obs_density()}}
 }

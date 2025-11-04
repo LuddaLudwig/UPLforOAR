@@ -12,6 +12,7 @@ Bayesian_UPL(
   significance = 0.99,
   xvals = NULL,
   maxY = NULL,
+  minY = 0,
   convergence_report = FALSE,
   manual_prior = FALSE,
   prior_list = NULL
@@ -35,8 +36,11 @@ density. Default is \code{NULL}, in which case \code{x_hat} is a 1024 length seq
 between \code{0} and \code{3 * max(data$emissions)}.}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
-distributions and set upper ranges on prior distributions, not specified
+distributions and set upper ranges on prior distributions, if not specified
 manually. Default is \code{NULL}, in which case is is calculated as \code{3 * max(data$emissions)}.}
+
+\item{minY}{The minimum emission value possible, used to truncate likelihood
+distributions. Default is 0.}
 
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document

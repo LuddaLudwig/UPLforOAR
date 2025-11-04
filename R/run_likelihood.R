@@ -97,7 +97,7 @@ run_likelihood = function(model_input, xvals = NULL, minY = 0,
                                            adapt = n.adapt, sample = n.iter,
                                            inits = model_input$dat_inits))
   output = list(run_results = rjm, distribution = model_input$distribution,
-                manual_prior = manual_prior,
+                manual_prior = manual_prior, maxY = maxY, minY = minY,
                 data = model_input$data, xvals = xvals, future_runs = future_runs)
   parallel::stopCluster(cl3)
   return(output)
