@@ -365,7 +365,11 @@ fit_metrics = subset(combined_fit, select = c(type, UPL))
 Looking at the UPL results, we do see some variance in the UPL, but it is much 
 smaller than the difference between approximation methods and distributions. The 
 standard deviation in these 4 repeated UPL results is `r signif(sd(fit_metrics$UPL),3)` 
-which is similar to the difference between the Bayesian and frequentist Normal UPL's.
+which is similar to the difference between the Bayesian and frequentist Normal UPL's. 
+It is worth pointing out that the more uncertainty in the fit, the more the 
+stochastic component might affect the UPL results. This likely only a concern 
+when the model struggles to converge because it is a poor fit or because there 
+are not enough data.
 ```{r table3, echo = FALSE}
 knitr::kable(fit_metrics,
              caption = "UPL results for fitting unbounded Normal distributions with 
