@@ -31,6 +31,9 @@
 #' or be uninformative calculated from range of emissions data. Note that if you
 #' are supplying priors manually than you can only run one type of distribution
 #' at a time.
+#' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
+#' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
+#' will use random values for `.RNG.name` and `.RNG.seed` instead.
 #' @returns A list of tibble results from [setup_likelihood()], [run_likelihood()],
 #' [output_likelihood()], [obs_density()], [fit_likelihood()], and
 #' [converge_likelihood()] for each distribution in `distr_list`.
@@ -60,7 +63,7 @@
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
                         data, future_runs = 3, significance = 0.99,
                         xvals = NULL, maxY = NULL, minY = 0,
-                        convergence_report = FALSE,
+                        convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){
     figs_list = list()
@@ -73,7 +76,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     }
     distribution = distr_list[1]
     mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                 manual_prior = manual_prior,
+                                 manual_prior = manual_prior, random = random,
                                  prior_list = prior_list)
     mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                              future_runs = future_runs, xvals = xvals)
@@ -96,7 +99,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
       mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                   manual_prior = FALSE)
+                                   manual_prior = FALSE, random = random)
       mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                                future_runs = future_runs, xvals = xvals)
       mod_output = output_likelihood(jags_model_run = mod_run,

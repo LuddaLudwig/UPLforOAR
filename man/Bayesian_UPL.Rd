@@ -14,6 +14,7 @@ Bayesian_UPL(
   maxY = NULL,
   minY = 0,
   convergence_report = FALSE,
+  random = FALSE,
   manual_prior = FALSE,
   prior_list = NULL
 )
@@ -47,6 +48,10 @@ convergence figures should be generated with results. If \code{TRUE}, a document
 Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
 working directory. Note that this is an Rmarkdown document that requires
 either LaTex or MikTek installed in order to render the PDF.}
+
+\item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
+and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
+will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you
