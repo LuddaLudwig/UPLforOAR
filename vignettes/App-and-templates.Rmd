@@ -28,19 +28,7 @@ knitr::knit_hooks$set(imgcenter = function(before, options, envir){
 ```
 
 ```{r setup}
-library(dplyr)
-library(ggplot2)
-library(forcats)
 library(UPLforOAR)
-library(matrixStats)
-library(EnvStats)
-library(np)
-library(sfsmisc)
-library(parallel)
-library(rjags)
-library(runjags)
-library(sn)
-library(patchwork)
 ```
 
 ## Introduction

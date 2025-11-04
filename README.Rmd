@@ -26,7 +26,6 @@ knitr::knit_hooks$set(imgcenter = function(before, options, envir){
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
-library(EnvStats)
 library(grid)
 library(np)
 library(sfsmisc)
