@@ -2,8 +2,8 @@
 % Please edit documentation in R/Bayesian_UPL.R
 \name{Bayesian_UPL}
 \alias{Bayesian_UPL}
-\title{Bayesian_UPL() wraps \code{\link[=setup_likelihood]{setup_likelihood()}}, \code{\link[=run_likelihood]{run_likelihood()}},
-\code{\link[=output_likelihood]{output_likelihood()}}, \code{\link[=converge_likelihood]{converge_likelihood()}}, and \code{\link[=fit_likelihood]{fit_likelihood()}}}
+\title{Bayesian_UPL() wraps \verb{_likelihood()} functions into results comparable for
+multiple distributions}
 \usage{
 Bayesian_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
@@ -19,8 +19,8 @@ Bayesian_UPL(
 }
 \arguments{
 \item{distr_list}{A list including one or more of
-\code{c('Normal','Skewed','Lognormal','Gamma','Beta')}. Note that if prior bounds
-are supplied manually, only one distribution can be used.}
+\code{c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')}. Note that if prior
+bounds are supplied manually, only one distribution can be used.}
 
 \item{data}{Emissions data from either the best source or top performers,
 must have a column named 'emissions'.}
@@ -32,16 +32,17 @@ is \code{3} since compliance uses 1 test average of 3 runs.}
 
 \item{xvals}{Ordered sequence of emissions at which to predict probability
 density. Default is \code{NULL}, in which case \code{x_hat} is a 1024 length sequence
-between \code{0} and \code{3*max(data$emissions)}.}
+between \code{0} and \code{3 * max(data$emissions)}.}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
 distributions and set upper ranges on prior distributions, not specified
-manually. Default is \code{NULL}, in which case is is calculated as \code{3*max(data$emissions)}.}
+manually. Default is \code{NULL}, in which case is is calculated as \code{3 * max(data$emissions)}.}
 
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document
 Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
-working directory.}
+working directory. Note that this is an Rmarkdown document that requires
+either LaTex or MikTek installed in order to render the PDF.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you
@@ -49,7 +50,7 @@ are supplying priors manually than you can only run one type of distribution
 at a time.}
 
 \item{prior_list}{Optional list of \code{\link[stats:Uniform]{stats::dunif()}} upper and lower bounds for prior
-distributions. For \code{'Normal'} they are ordered \verb{c(sd_low, sd_high, mean_low,mean_high')}.
+distributions. For \code{'Normal'} they are ordered \verb{c(sd_low, sd_high, mean_low, mean_high')}.
 For \code{'Lognormal'} they are ordered \code{c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)}.
 For \code{'Skewed'} they are ordered \code{c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)}.
 For \code{'Gamma'} they are ordered \code{c(rate_low, rate_high, shape_low, shape_high)}. For

@@ -1,7 +1,7 @@
 \newpage
 
-## Appendix B: NSPS data table
+## Appendix B: New Source Data Table
 
-Below is the table containing all of emissions data used in the NSPS 
+Below is the table containing all of emissions data used in the new source 
 UPL calculation. Note that you can download a .csv version of these data while
 using the UPL_app.Rmd webpage. 

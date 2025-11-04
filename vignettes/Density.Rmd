@@ -10,9 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   echo = FALSE, 
-  error=TRUE,
-  warning=FALSE,
-  message=FALSE,
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
   collapse = TRUE,
   comment = "#>",
   fig.align = "center"
@@ -70,7 +70,7 @@ to empirical densities.
 
 We will look at some synthetic data generated with a mixture of Normal and 
 Lognormal distributions for 5 sources.
-```{r load, echo=TRUE}
+```{r load, echo = TRUE}
 set.seed(1)
 emiss_ln1 = rlnorm(18, meanlog = log(0.01), sdlog = 2)
 source1 = rep("A", 18)
@@ -97,14 +97,14 @@ a rule-of-thumb method (not recommended) of arriving at a bandwidth
 will plot the density using `ggplot2::geom_density()` by `source`. The 
 `UPLforOAR` package includes several `ggplot2` themes designed for density 
 figures. The figure below uses `multi_source_theme()`.
-```{r figure1, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source."}
+```{r figure1, echo = TRUE, fig.dim = c(5.5,4), fig.align = "center", fig.cap = "Observation density of simulated emissions by source."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
   geom_density(alpha = 0.5, trim = FALSE)+
   multi_source_theme()+
   scale_x_continuous(limits =c(-0.05, 0.25))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   ggtitle("Source Densities")+
-  ylab("Density")+xlab("Emissions")+
+  ylab("Density")+ xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
 ```
 
@@ -115,14 +115,14 @@ past zero. The behavior that `ggplot` uses to accommodate bounds for
 `geom_density()` involves reflecting the density back across the boundary. This 
 is alright, but there are better methods that use density estimators specific 
 for bounded circumstances.
-```{r figure2, echo=TRUE, fig.dim=c(5.5,4), fig.align = "center", fig.cap="Observation density of simulated emissions by source, bounded strictly by 0."}
+```{r figure2, echo = TRUE, fig.dim = c(5.5, 4), fig.align = "center", fig.cap = "Observation density of simulated emissions by source, bounded strictly by 0."}
 ggplot(aes(emissions, fill = sources), data = dat_emiss)+
   geom_density(alpha = 0.5, trim = FALSE, bounds = c(0, Inf))+
   multi_source_theme()+
   scale_x_continuous(limits = c(-0.05, 0.25))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   ggtitle("Source Densities")+
-  ylab("Density")+xlab("Emissions")+
+  ylab("Density")+ xlab("Emissions")+
   labs(fill = 'Top sources', color = 'Top sources')
 ```
 
@@ -133,7 +133,7 @@ estimators, for non-zero data, as well as a better default bandwidth estimator.
 Furthermore, we can store the results directly in our environment rather than 
 them being inside the `ggplot` object.
 
-```{r obs_density, echo=TRUE}
+```{r obs_density, echo = TRUE}
 obs_dens_results = obs_density(data = dat_emiss)
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
@@ -145,7 +145,7 @@ likelihood distribution from which to calculate the UPL. This figures uses
 `pop_distr_theme()` and plots the `obs_density()` results above using 
 `ggplot2::geom_line()` and `ggplot2::geom_line()`. The emission observations 
 themselves are indicated as points and as a rug underneath the plot.
-```{r figure3, echo=TRUE, fig.dim=c(5,3), fig.align = "center", fig.cap="Observation density of IIS HCl emissions top performers overall population."}
+```{r figure3, echo = TRUE, fig.dim = c(5, 3), fig.align = "center", fig.cap = "Observation density of IIS HCl emissions top performers overall population."}
 ggplot(data = Obs_onPoint)+
   geom_line(data = obs_den_df, aes(y = ydens, x = x_hat), 
             size = 0.75, color = 'black')+
@@ -192,7 +192,7 @@ by default is `seq(0,3*max(data$emissions,length.out=1024))`.
 
 ## Bandwidth and kernel options 
 
-Below are some examples of `obs_denisty()` with different bandwidths and 
+Below are some examples of `obs_density()` with different bandwidths and 
 different kernels. For these comparisons, we are using a known gamma distribution 
 to generate the sample of emissions data, then comparing the empirical densities 
 to the actual probability density function. There is little difference between 
@@ -202,7 +202,7 @@ supplied is also similar, though slightly over fit.
 
 Run `?obs_density` in the console for detailed information in the help pages.
 
-```{r obs_example, echo=TRUE}
+```{r obs_example, echo = TRUE}
 # Generate some data to use:
 set.seed(1)
 xval = seq(0, 10, length.out = 1000)
@@ -228,7 +228,7 @@ dens4 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = "cv.ml")
 dens_pts4 = dens4$Obs_onPoint
 dens_vals4 = dens4$obs_den_df
 ```
-```{r figure4, echo=FALSE, out.width="100%", fig.height=4, fig.align = "center", fig.cap="Examples of empirical densities using different bandwidth options. The actual density distribution used to simulate the data is in black, and various empirical densities overlaid in color."}
+```{r figure4, echo = FALSE, out.width = "100%", fig.height = 4, fig.align = "center", fig.cap = "Examples of empirical densities using different bandwidth options. The actual density distribution used to simulate the data is in black, and various empirical densities overlaid in color."}
 dens_vals1$type = rep('Default', nrow(dens_vals1))
 dens_vals2$type = rep('Manual bw = 0.1', nrow(dens_vals2))
 dens_vals3$type = rep('Least squares', nrow(dens_vals3))
@@ -298,7 +298,7 @@ try a different bandwidth or don't use this kernel type. Consequently, in the
 figure below, it is clear that both the Gaussian and floating boundary look poor 
 recreations of the actual gamma distribution used to simulate the data.
 
-```{r figure6, echo=FALSE, out.width="100%", fig.height=4, fig.align = "center", fig.cap="Examples of empirical densities using different kernel options. The actual density distribution used to simulate the data is in black, and various empirical densities overlaid in color."}
+```{r figure6, echo = FALSE, out.width = "100%", fig.height = 4, fig.align = "center", fig.cap = "Examples of empirical densities using different kernel options. The actual density distribution used to simulate the data is in black, and various empirical densities overlaid in color."}
 dens_vals1$type = rep('Default (Gamma)', nrow(dens_vals1))
 dens_vals2$type = rep('Gaussian', nrow(dens_vals2))
 dens_vals3$type = rep('Floating boundary', nrow(dens_vals3))
@@ -322,9 +322,9 @@ ggplot(data = dens_vals)+
             alpha = 0.25)+
   geom_point(aes(y = ydens, x = emissions, color = type), data = dens_pts,
              size = 3, alpha = 0.5, shape = 19)+
-  ylab("Density")+xlab("Emissions")+
+  ylab("Density")+ xlab("Emissions")+
   ggtitle("Kernel comparisons")+labs(color='Kernel',fill="Kernel")+
-  multi_source_theme()+theme(panel.spacing.x = unit(4, "mm"))+
+  multi_source_theme()+ theme(panel.spacing.x = unit(4, "mm"))+
   scale_color_manual(values=palette_line, labels = c("Actual", "Default", 
                                                      "Gaussian",
                                                      "FB", "RIG"))+
@@ -332,8 +332,8 @@ ggplot(data = dens_vals)+
                                                     "Gaussian",
                                                       "FB", "RIG"))+
   multi_source_theme()+theme(panel.spacing.x = unit(4, "mm"))+
-  scale_x_continuous(expand = expansion(mult = c(0,0.05)))+
-  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
-  coord_cartesian(clip = 'off')+facet_wrap(~type)+
-  theme(strip.text = element_text(color='black',size=12))
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+ facet_wrap(~type)+
+  theme(strip.text = element_text(color = 'black', size = 12))
 ```

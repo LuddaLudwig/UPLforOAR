@@ -9,39 +9,42 @@
 #' @description
 #' Uses Gram-Charlier Series-A distribution approximation to determine the
 #' lognormal UPL.
-#'
 #' @export
 #' @references "An upper prediction limit for the arithmetic mean of a lognormal
 #' random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
-Lognormal_UPL=function(data,future_runs=3,significance=0.99){
+Lognormal_UPL = function(data, future_runs = 3, significance = 0.99){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
   }
-  if (future_runs<1){
+  if (future_runs < 1){
     stop("future_runs must be a positive integer")
   }
-  if (significance>=1){
+  if (significance >= 1){
     stop("significance must be greater then 0 and less than 1")
   }
-  if (significance<=0){
+  if (significance <= 0){
     stop("significance must be greater then 0 and less than 1")
   }
-  data$ln_emiss=log(data$emissions)
-  data$ln_emiss=replace(data$ln_emiss,
-                           !is.finite(data$ln_emiss),NA)
-  n=length(data$emissions)
-  mean_log=mean(data$ln_emiss,na.rm=TRUE)
-  sd_log=stats::sd(data$ln_emiss,na.rm=TRUE)
-  # using Gram-Charlmier Series A distribution approximation
-  beta2=(exp(4*sd_log^2)+2*exp(3*sd_log^2)+3*exp(2*sd_log^2)-3)/(future_runs*(exp(sd_log^2)-1)^2)+3*(1-1/future_runs)
-  beta1=sqrt(exp(sd_log^2)-1)*(exp(sd_log^2)+2)/sqrt(future_runs)
-  zvals=seq(-5,5,by=0.0101)
-  Fgzs=abs((1-(beta1/6)*(3*zvals-zvals^3)+(beta2-3)*(3-6*zvals^2+zvals^4)/24)*stats::dnorm(zvals))
-  Fg_cdf=cumsum(Fgzs/sum(Fgzs))
-  zscore1=zvals[Fg_cdf>significance][1]
-  mean_convert=exp(mean_log+(sd_log^2)/2)
-  part2=sqrt(future_runs*exp(2*mean_log+sd_log^2)*(exp(sd_log^2)-1)+future_runs^2*exp(2*mean_log+sd_log^2)*(((sd_log^2)/n)+(sd_log^4)/(2*(n-1))))
-  PI99_lnorm=mean_convert+(zscore1/future_runs)*part2
-  return(PI99_lnorm)
+  data$ln_emiss = log(data$emissions)
+  data$ln_emiss = replace(data$ln_emiss, !is.finite(data$ln_emiss), NA)
+  n = length(data$emissions)
+  if (n < 3){
+    stop("Need at least 3 observations for UPL calculation")
+  }
+  mean_log = mean(data$ln_emiss, na.rm = TRUE)
+  sd_log = stats::sd(data$ln_emiss, na.rm = TRUE)
+  if (sd_log == 0){
+    stop("Cannot perform UPL calculation on data with 0 variance")
+  }
+  beta2 = (exp(4 * sd_log^2) + 2 * exp(3 * sd_log^2) + 3 * exp(2 * sd_log^2) - 3) / (future_runs * (exp(sd_log^2) - 1)^2) + 3 * (1 - 1 / future_runs)
+  beta1 = sqrt(exp(sd_log^2) - 1) * (exp(sd_log^2) + 2) / sqrt(future_runs)
+  zvals = seq(-5, 5, by = 0.0101)
+  Fgzs = abs((1 - (beta1 / 6) * (3 * zvals- zvals^3) + (beta2 - 3) * (3 - 6 * zvals^2 + zvals^4) / 24) * stats::dnorm(zvals))
+  Fg_cdf = cumsum(Fgzs / sum(Fgzs))
+  zscore1 = zvals[Fg_cdf > significance][1]
+  mean_convert = exp(mean_log + (sd_log^2) / 2)
+  part2 = sqrt(future_runs * exp(2 * mean_log + sd_log^2) * (exp(sd_log^2) - 1) + future_runs^2 * exp(2 * mean_log + sd_log^2) * (((sd_log^2) / n) + (sd_log^4) / (2 * (n - 1))))
+  UPL_lognormal = mean_convert + (zscore1 / future_runs) * part2
+  return(UPL_lognormal)
 }

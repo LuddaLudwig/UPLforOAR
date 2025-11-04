@@ -4,95 +4,94 @@
 #' @returns String with either `'Normal'`, `'Lognormal'`, or `'Skewed'`
 #' @references  On measuring skewness and kurtosis" Dragan Doric, et al.
 #' Springer Science + Buisness Media B. V. 2007. September 20, 2007
+#' @description
+#' This uses ratios of ratios of kurtosis and skewness to evaluate how Normal or
+#' non-Normal the emissions data are. For small data sets where `n = 3`, kurtosis
+#' and the standard error of kurtosis are estimated differently and the only
+#' distribution outcomes are `'Normal'` or `'Lognormal'`. Note that there are
+#' multiple methods for evaluating skewness and kurtosis. The Fisher method is
+#' what is used in the old Excel workbook and is a good selection for small
+#' `n < 300` samples from an unknown population.
 #' @export
-distribution_type=function(data){
-  # note that there are multiple methods for evaluating skewness and kurtosis
-  # the fisher method in the EnvStats package is the same as what is used in Excel
-  # and is a good selection for small (<300) samples from an unknown population
-  data$ln_emiss=log(data$emissions)
-  data$ln_emiss=replace(data$ln_emiss,
-                                 !is.finite(data$ln_emiss),NA)
+distribution_type = function(data){
+  data$ln_emiss = log(data$emissions)
+  data$ln_emiss = replace(data$ln_emiss, !is.finite(data$ln_emiss), NA)
+  sigma = stats::sd(data$emissions)
+  mean_ln = mean(data$ln_emiss, na.rm = TRUE)
+  sigma_ln = stats::sd(data$ln_emiss, na.rm = TRUE)
+  if ((sigma == 0) | (sigma_ln == 0)){
+    stop("Cannot perform UPL calculation on data with 0 variance")
+  }
+  n = length(data$emissions)
+  if (n < 3){
+    stop("Need at least 3 observations for UPL calculation")
+  }
+  emission_mean = mean(data$emissions)
+  S = n / ((n - 1) * (n - 2)) * sum(((data$emissions - emission_mean) / sigma)^3)
+  S_ln = n / ((n - 1) * (n - 2)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^3, na.rm = T)
+  SES = sqrt((6 * n * (n - 1)) / ((n - 2) * (n + 1) * (n + 3)))
+  S_SES = abs(S / SES)
+  S_SES_ln = abs(S_ln / SES)
 
-  moment3=EnvStats::skewness(data$emissions,method='fisher')
-  moment3_ln=EnvStats::skewness(data$ln_emiss,method='fisher')
-  std.s=stats::sd(data$emissions)
-  mean_log=mean(data$ln_emiss,na.rm=TRUE)
-  sd_log=stats::sd(data$ln_emiss,na.rm=TRUE)
-  n=length(data$emissions)
-  emission_mean=mean(data$emissions)
-
-  if (n==3){
-    moment4=sum((data$emissions-emission_mean)^4)/((n-1)*(std.s)^4)-3
-    moment4_ln=sum((data$ln_emiss-mean_log)^4)/((n-1)*(sd_log)^4)-3
-    SE_kurtosis=sqrt(24/n)
-    SE_skew=sqrt((6*n*(n-1))/((n-2)*(n+1)*(n+3)))
-    S_SE_skew=abs(moment3/SE_skew)
-    Sln_SE_skew=abs(moment3_ln/SE_skew)
-    if(S_SE_skew<Sln_SE_skew){
-      distr_choice="Normal"
+  if (n == 3){
+    K = sum((data$emissions - emission_mean)^4) / ((n - 1) * (sigma)^4) - 3
+    K_ln = sum((data$ln_emiss - mean_ln)^4, na.rm = T) / ((n - 1) * (sigma_ln)^4) - 3
+    SEK = sqrt(24 / n)
+    if(S_SES < S_SES_ln){
+      distr_choice = "Normal"
     } else {
-      distr_choice="Lognormal"
+      distr_choice = "Lognormal"
     }
-
-  } else if (n>3){
-    moment4=EnvStats::kurtosis(data$emissions,method='fisher')
-    moment4_ln=EnvStats::kurtosis(data$ln_emiss,method='fisher')
-    SE_kurtosis=sqrt(24*n*(n^2-1)/((n-2)*(n+3)*(n-3)*(n+5)))
-
-    SE_skew=sqrt((6*n*(n-1))/((n-2)*(n+1)*(n+3)))
-    S_SE_skew=abs(moment3/SE_skew)
-    Sln_SE_skew=abs(moment3_ln/SE_skew)
-    S_SE_kurt=abs(moment4/SE_kurtosis)
-    Sln_SE_kurt=abs(moment4_ln/SE_kurtosis)
-
+  } else if (n > 3){
+    K = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$emissions - emission_mean) / sigma)^4) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
+    K_ln = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$ln_emiss - mean_ln) / sigma_ln)^4, na.rm = T) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
+    SEK = sqrt(24 * n * (n^2 - 1) / ((n - 2) * (n + 3) * (n - 3) * (n + 5)))
+    S_SEK = abs(K / SEK)
+    S_SEK_ln = abs(K_ln / SEK)
     norm_zscore=stats::qnorm(0.975)
-
-    if (S_SE_skew>norm_zscore){
-      raw_distr1='Non-normal'
+    if (S_SES > norm_zscore){
+      raw_distr1 = 'Non-normal'
     } else {
-      raw_distr1='Normal'
+      raw_distr1 = 'Normal'
     }
-    if (S_SE_kurt>norm_zscore){
-      raw_distr2='Non-normal'
+    if (S_SEK > norm_zscore){
+      raw_distr2 = 'Non-normal'
     } else {
-      raw_distr2='Normal'
+      raw_distr2 = 'Normal'
     }
-
-    if (Sln_SE_skew>norm_zscore){
-      ln_distr1='Non-normal'
+    if (S_SES_ln > norm_zscore){
+      ln_distr1 = 'Non-normal'
     } else {
-      ln_distr1='Normal'
+      ln_distr1 = 'Normal'
     }
-    if (Sln_SE_kurt>norm_zscore){
-      ln_distr2='Non-normal'
+    if (S_SEK_ln > norm_zscore){
+      ln_distr2 = 'Non-normal'
     } else {
-      ln_distr2='Normal'
+      ln_distr2 = 'Normal'
     }
-
-    if ((raw_distr1=="Normal")&(raw_distr2=="Normal")){
-      raw_distr="Normal"
+    if ((raw_distr1 == "Normal") & (raw_distr2 == "Normal")){
+      raw_distr = "Normal"
     } else {
-      raw_distr='Non-normal'
+      raw_distr = 'Non-normal'
     }
-    if ((ln_distr1=="Normal")&(ln_distr2=="Normal")){
-      ln_distr="Normal"
+    if ((ln_distr1 == "Normal") & (ln_distr2 == "Normal")){
+      ln_distr = "Normal"
     } else {
-      ln_distr='Non-normal'
+      ln_distr = 'Non-normal'
     }
-
-    if ((ln_distr=="Normal")&(raw_distr=="Normal")){
-      if (S_SE_skew<Sln_SE_skew){
-        distr_choice="Normal"
+    if ((ln_distr == "Normal") & (raw_distr == "Normal")){
+      if (S_SES < S_SES_ln){
+        distr_choice = "Normal"
       } else {
-        distr_choice="Lognormal"
+        distr_choice = "Lognormal"
     }
-    } else if (raw_distr=="Normal"){
-      distr_choice="Normal"
-    } else if (ln_distr=="Normal"){
-      distr_choice="Lognormal"
+    } else if (raw_distr == "Normal"){
+      distr_choice = "Normal"
+    } else if (ln_distr == "Normal"){
+      distr_choice = "Lognormal"
     } else {
-      distr_choice="Skewed"
+      distr_choice = "Skewed"
     }
   }
-  distr_choice
+  return(distr_choice)
 }

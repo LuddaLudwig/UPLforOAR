@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--10--22-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--03-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -21,10 +21,8 @@ National Emissions Standards for Hazardous Air Pollutants (NESHAP)
 analyses. This includes organizing data sets for Maximum Achievable
 Control Technology (MACT) floor analysis and Upper Predictive Limit
 (UPL) calculations. These functions include selecting the best and top
-performing sources from emissions data based on appropriate Clean Air
-Act sections, determining the appropriate distributions for the
-emissions data, and calculating the UPL for Existing source Guidance
-(EG) and New Source Performance Standards (NSPS).
+performing sources, determining the appropriate distributions for the
+emissions data, and calculating the UPL for existing and new sources.
 
 The `UPLforOAR` R package replicates all of the functionality of the
 UPL.xlsx workbook while streamlining its use. Using R instead of Excel
@@ -59,11 +57,11 @@ user guides, references, and worked examples included at the `UPLforOAR`
 ## Installation
 
 You can install the most recent development version of `UPLforOAR` from
-[GitHub](https://github.com/USEPA/UPLforOAR) with:
+[GitHub](https://github.com/LuddaLudwig/UPLforOAR) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("USEPA/UPLforOAR")
+pak::pak("LuddaLudwig/UPLforOAR")
 ```
 
 ## Contact
@@ -95,11 +93,11 @@ summary(dat_emiss$emissions)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
-dat_EG = MACT_EG(CAA_section=112, dat_emiss)
-dat_EG_avg = dat_EG%>%group_by(sources)%>%
+dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist_avg = dat_exist %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
-dat_EG_avg = arrange(dat_EG_avg, avg)
-distribution_result_EG = distribution_type(dat_EG)
+dat_exist_avg = arrange(dat_exist_avg, avg)
+distribution_result_exist = distribution_type(dat_exist)
 ```
 
 | Source                           | Average emission | No. of Tests |
@@ -111,7 +109,7 @@ distribution_result_EG = distribution_type(dat_EG)
 | Logan Generating Plant_Unit1_B01 |         5.33e-09 |            1 |
 | Nucla_001_1                      |         5.33e-09 |            1 |
 
-Top 5 of 42 sources for EG standard UPL calculation
+Top 5 of 42 sources for existing source UPL calculation
 
 Since there were more than 30 sources in the emissions data, the top 12%
 were chosen to represent the top sources. This yielded 47 sources. The
@@ -125,10 +123,10 @@ also calculate the Lognormal UPL for comparison, which is strictly
 positive.
 
 ``` r
-UPL1_EG = Normal_UPL(data = dat_EG,
+UPL1_exist = Normal_UPL(data = dat_exist,
                      future_runs = 1,
                      significance = 0.99)
-UPL2_EG = Lognormal_UPL(data = dat_EG,
+UPL2_exist = Lognormal_UPL(data = dat_exist,
                         future_runs = 1,
                         significance = 0.99)
 ```
@@ -145,18 +143,18 @@ emissions.
 ``` r
 # make an ordered sequence of emissions 
 # for which we will define the probability density
-x_hat = seq(0, 3*max(dat_EG$emissions), length.out = 1024)
+x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
-obs_dens_results = obs_density(dat_EG, xvals = x_hat)
+obs_dens_results = obs_density(dat_exist, xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
 # based on estimated distribution parameters
-pdf_n = dnorm(x_hat, mean = mean(dat_EG$emissions, na.rm = T),
-              sd=sd(dat_EG$emissions, na.rm = T))
-pdf_ln = dlnorm(x_hat,mean = log(mean(dat_EG$emissions, na.rm = T)),
-              sd = sd(log(dat_EG$emissions), na.rm = T))
+pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
+              sd = sd(dat_exist$emissions, na.rm = T))
+pdf_ln = dlnorm(x_hat,mean = log(mean(dat_exist$emissions, na.rm = T)),
+              sd = sd(log(dat_exist$emissions), na.rm = T))
 pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ```
 
@@ -164,7 +162,7 @@ pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ggplot()+
   geom_line(data = obs_den_df, size=0.75,
             aes(y = ydens, x = x_hat, color = 'a'))+
-  geom_area(data = obs_den_df, alpha=0.25,
+  geom_area(data = obs_den_df, alpha = 0.25,
             aes(y = ydens, x = x_hat, fill = 'a'))+
   geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
              size = 3, alpha = 0.5, shape = 19, color = 'black')+
@@ -179,17 +177,17 @@ ggplot()+
   ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
   ggtitle("Overall observed population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_EG$emissions)),
+  geom_vline(aes(xintercept = (mean(dat_exist$emissions)),
                  color = 'a'), size = 1, linetype = 1)+
-  geom_vline(aes(xintercept = UPL1_EG, color = 'b'), 
+  geom_vline(aes(xintercept = UPL1_exist, color = 'b'), 
              linewidth = 1, linetype = 2)+
-  geom_vline(aes(xintercept = UPL2_EG, color = 'c'), 
+  geom_vline(aes(xintercept = UPL2_exist, color = 'c'), 
              linewidth = 1, linetype = 3)+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   coord_cartesian(clip = 'off')+
   labs(color = 'Distribution:', fill = 'Distribution:')+
-  geom_rug(sides = 'b', aes(x = emissions), data = dat_EG,
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_exist,
            alpha = 0.5, outside = TRUE, color = 'black')+
   scale_color_manual(values = c('black', '#FF7F00', '#984EA3'),
                      labels = c('Observations', 'Normal', 'Lognormal'))+

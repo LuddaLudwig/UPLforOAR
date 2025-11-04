@@ -13,285 +13,305 @@ params:
   runMACT: "NA"
   data_nsps: "NA"
   dat_UPL: "NA"
+  zero_warn: "NA"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(error=TRUE,warning=FALSE, message=FALSE,
-                      fig.pos="H",out.extra = "")
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(error = TRUE, warning = FALSE, message = FALSE, 
+                      appendix = FALSE,
+                      fig.pos = "H", out.extra = "")
 library(tidyverse)
 library(kableExtra)
 library(UPLforOAR)
 ```
 
-```{r data, echo = FALSE}
+```{r data, echo = FALSE, appendix = TRUE}
 dat_top_exist = params$data
-
-if (params$CAA_section==112){
+if (params$CAA_section == 112){
   CAA_text='CAA Section 112(d)(3)'
-} else if (params$CAA_section==129){
+} else if (params$CAA_section == 129){
   CAA_text='CAA Section 129(a)(2)'
 }
-
-emission_mean_exist=results1=mean(dat_top_exist$emissions)
-dat_topmeans_exist=dat_top_exist%>%group_by(sources)%>%
-                              summarize(means=mean(emissions),counts=n())
-dat_topmeans_exist$sources=as.factor(dat_topmeans_exist$sources)
-dat_topmeans_exist$sources=fct_reorder(dat_topmeans_exist$sources,
-                              dat_topmeans_exist$means,.desc = FALSE)
-dat_topmeans_exist=arrange(dat_topmeans_exist,means)
-dat_topmeans_exist=dat_topmeans_exist%>%mutate(across(where(is.numeric),~signif(.,digits=4)))
-names(dat_topmeans_exist)=c('sources','means','counts')
-if (all(dat_topmeans_exist$counts==1)){
+emission_mean_exist = mean(dat_top_exist$emissions)
+dat_topmeans_exist = dat_top_exist %>% group_by(sources)%>%
+                              summarize(means = mean(emissions), counts = n())
+dat_topmeans_exist$sources = as.factor(dat_topmeans_exist$sources)
+dat_topmeans_exist$sources = fct_reorder(dat_topmeans_exist$sources,
+                              dat_topmeans_exist$means, .desc = FALSE)
+dat_topmeans_exist = arrange(dat_topmeans_exist, means)
+dat_topmeans_exist = dat_topmeans_exist %>% 
+  mutate(across(where(is.numeric), ~signif(., digits = 4)))
+names(dat_topmeans_exist) = c('sources', 'means', 'counts')
+if (all(dat_topmeans_exist$counts == 1)){
   source_fig = FALSE
 } else {
   source_fig = TRUE
 }
-
-dat_top_new=params$data_nsps
-emission_mean_new=mean(dat_top_new$emissions)
-best_source=as.character(dat_top_new$sources)[1]
-
-distribution_result_exist=distribution_type(data=dat_top_exist)
-
-UPL_table=params$dat_UPL
-
-best_UPL=UPL_table$UPL_exist[UPL_table$distribution==distribution_result_exist]
-
-if (nrow(dat_top_new)<3){
+dat_top_new = params$data_nsps
+emission_mean_new = mean(dat_top_new$emissions)
+best_source = as.character(dat_top_new$sources)[1]
+distribution_result_exist = distribution_type(data = dat_top_exist)
+UPL_table = params$dat_UPL
+best_UPL = UPL_table$UPL_exist[UPL_table$distribution == distribution_result_exist]
+if (nrow(dat_top_new) < 3){
+  nsps_EVAL = FALSE
+} else if (stats::sd(dat_top_new$emissions, na.rm = TRUE) == 0){
   nsps_EVAL = FALSE
 } else {
-  distribution_result_new=distribution_type(data=dat_top_new)
-  best_UPL_NSPS=UPL_table$UPL_new[UPL_table$distribution==distribution_result_new]
+  distribution_result_new = distribution_type(data = dat_top_new)
+  best_UPL_NSPS = UPL_table$UPL_new[UPL_table$distribution == distribution_result_new]
   nsps_EVAL = TRUE
 }
 if (is.null(params$runMACT)){
-  mact_EVAL=FALSE
+  mact_EVAL = FALSE
 } else if (!params$runMACT){
-  mact_EVAL=FALSE
+  mact_EVAL = FALSE
 } else if (params$runMACT){
-  mact_EVAL=TRUE
+  mact_EVAL = TRUE
 }
-
-
 ```
 
-```{r cond1a, child='conditional1a.Rmd', eval=nsps_EVAL}
+```{r cond1a, child = 'App_report_children/conditional1a.Rmd', eval = nsps_EVAL}
 ```
 
-```{r cond1b, child='conditional1b.Rmd', eval=(!nsps_EVAL)}
+```{r cond1b, child = 'App_report_children/conditional1b.Rmd', eval = (!nsps_EVAL)}
 ```
 
-## Source population calculation
+## Source Population Calculation
 
-```{r cond2a, child='conditional2a.Rmd', eval=(mact_EVAL)}
+```{r cond5, child = 'App_report_children/conditional5.Rmd', eval = params$zero_warn}
 ```
 
-```{r cond2b, child='conditional2b.Rmd', eval=(!mact_EVAL)}
+```{r cond2a, child = 'App_report_children/conditional2a.Rmd', eval = (mact_EVAL)}
+```
+
+```{r cond2b, child = 'App_report_children/conditional2b.Rmd', eval = (!mact_EVAL)}
 ```
 
 ##### The best performer for the new source calculation was `r best_source` with an average emission of `r signif(emission_mean_new,digits=4)` from `r nrow(dat_top_new)` test runs.
 
-```{r mean_table, echo = FALSE}
-dat_topmeans_exist%>%head(5)%>%knitr::kable(caption="Top five sources for existing source calculation",digits=12,
-             col.names=c('Source','Average emission','No. of Runs'))
+```{r mean_table, echo = FALSE, appendix = TRUE}
+dat_topmeans_exist %>% head(5) %>% knitr::kable(
+  caption = "Top five sources for existing source calculation", 
+  digits = 12, col.names = c('Source', 'Average emission', 'No. of Runs'))
 ```
 
 ## UPL Results
-```{r cond3a, child='conditional3a.Rmd', eval=nsps_EVAL}
+```{r cond3a, child = 'App_report_children/conditional3a.Rmd', eval = nsps_EVAL}
 ```
 
-```{r cond3b, child='conditional3b.Rmd', eval=(!nsps_EVAL)}
+```{r cond3b, child = 'App_report_children/conditional3b.Rmd', eval = (!nsps_EVAL)}
 ```
 
-```{r UPL_table, echo=FALSE, eval=nsps_EVAL}
-UPL_table%>%knitr::kable(caption=paste0("UPL results from frequentist excel 
-                                           workbook equivalent using a significance of ",
-                                           (params$significance*100),'% and ',
-                                           params$future_runs,' future test runs.'),
-              col.names=c('Distribution','Existing source UPL','NSPS UPL'), digits = 12)
+```{r UPL_table, echo = FALSE, eval = nsps_EVAL, appendix = TRUE}
+UPL_tabl %>% knitr::kable(
+caption = paste0("UPL results from frequentist excel workbook equivalent 
+                 using a significance of ", 
+                 (params$significance * 100), '% and ', 
+                 params$future_runs, ' future test runs.'),
+              col.names = c('Distribution', 'Existing source UPL', 
+                            'New source UPL'), digits = 12)
 ```
 
-```{r UPL_table2, echo=FALSE, eval=(!nsps_EVAL), results=TRUE}
-UPL_table=subset(UPL_table,select=-c(UPL_new))
-UPL_table%>%knitr::kable(caption=paste0("UPL results from frequentist excel 
-                                           workbook equivalent using a significance of ",
-                                           (params$significance*100),'% and ',
-                                           params$future_runs,' future test runs.'),
-              col.names=c('Distribution','Existing source UPL'), digits = 12)
+```{r UPL_table2, echo = FALSE, eval = (!nsps_EVAL), results = TRUE, appendix = TRUE}
+UPL_table = subset(UPL_table, select = -c(UPL_new))
+UPL_table %>% knitr::kable(
+caption = paste0("UPL results from frequentist excel workbook equivalent 
+                 using a significance of ", (params$significance * 100), 
+                 '% and ', params$future_runs, ' future test runs.'),
+              col.names = c('Distribution', 'Existing source UPL'), digits = 12)
 ```
 
-```{r plot1, echo=FALSE, eval=source_fig, results=FALSE, fig.height=4, fig.cap="Figure 1. Observation density of emissions by source type. Source averages are indicated by vertical lines."}
-ggplot(data=dat_top_exist,aes(emissions,fill=sources))+
-          geom_density(alpha=0.75,bounds=c(0,Inf))+
-          ylab("Density")+xlab("Emissions")+
+```{r plot1, echo = FALSE, eval = source_fig, results = FALSE, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
+ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
+          geom_density(alpha = 0.75, bounds = c(0, Inf))+
+          ylab("Density")+ xlab("Emissions")+
           ggtitle("Top sources observed populations")+
-          multi_source_theme()+labs(fill='Top sources',color='Top sources')+
-          geom_vline(aes(xintercept=means,color=sources),
-             data=dat_topmeans_exist,linewidth=1)+
-          guides(fill=guide_legend(nrow=2,byrow=TRUE),
-                color=guide_legend(nrow=2,byrow=TRUE))+
-          scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-          scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-          coord_cartesian(clip='off')+
-          geom_rug(sides='b',aes(x=emissions,color=sources),
-                   data=dat_top_exist,alpha=0.5,outside=TRUE)
+          multi_source_theme()+ labs(fill = 'Top sources', 
+                                     color = 'Top sources')+
+          geom_vline(aes(xintercept = means, color = sources),
+             data = dat_topmeans_exist, linewidth = 1)+
+          guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+                color = guide_legend(nrow = 2, byrow = TRUE))+
+          scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+          scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+          coord_cartesian(clip = 'off')+
+          geom_rug(sides = 'b', aes(x = emissions, color = sources),
+                   data = dat_top_exist, alpha = 0.5, outside = TRUE)
 ```
 
-```{r plot2, echo = FALSE, fig.height=4, fig.cap="Figure 2. Observation density of emission test run population. Test run average and existing source UPL calculations are indicated by vertical lines."}
+```{r plot2, echo = FALSE, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emission test run population. Test run average and existing source UPL calculations are indicated by vertical lines."}
 
-x_hat=seq(0,3*max(dat_top_exist$emissions),length.out=1024)
-obs_dens_results=obs_density(data=dat_top_exist,xvals=x_hat)
-Obs_onPoint=obs_dens_results$Obs_onPoint
-obs_den_df=obs_dens_results$obs_den_df
-pdf_norm=dnorm(x_hat,mean=emission_mean_exist,sd=sd(dat_top_exist$emissions))
-pdf_ln=dlnorm(x_hat,mean=mean(dat_top_exist$ln_emiss,na.rm=T),
-              sd=sd(dat_top_exist$ln_emiss,na.rm=T))
-pred_dat=tibble(pdf_norm=pdf_norm,pdf_ln=pdf_ln,x_hat=x_hat)
+x_hat = seq(0, 3 * max(dat_top_exist$emissions), length.out = 1024)
+obs_dens_results = obs_density(data = dat_top_exist, xvals = x_hat)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
+pdf_norm = dnorm(x_hat, mean = emission_mean_exist, 
+                 sd = sd(dat_top_exist$emissions, na.rm = T))
+pdf_ln = dlnorm(x_hat, mean = mean(dat_top_exist$ln_emiss, na.rm = T),
+                sd = sd(dat_top_exist$ln_emiss, na.rm = T))
+pred_dat = tibble(pdf_norm = pdf_norm, pdf_ln = pdf_ln, x_hat = x_hat)
 
-ggplot(data=Obs_onPoint)+
-  geom_line(data=obs_den_df,aes(y=ydens,x=x_hat,color='a'),
-            key_glyph='rect',linewidth=0.75)+
-  geom_area(data=obs_den_df,aes(y=ydens,x=x_hat),alpha=0.25,
-            fill='black')+
-  geom_point(aes(y=ydens,x=emissions),
-             size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),key_glyph='rect',
-               data = pred_dat,linewidth=0.75,linetype=3)+
-  geom_area(aes(y=pdf_norm,x=x_hat),alpha=0.25,
-            data = pred_dat,fill='#FF7F00')+
-  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),key_glyph='rect',
-               data = pred_dat,linewidth=0.75,linetype=2)+
-  geom_area(aes(y=pdf_ln,x=x_hat),alpha=0.25,
-            data = pred_dat,fill='#984EA3')+
-  ylab("Density")+xlab("Emissions")+
+ggplot(data = Obs_onPoint)+
+  geom_line(data = obs_den_df, aes(y = ydens, x = x_hat, color = 'a'),
+            key_glyph = 'rect', linewidth = 0.75)+
+  geom_area(data = obs_den_df, aes(y = ydens, x = x_hat), alpha = 0.25,
+            fill = 'black')+
+  geom_point(aes(y = ydens, x = emissions),
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_norm, x = x_hat, color = 'c'), key_glyph = 'rect',
+               data = pred_dat, linewidth = 0.75, linetype = 3)+
+  geom_area(aes(y = pdf_norm, x = x_hat), alpha = 0.25,
+            data = pred_dat, fill = '#FF7F00')+
+  geom_line(aes(y = pdf_ln, x = x_hat, color = 'b'), key_glyph = 'rect',
+               data = pred_dat, linewidth = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_ln, x = x_hat), alpha = 0.25,
+            data = pred_dat, fill = '#984EA3')+
+  ylab("Density")+ xlab("Emissions")+
   ggtitle("Existing source test run population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept=emission_mean_exist,color='a'),
-             linewidth=1,linetype=1,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Normal"],color='c'),
-             linewidth=1,linetype=3,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Lognormal"],color='b'),
-             linewidth=1,linetype=2,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_exist[UPL_table$distribution=="Skewed"],color='d'),
-             linewidth=1,linetype=4,key_glyph='rect')+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+labs(color="Distribution:")+
-  geom_rug(sides='b',aes(x=emissions),data=dat_top_exist,
-           alpha=0.5,outside=TRUE,color='black')+
-  scale_color_manual(values=c('black','#984EA3','#FF7F00','#377EB8'),
-                     labels=c('Observations','Lognormal','Normal','Skewed'))+
-  guides(fill='none')
+  geom_vline(aes(xintercept = emission_mean_exist, color = 'a'),
+             linewidth = 1, linetype = 1, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_exist[UPL_table$distribution == "Normal"], 
+                 color = 'c'), linewidth = 1, linetype = 3, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_exist[UPL_table$distribution == "Lognormal"], 
+                 color = 'b'), linewidth = 1, linetype = 2, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_exist[UPL_table$distribution == "Skewed"], 
+                 color = 'd'), linewidth = 1, linetype = 4, key_glyph = 'rect')+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+ labs(color = "Distribution:")+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_top_exist,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#984EA3', '#FF7F00', '#377EB8'),
+                     labels = c('Observations', 'Lognormal', 'Normal', 
+                                'Skewed'))+
+  guides(fill = 'none')
 ```
 
-```{r plot3, echo=FALSE, eval=nsps_EVAL, fig.height=4, fig.cap="Figure 3. Observation density of best performer test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
+```{r plot3, echo = FALSE, eval = nsps_EVAL, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of best performer test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
 
-x_hat_new=seq(0,3*max(dat_top_new$emissions),length.out=1024)
-obs_dens_results_new=obs_density(data=dat_top_new,xvals=x_hat_new)
-Obs_onPoint_new=obs_dens_results_new$Obs_onPoint
-obs_den_df_new=obs_dens_results_new$obs_den_df
-pdf_norm_new=dnorm(x_hat_new,mean=emission_mean_new,sd=sd(dat_top_new$emissions))
-pdf_ln_new=dlnorm(x_hat_new,mean=mean(dat_top_new$ln_emiss,na.rm=T),
-              sd=sd(dat_top_new$ln_emiss,na.rm=T))
-pred_dat_new=tibble(pdf_norm=pdf_norm_new,pdf_ln=pdf_ln_new,x_hat=x_hat_new)
+x_hat_new = seq(0, 3 * max(dat_top_new$emissions), length.out = 1024)
+obs_dens_results_new = obs_density(data = dat_top_new, xvals = x_hat_new)
+Obs_onPoint_new = obs_dens_results_new$Obs_onPoint
+obs_den_df_new = obs_dens_results_new$obs_den_df
+pdf_norm_new = dnorm(x_hat_new, mean = emission_mean_new, 
+                     sd = sd(dat_top_new$emissions, na.rm = T))
+pdf_ln_new = dlnorm(x_hat_new, mean = mean(dat_top_new$ln_emiss, na.rm=T), 
+              sd = sd(dat_top_new$ln_emiss ,na.rm = T))
+pred_dat_new = tibble(pdf_norm = pdf_norm_new, pdf_ln = pdf_ln_new, 
+                      x_hat = x_hat_new)
 
-ggplot(data=Obs_onPoint_new)+
-  geom_line(data=obs_den_df_new,aes(y=ydens,x=x_hat,color='a'),
-            key_glyph='rect',linewidth=0.75)+
-  geom_area(data=obs_den_df_new,aes(y=ydens,x=x_hat),alpha=0.25,
-            fill='black')+
-  geom_point(aes(y=ydens,x=emissions),
-             size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(aes(y=pdf_norm,x=x_hat,color='c'),key_glyph='rect',
-               data = pred_dat_new,linewidth=0.75,linetype=3)+
-  geom_area(aes(y=pdf_norm,x=x_hat),alpha=0.25,
-            data = pred_dat_new,fill='#FF7F00')+
-  geom_line(aes(y=pdf_ln,x=x_hat,color='b'),key_glyph='rect',
-               data = pred_dat_new,linewidth=0.75,linetype=2)+
-  geom_area(aes(y=pdf_ln,x=x_hat),alpha=0.25,
-            data = pred_dat_new,fill='#984EA3')+
-  ylab("Density")+xlab("Emissions")+
-  ggtitle("NSPS test run population")+
+ggplot(data = Obs_onPoint_new)+
+  geom_line(data = obs_den_df_new, aes(y = ydens, x = x_hat, color = 'a'),
+            key_glyph = 'rect', linewidth = 0.75)+
+  geom_area(data = obs_den_df_new, aes(y = ydens, x = x_hat), alpha = 0.25,
+            fill = 'black')+
+  geom_point(aes(y = ydens, x = emissions),
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_norm, x = x_hat, color = 'c'), key_glyph = 'rect',
+               data = pred_dat_new, linewidth = 0.75, linetype = 3)+
+  geom_area(aes(y = pdf_norm, x = x_hat), alpha = 0.25, 
+            data = pred_dat_new, fill = '#FF7F00')+
+  geom_line(aes(y = pdf_ln, x = x_hat, color = 'b'), key_glyph = 'rect',
+               data = pred_dat_new, linewidth = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_ln, x = x_hat), alpha = 0.25,
+            data = pred_dat_new, fill = '#984EA3')+
+  ylab("Density")+ xlab("Emissions")+
+  ggtitle("New source test run population")+
   pop_distr_theme()+
-  geom_vline(aes(xintercept=(emission_mean_new),color='a'),
-             linewidth=1,linetype=1,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Normal"],color='c'),
-             linewidth=1,linetype=3,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Lognormal"],color='b'),
-             linewidth=1,linetype=2,key_glyph='rect')+
-  geom_vline(aes(xintercept=UPL_table$UPL_new[UPL_table$distribution=="Skewed"],color='d'),
-             linewidth=1,linetype=4,key_glyph='rect')+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  coord_cartesian(clip='off')+labs(color="Distribution:")+
-  geom_rug(sides='b',aes(x=emissions),data=dat_top_new,
-           alpha=0.5,outside=TRUE,color='black')+
-  scale_color_manual(values=c('black','#984EA3','#FF7F00','#377EB8'),
-                     labels=c('Observations','Lognormal','Normal','Skewed'))+
-  guides(fill='none')
+  geom_vline(aes(xintercept = emission_mean_new, color = 'a'),
+             linewidth = 1, linetype = 1, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_new[UPL_table$distribution == "Normal"], 
+                 color = 'c'), linewidth = 1, linetype = 3, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_new[UPL_table$distribution == "Lognormal"], 
+                 color = 'b'), linewidth = 1, linetype = 2, key_glyph = 'rect')+
+  geom_vline(aes(xintercept = UPL_table$UPL_new[UPL_table$distribution == "Skewed"], 
+                 color = 'd'), linewidth = 1, linetype = 4, key_glyph = 'rect')+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+ labs(color = "Distribution:")+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_top_new,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#984EA3', '#FF7F00', '#377EB8'),
+                     labels = c('Observations', 'Lognormal', 'Normal', 
+                                'Skewed'))+
+  guides(fill = 'none')
 ```
 
 \newpage
-## Appendix A: EG data table
+## Appendix A: Existing Source Data Table
 
 Below is the table containing all of emissions data used in the existing source 
 UPL calculation. Note that you can download a .csv version of these data while
 using the UPL_app.Rmd webpage. 
 
-```{r dat_EG, echo = FALSE, results=TRUE}
-dat_top_exist%>%knitr::kable(caption="Top performering source emissions data used in Existing source UPL calculations.",digits=12,
-             col.names=names(dat_top_exist))
+```{r dat_Exist, echo = FALSE, results = TRUE, appendix = TRUE}
+dat_top_exist %>% knitr::kable(
+  caption = "Top performering source emissions data used in existing source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_exist))
 ```
 
-```{r cond4, child='conditional4.Rmd', eval=nsps_EVAL}
+```{r cond4, child = 'App_report_children/conditional4.Rmd', eval = nsps_EVAL}
 
 ```
-```{r dat_NSPS, echo=FALSE, eval=nsps_EVAL}
-dat_top_new%>%knitr::kable(caption="Best performering source emissions data used in NSPS UPL calculations.",digits=12,
-             col.names=names(dat_top_new))
+```{r dat_New, echo= F ALSE, eval = nsps_EVAL, appendix = TRUE, appendix = TRUE}
+dat_top_new %>% knitr::kable(
+  caption = "Best performering source emissions data used in new source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_new))
 ```
 
 \newpage
 
-## Appendix C: R code
+## Appendix C: `R` Function Code
 
-### MACT_EG()
-```{r function_docs1, results=TRUE, message=TRUE, echo=FALSE}
-MACT_EG
+### Disclaimer
+
+The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information.  Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.  The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
+
+### MACT_existing()
+```{r function_docs1, results = TRUE, message = TRUE, echo = FALSE}
+MACT_existing
 ```
 
-### MACT_NSPS()
-```{r function_docs2, results=TRUE, message=TRUE, echo=FALSE}
-MACT_NSPS
+### MACT_new()
+```{r function_docs2, results = TRUE, message = TRUE, echo = FALSE}
+MACT_new
 ```
 
 ### distribution_type()
-```{r function_docs3, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs3, results = TRUE, message = TRUE, echo = FALSE}
 distribution_type
 ```
 
 ### Normal_UPL()
-```{r function_docs4, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs4, results = TRUE, message = TRUE, echo = FALSE}
 Normal_UPL
 ```
 
 ### Lognormal_UPL()
-```{r function_docs5, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs5, results = TRUE, message = TRUE, echo = FALSE}
 Lognormal_UPL
 ```
 
 ### Skewed_UPL()
-```{r function_docs6, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs6, results = TRUE, message = TRUE, echo = FALSE}
 Skewed_UPL
 ```
 
 ### obs_density()
-```{r function_docs7, results=TRUE, message=TRUE, echo=FALSE}
+```{r function_docs7, results = TRUE, message = TRUE, echo = FALSE}
 obs_density
 ```        
 
 \newpage
 ## Appendix D: System and package versions
-```{r versions, results=TRUE, echo=FALSE}
+```{r versions, results = TRUE, echo = FALSE}
 sessionInfo()
+```
+
+\newpage
+## Appendix E: Rmd Code Chunks
+
+```{r ref.label = knitr::all_labels(appendix == TRUE), echo = TRUE, eval = FALSE}
 ```

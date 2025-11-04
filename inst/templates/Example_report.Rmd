@@ -1,0 +1,550 @@
+---
+author: "OAR-OCAP-NRD-EDAB and/or author names here"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    extra_dependencies: ["float", "breqn"]
+params:
+  source:
+    label: "Stationary source category"
+    input: text
+    value: "Example Industry"
+  data:
+    label: "Select data set, with named columns of emissions and sources"
+    input: file
+    accept: ".csv"
+    value: "Example_data1.csv"
+  CAA_section: 
+    label: "CAA Section"
+    value: 112
+    input: select
+    choices: [112, 129]
+  future_runs: 
+    label: "Number of future test runs"
+    value: 3
+    input: numeric
+  significance:
+    label: "Level of significance" 
+    value: 0.99
+    input: numeric
+---
+<!-- Change the document title and authors as needed -->
+
+---
+title: "National Emission Standards for Hazardous Air Pollutants (NESHAP) Maximum Achievable Control Technology (MACT) Floor Analysis for `r params$source` Units for Final Rule"
+---
+
+<!-- Memorandum example text was taken from past EPA rulemakings -->
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE,
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  appendix = FALSE,
+  fig.align = "center",
+  fig.pos="H",
+  out.extra = ""
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(EnvStats)
+library(grid)
+library(np)
+library(sfsmisc)
+library(UPLforOAR)
+```
+<!-- Repeat the analysis block below with unique names if you have multiple HAPS or subcategories -->
+```{r analysis_1, appendix = TRUE}
+# Below is an example of loading data, sorting and selecting to top performers, 
+# and calculating the correct distribution and UPL for existing source and NSPS. 
+# If there are multiple HAP or subcategories, simply repeat with code block for 
+# those data, making sure to use unique names so you don't overwrite the results.
+if (params$CAA_section == 112){
+  CAA_text = 'CAA Section 112(d)(3)'
+} else if (params$CAA_section == 129){
+  CAA_text = 'CAA Section 129(a)(2)'
+}
+dat_emiss = read_csv(params$data)
+if (any(dat_emiss$emissions == 0)){
+  zero_warn = TRUE
+} else {
+  zero_warn = FALSE
+}
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss)
+dat_top_new = MACT_new(data = dat_emiss)
+dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
+dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
+                               !is.finite(dat_top_exist$ln_emiss), NA)
+dat_top_new$ln_emiss = log(dat_top_new$emissions)
+dat_top_new$ln_emiss = replace(dat_top_new$ln_emiss, 
+                               !is.finite(dat_top_new$ln_emiss), NA)
+dat_topmeans_exist = dat_top_exist %>% group_by(sources) %>% 
+                              summarize(means = mean(emissions), counts = n())
+if (all(dat_topmeans_exist$counts == 1)){
+  source_fig = FALSE
+} else {
+  source_fig = TRUE
+}
+best_source = as.character(dat_top_new$sources)[1]
+distribution_result_exist = distribution_type(data = dat_top_exist)
+distribution_result_new = distribution_type(data = dat_top_new)
+
+if (distribution_result_exist == "Normal"){
+  UPL_exist = Normal_UPL(data = dat_top_exist,
+                         significance = params$significance,
+                         future_runs = params$future_runs)
+} else if (distribution_result_exist == "Lognormal"){
+  UPL_exist = Lognormal_UPL(data = dat_top_exist,
+                         significance = params$significance,
+                         future_runs = params$future_runs)  
+} else if (distribution_result_exist == "Skewed"){
+  UPL_exist = Skewed_UPL(data = dat_top_exist,
+                         significance = params$significance,
+                         future_runs = params$future_runs)  
+}
+
+if (distribution_result_new == "Normal"){
+  UPL_new = Normal_UPL(data = dat_top_new,
+                         significance = params$significance,
+                         future_runs = params$future_runs)
+} else if (distribution_result_new == "Lognormal"){
+  UPL_new = Lognormal_UPL(data = dat_top_new,
+                         significance = params$significance,
+                         future_runs = params$future_runs)  
+} else if (distribution_result_new == "Skewed"){
+  UPL_new = Skewed_UPL(data = dat_top_new,
+                         significance = params$significance,
+                         future_runs = params$future_runs)  
+}
+```
+
+<!-- Edit/add/remove any content as appropriate -->
+<!-- Italicized comments in * * likely need to be edited for each use -->
+
+## Introduction
+
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources, or the best-performing 5 sources for source categories with fewer than 30 sources. 
+
+The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
+
+## MACT Floor Analysis Hazardous Air Pollutants
+
+The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: *chemical X, chemical Y, chemical Z...*.
+
+## MACT Floor Analysis subcategories
+
+Under *CAA section 112(d)(1)*, the EPA has the discretion to “...distinguish among classes, types, and sizes of sources within a category or subcategory in establishing...” standards. When separate subcategories are established, a MACT floor is determined separately for each subcategory. To determine whether the EGU source category warrants subcategorization for the MACT floor analysis, the EPA reviewed `r params$source` design, operating information, and air emissions data compiled in the ICR data set and other information collected by the Agency for development of the NESHAP for this source category. Based on this review, the EPA concluded that there are significant design and operational differences in `r params$source` that affect the levels of emissions of certain HAP to justify subcategorizing `r params$source` for the purpose of establishing MACT floors. 
+
+For the MACT floor analysis, the following `r params$source` subcategories were defined:
+
+- **Subcategory 1.** *describe it here and how/why it was determined*
+
+- **Subcategory 2.** *describe it here and how/why it was determined*
+
+## Calculating Emission Values used in the MACT Floor Analysis
+
+The EPA received emissions data from industry respondents under the `r params$source` 
+MACT ICR in a number of different units of measure and converted these units of measure 
+to a common *insert measurement units*. 
+
+*If any outlier analysis or subsequent QA/QC was done on the emissions data prior to MACT floor analysis, please include it here.*
+
+## MACT Floor Analysis Methodology
+
+The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
+
+For the existing-source MACT floors, selection of the MACT floor pool size (i.e., number of units to be included in the determination of the average emission limitation value) was determined on an individual subcategory basis as described below. 
+
+- **Subcategory 1.** *do any subcategories need different handling?*
+
+- **Subcategory 2.** *do any subcategories need different handling?*
+
+### Probability distribution Selection
+
+The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using a `r (params$significance)*100`\% upper prediction limit (UPL) approach. Specifically, the MACT floor limit is an UPL calculated with the Student’s t-distribution using the `qt()` function in the `R` `stats` software. The Student’s t-distribution has also been used in other EPA rulemakings (e.g., NESHAP for Portland Cement, NSPS for Hospital/Medical/Infectious Waste Incinerators [HMIWI], NESHAP for Industrial, Commercial, and Institutional Boilers and Process Heaters) in accounting for variability and reflects the level of confidence. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
+
+The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were distributed normally, log-normally, or skew-normally. Statistical tests of the kurtosis and skewness are then used to evaluate the normality assumption. The skewness statistic, $S$, characterizes the degree of asymmetry of a given data distribution, and is calculated according to the Fisher method as: 
+
+$$
+S=\frac{n}{(n-1)(n-2)}\displaystyle\sum_{i=1}^n\left(\frac{x_{i} -\overline{x}}{\sigma}\right)^3
+$$ 
+
+Where $n$ is the sample size, $\overline{x}$ is the mean of emissions data, and $\sigma$ is the standard deviation (Doric et al. 2007). Normally distributed data have $S = 0$. An $S$ that is greater (less) than 0 indicates that the data are asymmetrically distributed with a right (left) tail extending towards positive (negative) values. The standard error of the skewness statistic, $SES$, can be approximated by $SES = \sqrt{\frac{6n(n-1)}{(n-2)(n+1)(n+3)}}$, where $n$ is the sample size. The kurtosis statistic, $K$, characterizes the degree of peakedness or flatness of a given data distribution in comparison to a normal distribution, and is calculated according to the Fisher method as:
+
+$$
+K=\frac{\sum_{i=1}^n(x_i-\overline{x})^4}{(n-1)\sigma^4}-3
+$$ 
+
+for small data sets where $n=3$ and as:
+$$
+K=\frac{n(n+1)}{(n-1)(n-2)(n-3)}\displaystyle\sum_{i=1}^{n}\left(\frac{x_{i}-\overline{x}}{\sigma} \right)^4-\frac{3(n-1)^2}{(n-2)(n-3)}
+$$ 
+
+for larger data sets. Normally distributed data have $K = 3$. A $K$ that is greater (less) than 3 indicates a relatively peaked (flat) distribution. For small data sets where $n=3$, the standard error of the kurtosis statistic, $SEK$, can be approximated by $SEK = \sqrt{24/n}$, where $n$ is the sample size. Otherwise, $SEK=\sqrt{\frac{24n(n^{2}-1)}{(n-2)(n+3)(n-3)(n+5)}}$.
+
+For each data set to which the UPL was applied (i.e., the separate data sets for each HAP and HAP surrogate type applicable to the subcategory), the $S$ and $K$ statistics were calculated using both the reported test run values and the log-transformed reported test run values. For small data sets where $n=3$, if $\left|\frac{S}{SES}\right|$ for the non-transformed data is less than $\left|\frac{S}{SES}\right|$ for the log-transformed data then the distribution is considered normal, otherwise it is consider log-normal. The skew-normal distribution can only be implemented for data where $n>3$. Generally, if $\left|\frac{S}{SES}\right|$ or $\left|\frac{K}{SEK}\right|$ are greater than `qnorm(0.975, 0, 1)` (the $97.5^{th}$ quantile of the standard normal, which is approximately 1.96) the data are considered non-normal. Using these ratios, a series of decisions is used to determine the best distribution choice. First, each ratio of $\left|\frac{S}{SES}\right|$ and $\left|\frac{K}{SEK}\right|$ are calculated, and if they are less than 1.96 for untransformed or log-transformed, the data are tentatively assigned as normal. If both the skewness and kurtosis ratios came back normal for the log-transformed data and the untransformed data, then we check: if $\left|\frac{S}{SES}\right|$ is smaller for the untransformed data than the log-transformed data, the distribution is finalized as normal, if it is larger than the distribution is finalized as log-normal. For all other circumstances where both the skewness and kurtosis ratios for the untransformed data were normal, the final distribution choice is normal. Similarly, for all other circumstances where both the skewness and kurtosis ratios for the log-transformed data were normal, the final distribution is log-normal. All other circumstances are designated for the skew-normal distribution. The distribution selection is implemented via the function `distribution_type()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, which is documented in Appendix C.
+
+### UPL Calculation for Normal Data
+
+In the case of normally distributed data, the MACT floor limit is an UPL calculated as:
+
+$$
+UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+$$
+Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ quantile of the *t*-distribution with $df$ degrees of freedom. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
+
+### UPL Calculation for Log-normal Data
+
+In the case of log-normally distributed data, the MACT floor limit is an UPL calculated from a log-normal approximation described in Bhaumik and Gibbons, 2004 using the Gram-Charlier Type-A Series expansion. 
+
+$$
+UPL= e^{\hat{\mu}+\frac{\hat{\sigma}^2}{2}}+\frac{z_{~`r params$significance`}}{m}\sqrt{m e^{2\hat{\mu}+\hat{\sigma}^{2}}(e^{\hat{\sigma}^{2}}-1)+m^{2}e^{2\hat{\mu}+\hat{\sigma}^{2}}\left(\frac{\hat{\sigma}^{2}}{n}+\frac{\hat{\sigma}^{4}}{2(n-1)}\right)}
+$$
+Where $n$ is the number of test runs, $m$ is the number of future test runs,  $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ percentile of the log-normal distribution estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
+
+$$
+`r params$significance` = \int_{0}^{z_{~`r params$significance`}}\left|\left(1-\frac{\sqrt{\beta_{1z}}}{6}(3z-z^3)+\frac{(\beta_{2z-3})(3-6z^2+z^4)}{24} \right)\phi(z)\right|
+$$
+Where $\phi(z)$ is the standard normal and $z$ is a sequence from $-5$ to $5$ by intervals of $0.101$. The coefficients are calculated following equation 25 as:
+
+$$
+\beta_{2z} = \frac{e^{4\hat\sigma^2}+2e^{3\hat\sigma^2}+3e^{2\hat\sigma^2}-3}{m(e^{\hat\sigma^2}-1)^2}+3\left(1-\frac{1}{m}\right)
+$$
+
+and:
+
+$$
+\sqrt{\beta_{1z}} = \frac{\sqrt{e^{\hat\sigma^2}-1}(e^{\hat\sigma^2}+2)}{\sqrt{m}}
+$$
+
+This UPL calculation was performed in `R` using the `Lognormal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
+
+### UPL Calculation for Skew-normal Data
+
+The same UPL equation as for normal data is used, but the *t*-statistic is substituted for a new *t*-statistic that is iteratively adjusted for the skewed distribution until it achieves `r (params$significance)*100`\% significance. To achieve this, an approximation of the incomplete beta function, is used: 
+
+
+\begin{gather*}
+I_{~u_0}\left(a,~ b\right) \approx \frac{\Gamma(a,w)}{\Gamma(a)}+\frac{e^{-w}w^a}{\Gamma(a)}\bigg(\frac{a-1-w}{2b}+\frac{1}{(2b)^2}\bigg(\frac{a^3}{2}-\frac{5a^2}{3}+\frac{3a}{2}-\frac{1}{3}-w\left(\frac{3a^2}{2}-\frac{11a}{6}+\frac{1}{3}\right) \\
++w^2\left(\frac{3a}{2}-\frac{1}{6}\right)-w^3\frac{1}{2} \bigg) \bigg)
+\end{gather*}
+
+
+Where $u_0$ and $w$ are defined as: 
+
+$$
+u_0 = \frac{1}{1+\frac{t_{new}^{2}}{n-1}}, ~~ w=b\left(\frac{u_0}{1-u_0}\right)
+$$
+Where $n$ is the number of test runs and $t_{new}$ is the iteratively adjusted *t*-statistic. Six expanded terms of the incomplete beta function are calculated with $(a_i,~b_i)$ pairs: 
+
+$$
+b_1,~...,~b_6=\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~1, ~1
+$$ 
+and:
+$$
+a_1,~...,~a_6 = \frac{n-1}{2}, ~\frac{n+1}{2},~ \frac{n+3}{2}, ~ \frac{n+5}{2}, ~ \frac{n-1}{2}, ~ \frac{n+1}{2}
+$$
+These six incomplete beta function terms, $I_{u_0}(a_i,~ b_i)$, for $i~\epsilon~(1,~6)$, are then used in the subsequent calculation of the probability $P(t_{new})$ given the trial *t*-statistic $t_{new}$ and actual skewness $S$, and kurtosis $K$:
+
+\begin{gather*}
+P(t_{new})=1-\frac{I_{u_0}\left(a_1,~ b_1\right)}{2}-S\times \left(I_{u_0}\left(a_5,~ b_5\right)\times\left(\frac{2n-1}{6\sqrt{2n\pi}}\right)-I_{u_0}\left(a_6,~ b_6\right)\times\left(\frac{n-1}{3\sqrt{2n\pi}} \right)\right)+ \\
+K\times\left(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{n-1}{24}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(n+2)}{12n} \right)+I_{u_0}\left(a_3,~ b_3\right)\times\left(\frac{(n+4)(n-1)}{24n} \right)\right)- \\ 
+S^2\times\bigg(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{(n-1)(2n+5)}{72}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(2n^2+5n+8)}{24n} \right)- \\ 
+I_{u_0}\left(a_3,~ b_3\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{24n} \right)-I_{u_0}\left(a_4,~ b_4\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{72n} \right)\bigg) 
+\end{gather*}
+
+Where $S$ and $K$ are the skewness and kurtosis estimates defined earlier. 
+
+First, the updated probability is calculated using the original *t*-statistic after accounting for skewness and kurtosis. If this $P(t)$ is within 0.0001 of `r params$significance`, then the UPL is calculated with the original *t*-statistic as:
+
+$$
+UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+$$
+
+Which is the same as the UPL for normally distributed data. If, however, the updated probability $P(t)$ is more than 0.0001 different than `r params$significance`, then a list of 20,000 potential $t_{new}$ are proposed in increasing or decreasing increments of 0.0001 (depending on whether $P(t)$ is less than or greater than `r params$significance`). The first $t_{new}$ such that $P(t_{new})$ is within 0.0001 of `r params$significance` is selected as the new *t*-statistic to use in the UPL calculation for skew-normal data:
+
+$$
+UPL = \overline{x} + t_{new}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+$$
+
+This UPL calculation was performed in `R` using the `Skewed_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
+
+## Adjustment for Below Detection Level Emissions Data 
+
+To account for the effect of measurement imprecision associated with the data in the ICR databases (that include method detection level data), a protocol specified by the EPA was used. The procedure for determining a representative detection level (RDL) begins with identifying all of the available reported pollutant-specific method detection levels for the best performing units regardless of any subcategory (e.g., existing or new, fuel type, etc.). From that combined pool of data, we calculate the arithmetic mean value. By limiting the data set to those tests used to establish the floor or emissions limit (i.e., best performers), the EPA believes that the result is representative also of the best performing testing companies and laboratories. The EPA also believes that the outcome should minimize the effect of a test(s) with an inordinately high method detection level (e.g., the sample volume was too small, the laboratory technique was insufficiently sensitive, or the procedure for determining the detection level was other than that specified). The EPA then calls the resulting mean of the method detection levels the RDL, and the Agency considers it characteristic of accepted source emissions measurement performance. 
+
+The second step in the process is to calculate three times the RDL to compare with the calculated floor or emissions limit. We use the multiplication factor of 3. For comparing to the floor, if three times the RDL were less than the calculated floor or emissions limit (e.g., calculated from the UPL), we would conclude that measurement variability was adequately addressed. The calculated floor or emissions limit would need no adjustment. If, on the other hand, the value equal to three times the RDL were greater than the UPL, we would conclude that the calculated floor or emissions limit does not account entirely for measurement variability. If indicated, we substituted the value equal to three times the RDL for the calculated MACT floor UPL emissions level.
+
+*Add any RDL content specific to your source category*
+
+```{r table1, echo = FALSE, out.width = "100%", appendix = TRUE}
+col1=c('Subcategory 1','Subcategory 2','Subcategory 3','Subcategory 4',
+       'Subcategory 5')
+col2=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
+col3=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
+col4=c('HAP 1, HAP 2, X, Y, Z', 'HAP 1, X, Y, Z', 'HAP 1, HAP 2, HAP 3, X, Y, Z', 
+       'None', 'X, Y, Z')
+table1=tibble(col1=col1,col2=col2,col3=col3,col4=col4)
+table1%>%knitr::kable(
+  caption="Here is an example of a table in case you need one",
+             col.names=c('',
+                         'Existing MACT floor (old units)',
+                         'Existing MACT floor (new units)',
+                         'New MACT floor'))
+```
+
+\newpage
+## MACT Floor Data Set
+
+*describe any data that was excluded here and why*
+
+```{r cond1, child = 'App_report_children/conditional5.Rmd', eval = zero_warn}
+```
+
+Tables with the full data sets used for each existing source MACT floor analysis can be found listed in Appendix A. Tables with the full data sets used for each new source MACT floor analysis can be found listed in Appendix B.
+
+<!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
+
+The final data set for the *chemical X* existing source MACT floor for *subcategory A* included `r nrow(dat_top_exist)` test runs from `r length(unique(dat_top_exist$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(dat_top_new$emissions), digits = 4)` from `r nrow(dat_top_new)` test runs. 
+
+```{r plot1, echo = FALSE, eval = source_fig, results=FALSE, fig.align = "center", fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
+ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
+          geom_density(alpha = 0.5, bounds = c(0, Inf))+
+          ylab("Density")+xlab("Chemical X emissions (units)")+
+          ggtitle("Subcategory A top sources test run densities")+
+          multi_source_theme()+labs(fill = 'Top sources', 
+                                    color = 'Top sources')+
+          geom_vline(aes(xintercept = means, color = sources),
+             data = dat_topmeans_exist, linewidth = 1)+
+          guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+                color = guide_legend(nrow = 2, byrow = TRUE))+
+          scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+          scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+          coord_cartesian(clip = 'off')+
+          geom_rug(sides = 'b', aes(x = emissions, color = sources), 
+                   data = dat_top_exist, alpha = 0.5, outside = TRUE)
+```
+
+Figures with density plots of emission test run data were created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `gamma` kernel type, a zero lower bound, a bandwidth of $\sigma n^{-2/5}$ where $\sigma$ is the emission value standard deviation and $n$ is the number of runs. For further details see the `R` code in Appendix C. 
+
+\newpage
+## MACT Floor Analysis Results
+
+<!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
+
+### Existing Source *Chemical X* in *Subcategory A*
+
+The distribution that best represents the existing source data set for *chemical x* in *subcategory A* is the `r distribution_result_exist` distribution, with a corresponding UPL of `r signif(UPL_exist, digits = 4)` *(insert measurement units)*. 
+
+```{r plot2, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
+x_hat = seq(0, 3*max(dat_top_exist$emissions), length.out = 1024)
+obs_dens_results = obs_density(dat_top_exist, xvals = x_hat)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
+if (distribution_result_exist == "Normal"){
+  pdf_n = dnorm(x_hat, mean = mean(dat_top_exist$emissions, na.rm = T),
+              sd=sd(dat_top_exist$emissions, na.rm = T))
+  pred_dat = tibble(x_hat, pdf_n)
+} else if (distribution_result_exist == "Lognormal"){
+  pdf_n = dlnorm(x_hat,mean = log(mean(dat_top_exist$emissions, na.rm = T)),
+              sd = sd(log(dat_top_exist$emissions), na.rm = T))
+  pred_dat = tibble(x_hat, pdf_n)  
+} else {
+  pred_dat = tibble(xhat = rep(NA, 1024), pdf_n = rep(NA, 1024))
+}
+ggplot()+
+  geom_line(data = obs_den_df, size = 0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = obs_den_df, alpha = 0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_n, x = x_hat, color = 'b'),
+               data = pred_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = pred_dat)+
+  ylab("Density")+xlab("Chemical X emissions (units)")+
+  ggtitle("Subcategory A existing source\nMACT floor test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = mean(dat_top_exist$emissions), 
+                 color = 'a'), linewidth = 1, linetype = 1)+
+  geom_vline(aes(xintercept = UPL_exist, color = 'b'), 
+             linewidth = 1, linetype = 2)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_top_exist,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00'),
+                     labels = c('Observations', distribution_result_exist))+
+  scale_fill_manual(values = c('black', '#FF7F00'),
+                    labels = c('Observations', distribution_result_exist))
+```
+
+### New Source *Chemical X* in *Subcategory A*
+
+The distribution that best represents the new source data set for *chemical x* in *subcategory A* is the `r distribution_result_new` distribution, with a corresponding UPL of `r signif(UPL_new, digits = 4)` *(insert measurement units)*. 
+
+```{r plot3, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
+x_hat = seq(0, 3*max(dat_top_new$emissions), length.out = 1024)
+obs_dens_results = obs_density(dat_top_new, xvals = x_hat)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
+if (distribution_result_new == "Normal"){
+  pdf_n = dnorm(x_hat, mean = mean(dat_top_new$emissions, na.rm = T),
+              sd=sd(dat_top_new$emissions, na.rm = T))
+  pred_dat = tibble(x_hat, pdf_n)
+} else if (distribution_result_new == "Lognormal"){
+  pdf_n = dlnorm(x_hat,mean = log(mean(dat_top_new$emissions, na.rm = T)),
+              sd = sd(log(dat_top_new$emissions), na.rm = T))
+  pred_dat = tibble(x_hat, pdf_n)  
+} else {
+  pred_dat = tibble(xhat = rep(NA, 1024), pdf_n = rep(NA, 1024))
+}
+ggplot()+
+  geom_line(data = obs_den_df, size = 0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = obs_den_df, alpha = 0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_n, x = x_hat, color = 'b'),
+               data = pred_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = pred_dat)+
+  ylab("Density")+xlab("Chemical X emissions (units)")+
+  ggtitle("Subcategory A new source\nMACT floor test run population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = mean(dat_top_new$emissions), 
+                 color = 'a'), linewidth = 1, linetype = 1)+
+  geom_vline(aes(xintercept = UPL_new, color = 'b'), 
+             linewidth = 1, linetype = 2)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_top_new,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#377EB8'),
+                     labels = c('Observations', distribution_result_new))+
+  scale_fill_manual(values = c('black', '#377EB8'),
+                    labels = c('Observations', distribution_result_new))
+```
+<!-- If you have multiple HAP emissions or subcategories, consider combining into one table summarizing the UPL -->
+
+### UPL Calculation Summary
+
+The table below includes all UPL calculations for `r params$source` existing and new source MACT floor analyses using a significance of `r (params$significance)*100`\% and `r params$future_runs` future test runs.
+
+```{r UPL_table, out.width = "80%", appendix = TRUE}
+dat_UPL = tibble(HAP = c("Chemical X"), 
+                 Subcategory = c("Type A"), 
+                 Existing = c(signif(UPL_exist,4)), 
+                 New = c(signif(UPL_new, 4)))
+dat_UPL %>% knitr::kable(
+  caption = "Upper Predictive Limit (UPL) results for existing and 
+  new source MACT floors in (measurement units)", digits = 12, 
+                         col.names = c("HAP", "Subcategory", 
+                                       "Existing source UPL", 
+                                       "New source UPL"))
+```
+
+\newpage
+## References
+
+Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmetic Mean of a Lognormal Random Variable. Technometrics, 46(2):239-248. 
+
+Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
+
+\newpage
+## Appendix A: Existing Source Data Tables
+
+<!-- Add more tables for additional HAP or subcategories -->
+
+`r params$source` existing source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
+
+```{r dat_Exist, echo = FALSE, appendix = TRUE}
+dat_top_exist %>% knitr::kable(
+  caption = "Top performering source emissions data used in existing source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_exist))
+```
+
+\newpage
+## Appendix B: New Source Data Tables
+
+<!-- Add more tables for additional HAP or subcategories -->
+
+`r params$source` new source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
+
+```{r dat_New, echo=FALSE, appendix = TRUE}
+dat_top_new %>% knitr::kable(
+  caption = "Best performering source emissions data used in new source 
+  UPL calculations.", digits = 12, col.names = names(dat_top_new))
+```
+
+\newpage
+## Appendix C: `R` Function Code
+
+### Disclaimer
+
+The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information.  Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA.  The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
+
+### MACT_existing()
+```{r function_docs1, results = TRUE, message = TRUE, echo = FALSE}
+MACT_existing
+```
+
+### MACT_new()
+```{r function_docs2, results = TRUE, message = TRUE, echo = FALSE}
+MACT_new
+```
+
+### distribution_type()
+```{r function_docs3, results = TRUE, message = TRUE, echo = FALSE}
+distribution_type
+```
+
+### Normal_UPL()
+```{r function_docs4, results = TRUE, message = TRUE, echo = FALSE}
+Normal_UPL
+```
+
+### Lognormal_UPL()
+```{r function_docs5, results = TRUE, message = TRUE, echo = FALSE}
+Lognormal_UPL
+```
+
+### Skewed_UPL()
+```{r function_docs6, results = TRUE, message = TRUE, echo = FALSE}
+Skewed_UPL
+```
+
+### obs_density()
+```{r function_docs7, results = TRUE, message = TRUE, echo = FALSE}
+obs_density
+```        
+
+\newpage
+## Appendix D: System and Package Versions
+```{r versions, results = TRUE, echo = FALSE}
+sessionInfo()
+```
+
+\newpage
+## Appendix E: Rmd Code Chunks
+
+```{r ref.label = knitr::all_labels(appendix == TRUE), echo = TRUE, eval = FALSE}
+```

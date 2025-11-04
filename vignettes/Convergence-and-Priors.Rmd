@@ -10,9 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   echo = FALSE, 
-  error=TRUE,
-  warning=FALSE,
-  message=FALSE,
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
   collapse = TRUE,
   comment = "#>",
   fig.align = "center"
@@ -83,24 +83,24 @@ set.seed(1)
 emissions = runif(30, min = 0, max = 100)
 results = Bayesian_UPL(distr_list = c("Lognormal"),
                        data = tibble(emissions = emissions))
-conv_metrics=results$conv_output
+conv_metrics = results$conv_output
 ```
 ``` {r table1, fig.align = "center"}
-conv_metrics=mutate(conv_metrics,across(c(3),~signif(.,digits=4)))
+conv_metrics = mutate(conv_metrics, across(c(3), ~signif(., digits = 4)))
 knitr::kable(conv_metrics,
-             caption="Gelman-Rubin convergence tests for likelihood parameters",
-             col.names=c("Distribution",'Parameter',"Diagnostic","Converged"))
+             caption = "Gelman-Rubin convergence tests for likelihood parameters",
+             col.names = c("Distribution",'Parameter',"Diagnostic","Converged"))
 ```
 
 We can take a look at the figures generated in the convergence report as well. 
 Note that for both parameters, the left figures show one of the chains is off on 
 a tangent and they are clearly not well-mixed or without trend. This is the kind 
 of behavior that will result in the Gelman-Rubin diagnostic failing.
-```{r figure1, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence in MCMC chains."}
-part1=setup_likelihood(distribution = "Lognormal",
-                       data = tibble(emissions = emissions))
-part2=run_likelihood(model_input = part1)
-part3=converge_figs(distribution = "Lognormal",jags_model_run = part2)
+```{r figure1, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence in MCMC chains."}
+part1 = setup_likelihood(distribution = "Lognormal",
+                         data = tibble(emissions = emissions))
+part2 = run_likelihood(model_input = part1)
+part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
 ```
 
@@ -125,9 +125,9 @@ show the posterior is too flat. Note that there is a slight peak for the
 `emission_mean` posterior around 0.01, which is indeed the average of the 3 points, 
 but there is not enough information to definitely say this is much more likely 
 than any other value searched.  
-```{r figure2, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence where posterior is too flat."}
-dat_emiss2=read.csv("Lime_data.csv")
-small_dat = MACT_NSPS(dat_emiss2)
+```{r figure2, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence where posterior is too flat."}
+dat_emiss2 = read.csv("Example_data1.csv")
+small_dat = MACT_new(dat_emiss2)
 part1 = setup_likelihood(distribution = "Normal", data = small_dat)
 part2 = run_likelihood(model_input = part1)
 part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
@@ -151,8 +151,8 @@ though it does pass the Gelman-Rubin checks. Even though the MCMC chains
 are well mixed, they are clearly stacking up against the lower bound and trying 
 to converge on a lower mean than we have allowed. This skew in the chains (left) 
 and histogram (right) indicate improper prior distribution bounds. 
-```{r figure3, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, fig.cap="Example of bad convergence, where the prior limits are too restrictive."}
-dat_emiss = read.csv('IIS_HCl.csv')
+```{r figure3, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence, where the prior limits are too restrictive."}
+dat_emiss = read.csv('Example_data2.csv')
 part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
                          manual_prior = TRUE, 
                          prior_list = c(0.0001, 0.001, 0.01, 0.05))
@@ -199,13 +199,13 @@ resulting fitted probability density distributions below. Note that both have
 very large error bars around the probability density at the emission observations. 
 This is expected given how little information we actually get from 3 observations. 
 The ability to quantify this uncertainty is a nice outcome of using a Bayesian approach.
-```{r manual, echo = TRUE, fig.height=4, out.width="100%", fig.align = "center", results=FALSE}
+```{r manual, echo = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE}
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
                                manual_prior = TRUE,
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
 result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat)
 ```
-```{r figure4, echo = FALSE, fig.height=5, fig.width=4, fig.align="center", fig.cap="Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well."}
+```{r figure4, echo = FALSE, fig.height = 5, fig.width = 4, fig.align = "center", fig.cap = "Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well."}
 result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
                                           nrow(result_uninformed$obs_pdf_dat))
 result_uninformed$pred_pdf_dat$distr = rep("Uninformed", 
@@ -218,42 +218,42 @@ result_informed$pred_pdf_dat$distr = rep("Informed",
                                           nrow(result_informed$pred_pdf_dat))
 result_informed$fit_table$distr = rep("Informed", 
                                           nrow(result_informed$fit_table))
-combined_pdf=rbind(result_uninformed$pred_pdf_dat,result_informed$pred_pdf_dat)
-combined_obs=rbind(result_uninformed$obs_pdf_dat,result_informed$obs_pdf_dat)
-combined_fit=rbind(result_uninformed$fit_table,result_informed$fit_table)
+combined_pdf = rbind(result_uninformed$pred_pdf_dat, result_informed$pred_pdf_dat)
+combined_obs = rbind(result_uninformed$obs_pdf_dat, result_informed$obs_pdf_dat)
+combined_fit = rbind(result_uninformed$fit_table, result_informed$fit_table)
 
-palette_line =c("#377EB8","#E41A1C")
+palette_line = c("#377EB8", "#E41A1C")
 ggplot()+
-  geom_line(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),size=0.75,color='black')+
-  geom_area(data=combined_pdf,
-            aes(y=ydens,x=(x_hat)),fill='grey')+
-  geom_point(data=combined_obs,
-            aes(y=ydens,x=(emissions)),
-            size=3,alpha=0.5,shape=19,color='black')+
-  geom_line(data=combined_pdf,
-            aes(x=(x_hat),y=pdf_hat,color=distr),size=0.75)+
-  geom_area(data=combined_pdf,
-            aes(x=(x_hat),y=pdf_hat,fill=distr),alpha=0.5)+
-  geom_errorbar(data=combined_obs,
-                aes(ymin=low,ymax=up,x=(emissions),color=distr),
-                alpha=0.5)+
-  geom_point(data=combined_obs,
-             aes(x=(emissions),y=med,fill=distr),
-             size=3,alpha=0.5,shape=21,color='black')+
+  geom_line(data = combined_pdf,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = combined_pdf,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = combined_obs,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_errorbar(data = combined_obs,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = combined_obs,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
   geom_vline(aes(xintercept = UPL, color = distr), data = combined_fit,
              linewidth = 1)+
-  ylab("Density")+xlab("Emissions")+
-  pop_distr_theme()+labs(color='Distribution',fill="Distribution")+
-  scale_x_continuous(expand=expansion(mult=c(0,0.05)))+
-  scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
-  geom_rug(data=combined_obs,
-           sides='b',aes(x=(emissions)),
-           alpha=0.5,outside=TRUE,color='black')+
-  coord_cartesian(clip='off')+scale_color_manual(values=palette_line)+
-  scale_fill_manual(values=palette_line)+
-  facet_wrap(~distr,scales='fixed',nrow=3)+theme(legend.position = 'none')+
-  theme(strip.text = element_text(color='black',size=12))
+  ylab("Density")+ xlab("Emissions")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_rug(data = combined_obs,
+           sides = 'b', aes( x =emissions),
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap(~distr, scales = 'fixed', nrow = 3)+ theme(legend.position = 'none')+
+  theme(strip.text = element_text(color = 'black', size = 12))
 ```
 
 We can look at how the convergence figures are different in the case where we 
@@ -263,7 +263,7 @@ uninformed priors. Even though we provided the prior distributions manually, the
 are still considered to be uninformative. We have restricted the parameter space 
 with lower and upper bounds, but it is still a wide accommodation, and within 
 that all parameter outcomes are equally likely before we consider the data.
-```{r figure5, fig.height=4, out.width="100%", fig.align = "center", results=FALSE, echo = FALSE, fig.cap="Improved convergence of parameters by providing slightly more restrictive bounds as priors."}
+```{r figure5, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, echo = FALSE, fig.cap = "Improved convergence of parameters by providing slightly more restrictive bounds as priors."}
 part1 = setup_likelihood(distribution = "Normal", data = small_dat,
                          manual_prior = TRUE,
                          prior_list = c(0.0001, 0.01, 0.005, 0.03))
