@@ -38,7 +38,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
+<li><a class="dropdown-item" href="../articles/App-and-templates.html">Shiny App and Rmd templates</a></li>
+    <li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
     <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence and Priors</a></li>
     <li><a class="dropdown-item" href="../articles/Density.html">Density</a></li>
     <li><a class="dropdown-item" href="../articles/Distributions.html">Distributions</a></li>
@@ -49,7 +50,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/USEPA/UPLforOAR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/LuddaLudwig/UPLforOAR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -65,12 +66,13 @@
       <img src="../logo.png" class="logo" alt=""><h1>Bayesian UPL</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USEPA/UPLforOAR/blob/main/vignettes/Bayesian-UPL.Rmd" class="external-link"><code>vignettes/Bayesian-UPL.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/LuddaLudwig/UPLforOAR/blob/main/vignettes/Bayesian-UPL.Rmd" class="external-link"><code>vignettes/Bayesian-UPL.Rmd</code></a></small>
       <div class="d-none name"><code>Bayesian-UPL.Rmd</code></div>
     </div>
 
     
     
+<pre><code><span><span class="co">#&gt; Error in library(EnvStats): there is no package called 'EnvStats'</span></span></code></pre>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -125,51 +127,29 @@ runs to be comparative to a typical compliance test).</p>
 <p>Let’s look at an example data set of HCl emissions from Integrated
 Iron and Steel. This data set as provided is already the set of top
 performers in the industry, so there is no need to run
-<code><a href="../reference/MACT_EG.html">MACT_EG()</a></code> to select the data. The first step is to load and
-plot the emissions data.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">'IIS_HCl.csv'</span><span class="op">)</span></span>
+<code><a href="../reference/MACT_existing.html">MACT_existing()</a></code> to select the data. The first step is to
+load and plot the emissions data.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">'Example_data2'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in file(file, "rt"): cannot open the connection</span></span>
 <span><span class="va">emission_mean</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'mean': object 'dat_emiss' not found</span></span>
 <span><span class="va">dat_means</span> <span class="op">=</span> <span class="fu">summarize</span><span class="op">(</span><span class="va">dat_emiss</span>, means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span>, counts <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                      .by <span class="op">=</span> <span class="st">'sources'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span>
 <span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_means' not found</span></span>
 <span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu">fct_reorder</span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span>,</span>
 <span>                              <span class="va">dat_means</span><span class="op">$</span><span class="va">means</span>, .desc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_means' not found</span></span>
 <span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">sources</span>, </span>
 <span>                           levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">dat_means</span><span class="op">$</span><span class="va">sources</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">dat_means</span> <span class="op">=</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">dat_means</span>, <span class="va">means</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span>
+<span><span class="va">dat_means</span> <span class="op">=</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">dat_means</span>, <span class="va">means</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_means' not found</span></span></code></pre></div>
 <p>Take a quick look at the average emission for each source in the data
 set:</p>
-<table class="table">
-<caption>Top sources for existing source UPL calculation</caption>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Average emission</th>
-<th align="right">No. of test runs</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">A</td>
-<td align="right">0.000603</td>
-<td align="right">12</td>
-</tr>
-<tr class="even">
-<td align="left">B</td>
-<td align="right">0.000805</td>
-<td align="right">3</td>
-</tr>
-<tr class="odd">
-<td align="left">C</td>
-<td align="right">0.001240</td>
-<td align="right">18</td>
-</tr>
-<tr class="even">
-<td align="left">D</td>
-<td align="right">0.003050</td>
-<td align="right">3</td>
-</tr>
-</tbody>
-</table>
+<pre><code><span><span class="co">#&gt; Error: object 'dat_means' not found</span></span></code></pre>
 <p>Next we want to look at density plots of the emission observations.
 Our goal is to fit a probability density that best describes the data,
 from which we can determine the UPL. In order to know the probability
@@ -180,9 +160,9 @@ density using <code><a href="https://ggplot2.tidyverse.org/reference/geom_densit
 impossible. The <code>UPLforOAR</code> package includes several
 <code>ggplot2</code> themes designed for density figures. The figure
 below uses <code><a href="../reference/multi_source_theme.html">multi_source_theme()</a></code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">emissions</span>, fill <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">geom_density</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span>, trim <span class="op">=</span> <span class="cn">FALSE</span>, bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_density</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span>, trim <span class="op">=</span> <span class="cn">FALSE</span>, bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/multi_source_theme.html">multi_source_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu">theme</span><span class="op">(</span>legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">guides</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>         color <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -192,12 +172,8 @@ below uses <code><a href="../reference/multi_source_theme.html">multi_source_the
 <span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Source observed populations"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"IIS HCl emissions"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">'Top sources'</span>, color <span class="op">=</span> <span class="st">'Top sources'</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure1-1.png" alt="Observation density of IIS HCl emissions by top performing source." width="528"><p class="caption">
-Observation density of IIS HCl emissions by top performing source.
-</p>
-</div>
+<span>  <span class="fu">labs</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">'Top sources'</span>, color <span class="op">=</span> <span class="st">'Top sources'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span></code></pre></div>
 <p>For most cases however, we will want more control over the density
 results. The default settings in <code><a href="../reference/obs_density.html">obs_density()</a></code> are designed
 to be compatible with typical emissions data, such as appropriate kernel
@@ -207,10 +183,13 @@ results directly in our environment rather than them being inside the
 <code>ggplot</code> object. See the <code><a href="../articles/Density.html">vignette("Density")</a></code>
 article for a thorough description of how <code><a href="../reference/obs_density.html">obs_density()</a></code>
 works.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span>
 <span><span class="va">Obs_onPoint</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
-<span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'obs_dens_results' not found</span></span>
+<span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span>
+<span><span class="co">#&gt; Error: object 'obs_dens_results' not found</span></span></code></pre></div>
 <p>The figure below shows the overall observation density of the top
 performing source population, of which it is our goal to determine an
 appropriately representative likelihood distribution from which to
@@ -219,7 +198,7 @@ plots the <code><a href="../reference/obs_density.html">obs_density()</a></code>
 <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line</a></code>. The
 emission observations themselves are indicated as points and as a rug
 underneath the plot.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">Obs_onPoint</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span>, </span>
 <span>            size <span class="op">=</span> <span class="fl">0.75</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
@@ -230,17 +209,12 @@ underneath the plot.</p>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"IIS HCl emissions"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Overall observed population"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pop_distr_theme.html">pop_distr_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">geom_rug</span><span class="op">(</span>sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure2-1.png" alt="Observation density of IIS HCl emissions top performers overall population." width="480"><p class="caption">
-Observation density of IIS HCl emissions top performers overall
-population.
-</p>
-</div>
+<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'Obs_onPoint' not found</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-2-explore-possible-likelihood-distributions">Step 2: Explore possible likelihood distributions<a class="anchor" aria-label="anchor" href="#step-2-explore-possible-likelihood-distributions"></a>
@@ -263,9 +237,10 @@ significance and number of future runs. Many of these options can be
 adjusted manually or evaluated step-wise, but
 <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> is designed to run with minimal user input
 needed.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Beta'</span>, <span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Normal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span></code></pre></div>
 <p>First, let’s look at plots of the resulting distributions. The points
 and error bars on these figures represent the median and 95% confidence
 interval around the predicted probability for each emission observation,
@@ -279,11 +254,7 @@ observations including error bars are stored in
 <code>results$obs_pdf_dat</code>, and those for plotting the densities
 along the range of <code>xvals</code> are stored in
 <code>results$pred_pdf_dat</code>.</p>
-<div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure3-1.png" alt="Fitted likelihood distributions for IIS HCl emissions." width="100%"><p class="caption">
-Fitted likelihood distributions for IIS HCl emissions.
-</p>
-</div>
+<pre><code><span><span class="co">#&gt; Error: object 'results' not found</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="step-3-selecting-a-distribution">Step 3: Selecting a distribution<a class="anchor" aria-label="anchor" href="#step-3-selecting-a-distribution"></a>
@@ -320,49 +291,12 @@ close to 1. If it doesn’t integrate to 1, than it isn’t a proper
 probability density. This is the case for the Normal distribution in our
 example, since some of it would extend below 0 where emissions are not
 defined, so it integrates to less than 1.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
-<table class="table">
-<caption>Goodness of fit results for IIS HCl emissions</caption>
-<thead><tr class="header">
-<th align="left">Distribution</th>
-<th align="right">SSE</th>
-<th align="right">No. Obs. in 95% CI</th>
-<th align="right">integral</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Gamma</td>
-<td align="right">98400</td>
-<td align="right">34</td>
-<td align="right">0.9870868</td>
-</tr>
-<tr class="even">
-<td align="left">Beta</td>
-<td align="right">108000</td>
-<td align="right">34</td>
-<td align="right">0.9875739</td>
-</tr>
-<tr class="odd">
-<td align="left">Skewed</td>
-<td align="right">192000</td>
-<td align="right">30</td>
-<td align="right">0.9879832</td>
-</tr>
-<tr class="even">
-<td align="left">Lognormal</td>
-<td align="right">220000</td>
-<td align="right">35</td>
-<td align="right">0.9858015</td>
-</tr>
-<tr class="odd">
-<td align="left">Normal</td>
-<td align="right">2810000</td>
-<td align="right">4</td>
-<td align="right">0.5671120</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span>
+<span><span class="co">#&gt; Error: object 'results' not found</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span></code></pre>
 <p>The Gamma and Beta distributions have the lowest SSE, the most
 emission observations with densities in the 95% of the probability
 density, and both have areas under the curve that integrate to
@@ -394,25 +328,13 @@ compliance test). The <code>significance</code> and
 desired, which will not affect the fitted likelihood distribution but
 will change the UPL calculation. The UPL results are the variable
 <code>UPL</code> stored in <code>results$fit_table</code>:</p>
-<table class="table">
-<caption>Upper Predictive Limits for IIS HCl emissions</caption>
-<thead><tr class="header">
-<th align="left"></th>
-<th align="right">Gamma</th>
-<th align="right">Beta</th>
-<th align="right">Skewed</th>
-<th align="right">Lognormal</th>
-<th align="right">Normal</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="left">UPL</td>
-<td align="right">0.00261</td>
-<td align="right">0.0026</td>
-<td align="right">0.00246</td>
-<td align="right">0.00342</td>
-<td align="right">0.00291</td>
-</tr></tbody>
-</table>
+<pre><code><span><span class="co">#&gt; Error: object 'results' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'fit_metrics' not found</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="step-5-check-for-convergence">Step 5: Check for convergence<a class="anchor" aria-label="anchor" href="#step-5-check-for-convergence"></a>
@@ -429,84 +351,9 @@ convergence using the Gelman-Rubin diagnostic, and the corresponding
 outcome for convergence is in the variable <code>convYN</code>. If any
 distribution’s parameters fail the Gelman-Rubin diagnostic checks for
 convergence, then its results cannot be used.</p>
-<table class="table">
-<caption>Gelman-Rubin convergence tests for likelihood
-parameters</caption>
-<thead><tr class="header">
-<th align="left">Distribution</th>
-<th align="left">Parameter</th>
-<th align="right">Diagnostic</th>
-<th align="left">Converged</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Beta</td>
-<td align="left">alpha_em</td>
-<td align="right">1.001</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Beta</td>
-<td align="left">beta_em</td>
-<td align="right">1.002</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="odd">
-<td align="left">Gamma</td>
-<td align="left">rate_em</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Gamma</td>
-<td align="left">shape_em</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="odd">
-<td align="left">Lognormal</td>
-<td align="left">u_ln</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Lognormal</td>
-<td align="left">sd_ln</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="odd">
-<td align="left">Normal</td>
-<td align="left">emission_mean</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Normal</td>
-<td align="left">emission_sd</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="odd">
-<td align="left">Skewed</td>
-<td align="left">omega</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Skewed</td>
-<td align="left">xi</td>
-<td align="right">1.001</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="odd">
-<td align="left">Skewed</td>
-<td align="left">alpha</td>
-<td align="right">1.000</td>
-<td align="left">Yes</td>
-</tr>
-</tbody>
-</table>
+<pre><code><span><span class="co">#&gt; Error: object 'results' not found</span></span>
+<span><span class="co">#&gt; Error: object 'conv_metrics' not found</span></span>
+<span><span class="co">#&gt; Error: object 'conv_metrics' not found</span></span></code></pre>
 <p>The Gelman-Rubin diagnostic will test if the 3 separate MCMC chains
 have become well-mixed and without trends. Passing the Gelman-Rubin
 convergence test is necessary but not sufficient. A visual examination
@@ -524,7 +371,10 @@ show the 3 MCMC chains (red, blue, and green lines) are well-mixed and
 without trend, indicating good convergence. The figures on the right are
 histograms of the posterior distributions of the Gamma parameters. Both
 indicate good convergence on values for the rate and shape.</p>
-<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" width="100%" style="display: block; margin: auto;"><img src="Bayesian-UPL_files/figure-html/figure4-2.png" width="100%" style="display: block; margin: auto;"></p>
+<pre><code><span><span class="co">#&gt; Error: object 'dat_emiss' not found</span></span>
+<span><span class="co">#&gt; Error: object 'part1' not found</span></span>
+<span><span class="co">#&gt; Error: object 'part2' not found</span></span>
+<span><span class="co">#&gt; Error: object 'part3' not found</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">

@@ -38,7 +38,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
+<li><a class="dropdown-item" href="../articles/App-and-templates.html">Shiny App and Rmd templates</a></li>
+    <li><a class="dropdown-item" href="../articles/Bayesian-UPL.html">Bayesian UPL</a></li>
     <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence and Priors</a></li>
     <li><a class="dropdown-item" href="../articles/Density.html">Density</a></li>
     <li><a class="dropdown-item" href="../articles/Distributions.html">Distributions</a></li>
@@ -49,7 +50,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/USEPA/UPLforOAR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/LuddaLudwig/UPLforOAR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -65,12 +66,13 @@
       <img src="../logo.png" class="logo" alt=""><h1>Distributions</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USEPA/UPLforOAR/blob/main/vignettes/Distributions.Rmd" class="external-link"><code>vignettes/Distributions.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/LuddaLudwig/UPLforOAR/blob/main/vignettes/Distributions.Rmd" class="external-link"><code>vignettes/Distributions.Rmd</code></a></small>
       <div class="d-none name"><code>Distributions.Rmd</code></div>
     </div>
 
     
     
+<pre><code><span><span class="co">#&gt; Error in library(EnvStats): there is no package called 'EnvStats'</span></span></code></pre>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -137,10 +139,11 @@ density,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
 of Gamma distributed emissions,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
-is dependent on parameters <em>shape</em>,
+is dependent on parameters
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
-and <em>rate</em>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>:</p>
+the shape, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>,
+the rate:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><msup><mi>β</mi><mi>α</mi></msup><mrow><mi>Γ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mi>x</mi><mrow><mi>α</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>x</mi></mrow></msup></mrow><annotation encoding="application/x-tex">
 p(x) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}
 </annotation></semantics></math></p>
@@ -223,10 +226,11 @@ density,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
 of Normally distributed emissions,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
-is dependent on parameters <em>mean</em>,
+is dependent on parameters
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>,
-and <em>standard deviation</em>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>:</p>
+the mean, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>,
+the standard deviation:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mi>σ</mi><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mrow></mfrac><msup><mi>e</mi><mrow><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac></mrow></msup></mrow><annotation encoding="application/x-tex">
 p(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^{2}}{2\sigma^{2}}}
 </annotation></semantics></math></p>
@@ -254,7 +258,7 @@ scale
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>,
 and skewness
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
-This equivalent to a Normal distribution when
+This is equivalent to a Normal distribution when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha = 0</annotation></semantics></math>,
 it is right-skewed if
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha &gt; 0</annotation></semantics></math>,
@@ -268,13 +272,13 @@ p(x) = \frac{2}{\omega}\phi \left(\frac{x-\xi}{\omega}\right) \Phi \left(\alpha\
 </annotation></semantics></math></p>
 <p>Where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\phi(x)</annotation></semantics></math>
-is the standard normal probability distribution, and
+is the standard normal probability distribution,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi(x)</annotation></semantics></math>
 is its cumulative probability distribution function, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
 is transformed to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><annotation encoding="application/x-tex">\frac{x-\xi}{\omega}</annotation></semantics></math>.
-This can be expanded to:</p>
+Using the error function, this can be expanded to:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>2</mn><mi>ω</mi></mfrac><mfrac><mn>1</mn><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mfrac><msup><mi>e</mi><mrow><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mi>ω</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mn>2</mn></mfrac></mrow></msup><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo stretchy="true" form="prefix">[</mo><mn>1</mn><mo>+</mo><mfrac><mn>2</mn><msqrt><mi>π</mi></msqrt></mfrac><msubsup><mo>∫</mo><mn>0</mn><mrow><mi>α</mi><mfrac><mrow><mi>x</mi><mo>−</mo><mi>ξ</mi></mrow><mrow><mi>ω</mi><msqrt><mn>2</mn></msqrt></mrow></mfrac></mrow></msubsup><msup><mi>e</mi><mrow><mo>−</mo><msup><mi>t</mi><mn>2</mn></msup></mrow></msup><mi>d</mi><mi>t</mi><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
 p(x) = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\alpha\frac{x-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
 </annotation></semantics></math></p>
@@ -353,15 +357,15 @@ unsupported long-tail will be unaffected by this setting.</p>
 <p>Let’s look at an example using HCl emissions from Lime processing.
 First we will load the data and use the Excel workbook methods to pick a
 distribution and calculate the UPL.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Lime_data.csv"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Example_data1.csv"</span><span class="op">)</span></span>
 <span><span class="va">distr_choice</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
 <span><span class="va">UPL_excel</span> <span class="op">=</span> <span class="fu"><a href="../reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span></code></pre></div>
 <p>The emissions are a Lognormal distribution with a corresponding UPL
 of 2.57 (Lb/ton of stone fed Lime). Next we will plot the density of the
 emission observations along with the corresponding Lognormal probability
 density distribution to see how it looks.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, size<span class="op">=</span><span class="fl">0.75</span>,</span>
 <span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span>, color <span class="op">=</span> <span class="st">'a'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -418,7 +422,7 @@ truncate the upper limit of emission probabilities, called
 <code>maxY</code> to <code>2*max(data$emissions)</code> and
 <code>25*max(data$emissions)</code> to see how the UPL estimate
 changes.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
@@ -539,7 +543,7 @@ and stochasticity in the tail of the distribution.</p>
 <p>Let’s investigate the sensitivity of different UPL significance
 levels to <code>maxY</code>. Ideally we will find a level that is
 insensitive to <code>maxY</code> and converges well.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
@@ -749,7 +753,7 @@ since the data are so heavily skewed. We also won’t look at the Beta
 distribution since it has an upper limit of 1, and while the emissions
 observations are all less than that in our set of top performing
 sources, theoretically there could emissions higher than 1.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -757,7 +761,7 @@ sources, theoretically there could emissions higher than 1.</p>
 Fitted likelihood distributions for Lime HCl emissions.
 </p>
 </div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
 <table class="table">
 <caption>Comparing goodness of fit results for other
@@ -767,7 +771,7 @@ distributions</caption>
 <th align="right">UPL</th>
 <th align="right">SSE</th>
 <th align="right">No. Obs. in 95% CI</th>
-<th align="right">integral</th>
+<th align="right">pdf integral</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -797,14 +801,14 @@ distributions</caption>
 Furthermore, the Gamma distribution converges well. It still has a bit
 of a tail so we might want to repeat our experiments with increasingly
 larger values of <code>maxY</code>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                          maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                          maxY <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                           maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
+<span>                           maxY <span class="op">=</span> <span class="fl">25</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The outcome shows the tail is way more stable at the 99<sup>th</sup>
 percentile for Gamma than it was for Lognormal. Furthermore, the fit is
