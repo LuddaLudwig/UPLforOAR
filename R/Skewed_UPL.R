@@ -43,24 +43,24 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
     b = c(0.5, 0.5, 0.5, 0.5, 1, 1)
     w = b * (u0 / (1 - u0))
     a = c((n - 1) / 2, (n + 1) / 2, (n + 3) / 2, (n + 5) / 2, (n - 1) / 2, (n + 1) / 2)
-    term = c()
+    I_term = c()
     for (i in 1:6){
-      c11 = stats::pgamma(w[i], shape = a[i], rate = 1)
-      c12 = gamma(a[i])
-      c13 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
-      c14 = (a[i] - 1 - w[i]) / (2 * b[i])
-      c15 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
-      c16 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
-      c17 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-      term[i] = c11 / c12 + c13 * (c14 + (1 / (2 * b[i])^2) * (c15 - c16 + c17 - w[i]^3 / 2))
+      c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
+      c2 = gamma(a[i])
+      c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+      c4 = (a[i] - 1 - w[i]) / (2 * b[i])
+      c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
+      c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
+      c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
+      I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
     }
-    calc3 = (2 * n - 1) * term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * term[6] / (3 * sqrt(2 * n * pi))
-    calc4 = (n - 1) * term[1] / 24 - (n - 1) * (n + 2) * term[2] / (12 * n) + (n + 4) * (n - 1) * term[3] / (24 * n)
-    calc5 = (n - 1) * (2 * n + 5) * term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * term[4] / (72 * n)
-    current_prob = 1 - (term[1] / 2 + S * calc3 - K * calc4 + S^2 * calc5)
-    if (abs(current_prob - 0.99) < 0.0001){
+    coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
+    coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
+    coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
+    current_prob = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
+    if (abs(current_prob - significance) < 0.0001){
       Skewed_UPL = mean(data$emissions) + tscore * sqrt(var.s * (1 / n + 1 / future_runs))
-    } else if ((current_prob - 0.99) > 0){
+    } else if ((current_prob - significance) > 0){
       tstat_list = seq(from = tscore, length.out = 20000, by = -0.0001)
       new_prob = c()
       for (t in 1:length(tstat_list)){
@@ -68,25 +68,25 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
         b = c(0.5, 0.5, 0.5, 0.5, 1, 1)
         w = b * (u0 / (1 - u0))
         a = c((n - 1) / 2, (n + 1) / 2, (n + 3) / 2, (n + 5) / 2, (n - 1) / 2, (n + 1) / 2)
-        term = c()
+        I_term = c()
         for (i in 1:6){
-          c11 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c12 = gamma(a[i])
-          c13 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
-          c14 = (a[i] - 1 - w[i]) / (2 * b[i])
-          c15 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1/3)
-          c16 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
-          c17 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-          term[i] = c11 / c12 + c13 * (c14 + (1 / (2 * b[i])^2) * (c15 - c16 + c17 - w[i]^3 / 2))
+          c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
+          c2 = gamma(a[i])
+          c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+          c4 = (a[i] - 1 - w[i]) / (2 * b[i])
+          c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1/3)
+          c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
+          c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
+          I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
         }
-        calc3 = (2 * n - 1) * term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * term[6] / (3 * sqrt(2 * n * pi))
-        calc4 = (n - 1) * term[1] / 24 - (n - 1) * (n + 2) * term[2] / (12 * n) + (n + 4) * (n - 1) * term[3] / (24 * n)
-        calc5 = (n - 1) * (2 * n + 5) * term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * term[4] / (72 * n)
-        new_prob[t] = 1 - (term[1] / 2 + S * calc3 - K * calc4 + S^2 * calc5)
+        coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
+        coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
+        coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
+        new_prob[t] = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
       }
-      new_tscore = tstat_list[(abs(new_prob - 0.99) < 0.0001)][1]
+      new_tscore = tstat_list[(abs(new_prob - significance) < 0.0001)][1]
       Skewed_UPL = mean(data$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
-    } else if ((current_prob - 0.99) < 0){
+    } else if ((current_prob - significance) < 0){
       tstat_list = seq(from = tscore, length.out = 20000, by = 0.0001)
       new_prob = c()
       for (t in 1:length(tstat_list)){
@@ -94,23 +94,23 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
         b = c(0.5, 0.5, 0.5, 0.5, 1, 1)
         w = b * (u0 / (1 - u0))
         a = c((n - 1) / 2, (n + 1) / 2, (n + 3) / 2, (n + 5) / 2, (n - 1) / 2, (n + 1) / 2)
-        term = c()
+        I_term = c()
         for (i in 1:6){
-          c11 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c12 = gamma(a[i])
-          c13 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
-          c14 = (a[i] - 1 - w[i]) / (2 * b[i])
-          c15 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
-          c16 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
-          c17 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-          term[i] = c11 / c12 + c13 * (c14 + (1 / (2 * b[i])^2) * (c15 - c16 + c17 - w[i]^3 / 2))
+          c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
+          c2 = gamma(a[i])
+          c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+          c4 = (a[i] - 1 - w[i]) / (2 * b[i])
+          c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
+          c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
+          c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
+          I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
         }
-        calc3 = (2 * n - 1) * term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * term[6] / (3 * sqrt(2 * n * pi))
-        calc4 = (n - 1) * term[1] / 24 - (n - 1) * (n + 2) * term[2] / (12 * n) + (n + 4) * (n - 1) * term[3] / (24 * n)
-        calc5 = (n - 1) * (2 * n + 5) * term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * term[4] / (72 * n)
-        new_prob[t] = 1 - (term[1] / 2 + S * calc3 - K * calc4 + S^2 * calc5)
+        coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
+        coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
+        coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
+        new_prob[t] = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
       }
-      new_tscore = tstat_list[(abs(new_prob - 0.99) < 0.0001)][1]
+      new_tscore = tstat_list[(abs(new_prob - significance) < 0.0001)][1]
       Skewed_UPL = mean(data$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     }
   }
