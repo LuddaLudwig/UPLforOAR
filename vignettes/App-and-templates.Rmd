@@ -45,13 +45,13 @@ A couple quick notes about the shiny app and `UPLforOAR` package in general:
 
  - Outliers are neither checked for nor removed.
  - Units are not checked or used. It is assumed all of your data are in the same units.
- - Be careful with data that are very small numbers or very close to, e.g. 99.9999997\%. 
+ - Be careful with data that are very small numbers or very close to 1, e.g. 99.9999997\%. 
  High precision is required to handle data like that, or to do any operations 
  such as adding or subtracting a very very tiny number from a much larger one. 
  This is an issue whether using R or Excel, and certain '.csv' data formats have 
  less precision than others. There are packages in R designed specifically to help 
  in these circumstances, such as [`Rmpfr`](https://cran.r-project.org/web/packages/Rmpfr/vignettes/Rmpfr-pkg.pdf), 
- but it will need to be implemented by the user.
+ but they will need to be implemented by the user.
 
 ## Shiny app
 
@@ -95,11 +95,12 @@ top performing sources, the best performer, and a table with the UPL results.
 The EG and NSPS emission datasets will be named similarly to your uploaded data, 
 with the same emissions and sources columns, and an additional column named 
 `ln_emiss` with log-transformed emissions. The UPL spreadsheet will include all 
-of the UPL calculations for both EG and NSPS for Normal, Lognormal, and Skewed. 
+of the UPL calculations for both existing and new source (if applicable) for 
+Normal, Lognormal, and Skewed. 
 
 The last download button will take your data and input selections and generate a 
 PDF report. This uses 'App_report_template.Rmd' and its child .Rmd files in the 
-templates directory within the `UPLforOAR` installation to render the PDF. 
+'App_report_children' folder in the templates directory to render the PDF. 
 Generating PDF's from Rmarkdown documents requires the user to have some version 
 of LaTex installed (MikTex for windows). 
 
@@ -128,7 +129,7 @@ knitr::include_graphics("app_template_figs/fig5.png")
 ```
 
 If you have multiple runs per source you will see a figure with the observation 
-densities of emissions for each sources in your set of top performers for EG 
+densities of emissions for each sources in your set of top performers for existing source 
 standard calculations. Each source will have a different color with a vertical 
 line indicating the source mean emission. This figure is provided to give you an 
 idea of inter- and intra-source variability in emissions.
@@ -142,11 +143,11 @@ workbook, implemented via the `Normal_UPL()`, `Lognormal_UPL()`, and
 `Skewed_UPL()` functions in `UPLforOAR`. All of the UPL results are included in 
 the table, and the text above will also report which distribution is the best 
 choice via the function `distribution_type()`, and its corresponding UPL result. 
-If you have less than 3 emission observations for the NSPS calculation those UPL 
+If you have less than 3 emission observations for the new source calculation those UPL 
 results will be omitted. The Skewed function `Skewed_UPL()` requires greater 
 than 3 observations to calculate the UPL. 
 
-```{r fig7, out.width="80%", fig.cap="Observation density of EG emissions population."}
+```{r fig7, out.width="80%", fig.cap="Observation density of existing source emissions population."}
 knitr::include_graphics("app_template_figs/fig7.png")
 ```
 
@@ -170,11 +171,11 @@ emissions is a hard boundary: that is, there is zero probability of having a
 negative emission. This lower boundary is *not* accounted for in the UPL 
 functions and distribution selection criteria from the Excel workbook. 
 
-```{r fig8, out.width="80%", fig.cap="Observation density of NSPS emissions population."}
+```{r fig8, out.width="80%", fig.cap="Observation density of new source emissions population."}
 knitr::include_graphics("app_template_figs/fig8.png")
 ```
 
-Lastly, a similar figure for the NSPS emissions population is plotted (assuming 
+Lastly, a similar figure for the new source emissions population is plotted (assuming 
 there are at least 3 runs in the data set).
 
 ## Templates
@@ -191,13 +192,14 @@ circumstances, child .Rmd documents are stored for reference in the folder
 
 In addition to the summaries, figures, and tables of results that are displayed 
 in the shiny app, the report will also include several appendices. Appendix A is 
-a table of all of the emissions data used in the EG UPL calculation. Appendix B 
-is a table of all of the emissions data used in the NSPS UPL calculation. 
+a table of all of the emissions data used in the existing source UPL calculation. Appendix B 
+is a table of all of the emissions data used in the new source UPL calculation. 
 Appendix C contains the function code in the `UPLforOAR` version used in the 
 shiny app to perform the calculations in the report. Appendix D lists the 
 session info of the computer and environment that ran the calculations in the 
 report. This includes the R version, `UPLforOAR` version, and the version info 
-for its dependencies and any other packages loaded. 
+for its dependencies and any other packages loaded. Appendix E contains the R 
+code chunks run in the generation of this report.
 
 This template is meant to be generic so that it makes sense with any emissions 
 data uploaded while using the shiny app. As such, no axes labels include units 
@@ -217,7 +219,7 @@ for quickly checking all of your convergence results at once. For including
 convergence figures in a final report it is better to use `converge_figs()` 
 directly to generate the figures as a `ggplot` object.
 
-### Reports for reg text
+### Reports for Memorandum Reg Text
 
 The shiny app and PDF report generated from it are designed to quickly provide 
 UPL results with little need for input from the user. As such, there also isn't 
@@ -239,7 +241,7 @@ the name of your source category. Much like the README.Rmd and the package
 vignettes, these templates include the analysis and text using an example 
 emissions data set. However, these templates are designed to be copied and then 
 customized to the specific rule or pollutant, with the places where you might 
-want to make changes pointed out in italics. Often more than one hazardous air 
+want to make text changes pointed out in italics. Often more than one hazardous air 
 pollutant or multiple subcategories will be in the same report. In those cases, 
 you will want to copy the relevant code blocks for each new analysis. Optional 
 example text from past MACT floor analysis memorandums is included that can be 
