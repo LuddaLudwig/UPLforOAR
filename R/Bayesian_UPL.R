@@ -10,8 +10,10 @@
 #' density. Default is `NULL`, in which case `x_hat` is a 1024 length sequence
 #' between `0` and `3 * max(data$emissions)`.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
-#' distributions and set upper ranges on prior distributions, not specified
+#' distributions and set upper ranges on prior distributions, if not specified
 #' manually. Default is `NULL`, in which case is is calculated as `3 * max(data$emissions)`.
+#' @param minY The minimum emission value possible, used to truncate likelihood
+#' distributions. Default is 0.
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
@@ -57,7 +59,7 @@
 #'
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
                         data, future_runs = 3, significance = 0.99,
-                        xvals = NULL, maxY = NULL,
+                        xvals = NULL, maxY = NULL, minY = 0,
                         convergence_report = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){
@@ -73,7 +75,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     mod_bayes = setup_likelihood(distribution = distribution, data = data,
                                  manual_prior = manual_prior,
                                  prior_list = prior_list)
-    mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY,
+    mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                              future_runs = future_runs, xvals = xvals)
     manual_prior = mod_bayes$manual_prior
     mod_output = output_likelihood(jags_model_run = mod_run,
@@ -95,7 +97,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
       distribution = distr_list[j]
       mod_bayes = setup_likelihood(distribution = distribution, data = data,
                                    manual_prior = FALSE)
-      mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY,
+      mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                                future_runs = future_runs, xvals = xvals)
       mod_output = output_likelihood(jags_model_run = mod_run,
                                      significance = significance)
