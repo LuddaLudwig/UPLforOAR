@@ -54,7 +54,7 @@ and new sources.
 
 Current UPL methods are only applicable to emissions data that are distributed 
 Normally, Skewed, or Lognormally. The UPL for Normal data can be calculated 
-analytically with `Normal_UPL()` using the mean, standard deviation, and t-score. 
+analytically with `Normal_UPL()` using the mean, standard deviation, and *t*-statistic. 
 However, there are no equivalent analytical solutions for Skewed or Lognormal 
 UPL calculations. Instead, `Lognormal_UPL()` uses a Gram-Charlier Type A Series 
 expansion to approximate the density distribution and determine the arithmetic 
