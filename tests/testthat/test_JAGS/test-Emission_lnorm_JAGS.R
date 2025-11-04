@@ -1,8 +1,11 @@
-model {
+# Lognormal
+      model {
       # priors
           sd_ln ~ dunif( 0.001 * sdOfLogY, 1000 * sdOfLogY )
-          u_ln ~ dnorm( meanOfLogY, 0.001 / sdOfLogY^2 ) #this is in log-space, so it can be negative
           tau_ln = 1 / (sd_ln^2)
+
+          #this is in log-space, so it can be negative
+          u_ln ~ dnorm( meanOfLogY, 0.001 / sdOfLogY^2 )
 
       #likelihood
           for (i in 1:length(emission_xi)){
