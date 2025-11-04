@@ -70,7 +70,7 @@ If you have any questions please reach out to <Ludwig.Ludda@epa.gov>
 
 ## Example emissions data
 
-This is example uses Hg emissions data from the recent [EPA
+This example uses Hg emissions data from the recent [EPA
 rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132)
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units.
 This data set contains a lot of test report information, but only
