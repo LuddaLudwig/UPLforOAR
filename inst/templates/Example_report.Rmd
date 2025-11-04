@@ -3,7 +3,7 @@ author: "OAR-OCAP-NRD-EDAB and/or author names here"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
-    extra_dependencies: ["float"]
+    extra_dependencies: ["float", "breqn"]
 params:
   source:
     label: "Stationary source category"
@@ -212,7 +212,7 @@ In the case of log-normally distributed data, the MACT floor limit is an UPL cal
 $$
 UPL= e^{\hat{\mu}+\frac{\hat{\sigma}^2}{2}}+\frac{z_{~`r params$significance`}}{m}\sqrt{m e^{2\hat{\mu}+\hat{\sigma}^{2}}(e^{\hat{\sigma}^{2}}-1)+m^{2}e^{2\hat{\mu}+\hat{\sigma}^{2}}\left(\frac{\hat{\sigma}^{2}}{n}+\frac{\hat{\sigma}^{4}}{2(n-1)}\right)}
 $$
-Where $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ percentile of the log-normal distribution estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
+Where $n$ is the number of test runs, $m$ is the number of future test runs,  $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ percentile of the log-normal distribution estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
 
 $$
 `r params$significance` = \int_{0}^{z_{~`r params$significance`}}\left|\left(1-\frac{\sqrt{\beta_{1z}}}{6}(3z-z^3)+\frac{(\beta_{2z-3})(3-6z^2+z^4)}{24} \right)\phi(z)\right|
@@ -231,6 +231,55 @@ $$
 
 This UPL calculation was performed in `R` using the `Lognormal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
 
+### UPL Calculation for Skew-normal Data
+
+The same UPL equation as for normal data is used, but the *t*-statistic is substituted for a new *t*-statistic that is iteratively adjusted for the skewed distribution until it achieves `r (params$significance)*100`\% significance. To achieve this, an approximation of the incomplete beta function, is used: 
+
+
+\begin{gather*}
+I_{~u_0}\left(a,~ b\right) \approx \frac{\Gamma(a,w)}{\Gamma(a)}+\frac{e^{-w}w^a}{\Gamma(a)}\bigg(\frac{a-1-w}{2b}+\frac{1}{(2b)^2}\bigg(\frac{a^3}{2}-\frac{5a^2}{3}+\frac{3a}{2}-\frac{1}{3}-w\left(\frac{3a^2}{2}-\frac{11a}{6}+\frac{1}{3}\right) \\
++w^2\left(\frac{3a}{2}-\frac{1}{6}\right)-w^3\frac{1}{2} \bigg) \bigg)
+\end{gather*}
+
+
+Where $u_0$ and $w$ are defined as: 
+
+$$
+u_0 = \frac{1}{1+\frac{t_{new}^{2}}{n-1}}, ~~ w=b\left(\frac{u_0}{1-u_0}\right)
+$$
+Where $n$ is the number of test runs and $t_{new}$ is the iteratively adjusted *t*-statistic. Six expanded terms of the incomplete beta function are calculated with $(a_i,~b_i)$ pairs: 
+
+$$
+b_1,~...,~b_6=\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~1, ~1
+$$ 
+and:
+$$
+a_1,~...,~a_6 = \frac{n-1}{2}, ~\frac{n+1}{2},~ \frac{n+3}{2}, ~ \frac{n+5}{2}, ~ \frac{n-1}{2}, ~ \frac{n+1}{2}
+$$
+These six incomplete beta function terms, $I_{u_0}(a_i,~ b_i)$, for $i~\epsilon~(1,~6)$, are then used in the subsequent calculation of the probability $P(t_{new})$ given the trial *t*-statistic $t_{new}$ and actual skewness $S$, and kurtosis $K$:
+
+\begin{gather*}
+P(t_{new})=1-\frac{I_{u_0}\left(a_1,~ b_1\right)}{2}-S\times \left(I_{u_0}\left(a_5,~ b_5\right)\times\left(\frac{2n-1}{6\sqrt{2n\pi}}\right)-I_{u_0}\left(a_6,~ b_6\right)\times\left(\frac{n-1}{3\sqrt{2n\pi}} \right)\right)+ \\
+K\times\left(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{n-1}{24}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(n+2)}{12n} \right)+I_{u_0}\left(a_3,~ b_3\right)\times\left(\frac{(n+4)(n-1)}{24n} \right)\right)- \\ 
+S^2\times\bigg(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{(n-1)(2n+5)}{72}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(2n^2+5n+8)}{24n} \right)- \\ 
+I_{u_0}\left(a_3,~ b_3\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{24n} \right)-I_{u_0}\left(a_4,~ b_4\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{72n} \right)\bigg) 
+\end{gather*}
+
+Where $S$ and $K$ are the skewness and kurtosis estimates defined earlier. 
+
+First, the updated probability is calculated using the original *t*-statistic after accounting for skewness and kurtosis. If this $P(t)$ is within 0.0001 of `r params$significance`, then the UPL is calculated with the original *t*-statistic as:
+
+$$
+UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+$$
+
+Which is the same as the UPL for normally distributed data. If, however, the updated probability $P(t)$ is more than 0.0001 different than `r params$significance`, then a list of 20,000 potential $t_{new}$ are proposed in increasing or decreasing increments of 0.0001 (depending on whether $P(t)$ is less than or greater than `r params$significance`). The first $t_{new}$ such that $P(t_{new})$ is within 0.0001 of `r params$significance` is selected as the new *t*-statistic to use in the UPL calculation for skew-normal data:
+
+$$
+UPL = \overline{x} + t_{new}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+$$
+
+This UPL calculation was performed in `R` using the `Skewed_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix C for the function details.
 
 ## Adjustment for Below Detection Level Emissions Data 
 
