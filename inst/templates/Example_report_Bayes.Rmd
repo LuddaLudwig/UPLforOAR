@@ -677,7 +677,7 @@ MACT_new
 
 ### write_likelihood()
 ```{r function_docs3, results = TRUE, message = TRUE, echo = FALSE}
-write_likelihood
+readLines("./../../R/write_likelihood.R")
 ```
 
 ### setup_likelihood()
@@ -719,6 +719,20 @@ Bayesian_UPL
 ```{r function_docs11, results = TRUE, message = TRUE, echo = FALSE}
 obs_density
 ```  
+
+### JAGS Model Scripts
+```{r function_docs12, results = TRUE, message = TRUE, echo = FALSE}
+readLines("./../JAGS/Emission_beta_JAGS.R")
+readLines("./../JAGS/Emission_gamma_JAGS.R")
+readLines("./../JAGS/Emission_lnorm_JAGS.R")
+readLines("./../JAGS/Emission_normal_JAGS.R")
+readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
+readLines("./../JAGS/Manual_emission_beta_JAGS.R")
+readLines("./../JAGS/Manual_emission_gamma_JAGS.R")
+readLines("./../JAGS/Manual_emission_lnorm_JAGS.R")
+readLines("./../JAGS/Manual_emission_normal_JAGS.R")
+readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
+```
 
 \newpage
 ## Appendix D: System and package versions
