@@ -91,7 +91,7 @@ If you have any questions please reach out to <Ludwig.Ludda@epa.gov>
 
 ## Example emissions data
 
-This is example uses Hg emissions data from the recent [EPA rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132) 
+This example uses Hg emissions data from the recent [EPA rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132) 
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. This 
 data set contains a lot of test report information, but only columns for 
 `emissions` and `sources` are needed for the MACT floor UPL analysis. The 
@@ -122,7 +122,7 @@ knitr::kable(dat_exist_avg %>% mutate(across(c(2), ~signif(., digits = 4))) %>% 
 ```
 
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_exist)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_exist`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
-```{r UPL, echo=TRUE}
+```{r UPL, echo = TRUE}
 UPL1_exist = Normal_UPL(data = dat_exist,
                      future_runs = 1,
                      significance = 0.99)
@@ -131,7 +131,7 @@ UPL2_exist = Lognormal_UPL(data = dat_exist,
                         significance = 0.99)
 ```
 Next we calculate the UPL using the appropriate distribution, which results in a MACT floor standard of `r UPL1_exist` lb/MMBtu in Hg emissions. Lastly, we will want to plot observation density of emissions data as well as the `r distribution_result_exist` distribution that was used to as the probability density function for the UPL calculation. From the figure below, the Lognormal appears to better represent the data, which would yield a UPL MACT floor standard of `r UPL2_exist` lb/MMBtu in Hg emissions.
-```{r distr, echo=TRUE}
+```{r distr, echo = TRUE}
 # make an ordered sequence of emissions 
 # for which we will define the probability density
 x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
@@ -148,7 +148,7 @@ pdf_ln = dlnorm(x_hat,mean = log(mean(dat_exist$emissions, na.rm = T)),
               sd = sd(log(dat_exist$emissions), na.rm = T))
 pred_dat = tibble(x_hat, pdf_ln, pdf_n)
 ```
-```{r plot1, echo=TRUE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The fitted normal distribution that is the basis of the UPL estimate is colored orange. The average of the Hg emissions is the vertical black line and the UPL results are the vertical purple and orange lines."}
+```{r plot1, echo = TRUE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored purple. The fitted normal distribution that is the basis of the UPL estimate is colored orange. The average of the Hg emissions is the vertical black line and the UPL results are the vertical purple and orange lines."}
 ggplot()+
   geom_line(data = obs_den_df, size=0.75,
             aes(y = ydens, x = x_hat, color = 'a'))+
