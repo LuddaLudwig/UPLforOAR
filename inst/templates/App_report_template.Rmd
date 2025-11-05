@@ -255,7 +255,7 @@ dat_top_exist %>% knitr::kable(
 ```{r cond4, child = 'App_report_children/conditional4.Rmd', eval = nsps_EVAL}
 
 ```
-```{r dat_New, echo= F ALSE, eval = nsps_EVAL, appendix = TRUE, appendix = TRUE}
+```{r dat_New, echo = FALSE, eval = nsps_EVAL, appendix = TRUE, appendix = TRUE}
 dat_top_new %>% knitr::kable(
   caption = "Best performering source emissions data used in new source 
   UPL calculations.", digits = 12, col.names = names(dat_top_new))
