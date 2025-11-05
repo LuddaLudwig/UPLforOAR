@@ -15,9 +15,12 @@
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
 #' distributions. For `'Normal'` and `'Lognormal'` they are ordered
 #' `c(pop_sd_mu_low, pop_sd_mu_high, pop_mu_mu_low, pop_mu_mu_high, pop_sd_sd_low, pop_sd_sd_high, pop_mu_sd_low, pop_mu_sd_high)`.
-#' For `'Skewed'` they are ordered `c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)`.
-#' For `'Gamma'` they are ordered `c(rate_low, rate_high, shape_low, shape_high)`. For
-#' `'Beta'` they are ordered `c(alpha_low, alpha_high, beta_low, beta_high)`.
+#' For `'Skewed'` they are ordered
+#' `c(pop_omega_mu_low, pop_omega_mu_high, pop_xi_mu_low, pop_xi_mu_high, pop_alpha_mu_low, pop_alpha_mu_high, pop_omega_sd_low, pop_omega_sd_high,  pop_xi_sd_low, pop_xi_sd_high, pop_alpha_sd_low, pop_alpha_sd_high)`.
+#' For `'Gamma'` they are ordered
+#' `c(pop_rate_mu_low, pop_rate_mu_high, pop_shape_mu_low, pop_shape_mu_high, pop_rate_sd_low, pop_rate_sd_high, pop_shape_sd_low, pop_shape_sd_high)`.
+#' For `'Beta'` they are ordered
+#' `c(pop_alpha_mu_low, pop_alpha_mu_high, pop_beta_mu_low, pop_beta_mu_high, pop_alpha_sd_low, pop_alpha_sd_high, pop_beta_sd_low, pop_beta_sd_high)`.
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
 #' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
 #' will use random values for `.RNG.name` and `.RNG.seed` instead.
@@ -204,12 +207,20 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
       }
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
-             'u_ln' = mean(c(prior_list[3], prior_list[4])),
-             'sd_ln' = mean(c(prior_list[1], prior_list[2]))),
+             'pop_mu_mu' = mean(c(prior_list[3], prior_list[4])),
+             'pop_sd_mu' = mean(c(prior_list[1], prior_list[2])),
+             'pop_mu_sd' = mean(c(prior_list[7], prior_list[8])),
+             'pop_sd_sd' = mean(c(prior_list[5], prior_list[6]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'u_ln' = initial1, 'sd_ln' = 0.9 * prior_list[2]),
+             'pop_mu_mu' = initial1,
+             'pop_sd_mu' = 0.9 * prior_list[2],
+             'pop_mu_sd' = 0.9 * prior_list[8],
+             'pop_sd_sd' = 0.9 * prior_list[6]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'u_ln' = initial2, 'sd_ln' = max(1.1 * prior_list[1], 0.000001)))
+             'pop_mu_mu' = initial2,
+             'pop_sd_mu' = max(1.1 * prior_list[1], 0.0000000001),
+             'pop_mu_sd' = max(1.1 * prior_list[7], 0.0000000001),
+             'pop_sd_sd' = max(1.1 * prior_list[5], 0.0000000001)))
     } else if (distribution == "Skewed"){
       if (prior_list[4] < 0){
         initial1 = 1.1 * prior_list[4]
@@ -233,42 +244,71 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
       }
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                  '/Manual_emissionGroup_skewed_JAGS.R'))
-      par_list = c('omega', 'xi', 'alpha')
+      par_list = c('omega', 'xi', 'alpha', 'pop_omega_mu', 'pop_omega_sd',
+                   'pop_xi_mu', 'pop_xi_sd', 'pop_alpha_mu', 'pop_alpha_sd')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
-             'xi' = mean(c(prior_list[3], prior_list[4])),
-             'omega' = mean(c(prior_list[1], prior_list[2])),
-             'alpha' = mean(c(prior_list[5], prior_list[6]))),
+             'pop_xi_mu' = mean(c(prior_list[3], prior_list[4])),
+             'pop_omega_mu' = mean(c(prior_list[1], prior_list[2])),
+             'pop_alpha_mu' = mean(c(prior_list[5], prior_list[6])),
+             'pop_xi_sd' = mean(c(prior_list[9], prior_list[10])),
+             'pop_omega_sd' = mean(c(prior_list[7], prior_list[8])),
+             'pop_alpha_sd' = mean(c(prior_list[11], prior_list[12]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'xi' = initial1, 'omega' = max(1.1 * prior_list[1], 0.00001),
-             'alpha' = initial4),
+             'pop_xi_mu' = initial1,
+             'pop_xi_sd' = max(1.1 * prior_list[9], 0.00000001),
+             'pop_omega_mu' = max(1.1 * prior_list[1], 0.00000001),
+             'pop_omega_sd' = max(1.1 * prior_list[7], 0.00000001),
+             'pop_alpha_mu' = initial4,
+             'pop_alpha_sd' = max(1.1 * prior_list[11], 0.00000001)),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'xi' = initial2, 'omega' = 0.9 * prior_list[2], 'alpha' = initial3))
+             'pop_xi_mu' = initial2, 'pop_xi_sd' = 0.9 * prior_list[10],
+             'pop_omega_mu' = 0.9 * prior_list[2],
+             'pop_omega_sd' = 0.9 * prior_list[8],
+             'pop_alpha_mu' = initial3),
+             'pop_alpha_sd' = 0.9 * prior_list[12])
     } else if (distribution == 'Gamma'){
       if (prior_list[3] <= 0){
-        initial2 = 0.000001
+        initial2 = 0.000000001
       } else if (prior_list[3] > 0){
         initial2 = 1.1 * prior_list[3]
       }
       if (prior_list[1] <= 0){
-        initial1 = 0.000001
+        initial1 = 0.000000001
       } else if (prior_list[1] > 0){
         initial1 = 1.1 * prior_list[1]
+      }
+      if (prior_list[5] <= 0){
+        initial3 = 0.000000001
+      } else if (prior_list[5] > 0){
+        initial3 = 1.1 * prior_list[5]
+      }
+      if (prior_list[7] <= 0){
+        initial4 = 0.000000001
+      } else if (prior_list[7] > 0){
+        initial4 = 1.1 * prior_list[7]
       }
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                  '/Manual_emissionGroup_gamma_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
-                   'rate_em', 'shape_em')
+                   'pop_rate_mu', 'pop_shape_mu', 'pop_rate_sd', 'pop_shape_sd',
+                   'group_rate', 'group_shape', 'group')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
-             'rate_em' = mean(c(prior_list[1], prior_list[2])),
-             'shape_em' = mean(c(prior_list[3], prior_list[4]))),
+             'pop_rate_mu' = mean(c(prior_list[1], prior_list[2])),
+             'pop_shape_mu' = mean(c(prior_list[3], prior_list[4])),
+             'pop_rate_sd' = mean(c(prior_list[5], prior_list[6])),
+             'pop_shape_sd' = mean(c(prior_list[7], prior_list[8]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'rate_em' = initial1,
-             'shape_em' = initial2),
+             'pop_rate_mu' = initial1,
+             'pop_shape_mu' = initial2,
+             'pop_rate_sd' = initial3,
+             'pop_shape_sd' = initial4),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'rate_em' = 0.9 * prior_list[2],
-             'shape_em' = 0.9 * prior_list[4]))
+             'pop_rate_mu' = 0.9 * prior_list[2],
+             'pop_shape_mu' = 0.9 * prior_list[4],
+             'pop_rate_sd' = 0.9 * prior_list[6],
+             'pop_shape_sd' = 0.9 * prior_list[8]))
     } else if (distribution == 'Beta'){
       if (min(data$emissions) < 0){
         stop('Cannot use beta distribution with emissions less than 0')
@@ -288,40 +328,79 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
         initial2 = 0.9 * prior_list[1]
       } else if (prior_list[1] > 0){
         initial2 = 1.1 * prior_list[1]
-        if (initial1 < (-1)){
-          initial1 = -0.99999
+        if (initial2 < (-1)){
+          initial2 = -0.99999
         }
       }
       if (prior_list[4] < 0){
         initial3 = 1.1 * prior_list[4]
       } else if (prior_list[4] > 0){
         initial3 = 0.9 * prior_list[4]
-        if (initial1 < (-1)){
-          initial1 = -0.99999
+        if (initial3 < (-1)){
+          initial3 = -0.99999
         }
       }
       if (prior_list[3] < 0){
         initial4 = 0.9 * prior_list[3]
       } else if (prior_list[3] > 0){
         initial4 = 1.1 * prior_list[3]
-        if (initial1 < (-1)){
-          initial1 = -0.99999
+        if (initial4 < (-1)){
+          initial4 = -0.99999
+        }
+      }
+      if (prior_list[6] < 0){
+        initial5 = 1.1 * prior_list[6]
+      } else if (prior_list[6] > 0){
+        initial5 = 0.9 * prior_list[6]
+        if (initial5 < (-1)){
+          initial5 = -0.99999
+        }
+      }
+      if (prior_list[5] < 0){
+        initial6 = 0.9 * prior_list[5]
+      } else if (prior_list[5] > 0){
+        initial6 = 1.1 * prior_list[5]
+        if (initial6 < (-1)){
+          initial6 = -0.99999
+        }
+      }
+      if (prior_list[8] < 0){
+        initial7 = 1.1 * prior_list[8]
+      } else if (prior_list[8] > 0){
+        initial7 = 0.9 * prior_list[8]
+        if (initial7 < (-1)){
+          initial7 = -0.99999
+        }
+      }
+      if (prior_list[7] < 0){
+        initial8 = 0.9 * prior_list[7]
+      } else if (prior_list[7] > 0){
+        initial8 = 1.1 * prior_list[7]
+        if (initial8 < (-1)){
+          initial8 = -0.99999
         }
       }
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                  '/Manual_emissionGroup_beta_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
-                   'alpha_em', 'beta_em')
+                   'pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
+                   'group_alpha', 'group_beta', 'group')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
-             'beta_em' = mean(c(prior_list[3], prior_list[4])),
-             'alpha_em' = mean(c(prior_list[1], prior_list[2]))),
+             'pop_beta_mu' = mean(c(prior_list[3], prior_list[4])),
+             'pop_alpha_mu' = mean(c(prior_list[1], prior_list[2])),
+             'pop_beta_sd' = mean(c(prior_list[7], prior_list[8])),
+             'pop_alpha_sd' = mean(c(prior_list[5], prior_list[6]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'beta_em' = initial3,
-             'alpha_em' = initial1),
+             'pop_beta_mu' = initial3,
+             'pop_alpha_mu' = initial1,
+             'pop_beta_sd' = initial7,
+             'pop_alpha_sd' = initial5),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'beta_em' = initial4,
-             'alpha_em' = initial2))
+             'pop_beta_mu' = initial4,
+             'pop_alpha_mu' = initial2,
+             'pop_beta_sd' = initial8,
+             'pop_alpha_sd' = initial6))
     }
     if (random){
       data_inits = list(

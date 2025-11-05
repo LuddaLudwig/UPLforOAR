@@ -26,9 +26,12 @@ from range of emissions data. if \code{TRUE} priors should be specified manually
 \item{prior_list}{Optional list of \code{\link[stats:Uniform]{stats::dunif()}} upper and lower bounds for prior
 distributions. For \code{'Normal'} and \code{'Lognormal'} they are ordered
 \code{c(pop_sd_mu_low, pop_sd_mu_high, pop_mu_mu_low, pop_mu_mu_high, pop_sd_sd_low, pop_sd_sd_high, pop_mu_sd_low, pop_mu_sd_high)}.
-For \code{'Skewed'} they are ordered \code{c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)}.
-For \code{'Gamma'} they are ordered \code{c(rate_low, rate_high, shape_low, shape_high)}. For
-\code{'Beta'} they are ordered \code{c(alpha_low, alpha_high, beta_low, beta_high)}.}
+For \code{'Skewed'} they are ordered
+\code{c(pop_omega_mu_low, pop_omega_mu_high, pop_xi_mu_low, pop_xi_mu_high, pop_alpha_mu_low, pop_alpha_mu_high, pop_omega_sd_low, pop_omega_sd_high,  pop_xi_sd_low, pop_xi_sd_high, pop_alpha_sd_low, pop_alpha_sd_high)}.
+For \code{'Gamma'} they are ordered
+\code{c(pop_rate_mu_low, pop_rate_mu_high, pop_shape_mu_low, pop_shape_mu_high, pop_rate_sd_low, pop_rate_sd_high, pop_shape_sd_low, pop_shape_sd_high)}.
+For \code{'Beta'} they are ordered
+\code{c(pop_alpha_mu_low, pop_alpha_mu_high, pop_beta_mu_low, pop_beta_mu_high, pop_alpha_sd_low, pop_alpha_sd_high, pop_beta_sd_low, pop_beta_sd_high)}.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
 and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
