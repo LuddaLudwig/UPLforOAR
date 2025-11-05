@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/Convergence-and-Priors.html">Convergence and Priors</a></li>
     <li><a class="dropdown-item" href="../articles/Density.html">Density</a></li>
     <li><a class="dropdown-item" href="../articles/Distributions.html">Distributions</a></li>
+    <li><a class="dropdown-item" href="../articles/Methods-Comparison.html">Methods Comparison</a></li>
   </ul>
 </li>
       </ul>
@@ -72,7 +73,6 @@
 
     
     
-<pre><code><span><span class="co">#&gt; Error in library(EnvStats): there is no package called 'EnvStats'</span></span></code></pre>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -292,8 +292,8 @@ The method of moments can be used for approximations when sample
 skewness is not too large, which is useful for determining initial
 values for MCMC chains for these parameters, but not as a solution for
 parameterization. Since there is no analytical solution, the approach in
-<code><a href="../reference/Skewed_UPL.html">Skewed_UPL()</a></code> uses iterative shifting of the t-score until
-the desired significance is achieved.</p>
+<code><a href="../reference/Skewed_UPL.html">Skewed_UPL()</a></code> uses iterative shifting of the
+<em>t</em>-statistic until the desired significance is achieved.</p>
 <p>The Skew-normal distribution is not included in JAGS, but it is in R
 via the <code>sn</code> package. However, any distribution can be coded
 manually in JAGS by using the ‘zero poisson’ <a href="https://www.multibugs.org/documentation/latest/Tricks.html#GenericDistribution" class="external-link">method</a>.
@@ -357,7 +357,7 @@ unsupported long-tail will be unaffected by this setting.</p>
 <p>Let’s look at an example using HCl emissions from Lime processing.
 First we will load the data and use the Excel workbook methods to pick a
 distribution and calculate the UPL.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Example_data1.csv"</span><span class="op">)</span></span>
 <span><span class="va">distr_choice</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
 <span><span class="va">UPL_excel</span> <span class="op">=</span> <span class="fu"><a href="../reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span></code></pre></div>
@@ -365,7 +365,7 @@ distribution and calculate the UPL.</p>
 of 2.57 (Lb/ton of stone fed Lime). Next we will plot the density of the
 emission observations along with the corresponding Lognormal probability
 density distribution to see how it looks.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_den_df</span>, size<span class="op">=</span><span class="fl">0.75</span>,</span>
 <span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span>, color <span class="op">=</span> <span class="st">'a'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -422,7 +422,7 @@ truncate the upper limit of emission probabilities, called
 <code>maxY</code> to <code>2*max(data$emissions)</code> and
 <code>25*max(data$emissions)</code> to see how the UPL estimate
 changes.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
@@ -543,7 +543,7 @@ and stochasticity in the tail of the distribution.</p>
 <p>Let’s investigate the sensitivity of different UPL significance
 levels to <code>maxY</code>. Ideally we will find a level that is
 insensitive to <code>maxY</code> and converges well.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
@@ -753,7 +753,7 @@ since the data are so heavily skewed. We also won’t look at the Beta
 distribution since it has an upper limit of 1, and while the emissions
 observations are all less than that in our set of top performing
 sources, theoretically there could emissions higher than 1.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -761,7 +761,7 @@ sources, theoretically there could emissions higher than 1.</p>
 Fitted likelihood distributions for Lime HCl emissions.
 </p>
 </div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">fit_table</span></span></code></pre></div>
 <table class="table">
 <caption>Comparing goodness of fit results for other
@@ -801,7 +801,7 @@ distributions</caption>
 Furthermore, the Gamma distribution converges well. It still has a bit
 of a tail so we might want to repeat our experiments with increasingly
 larger values of <code>maxY</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>

@@ -7,7 +7,8 @@ articles:
   Convergence-and-Priors: Convergence-and-Priors.html
   Density: Density.html
   Distributions: Distributions.html
-last_built: 2025-11-04T17:26Z
+  Methods-Comparison: Methods-Comparison.html
+last_built: 2025-11-05T14:07Z
 urls:
   reference: https://luddaludwig.github.io/UPLforOAR/reference
   article: https://luddaludwig.github.io/UPLforOAR/articles
