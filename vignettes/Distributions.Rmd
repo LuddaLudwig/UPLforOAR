@@ -33,7 +33,6 @@ library(ggplot2)
 library(forcats)
 library(UPLforOAR)
 library(matrixStats)
-library(EnvStats)
 library(np)
 library(sfsmisc)
 library(parallel)
@@ -198,7 +197,7 @@ $\xi$, and $\omega$. The method of moments can be used for approximations when
 sample skewness is not too large, which is useful for determining initial values 
 for MCMC chains for these parameters, but not as a solution for parameterization. 
 Since there is no analytical solution, the approach in `Skewed_UPL()` uses 
-iterative shifting of the t-score until the desired significance is achieved.
+iterative shifting of the *t*-statistic until the desired significance is achieved.
 
 The Skew-normal distribution is not included in JAGS, but it is in R via the `sn` 
 package. However, any distribution can be coded manually in JAGS by using the 

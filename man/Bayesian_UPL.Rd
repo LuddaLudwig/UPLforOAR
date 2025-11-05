@@ -12,7 +12,9 @@ Bayesian_UPL(
   significance = 0.99,
   xvals = NULL,
   maxY = NULL,
+  minY = 0,
   convergence_report = FALSE,
+  random = FALSE,
   manual_prior = FALSE,
   prior_list = NULL
 )
@@ -35,14 +37,21 @@ density. Default is \code{NULL}, in which case \code{x_hat} is a 1024 length seq
 between \code{0} and \code{3 * max(data$emissions)}.}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
-distributions and set upper ranges on prior distributions, not specified
+distributions and set upper ranges on prior distributions, if not specified
 manually. Default is \code{NULL}, in which case is is calculated as \code{3 * max(data$emissions)}.}
+
+\item{minY}{The minimum emission value possible, used to truncate likelihood
+distributions. Default is 0.}
 
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document
 Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
 working directory. Note that this is an Rmarkdown document that requires
 either LaTex or MikTek installed in order to render the PDF.}
+
+\item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
+and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
+will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you

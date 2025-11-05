@@ -4,8 +4,8 @@
 #' distribution and prior. The priors are uninformative and
 #' set based on emissions data, unless specified manually via
 #' [setup_likelihood()]. The likelihood distributions are truncated to
-#' `(0, maxY)`, where `maxY` can be specified or used with the default
-#' `maxY = 3 * max(data$emissions)` in [run_likelihood()].
+#' `(minY, maxY)`, where `minY` and `maxY` can be specified or used with the
+#' default `minY = 0` and `maxY = 3 * max(data$emissions)` in [run_likelihood()].
 #' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`,
 #' or `'Beta'`.
 #' @param write_wd Default is `NULL`, in which case the JAGS scripts are written
@@ -36,14 +36,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dnorm(emission_mean, tau_em)T(0, maxY)
+            emission_xi[i] ~ dnorm(emission_mean, tau_em)T(minY, maxY)
             pdf_obs[i] = dnorm(emission_xi[i], emission_mean, tau_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dnorm(emission_mean, tau_em)T(0, maxY)
+            emission_hat[k] ~ dnorm(emission_mean, tau_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dnorm(x_hat[h], emission_mean, tau_em)
@@ -62,14 +62,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)){
-            emission_xi[i] ~ dlnorm(u_ln, tau_ln)T(0, maxY)
+            emission_xi[i] ~ dlnorm(u_ln, tau_ln)T(minY, maxY)
             pdf_obs[i] = dlnorm(emission_xi[i], u_ln, tau_ln)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dlnorm(u_ln, tau_ln)T(0, maxY)
+            emission_hat[k] ~ dlnorm(u_ln, tau_ln)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dlnorm(x_hat[h], u_ln, tau_ln)
@@ -107,14 +107,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dgamma(shape_em, rate_em)T(0, maxY)
+            emission_xi[i] ~ dgamma(shape_em, rate_em)T(minY, maxY)
             pdf_obs[i] = dgamma(emission_xi[i], shape_em, rate_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dgamma(shape_em, rate_em)T(0, maxY)
+            emission_hat[k] ~ dgamma(shape_em, rate_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dgamma(x_hat[h], shape_em, rate_em)
@@ -132,7 +132,7 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dbeta(alpha_em, beta_em)T(0, maxY)
+            emission_xi[i] ~ dbeta(alpha_em, beta_em)T(minY, maxY)
             pdf_obs[i] = dbeta(emission_xi[i], alpha_em, beta_em)
           }
 
@@ -140,7 +140,7 @@ write_likelihood = function(distribution,
       emission_mean = alpha_em / (alpha_em + beta_em)
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dbeta(alpha_em, beta_em)T(0, maxY)
+            emission_hat[k] ~ dbeta(alpha_em, beta_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dbeta(x_hat[h], alpha_em, beta_em)
@@ -159,14 +159,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dnorm(emission_mean, tau_em)T(0, maxY)
+            emission_xi[i] ~ dnorm(emission_mean, tau_em)T(minY, maxY)
             pdf_obs[i] = dnorm(emission_xi[i], emission_mean, tau_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dnorm(emission_mean, tau_em)T(0, maxY)
+            emission_hat[k] ~ dnorm(emission_mean, tau_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dnorm(x_hat[h], emission_mean, tau_em)
@@ -183,14 +183,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dlnorm(u_ln, tau_ln)T(0, maxY)
+            emission_xi[i] ~ dlnorm(u_ln, tau_ln)T(minY, maxY)
             pdf_obs[i] = dlnorm(emission_xi[i], u_ln, tau_ln)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dlnorm(u_ln, tau_ln)T(0, maxY)
+            emission_hat[k] ~ dlnorm(u_ln, tau_ln)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dlnorm(x_hat[h], u_ln, tau_ln)
@@ -228,14 +228,14 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dgamma(shape_em, rate_em)T(0, maxY)
+            emission_xi[i] ~ dgamma(shape_em, rate_em)T(minY, maxY)
             pdf_obs[i] = dgamma(emission_xi[i], shape_em, rate_em)
           }
 
       # derived quantities
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dgamma(shape_em, rate_em)T(0, maxY)
+            emission_hat[k] ~ dgamma(shape_em, rate_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dgamma(x_hat[h], shape_em, rate_em)
@@ -252,7 +252,7 @@ write_likelihood = function(distribution,
 
       #likelihood
           for (i in 1:length(emission_xi)) {
-            emission_xi[i] ~ dbeta(alpha_em, beta_em)T(0, maxY)
+            emission_xi[i] ~ dbeta(alpha_em, beta_em)T(minY, maxY)
             pdf_obs[i] = dbeta(emission_xi[i], alpha_em, beta_em)
           }
 
@@ -260,7 +260,7 @@ write_likelihood = function(distribution,
       emission_mean = alpha_em / (alpha_em + beta_em)
       # predict new emission tests
           for (k in 1:n_draws){
-            emission_hat[k] ~ dbeta(alpha_em, beta_em)T(0, maxY)
+            emission_hat[k] ~ dbeta(alpha_em, beta_em)T(minY, maxY)
           }
           for (h in 1:n_x_hat){
             pdf_hat[h] = dbeta(x_hat[h], alpha_em, beta_em)

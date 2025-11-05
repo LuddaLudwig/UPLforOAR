@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--03-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--04-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -70,7 +70,7 @@ If you have any questions please reach out to <Ludwig.Ludda@epa.gov>
 
 ## Example emissions data
 
-This is example uses Hg emissions data from the recent [EPA
+This example uses Hg emissions data from the recent [EPA
 rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132)
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units.
 This data set contains a lot of test report information, but only

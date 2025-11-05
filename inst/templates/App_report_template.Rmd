@@ -306,6 +306,7 @@ obs_density
 
 \newpage
 ## Appendix D: System and package versions
+
 ```{r versions, results = TRUE, echo = FALSE}
 sessionInfo()
 ```

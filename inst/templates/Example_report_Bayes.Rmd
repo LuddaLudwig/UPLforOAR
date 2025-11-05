@@ -628,9 +628,9 @@ dat_UPL %>% knitr::kable(
 \newpage
 ## References
 
-Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmetic Mean of a Lognormal Random Variable. Technometrics, 46(2):239-248. 
-
 Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
+
+Hobbs, N. Thompson and Mevin B. Hooten. 2015. "Bayesian Models: A statistical Primer for Ecologists". Princeton University Press.
 
 \newpage
 ## Appendix A: Existing Source Data Tables

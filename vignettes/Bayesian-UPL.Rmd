@@ -34,7 +34,6 @@ library(ggplot2)
 library(forcats)
 library(UPLforOAR)
 library(matrixStats)
-library(EnvStats)
 library(np)
 library(sfsmisc)
 library(parallel)
@@ -55,13 +54,13 @@ and new sources.
 
 Current UPL methods are only applicable to emissions data that are distributed 
 Normally, Skewed, or Lognormally. The UPL for Normal data can be calculated 
-analytically with `Normal_UPL()` using the mean, standard deviation, and t-score. 
+analytically with `Normal_UPL()` using the mean, standard deviation, and *t*-statistic. 
 However, there are no equivalent analytical solutions for Skewed or Lognormal 
 UPL calculations. Instead, `Lognormal_UPL()` uses a Gram-Charlier Type A Series 
 expansion to approximate the density distribution and determine the arithmetic 
 mean of future samples, and `Skewed_UPL()` uses the skewness and kurtosis 
-moments to iteratively adjust the t-score until the desired significance is 
-achieved. All three UPL methods assume the distribution explicitly and without
+moments to iteratively adjust the *t*-statistic until the desired significance is 
+achieved. All three UPL methods assume the distribution explicitly and without 
 uncertainty, and assume the emissions are observed perfectly and independently.
 
 By operating in a Bayesian framework, we can use the same method of deriving the 
@@ -97,7 +96,7 @@ so there is no need to run `MACT_existing()` to select the data. The first step 
 load and plot the emissions data. 
 
 ```{r load, echo=TRUE}
-dat_emiss = read.csv('Example_data2')
+dat_emiss = read.csv('Example_data2.csv')
 emission_mean = mean(dat_emiss$emissions)
 dat_means = summarize(dat_emiss, means = mean(emissions), counts = n(),
                       .by = 'sources')
@@ -233,7 +232,7 @@ ggplot()+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   geom_rug(data = results$obs_pdf_dat,
-           sides = 'b', aes(x = emission),
+           sides = 'b', aes(x = emissions),
            alpha = 0.5, outside = TRUE, color = 'black')+
   coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
   scale_fill_manual(values = palette_line)+
@@ -456,7 +455,8 @@ are concatenated in a list of tables for easy comparison and plotting.
   specified priors, with the emissions data given to `setup_likelihood()`, and 
   return the completed JAGS simulation. The JAGS model will run 3 MCMC chains in 
   parallel, using an adapt and burn-in of 10,000 iterations each, and then keep 
-  the next 10,000 iterations. The other arguments include `maxY`, which sets the 
+  the next 10,000 iterations. The other arguments include `minY` which sets the 
+  lower limit of emissions and defaults to 0,  `maxY`, which sets the 
   upper limit of emissions that can occur when fitting the likelihood distribution. 
   This will have no or very minimal influence on how the likelihood distribution 
   is fit, and indeed in most cases this limit will be well past the full extent 
@@ -472,7 +472,7 @@ are concatenated in a list of tables for easy comparison and plotting.
   setting `future_runs`, which defaults to `3`. This has no effect on likelihood 
   fit, but does change the UPL calculation. Lastly, you can specify `xvals`, the 
   range of possible emission values at which you want the likelihood to return a 
-  probability. This is `seq(0, 3*max(data$emissions), length.out=1024)` by default. 
+  probability. This is `seq(minY, maxY, length.out=1024)` by default. 
 
 ### - **`converge_likelihood()`:**
 

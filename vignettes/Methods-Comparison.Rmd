@@ -1,0 +1,378 @@
+---
+title: "Methods Comparison"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Methods-Comparison}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+```
+
+```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(UPLforOAR)
+library(matrixStats)
+library(np)
+library(sfsmisc)
+library(parallel)
+library(rjags)
+library(runjags)
+library(sn)
+library(patchwork)
+library(grid)
+library(readr)
+```
+
+## Introduction
+
+There are two families of UPL methods included in the `UPLforOAR` package: those 
+replicating the functionality of the Excel workbook in the frequentist framework, 
+(`distribution_type()`, `Normal_UPL()`, `Lognormal_UPL()`, and `Skewed_UPL()`)
+and those using fitted likelihood distributions in the Bayesian framework 
+(`Bayesian_UPL()`). The UPL is the same MACT floor limit in principle, with 
+these two families of methods simply being different ways of arriving at the 
+same answer. However, there are differences worth explaining, pros and cons, and 
+circumstances where the frequentist and Bayesian methods will get different UPL 
+estimates.
+
+### Frequentist
+
+The UPL for Normal data is well-suited to the frequentist framework because it 
+can be calculated analytically using the mean, standard deviation, and 
+*t*-statistic of the emissions data. However, there are no equivalent analytical 
+solutions for Skewed or Lognormal UPL calculations. Instead, `Lognormal_UPL()` 
+uses a Gram-Charlier Type A Series expansion to approximate the density 
+distribution and determine the arithmetic mean of future samples, and 
+`Skewed_UPL()` uses the skewness and kurtosis moments to iteratively adjust the 
+*t*-statistic until the desired significance is achieved. All three UPL methods 
+assume the distribution explicitly and without uncertainty, and assume the 
+emissions are observed perfectly and independently. This means that the 
+parameters defining the probability distributions from which the UPL is derived 
+are fixed point estimates. For example, any uncertainty around the mean of 
+emissions in normally distributed data does *not* carry through to the UPL estimate. 
+Furthermore, if there are circumstances where we don't want to assume all test 
+runs are independent, we want to incorporate additional sources of variance, or 
+perhaps use individual test run uncertainty, then it will be very difficult if 
+not impossible to accommodate in these methods. However, these formulas are very 
+quick to use, have no stochastic components, and have been in use a long time. 
+
+### Bayesian
+
+In contrast, the UPL is estimated the same way regardless of the distribution in 
+the Bayesian approach. In this method we use Bayesian MCMC to fit a likelihood 
+distribution to the emissions data. The results of this include posterior 
+distributions, which contain a full probability around your result rather than a 
+fixed point estimate. That means the UPL for a normal distribution is based on 
+full posterior distribution of the mean and standard deviation, rather than 
+fixed point estimates of the mean and standard deviation. This gives us much 
+better quantification of uncertainty in how well the distribution represents the 
+data. While we could still use the ratios of skewness and kurtosis implemented 
+in `distribution_type()` to pick the distribution to use, we can do better in 
+the Bayesian framework. Those ratios only tell us if the data are approximately 
+Normal or Lognormal, and are assigned as Skewed for any other outcome. But can 
+use many more types of distributions with Bayes that we will want to pick between. 
+With the `Bayesian_UPL()` function, we have several ways to quantitatively and 
+qualitatively asses the best fit distribution. Rather than assuming the 
+distribution is correct implicitly, we can evaluate how well the parameters 
+converged, which is another method by which we can reject bad choices for 
+distributions.
+
+The biggest advantage in using a Bayesian approach are the expanded options for 
+distributions, such as Beta and Gamma which are already implemented in 
+`Bayesian_UPL()`. Most emissions data are bounded by zero, and in some 
+circumstances have upper bounds as well. Bounded data can be accommodated both 
+by picking an appropriate distribution and by explicitly truncating the 
+likelihood distribution. More nuanced situations, such as non-independent test 
+run data, additional sources of variance, or individual test run uncertainty, 
+can easily be incorporated into the Bayesian approach without changing the 
+underlying methods of calculating the UPL. The main draw back is in the 
+difficulty of implementing the method. The Markov Chain Monte Carlo (MCMC) Gibbs 
+sampler takes longer than a simple analytical solution. Since there are fewer 
+assumptions, there are more steps to ensure the likelihood model worked well and 
+is appropriate to the data. There is a stochastic component due to the way the 
+MCMC sampler searches for the parameter solutions. While this shouldn't have a 
+meaningful effect on the outcome and can be controlled to create reproducible 
+results, it is a factor influencing different outcomes that might be undesirable. 
+Lastly, the Bayesian method uses prior information. While in many situations 
+this can be a strength in the method, here we generally want completely 
+uninformative priors for UPL calculations. We very much want to avoid a
+situation where we think the prior is uninformative, but in fact it is not.
+
+For more details on `Bayesian_UPL()` see the example and details at [Bayesian UPL](https://luddaludwig.github.io/UPLforOAR/articles/Bayesian-UPL.html).
+
+## Example Comparison
+
+We are going to calculate the UPL from emissions data using multiple methods and 
+compare the outcomes. This example uses Hg emissions data from the recent [EPA rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132) 
+NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. First we 
+load and organize the data into `emissions` and `sources`, then select the top 
+performers to use for the UPL calculations. We are only going to be considering 
+the existing source data set since it does not include multiple runs per source.
+
+```{r load, echo=TRUE}
+dat_emiss = read_csv("./../man/data_example/MATS_Hg.csv", col_names = TRUE)
+dat_emiss$sources = paste0(dat_emiss$`Plant Name`, "_", dat_emiss$`Unit Number`,
+                         "_", dat_emiss$boiler_id)
+dat_emiss$emissions = dat_emiss$Mercury_min_lb_MMBtu
+dat_emiss = subset(dat_emiss, select = c(sources, emissions))
+
+dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist_avg = dat_exist %>% group_by(sources) %>% 
+  summarize(avg = mean(emissions), counts = n())
+dat_exist_avg = arrange(dat_exist_avg, avg)
+distribution_result_exist = distribution_type(dat_exist)
+```
+
+The skewness and kurtosis ratio tests tell us the distribution is 
+`r distribution_result_exist`. However, looking at plot of the data it is clear 
+that the Normal (in orange) doesn't actually fit well (Fig. 1). This is because 
+those ratio tests do not account for zero as a lower boundary. 
+
+```{r plot1, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line."}
+x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
+obs_dens_results = obs_density(dat_exist, xvals = x_hat)
+Obs_onPoint = obs_dens_results$Obs_onPoint
+obs_den_df = obs_dens_results$obs_den_df
+pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
+              sd = sd(dat_exist$emissions, na.rm = T))
+pred_dat = tibble(x_hat, pdf_n)
+ggplot()+
+  geom_line(data = obs_den_df, size=0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = obs_den_df, alpha = 0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = Obs_onPoint,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(aes(y = pdf_n, x = x_hat, color = 'b'),
+               data = pred_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = pred_dat)+
+  ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
+  ggtitle("Overall observed population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = (mean(dat_exist$emissions)),
+                 color = 'a'), size = 1, linetype = 1)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_exist,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00'),
+                     labels = c('Observations', 'Normal'))+
+  scale_fill_manual(values = c('black', '#FF7F00'),
+                    labels = c('Observations', 'Normal'))
+```
+We can recreate this plot without the zero boundary for the density. Notice that 
+the Normal distribution a lot looks more reasonable when we allow the left tails 
+to extend a bit below zero, and things become symmetric (Fig. 2). This is 
+unrealistic, since we know we cannot have negative emissions. However, we cannot 
+account for boundaries in the analytical normal UPL calculation. In the Bayesian 
+framework, we can explore both bounded and unbounded normal distributions.
+
+```{r plot2, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line."}
+x_hat = seq(-mean(dat_exist$emissions), 3 * max(dat_exist$emissions), length.out = 1024)
+pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
+              sd = sd(dat_exist$emissions, na.rm = T))
+pred_dat = tibble(x_hat, pdf_n)
+ggplot()+
+  geom_density(aes(emissions, color = 'a', fill = 'a'), 
+               data = dat_exist, alpha = 0.25, size = 0.75)+
+  geom_line(aes(y = pdf_n, x = x_hat, color = 'b'),
+               data = pred_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = pred_dat)+
+  ylab("Density")+xlab("Hg emissions (lb/MMBtu)")+
+  ggtitle("Overall observed population")+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = (mean(dat_exist$emissions)),
+                 color = 'a'), size = 1, linetype = 1)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), 
+                     limits = c(-5e-8, 8e-8))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = dat_exist,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00'),
+                     labels = c('Observations', 'Normal'))+
+  scale_fill_manual(values = c('black', '#FF7F00'),
+                    labels = c('Observations', 'Normal'))
+```
+Ignoring the best distribution for the moment, we are going to calculate the UPL 
+using the frequentist methods, the Bayesian methods unbounded, and the Bayesian 
+methods bounded, for the Normal, Lognormal, and Skewed distributions. We are 
+using 1 for the number of future runs, since the data here are already averages 
+of 3 runs.
+
+```{r UPL, echo = TRUE, results = FALSE}
+UPL_freq_N = Normal_UPL(data = dat_exist,
+                     future_runs = 1,
+                     significance = 0.99)
+UPL_freq_LN = Lognormal_UPL(data = dat_exist,
+                        future_runs = 1,
+                        significance = 0.99)
+UPL_freq_SN = Skewed_UPL(data = dat_exist,
+                        future_runs = 1,
+                        significance = 0.99)
+Bayes_0bounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
+                             data = dat_exist, minY = 0, 
+                             future_runs = 1, significance = 0.99)
+Bayes_unbounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
+                             data = dat_exist, 
+                             minY = -mean(dat_exist$emissions), 
+                             future_runs = 1, significance = 0.99)
+```
+While the zero bounded and unbounded Bayesian results look very similar, there 
+are slight differences caused by the zero hard boundary. As a result the bounded 
+distributions look slightly better, and are more realistic.
+```{r plot3, echo = FALSE, fig.dim = c(4,8), fig.align = "center", fig.cap = "Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed."}
+Bayes_0bounded$obs_pdf_dat$type = rep("Zero bounded", 
+                                          nrow(Bayes_0bounded$obs_pdf_dat))
+Bayes_0bounded$pred_pdf_dat$type = rep("Zero bounded", 
+                                          nrow(Bayes_0bounded$pred_pdf_dat))
+Bayes_0bounded$fit_table$type = rep("Zero bounded", 
+                                          nrow(Bayes_unbounded$fit_table))
+Bayes_unbounded$obs_pdf_dat$type = rep("Unbounded", 
+                                          nrow(Bayes_unbounded$obs_pdf_dat))
+Bayes_unbounded$pred_pdf_dat$type = rep("Unbounded", 
+                                          nrow(Bayes_unbounded$pred_pdf_dat))
+Bayes_unbounded$fit_table$type = rep("Unbounded", 
+                                          nrow(Bayes_unbounded$fit_table))
+combined_pdf = rbind(Bayes_0bounded$pred_pdf_dat, 
+                     Bayes_unbounded$pred_pdf_dat)
+combined_obs = rbind(Bayes_0bounded$obs_pdf_dat, 
+                     Bayes_unbounded$obs_pdf_dat)
+combined_fit = rbind(Bayes_0bounded$fit_table, 
+                     Bayes_unbounded$fit_table)
+
+palette_line = c("#377EB8", "#FF7F00", "#4DAF4A")
+ggplot()+
+  geom_line(data = combined_pdf,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = combined_pdf,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = combined_obs,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = combined_pdf,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_errorbar(data = combined_obs, width = 1e-9,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = combined_obs,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
+  ylab("Density")+ xlab("Hg emissions")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_rug(data = combined_obs,
+           sides = 'b', aes(x = emissions),
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap(~distr+type, scales = 'fixed', nrow = 3)+
+  theme(legend.position = 'none')+theme(panel.spacing.x = unit(5, "mm"))+
+  theme(axis.text.y = element_text(size = 10), 
+        axis.text.x = element_text(size = 10))+
+  theme(strip.text = element_text(color = 'black', size = 12))
+```
+All six of the Bayesian distributions converged. When it comes to the 
+goodness-of-fit metrics, the best distribution was Skewed for both Bayes bounded 
+and unbounded, with the zero bounded being the best overall. The Normal 
+distribution did have the most points within 95\% CI, but had the worst fit when 
+zero-bounded and did not integrate to 1. 
+
+``` {r table1, fig.align = "center", echo = FALSE}
+fit_metrics = subset(combined_fit, select = -c(UPL)) %>% group_by(type)
+fit_metrics = arrange(fit_metrics, SSE, .by_group = TRUE)
+knitr::kable(mutate(fit_metrics, across(c(2, 3), ~signif(., digits = 3))),
+             caption = "Goodness of fit results for Hg emissions",
+             col.names = c('Distribution', 'SSE', 'No. Obs. in 95% CI', 
+                           'integral', 'Type'))
+```
+
+But we aren't interested in finding the best distribution in this exercise (it is probably a Gamma distribution anyways), just comparing UPL methods. The Lognormal doesn't change between bounded and unbounded Bayesian methods. That's because it already is strictly positive. The frequentist Lognormal result is similar but not the same, but it uses an approximation that is not replicated in the Bayesian method that isn't unexpected. All Lognormal results are similarly larger than all others, which is typical for the long-tailed distribution. The Skewed changes a little with the zero boundary, since it isn't strictly positive but is asymmetric. It changes a similar amount with the frequentist method, which again is an approximation, and not actually the 99$^{th}$ percentile of a skew-normal distribution. The unbounded Bayesian and frequentist UPL's for the Normal distribution are very similar to one another. Since the frequentist method has an exact analytical solution, we should be aiming to arrive at the same values with the Bayesian method, excepting the stochastic component and added accountability to uncertainty. The zero-bounded Bayesian Normal UPL is quite different, since we are essentially fitting a partial Normal.
+
+```{r table2, echo = FALSE}
+fit_metrics = subset(combined_fit, select = c(distr, type, UPL)) 
+fit_metrics = rbind(fit_metrics, c("Normal", "Frequentist", UPL_freq_N))
+fit_metrics = rbind(fit_metrics, c("Lognormal", "Frequentist", UPL_freq_LN))
+fit_metrics = rbind(fit_metrics, c("Skewed", "Frequentist", UPL_freq_SN))
+fit_metrics$UPL = as.numeric(fit_metrics$UPL)
+fit_metrics = fit_metrics %>% group_by(distr)
+fit_metrics = arrange(fit_metrics, type, .by_group = TRUE)
+knitr::kable(fit_metrics,
+             caption = "UPL results for fitting 3 distributions with 
+             frequentist, unbounded Bayesian, and zero bounded Bayesian.",
+             col.names = c("Distribution", "Method", "UPL"), digits = 10)
+```
+
+The next logical question is how much does the UPL change if we use different random seeds when starting the MCMC iterations? We can explore this be re-running distribution fits with `random = TRUE`. These results will *not* be exactly reproducible. We will fit three sets of unbounded Normal distributions with identical inputs, but allowing the random seeds to change. 
+
+```{r random, echo = TRUE, results = FALSE}
+Bayes_random1 = Bayesian_UPL(distr_list = c("Normal"),
+                             data = dat_exist, random = TRUE, 
+                             minY = -mean(dat_exist$emissions), 
+                             future_runs = 1, significance = 0.99)
+Bayes_random2 = Bayesian_UPL(distr_list = c("Normal"),
+                             data = dat_exist, random = TRUE, 
+                             minY = -mean(dat_exist$emissions), 
+                             future_runs = 1, significance = 0.99)
+Bayes_random3 = Bayesian_UPL(distr_list = c("Normal"),
+                             data = dat_exist, random = TRUE, 
+                             minY = -mean(dat_exist$emissions), 
+                             future_runs = 1, significance = 0.99)
+```
+```{r random_UPL, echo = FALSE}
+Bayes_fixed = subset(Bayes_unbounded$fit_table, 
+                     Bayes_unbounded$fit_table$distr == "Normal")
+Bayes_fixed$type = rep("Fixed", nrow(Bayes_fixed))
+Bayes_random1$fit_table$type = rep("Random 1", nrow(Bayes_random1$fit_table))
+Bayes_random2$fit_table$type = rep("Random 2", nrow(Bayes_random2$fit_table))
+Bayes_random3$fit_table$type = rep("Random 3", nrow(Bayes_random3$fit_table))
+combined_fit = rbind(Bayes_fixed, 
+                     Bayes_random1$fit_table,
+                     Bayes_random2$fit_table,
+                     Bayes_random3$fit_table)
+fit_metrics = subset(combined_fit, select = c(type, UPL)) 
+```
+
+Looking at the UPL results, we do see some variance in the UPL, but it is much 
+smaller than the difference between approximation methods and distributions. The 
+standard deviation in these 4 repeated UPL results is `r signif(sd(fit_metrics$UPL),3)` 
+which is similar to the difference between the Bayesian and frequentist Normal UPL's. 
+It is worth pointing out that the more uncertainty in the fit, the more the 
+stochastic component might affect the UPL results. This likely only a concern 
+when the model struggles to converge because it is a poor fit or because there 
+are not enough data.
+```{r table3, echo = FALSE}
+knitr::kable(fit_metrics,
+             caption = "UPL results for fitting unbounded Normal distributions with 
+             fixed and then 3 different random seeds.",
+             col.names = c("Type", "UPL"), digits = 11)
+```

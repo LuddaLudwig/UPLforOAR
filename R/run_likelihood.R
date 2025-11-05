@@ -12,12 +12,15 @@
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param xvals Ordered sequence of emissions at which to predict probability
 #' density. Default is `NULL`, in which case `x_hat` is a 1024 length
-#' sequence between `0` and `3 * max(data$emissions)`.
+#' sequence between `0` and `3 * max(data$emissions)` or `minY` and `maxY` if
+#' they are specified.
 #' @param maxY The maximum emission value possible, used to truncate likelihood
 #' distributions and set upper ranges on prior distributions.
 #' Default is `NULL`, in which case it is calculated as `3 * maximum(data$emissions)`.
+#' @param minY The minimum emission value possible, used to truncate likelihood
+#' distributions. Default is 0.
 #' @export
-run_likelihood = function(model_input, xvals = NULL,
+run_likelihood = function(model_input, xvals = NULL, minY = 0,
                           maxY = NULL, future_runs = 3){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
@@ -44,14 +47,14 @@ run_likelihood = function(model_input, xvals = NULL,
   n.update = 10000
   n.iter = 10000
   if (is.null(xvals)){
-    xvals = seq(0, maxY, length.out = 1024)
+    xvals = seq(minY, maxY, length.out = 1024)
   }
   if ((model_input$distribution == 'Beta') & (max(xvals) > 1)){
     stop('Cannot use beta distribution with max xvals greater than 1')
   }
   if (!manual_prior){
     data_list = list(emission_xi = data$emissions,
-                     n_draws = future_runs,
+                     n_draws = future_runs, minY = minY,
                      sdOfLogY = stats::sd(log(data$emissions), na.rm = T),
                      maxY = maxY, sdY = stats::sd(data$emissions),
                      meanOfLogY = mean(log(data$emissions), na.rm = T),
@@ -59,7 +62,7 @@ run_likelihood = function(model_input, xvals = NULL,
   } else if (manual_prior){
     if (length(model_input$prior_list) == 4){
       data_list = list(emission_xi = data$emissions,
-                       n_draws = future_runs,
+                       n_draws = future_runs, minY = minY,
                        sdOfLogY = stats::sd(log(data$emissions), na.rm = T),
                        maxY = maxY, sdY = stats::sd(data$emissions),
                        meanOfLogY = mean(log(data$emissions), na.rm = T),
@@ -70,7 +73,7 @@ run_likelihood = function(model_input, xvals = NULL,
                        up2 = model_input$prior_list[4])
     } else if (length(model_input$prior_list) == 6){
       data_list = list(emission_xi = data$emissions,
-                       n_draws = future_runs,
+                       n_draws = future_runs, minY = minY,
                        sdOfLogY = stats::sd(log(data$emissions), na.rm = T),
                        maxY = maxY, sdY = stats::sd(data$emissions),
                        meanOfLogY = mean(log(data$emissions), na.rm = T),
@@ -94,7 +97,7 @@ run_likelihood = function(model_input, xvals = NULL,
                                            adapt = n.adapt, sample = n.iter,
                                            inits = model_input$dat_inits))
   output = list(run_results = rjm, distribution = model_input$distribution,
-                manual_prior = manual_prior,
+                manual_prior = manual_prior, maxY = maxY, minY = minY,
                 data = model_input$data, xvals = xvals, future_runs = future_runs)
   parallel::stopCluster(cl3)
   return(output)

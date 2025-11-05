@@ -4,7 +4,13 @@
 \alias{run_likelihood}
 \title{Runs JAGS model scripts for chosen likelihood}
 \usage{
-run_likelihood(model_input, xvals = NULL, maxY = NULL, future_runs = 3)
+run_likelihood(
+  model_input,
+  xvals = NULL,
+  minY = 0,
+  maxY = NULL,
+  future_runs = 3
+)
 }
 \arguments{
 \item{model_input}{Results from \code{\link[=setup_likelihood]{setup_likelihood()}}, including JAGS model
@@ -13,7 +19,11 @@ monitor.}
 
 \item{xvals}{Ordered sequence of emissions at which to predict probability
 density. Default is \code{NULL}, in which case \code{x_hat} is a 1024 length
-sequence between \code{0} and \code{3 * max(data$emissions)}.}
+sequence between \code{0} and \code{3 * max(data$emissions)} or \code{minY} and \code{maxY} if
+they are specified.}
+
+\item{minY}{The minimum emission value possible, used to truncate likelihood
+distributions. Default is 0.}
 
 \item{maxY}{The maximum emission value possible, used to truncate likelihood
 distributions and set upper ranges on prior distributions.
