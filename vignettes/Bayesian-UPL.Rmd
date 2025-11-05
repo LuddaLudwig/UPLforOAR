@@ -72,6 +72,8 @@ to support the UPL calculation.
 
 The `Bayesian_UPL()` uses a Monte Carlo Markov Chain (MCMC) sampler (a Gibbs 
 sampler implemented via JAGS) to fit probability distributions to emissions data. 
+You will need to install [JAGS](https://sourceforge.net/projects/mcmc-jags/) 
+before being able to use `Bayesian_UPL()` or `run_likelihood()`.
 For example, when using a Normal distribution, this entails estimating the mean 
 and standard deviation which define the distribution. Unlike the `Normal_UPL()` 
 analytical solution, we don't merely get a point-estimate of the mean and 

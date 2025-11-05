@@ -37,7 +37,9 @@ This article is meant as a quick guide to using the shiny app and templates
 accompanying the `UPLforOAR` package. Rmarkdown files for the shiny app and all 
 templates are located in the `inst` folder in the package directory. It will be easier to access these by downloading directly from [github](https://github.com/LuddaLudwig/UPLforOAR/tree/main/inst). 
 Make sure to keep the shiny app UPL_app.Rmd in the same location as the [templates folder](https://github.com/LuddaLudwig/UPLforOAR/tree/main/inst/templates) 
-with its contents included, since the shiny app and report templates use relative paths to find each other.
+with its contents included, since the shiny app and report templates use 
+relative paths to find each other. You will need LaTex or MikTex (for Windows) 
+installed in order to generate PDF documents from the app report or other example templates.
 
 A couple quick notes about the shiny app and `UPLforOAR` package in general:
 
