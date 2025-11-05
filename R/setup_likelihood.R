@@ -148,7 +148,7 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'emission_sd' = 0.9 * prior_list[2]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'emission_mean' = 1.1 * prior_list[3],
-             'emission_sd' = max(1.1 * prior_list[1], 0.000001)))
+             'emission_sd' = max(1.1 * prior_list[1], 0.000000001)))
     } else if (distribution == "Lognormal"){
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                '/Manual_emission_lnorm_JAGS.R'))
@@ -171,7 +171,7 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
              'u_ln' = initial1, 'sd_ln' = 0.9 * prior_list[2]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'u_ln' = initial2, 'sd_ln' = max(1.1 * prior_list[1], 0.000001)))
+             'u_ln' = initial2, 'sd_ln' = max(1.1 * prior_list[1], 0.00000001)))
     } else if (distribution == "Skewed"){
       if (prior_list[4] < 0){
         initial1 = 1.1 * prior_list[4]
@@ -202,18 +202,18 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'omega' = mean(c(prior_list[1], prior_list[2])),
              'alpha' = mean(c(prior_list[5], prior_list[6]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'xi' = initial1, 'omega' = max(1.1 * prior_list[1], 0.00001),
+             'xi' = initial1, 'omega' = max(1.1 * prior_list[1], 0.00000001),
              'alpha' = initial4),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'xi' = initial2, 'omega' = 0.9 * prior_list[2], 'alpha' = initial3))
     } else if (distribution == 'Gamma'){
       if (prior_list[3] <= 0){
-        initial2 = 0.000001
+        initial2 = 0.000000001
       } else if (prior_list[3] > 0){
         initial2 = 1.1 * prior_list[3]
       }
       if (prior_list[1] <= 0){
-        initial1 = 0.000001
+        initial1 = 0.000000001
       } else if (prior_list[1] > 0){
         initial1 = 1.1 * prior_list[1]
       }
