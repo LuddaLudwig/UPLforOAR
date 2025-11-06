@@ -4,9 +4,9 @@
 
           # pop_mu_mu is in log-space, so it can be negative
           pop_mu_mu ~ dnorm(meanOfLogY, 0.001 / sdOfLogY^2)
-          pop_mu_sd ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
-          pop_sd_mu ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
-          pop_sd_sd ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
+          pop_mu_sd ~ dunif(0, 1000 * sdOfLogY) # must be positive
+          pop_sd_mu ~ dunif(0, 1000 * sdOfLogY) # must be positive
+          pop_sd_sd ~ dunif(0, 1000 * sdOfLogY) # must be positive
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, )# must be positive

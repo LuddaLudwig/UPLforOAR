@@ -2,9 +2,9 @@
       model {
       # priors
           pop_mu_mu ~ dunif(0,maxY)
-          pop_mu_sd ~ dunif(0, 1000 * sdY)T(0, ) # must be positive
-          pop_sd_mu ~ dunif(0, maxY)T(0, ) # must be positive
-          pop_sd_sd ~ dunif(0, 1000 * sdY)T(0, ) # must be positive
+          pop_mu_sd ~ dunif(0, 1000 * sdY) # must be positive
+          pop_sd_mu ~ dunif(0, maxY) # must be positive
+          pop_sd_sd ~ dunif(0, 1000 * sdY) # must be positive
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, ) # must be positive

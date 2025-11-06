@@ -2,10 +2,10 @@
       model {
       # priors
 
-          pop_rate_mu ~ dunif(low1, up1)T(0, ) #must be positive
-          pop_shape_mu ~ dunif(low2, up2)T(0, ) #must be positive
-          pop_rate_sd ~ dunif(low3, up3)T(0, ) #must be positive
-          pop_shape_sd ~ dunif(low4, up4)T(0, ) #must be positive
+          pop_rate_mu ~ dunif(low1, up1) #must be positive
+          pop_shape_mu ~ dunif(low2, up2) #must be positive
+          pop_rate_sd ~ dunif(low3, up3) #must be positive
+          pop_shape_sd ~ dunif(low4, up4) #must be positive
 
           for (j in 1:n_groups){
                 group_rate[j] ~ dnorm(pop_rate_mu, 1 / (pop_rate_sd^2))T(0, )

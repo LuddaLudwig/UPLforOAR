@@ -7,13 +7,13 @@
         model {
       # priors
 
-          pop_omega_mu ~ dunif(low1, up1)T(0, ) #must be positive
+          pop_omega_mu ~ dunif(low1, up1) #must be positive
           pop_xi_mu ~ dunif(low2, up2)
           pop_alpha_mu ~ dunif(low3, up3)
 
-          pop_omega_sd ~ dunif(low4, up4)T(0, ) # must be positive
-          pop_xi_sd ~ dunif(low5, up5)T(0, )
-          pop_alpha_sd ~ dunif(low6, up6)T(0, )
+          pop_omega_sd ~ dunif(low4, up4) # must be positive
+          pop_xi_sd ~ dunif(low5, up5)
+          pop_alpha_sd ~ dunif(low6, up6)
 
           for (j in 1:n_groups){
             alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))

@@ -2,10 +2,10 @@
       model {
       # priors
 
-          pop_rate_mu ~ dunif(0, maxY / (sdY^2))T(0, ) #must be positive
-          pop_shape_mu ~ dunif(0, (maxY^2) / (sdY^2))T(0, ) #must be positive
-          pop_rate_sd ~ dunif(0, maxY / (sdY^2))T(0, ) #must be positive
-          pop_shape_sd ~ dunif(0, (maxY^2) / (sdY^2))T(0, ) #must be positive
+          pop_rate_mu ~ dunif(0, maxY / (sdY^2)) #must be positive
+          pop_shape_mu ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive
+          pop_rate_sd ~ dunif(0, maxY / (sdY^2)) #must be positive
+          pop_shape_sd ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive
 
           for (j in 1:n_groups){
                 group_rate[j] ~ dnorm(pop_rate_mu, 1 / (pop_rate_sd^2))T(0, )

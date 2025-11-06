@@ -4,9 +4,9 @@
 
           # pop_mu_mu is in log-space, so it can be negative
           pop_mu_mu ~ dunif(low2, up2)
-          pop_mu_sd ~ dunif(low4, up4)T(0, )
-          pop_sd_mu ~ dunif(low1, up1)T(0, )
-          pop_sd_sd ~ dunif(low3, up3)T(0, )
+          pop_mu_sd ~ dunif(low4, up4)
+          pop_sd_mu ~ dunif(low1, up1)
+          pop_sd_sd ~ dunif(low3, up3)
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, )

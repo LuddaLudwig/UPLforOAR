@@ -11,9 +11,9 @@
           pop_xi_mu ~ dnorm(0, 1 / (100 * maxY))
           pop_alpha_mu ~ dunif(-100, 100)
 
-          pop_omega_sd ~ dunif(0, 100 * maxY)T(0, ) # must be positive
-          pop_xi_sd ~ dunif(0, (100 * maxY))T(0, ) # must be positive
-          pop_alpha_sd ~ dunif(0, 100)T(0, ) # must be positive
+          pop_omega_sd ~ dunif(0, 100 * maxY) # must be positive
+          pop_xi_sd ~ dunif(0, (100 * maxY)) # must be positive
+          pop_alpha_sd ~ dunif(0, 100) # must be positive
 
           for (j in 1:n_groups){
             alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))

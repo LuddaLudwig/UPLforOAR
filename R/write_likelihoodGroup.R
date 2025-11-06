@@ -34,9 +34,9 @@ write_likelihoodGroup = function(distribution,
       model {
       # priors
           pop_mu_mu ~ dunif(0,maxY)
-          pop_mu_sd ~ dunif(0, 1000 * sdY)T(0, ) # must be positive
-          pop_sd_mu ~ dunif(0, maxY)T(0, ) # must be positive
-          pop_sd_sd ~ dunif(0, 1000 * sdY)T(0, ) # must be positive
+          pop_mu_sd ~ dunif(0, 1000 * sdY) # must be positive
+          pop_sd_mu ~ dunif(0, maxY) # must be positive
+          pop_sd_sd ~ dunif(0, 1000 * sdY) # must be positive
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, ) # must be positive
@@ -70,9 +70,9 @@ write_likelihoodGroup = function(distribution,
 
           # pop_mu_mu is in log-space, so it can be negative
           pop_mu_mu ~ dnorm(meanOfLogY, 0.001 / sdOfLogY^2)
-          pop_mu_sd ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
-          pop_sd_mu ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
-          pop_sd_sd ~ dunif(0, 1000 * sdOfLogY)T(0, ) # must be positive
+          pop_mu_sd ~ dunif(0, 1000 * sdOfLogY) # must be positive
+          pop_sd_mu ~ dunif(0, 1000 * sdOfLogY) # must be positive
+          pop_sd_sd ~ dunif(0, 1000 * sdOfLogY) # must be positive
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, )# must be positive
@@ -112,9 +112,9 @@ write_likelihoodGroup = function(distribution,
           pop_xi_mu ~ dnorm(0, 1 / (100 * maxY))
           pop_alpha_mu ~ dunif(-100, 100)
 
-          pop_omega_sd ~ dunif(0, 100 * maxY)T(0, ) # must be positive
-          pop_xi_sd ~ dunif(0, (100 * maxY))T(0, ) # must be positive
-          pop_alpha_sd ~ dunif(0, 100)T(0, ) # must be positive
+          pop_omega_sd ~ dunif(0, 100 * maxY) # must be positive
+          pop_xi_sd ~ dunif(0, (100 * maxY)) # must be positive
+          pop_alpha_sd ~ dunif(0, 100) # must be positive
 
           for (j in 1:n_groups){
             alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))
@@ -138,10 +138,10 @@ write_likelihoodGroup = function(distribution,
       model {
       # priors
 
-          pop_rate_mu ~ dunif(0, maxY / (sdY^2))T(0, ) #must be positive
-          pop_shape_mu ~ dunif(0, (maxY^2) / (sdY^2))T(0, ) #must be positive
-          pop_rate_sd ~ dunif(0, maxY / (sdY^2))T(0, ) #must be positive
-          pop_shape_sd ~ dunif(0, (maxY^2) / (sdY^2))T(0, ) #must be positive
+          pop_rate_mu ~ dunif(0, maxY / (sdY^2)) #must be positive
+          pop_shape_mu ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive
+          pop_rate_sd ~ dunif(0, maxY / (sdY^2)) #must be positive
+          pop_shape_sd ~ dunif(0, (maxY^2) / (sdY^2)) #must be positive
 
           for (j in 1:n_groups){
                 group_rate[j] ~ dnorm(pop_rate_mu, 1 / (pop_rate_sd^2))T(0, )
@@ -177,9 +177,9 @@ write_likelihoodGroup = function(distribution,
           pop_beta_mu ~ dunif(-1, (0.25 - 1 + 0.25 / sdY^2 + 0.25^3 / sdY^2 - 2 *
             0.25^2 / sdY^2) * 1.25)
           pop_alpha_sd ~ dunif(0, (0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)
-            * 1.25)T(0, )
+            * 1.25)
           pop_beta_sd ~ dunif(0, (0.25 - 1 + 0.25 / sdY^2 + 0.25^3 / sdY^2 - 2 *
-            0.25^2 / sdY^2) * 1.25)T(0, )
+            0.25^2 / sdY^2) * 1.25)
 
           for (j in 1:n_groups){
                     group_alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))T(-1, )
@@ -213,9 +213,9 @@ write_likelihoodGroup = function(distribution,
       model {
       # priors
           pop_mu_mu ~ dunif(low2, up2)
-          pop_mu_sd ~ dunif(low4, up4)T(0, )
-          pop_sd_mu ~ dunif(low1, up1)T(0, )
-          pop_sd_sd ~ dunif(low3, up3)T(0, )
+          pop_mu_sd ~ dunif(low4, up4)
+          pop_sd_mu ~ dunif(low1, up1)
+          pop_sd_sd ~ dunif(low3, up3)
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, )
@@ -249,9 +249,9 @@ write_likelihoodGroup = function(distribution,
 
           # pop_mu_mu is in log-space, so it can be negative
           pop_mu_mu ~ dunif(low2, up2)
-          pop_mu_sd ~ dunif(low4, up4)T(0, )
-          pop_sd_mu ~ dunif(low1, up1)T(0, )
-          pop_sd_sd ~ dunif(low3, up3)T(0, )
+          pop_mu_sd ~ dunif(low4, up4)
+          pop_sd_mu ~ dunif(low1, up1)
+          pop_sd_sd ~ dunif(low3, up3)
 
           for (j in 1:n_groups){
                     group_sd[j] ~ dnorm(pop_sd_mu, 1 / (pop_sd_sd^2))T(0, )
@@ -287,13 +287,13 @@ write_likelihoodGroup = function(distribution,
         model {
       # priors
 
-          pop_omega_mu ~ dunif(low1, up1)T(0, ) #must be positive
+          pop_omega_mu ~ dunif(low1, up1) #must be positive
           pop_xi_mu ~ dunif(low2, up2)
           pop_alpha_mu ~ dunif(low3, up3)
 
-          pop_omega_sd ~ dunif(low4, up4)T(0, ) # must be positive
-          pop_xi_sd ~ dunif(low5, up5)T(0, )
-          pop_alpha_sd ~ dunif(low6, up6)T(0, )
+          pop_omega_sd ~ dunif(low4, up4) # must be positive
+          pop_xi_sd ~ dunif(low5, up5)
+          pop_alpha_sd ~ dunif(low6, up6)
 
           for (j in 1:n_groups){
             alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))
@@ -317,10 +317,10 @@ write_likelihoodGroup = function(distribution,
       model {
       # priors
 
-          pop_rate_mu ~ dunif(low1, up1)T(0, ) #must be positive
-          pop_shape_mu ~ dunif(low2, up2)T(0, ) #must be positive
-          pop_rate_sd ~ dunif(low3, up3)T(0, ) #must be positive
-          pop_shape_sd ~ dunif(low4, up4)T(0, ) #must be positive
+          pop_rate_mu ~ dunif(low1, up1) #must be positive
+          pop_shape_mu ~ dunif(low2, up2) #must be positive
+          pop_rate_sd ~ dunif(low3, up3) #must be positive
+          pop_shape_sd ~ dunif(low4, up4) #must be positive
 
           for (j in 1:n_groups){
                 group_rate[j] ~ dnorm(pop_rate_mu, 1 / (pop_rate_sd^2))T(0, )
@@ -354,8 +354,8 @@ write_likelihoodGroup = function(distribution,
           # note that both can be pos or neg, but the minimum is always -1
           pop_alpha_mu ~ dunif(low1, up1)
           pop_beta_mu ~ dunif(low2, up2)
-          pop_alpha_sd ~ dunif(low3, up3)T(0, )
-          pop_beta_sd ~ dunif(low4, up4)T(0, )
+          pop_alpha_sd ~ dunif(low3, up3)
+          pop_beta_sd ~ dunif(low4, up4)
 
           for (j in 1:n_groups){
                     group_alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))T(-1, )

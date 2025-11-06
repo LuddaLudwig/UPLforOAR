@@ -6,9 +6,9 @@
           pop_beta_mu ~ dunif(-1, (0.25 - 1 + 0.25 / sdY^2 + 0.25^3 / sdY^2 - 2 *
             0.25^2 / sdY^2) * 1.25)
           pop_alpha_sd ~ dunif(0, (0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)
-            * 1.25)T(0, )
+            * 1.25)
           pop_beta_sd ~ dunif(0, (0.25 - 1 + 0.25 / sdY^2 + 0.25^3 / sdY^2 - 2 *
-            0.25^2 / sdY^2) * 1.25)T(0, )
+            0.25^2 / sdY^2) * 1.25)
 
           for (j in 1:n_groups){
                     group_alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))T(-1, )

@@ -4,8 +4,8 @@
           # note that both can be pos or neg, but the minimum is always -1
           pop_alpha_mu ~ dunif(low1, up1)
           pop_beta_mu ~ dunif(low2, up2)
-          pop_alpha_sd ~ dunif(low3, up3)T(0, )
-          pop_beta_sd ~ dunif(low4, up4)T(0, )
+          pop_alpha_sd ~ dunif(low3, up3)
+          pop_beta_sd ~ dunif(low4, up4)
 
           for (j in 1:n_groups){
                     group_alpha[j] ~ dnorm(pop_alpha_mu, 1 / (pop_alpha_sd^2))T(-1, )
