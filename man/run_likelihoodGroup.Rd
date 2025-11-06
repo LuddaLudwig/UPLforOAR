@@ -41,7 +41,7 @@ levels, please convert to factor first
 }
 \value{
 \code{runjags} object named \code{run_results}, likelihood distribution from the
-JAGS model script, as well as \code{data} and \code{xval}s used as inputs.
+JAGS model script, as well as \code{data}, \code{group} and \code{xval}s used as inputs.
 }
 \description{
 Runs the JAGS model from \code{\link[=setup_likelihood]{setup_likelihood()}} model_code output using \code{\link[runjags:run.jags]{runjags::run.jags()}}.
