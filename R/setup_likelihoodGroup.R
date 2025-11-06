@@ -50,7 +50,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_normal_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group')
+                   'group_sd','group_mu','group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_mu_mu' = mu, 'pop_sd_mu' = sigma,
@@ -69,7 +69,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_lnorm_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group')
+                   'group_sd','group_mu','group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_mu_mu' = ln_mu, 'pop_sd_mu' = ln_sig,
@@ -115,7 +115,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_gamma_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_rate_mu', 'pop_shape_mu', 'pop_rate_sd', 'pop_shape_sd',
-                   'group_rate', 'group_shape', 'group')
+                   'group_rate', 'group_shape', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_rate_mu' = rate, 'pop_shape_mu' = shape,
@@ -139,7 +139,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_beta_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
-                   'group_alpha', 'group_beta', 'group')
+                   'group_alpha', 'group_beta', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_beta_mu' = beta, 'pop_alpha_mu' = alpha,
@@ -175,7 +175,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/Manual_emissionGroup_normal_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group')
+                   'group_sd','group_mu','group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_mu_mu' = mean(c(prior_list[3], prior_list[4])),
@@ -197,7 +197,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/Manual_emissionGroup_lnorm_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group')
+                   'group_sd','group_mu','group_emiss')
       if (any(c(prior_list[1:2], prior_list[5:8]) <= 0)){
         stop('Prior limits must be positive')
       }
@@ -284,7 +284,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/Manual_emissionGroup_gamma_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_rate_mu', 'pop_shape_mu', 'pop_rate_sd', 'pop_shape_sd',
-                   'group_rate', 'group_shape', 'group')
+                   'group_rate', 'group_shape', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_rate_mu' = mean(c(prior_list[1], prior_list[2])),
@@ -347,7 +347,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/Manual_emissionGroup_beta_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
-                   'group_alpha', 'group_beta', 'group')
+                   'group_alpha', 'group_beta', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_beta_mu' = mean(c(prior_list[3], prior_list[4])),
