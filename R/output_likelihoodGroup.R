@@ -111,6 +111,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
                           names_to = 'groups',values_to = 'emissions')
   names(pdf_obs_quant) = c('low', 'med', 'up')
   pdf_obs_quant$emissions = data$emissions
+  pdf_obs_quant[[group]] = data[[group]]
   density_hat$distr = rep(distribution, nrow(density_hat))
   pdf_obs_quant$distr = rep(distribution, nrow(pdf_obs_quant))
   pred_mean = mean(hat_quant$run1, na.rm = TRUE)
