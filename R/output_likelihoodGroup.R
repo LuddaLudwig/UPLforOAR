@@ -94,7 +94,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
     pdf_hat = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pdf_hat")))
     group_quant=tibble::as_tibble(as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model_run$run_results, vars="group"))))
+      coda::as.mcmc.list(jags_model_run$run_results, vars="group_emiss"))))
   }
   names(hat_quant) = sprintf('run%s', seq(1:future_runs))
   run3_mean = rowMeans(hat_quant)
