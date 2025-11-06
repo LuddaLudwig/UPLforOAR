@@ -52,7 +52,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            group[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
+            group_emiss[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -87,7 +87,7 @@ write_likelihoodGroup = function(distribution,
           }
       # derived quantities
           for (g in 1:n_groups){
-            group[g] ~ dlnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
+            group_emiss[g] ~ dlnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -157,7 +157,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            source[g] ~ dgamma(group_shape[g], group_rate[g])T(minY, maxY)
+            group_emiss[g] ~ dgamma(group_shape[g], group_rate[g])T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -195,7 +195,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            source[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
+            group_emiss[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -231,7 +231,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            group[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
+            group_emiss[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -266,7 +266,7 @@ write_likelihoodGroup = function(distribution,
           }
       # derived quantities
           for (g in 1:n_groups){
-            group[g] ~ dlnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
+            group_emiss[g] ~ dlnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -336,7 +336,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            source[g] ~ dgamma(group_shape[g], group_rate[g])T(minY, maxY)
+            group_emiss[g] ~ dgamma(group_shape[g], group_rate[g])T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
@@ -371,7 +371,7 @@ write_likelihoodGroup = function(distribution,
 
       # derived quantities
           for (g in 1:n_groups){
-            source[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
+            group_emiss[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){

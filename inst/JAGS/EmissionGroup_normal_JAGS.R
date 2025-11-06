@@ -20,7 +20,7 @@
 
       # derived quantities
           for (g in 1:n_groups){
-            group[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
+            group_emiss[g] ~ dnorm(group_mu[g], 1 / (group_sd[g]^2))T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){

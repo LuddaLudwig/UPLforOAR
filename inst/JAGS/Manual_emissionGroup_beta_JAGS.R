@@ -21,7 +21,7 @@
 
       # derived quantities
           for (g in 1:n_groups){
-            source[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
+            group_emiss[g] ~ dbeta(group_alpha[g], group_beta[g])T(minY, maxY)
           }
       # predict new emission tests
           for (k in 1:n_draws){
