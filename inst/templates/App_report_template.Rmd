@@ -104,7 +104,7 @@ dat_topmeans_exist %>% head(5) %>% knitr::kable(
 ```
 
 ```{r UPL_table, echo = FALSE, eval = nsps_EVAL, appendix = TRUE}
-UPL_tabl %>% knitr::kable(
+UPL_table %>% knitr::kable(
 caption = paste0("UPL results from frequentist excel workbook equivalent 
                  using a significance of ", 
                  (params$significance * 100), '% and ', 
