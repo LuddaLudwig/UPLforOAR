@@ -31,7 +31,7 @@ test_that("setup_likelihoodGroup() calls JAGS model scripts with initial values 
   expect_equal(JAGS_model_stuff$par_list,
                c('emission_hat', 'pdf_obs', 'pdf_hat', 'pop_rate_mu',
                  'pop_shape_mu', 'pop_rate_sd', 'pop_shape_sd', 'group_rate',
-                 'group_shape', 'group'))
+                 'group_shape', 'group_emiss'))
   expect_equal(JAGS_model_stuff$dat_inits, list(
     list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
          'pop_rate_mu' = rate, 'pop_shape_mu' = shape,

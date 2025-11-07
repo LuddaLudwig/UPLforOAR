@@ -40,11 +40,11 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   expect_equal(runmod$future_runs,runcount)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+
                                               runcount+nrow(top5)+N_parameter+
-                                              N_groups*2))
+                                              N_groups*3))
   expect_equal(run_results$burnin,20000)
   expect_equal(run_results$monitor,c('emission_hat', 'pdf_obs', 'pdf_hat',
                                      'pop_rate_mu', 'pop_shape_mu', 'pop_rate_sd',
                                      'pop_shape_sd',
-                                     'group_rate', 'group_shape', 'group'))
+                                     'group_rate', 'group_shape', 'group_emiss'))
 })
 

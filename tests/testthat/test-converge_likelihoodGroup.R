@@ -33,9 +33,9 @@ test_that("converge_likelihoodGroup() runs gelman diagnostics for convergence te
                                                    1.001, 1.000))
   expect_equal(conv_results$params,c('pop_rate_mu', 'pop_shape_mu',
                                      'pop_rate_sd', 'pop_shape_sd',
-               'group_rate1', 'group_rate2', 'group_rate3', 'group_rate4',
-               'group_rate5', 'group_shape1', 'group_shape2', 'group_shape3',
-               'group_shape4', 'group_shape5'))
+               'group_rate[1]', 'group_rate[2]', 'group_rate[3]', 'group_rate[4]',
+               'group_rate[5]', 'group_shape[1]', 'group_shape[2]', 'group_shape[3]',
+               'group_shape[4]', 'group_shape[5]'))
   expect_equal(conv_results$convYN,c('Yes','Yes','Yes','Yes','Yes','Yes','Yes',
                                      'Yes','Yes','Yes','Yes','Yes','Yes','Yes'))
 
