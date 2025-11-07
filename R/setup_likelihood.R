@@ -139,6 +139,9 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
                                                '/Manual_emission_normal_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'emission_mean', 'emission_sd')
+      if (any(prior_list[1:2] <= 0)){
+        stop('Prior limits must be positive')
+      }
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'emission_mean' = mean(c(prior_list[3], prior_list[4])),
@@ -148,12 +151,15 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'emission_sd' = 0.9 * prior_list[2]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'emission_mean' = 1.1 * prior_list[3],
-             'emission_sd' = max(1.1 * prior_list[1], 0.000001)))
+             'emission_sd' = 1.1 * prior_list[1]))
     } else if (distribution == "Lognormal"){
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                '/Manual_emission_lnorm_JAGS.R'))
       par_list=c('emission_hat', 'pdf_obs', 'pdf_hat',
                  'u_ln', 'sd_ln')
+      if (any(prior_list[1:2] <= 0)){
+        stop('Prior limits must be positive')
+      }
       if (prior_list[4] < 0){
         initial1 = 1.1 * prior_list[4]
       } else if (prior_list[4] > 0){
@@ -171,8 +177,11 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
              'u_ln' = initial1, 'sd_ln' = 0.9 * prior_list[2]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
-             'u_ln' = initial2, 'sd_ln' = max(1.1 * prior_list[1], 0.000001)))
+             'u_ln' = initial2, 'sd_ln' = 1.1 * prior_list[1]))
     } else if (distribution == "Skewed"){
+      if (any(prior_list[1:2] <= 0)){
+        stop('Prior limits must be positive')
+      }
       if (prior_list[4] < 0){
         initial1 = 1.1 * prior_list[4]
       } else if (prior_list[4] > 0){
@@ -202,20 +211,13 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'omega' = mean(c(prior_list[1], prior_list[2])),
              'alpha' = mean(c(prior_list[5], prior_list[6]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'xi' = initial1, 'omega' = max(1.1 * prior_list[1], 0.00001),
+             'xi' = initial1, 'omega' = 1.1 * prior_list[1],
              'alpha' = initial4),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'xi' = initial2, 'omega' = 0.9 * prior_list[2], 'alpha' = initial3))
     } else if (distribution == 'Gamma'){
-      if (prior_list[3] <= 0){
-        initial2 = 0.000001
-      } else if (prior_list[3] > 0){
-        initial2 = 1.1 * prior_list[3]
-      }
-      if (prior_list[1] <= 0){
-        initial1 = 0.000001
-      } else if (prior_list[1] > 0){
-        initial1 = 1.1 * prior_list[1]
+      if (any(prior_list <= 0)){
+        stop('Prior limits must be positive')
       }
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
                                                '/Manual_emission_gamma_JAGS.R'))
@@ -226,8 +228,8 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'rate_em' = mean(c(prior_list[1], prior_list[2])),
              'shape_em' = mean(c(prior_list[3], prior_list[4]))),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12,
-             'rate_em' = initial1,
-             'shape_em' = initial2),
+             'rate_em' = 1.1 * prior_list[1],
+             'shape_em' = 1.1 * prior_list[3]),
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'rate_em' = 0.9 * prior_list[2],
              'shape_em' = 0.9 * prior_list[4]))

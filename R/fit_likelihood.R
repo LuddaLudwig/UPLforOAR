@@ -1,13 +1,14 @@
 #' fit_likelihood() calculates the error between fitted density and
 #' observed density distributions
 #' @description
-#' This function takes the list of results from [output_likelihood()] and compares
+#' This function takes the list of results from [output_likelihood()] or
+#' [output_likelihoodGroup()] and compares
 #' the predicted density distributions to observed density distributions,
 #' estimating the `SSE` (sum of squared errors) and counts the number of emissions
 #' observations with densities that have overlapping 95 percent CI with predicted
 #' densities. Additional parameters can be supplied for use in [obs_density()]
 #' @export
-#' @param likelihood_result Output list from [output_likelihood()]
+#' @param likelihood_result Output list from [output_likelihood()] or [output_likelihoodGroup()]
 #' @param up Optional upper limit to bound density, default is `Inf`.
 #' @param low Optional lower limit to bound density, default is `0`.
 #' @param bw Optional bandwidth, default is `NULL` in which case
@@ -25,7 +26,8 @@
 #' merged data sets of observed and predicted densities at each emission value
 #' and each `xval`, named `obs_pdf_dat` and `xhat_pdf_dat` respectively. The
 #' `obs_pdf_dat` also includes the upper and lower 95 percent and median around predicted
-#' pdf. The UPL estimate from [output_likelihood()] is included as well.
+#' pdf. The UPL estimate from [output_likelihood()] or [output_likelihoodGroup()]
+#' is included as well.
 fit_likelihood = function(likelihood_result, up = Inf, low = 0,
                           kernel = 'gamma', bw = NULL){
   obs_pdf_temp = likelihood_result$obs_pdf

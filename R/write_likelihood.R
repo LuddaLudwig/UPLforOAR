@@ -85,7 +85,7 @@ write_likelihood = function(distribution,
         }
         model {
       # priors
-          omega ~ dunif(0, maxY) #must be positive
+          omega ~ dunif(0, 100 * maxY) #must be positive
           xi ~ dnorm(0, 1 / (100 * maxY))
           alpha ~ dunif(-100, 100) # this is a very wide range
 

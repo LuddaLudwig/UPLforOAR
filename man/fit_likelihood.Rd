@@ -14,7 +14,7 @@ fit_likelihood(
 )
 }
 \arguments{
-\item{likelihood_result}{Output list from \code{\link[=output_likelihood]{output_likelihood()}}}
+\item{likelihood_result}{Output list from \code{\link[=output_likelihood]{output_likelihood()}} or \code{\link[=output_likelihoodGroup]{output_likelihoodGroup()}}}
 
 \item{up}{Optional upper limit to bound density, default is \code{Inf}.}
 
@@ -38,10 +38,12 @@ Also includes the integration of predicted pdf, distribution type used, and
 merged data sets of observed and predicted densities at each emission value
 and each \code{xval}, named \code{obs_pdf_dat} and \code{xhat_pdf_dat} respectively. The
 \code{obs_pdf_dat} also includes the upper and lower 95 percent and median around predicted
-pdf. The UPL estimate from \code{\link[=output_likelihood]{output_likelihood()}} is included as well.
+pdf. The UPL estimate from \code{\link[=output_likelihood]{output_likelihood()}} or \code{\link[=output_likelihoodGroup]{output_likelihoodGroup()}}
+is included as well.
 }
 \description{
-This function takes the list of results from \code{\link[=output_likelihood]{output_likelihood()}} and compares
+This function takes the list of results from \code{\link[=output_likelihood]{output_likelihood()}} or
+\code{\link[=output_likelihoodGroup]{output_likelihoodGroup()}} and compares
 the predicted density distributions to observed density distributions,
 estimating the \code{SSE} (sum of squared errors) and counts the number of emissions
 observations with densities that have overlapping 95 percent CI with predicted

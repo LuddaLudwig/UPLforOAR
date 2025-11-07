@@ -119,7 +119,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   }
   if (convergence_report == TRUE){
     current_wd = getwd()
-    template_path = system.file("templates", package = "EPA.MACT.floor.UPL",
+    template_path = system.file("templates", package = "UPLforOAR",
                                 mustWork = TRUE)
     rmarkdown::render(paste0(template_path, '/convergence_template.Rmd'),
                       output_dir = current_wd,

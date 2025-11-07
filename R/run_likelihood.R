@@ -42,7 +42,6 @@ run_likelihood = function(model_input, xvals = NULL, minY = 0,
   if ((model_input$distribution == 'Beta' ) & (maxY > 1)){
     stop('Cannot use beta distribution with max emissions greater than 1')
   }
-  verify_install$JAGS.available
   n.adapt = 10000
   n.update = 10000
   n.iter = 10000

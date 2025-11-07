@@ -143,6 +143,7 @@ dat_exist_avg = dat_exist %>% group_by(sources) %>%
 dat_exist_avg = arrange(dat_exist_avg, avg)
 distribution_result_exist = distribution_type(dat_exist)
 ```
+### Zero-Boundary
 
 The skewness and kurtosis ratio tests tell us the distribution is 
 `r distribution_result_exist`. However, looking at plot of the data it is clear 
@@ -220,6 +221,8 @@ ggplot()+
   scale_fill_manual(values = c('black', '#FF7F00'),
                     labels = c('Observations', 'Normal'))
 ```
+### Comparing UPL Methods
+
 Ignoring the best distribution for the moment, we are going to calculate the UPL 
 using the frequentist methods, the Bayesian methods unbounded, and the Bayesian 
 methods bounded, for the Normal, Lognormal, and Skewed distributions. We are 
@@ -244,10 +247,12 @@ Bayes_unbounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
                              minY = -mean(dat_exist$emissions), 
                              future_runs = 1, significance = 0.99)
 ```
+### Bayesian Results
+
 While the zero bounded and unbounded Bayesian results look very similar, there 
 are slight differences caused by the zero hard boundary. As a result the bounded 
 distributions look slightly better, and are more realistic.
-```{r plot3, echo = FALSE, fig.dim = c(4,8), fig.align = "center", fig.cap = "Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed."}
+```{r plot3, echo = FALSE, out.width = "100%", fig.height = 7, fig.align = "center", fig.cap = "Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed."}
 Bayes_0bounded$obs_pdf_dat$type = rep("Zero bounded", 
                                           nrow(Bayes_0bounded$obs_pdf_dat))
 Bayes_0bounded$pred_pdf_dat$type = rep("Zero bounded", 
@@ -316,6 +321,8 @@ knitr::kable(mutate(fit_metrics, across(c(2, 3), ~signif(., digits = 3))),
                            'integral', 'Type'))
 ```
 
+### UPL Results
+
 But we aren't interested in finding the best distribution in this exercise (it is probably a Gamma distribution anyways), just comparing UPL methods. The Lognormal doesn't change between bounded and unbounded Bayesian methods. That's because it already is strictly positive. The frequentist Lognormal result is similar but not the same, but it uses an approximation that is not replicated in the Bayesian method that isn't unexpected. All Lognormal results are similarly larger than all others, which is typical for the long-tailed distribution. The Skewed changes a little with the zero boundary, since it isn't strictly positive but is asymmetric. It changes a similar amount with the frequentist method, which again is an approximation, and not actually the 99$^{th}$ percentile of a skew-normal distribution. The unbounded Bayesian and frequentist UPL's for the Normal distribution are very similar to one another. Since the frequentist method has an exact analytical solution, we should be aiming to arrive at the same values with the Bayesian method, excepting the stochastic component and added accountability to uncertainty. The zero-bounded Bayesian Normal UPL is quite different, since we are essentially fitting a partial Normal.
 
 ```{r table2, echo = FALSE}
@@ -331,6 +338,8 @@ knitr::kable(fit_metrics,
              frequentist, unbounded Bayesian, and zero bounded Bayesian.",
              col.names = c("Distribution", "Method", "UPL"), digits = 10)
 ```
+
+### Stochastic Effects
 
 The next logical question is how much does the UPL change if we use different random seeds when starting the MCMC iterations? We can explore this be re-running distribution fits with `random = TRUE`. These results will *not* be exactly reproducible. We will fit three sets of unbounded Normal distributions with identical inputs, but allowing the random seeds to change. 
 
@@ -370,9 +379,11 @@ It is worth pointing out that the more uncertainty in the fit, the more the
 stochastic component might affect the UPL results. This likely only a concern 
 when the model struggles to converge because it is a poor fit or because there 
 are not enough data.
-```{r table3, echo = FALSE}
+```{r table3, echo = FALSE, fig.align = "center"}
 knitr::kable(fit_metrics,
              caption = "UPL results for fitting unbounded Normal distributions with 
              fixed and then 3 different random seeds.",
-             col.names = c("Type", "UPL"), digits = 11)
+             col.names = c("Type", "UPL"), digits = 11, 
+             table.attr = "style='width:40%;'" ) %>% 
+  kable_classic(full_width = T, position = "center")
 ```
