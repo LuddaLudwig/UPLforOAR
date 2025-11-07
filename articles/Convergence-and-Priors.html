@@ -152,12 +152,12 @@ chains is off on a tangent and they are clearly not well-mixed or
 without trend. This is the kind of behavior that will result in the
 Gelman-Rubin diagnostic failing.
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure1-1.png" alt="Example of bad convergence in MCMC chains." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure1-1.png" class="r-plt" alt="Example of bad convergence in MCMC chains." width="100%"><p class="caption">
 Example of bad convergence in MCMC chains.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure1-2.png" alt="Example of bad convergence in MCMC chains." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure1-2.png" class="r-plt" alt="Example of bad convergence in MCMC chains." width="100%"><p class="caption">
 Example of bad convergence in MCMC chains.
 </p>
 </div>
@@ -187,12 +187,12 @@ is too flat. Note that there is a slight peak for the
 average of the 3 points, but there is not enough information to
 definitely say this is much more likely than any other value
 searched.<br><div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure2-1.png" alt="Example of bad convergence where posterior is too flat." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure2-1.png" class="r-plt" alt="Example of bad convergence where posterior is too flat." width="100%"><p class="caption">
 Example of bad convergence where posterior is too flat.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure2-2.png" alt="Example of bad convergence where posterior is too flat." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure2-2.png" class="r-plt" alt="Example of bad convergence where posterior is too flat." width="100%"><p class="caption">
 Example of bad convergence where posterior is too flat.
 </p>
 </div>
@@ -218,7 +218,7 @@ are clearly stacking up against the lower bound and trying to converge
 on a lower mean than we have allowed. This skew in the chains (left) and
 histogram (right) indicate improper prior distribution bounds.
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure3-1.png" alt="Example of bad convergence, where the prior limits are too restrictive." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure3-1.png" class="r-plt" alt="Example of bad convergence, where the prior limits are too restrictive." width="100%"><p class="caption">
 Example of bad convergence, where the prior limits are too restrictive.
 </p>
 </div>
@@ -275,7 +275,7 @@ Bayesian approach.</p>
 <span>                               prior_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0001</span>, <span class="fl">0.01</span>, <span class="fl">0.005</span>, <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">result_uninformed</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">small_dat</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure4-1.png" alt="Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well." width="384"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure4-1.png" class="r-plt" alt="Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well." width="384"><p class="caption">
 Example of two Normal distributions fit to the same 3 points of data,
 where one was more informative using slightly smaller bounds on prior
 distributions, and the other was completely uninformative and did not
@@ -291,13 +291,13 @@ be uninformative. We have restricted the parameter space with lower and
 upper bounds, but it is still a wide accommodation, and within that all
 parameter outcomes are equally likely before we consider the data.
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure5-1.png" alt="Improved convergence of parameters by providing slightly more restrictive bounds as priors." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure5-1.png" class="r-plt" alt="Improved convergence of parameters by providing slightly more restrictive bounds as priors." width="100%"><p class="caption">
 Improved convergence of parameters by providing slightly more
 restrictive bounds as priors.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure5-2.png" alt="Improved convergence of parameters by providing slightly more restrictive bounds as priors." width="100%"><p class="caption">
+<img src="Convergence-and-Priors_files/figure-html/figure5-2.png" class="r-plt" alt="Improved convergence of parameters by providing slightly more restrictive bounds as priors." width="100%"><p class="caption">
 Improved convergence of parameters by providing slightly more
 restrictive bounds as priors.
 </p>
@@ -330,7 +330,7 @@ needs to be very well justified.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   App-and-templates: App-and-templates.html
@@ -8,7 +8,7 @@ articles:
   Density: Density.html
   Distributions: Distributions.html
   Methods-Comparison: Methods-Comparison.html
-last_built: 2025-11-05T14:07Z
+last_built: 2025-11-07T19:29Z
 urls:
   reference: https://luddaludwig.github.io/UPLforOAR/reference
   article: https://luddaludwig.github.io/UPLforOAR/articles

@@ -188,12 +188,15 @@ multiple runs per source.</p>
 <span>  <span class="fu">summarize</span><span class="op">(</span>avg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span>, counts <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dat_exist_avg</span> <span class="op">=</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">dat_exist_avg</span>, <span class="va">avg</span><span class="op">)</span></span>
 <span><span class="va">distribution_result_exist</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span><span class="va">dat_exist</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="zero-boundary">Zero-Boundary<a class="anchor" aria-label="anchor" href="#zero-boundary"></a>
+</h3>
 <p>The skewness and kurtosis ratio tests tell us the distribution is
 Normal. However, looking at plot of the data it is clear that the Normal
 (in orange) doesn’t actually fit well (Fig. 1). This is because those
 ratio tests do not account for zero as a lower boundary.</p>
 <div class="figure" style="text-align: center">
-<img src="Methods-Comparison_files/figure-html/plot1-1.png" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line." width="480"><p class="caption">
+<img src="Methods-Comparison_files/figure-html/plot1-1.png" class="r-plt" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line." width="480"><p class="caption">
 Observation density of Hg for the overall population. The obseration
 data are indicated in black as points and a rug along the axis, with the
 observation density distribution as a black line. The fitted normal
@@ -210,7 +213,7 @@ negative emissions. However, we cannot account for boundaries in the
 analytical normal UPL calculation. In the Bayesian framework, we can
 explore both bounded and unbounded normal distributions.</p>
 <div class="figure" style="text-align: center">
-<img src="Methods-Comparison_files/figure-html/plot2-1.png" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line." width="480"><p class="caption">
+<img src="Methods-Comparison_files/figure-html/plot2-1.png" class="r-plt" alt="Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line." width="480"><p class="caption">
 Observation density of Hg for the overall population. The obseration
 data are indicated in black as points and a rug along the axis, with the
 observation density distribution as a black line. The fitted normal
@@ -219,6 +222,10 @@ without boundaries. The average of the Hg emissions is the vertical
 black line.
 </p>
 </div>
+</div>
+<div class="section level3">
+<h3 id="comparing-upl-methods">Comparing UPL Methods<a class="anchor" aria-label="anchor" href="#comparing-upl-methods"></a>
+</h3>
 <p>Ignoring the best distribution for the moment, we are going to
 calculate the UPL using the frequentist methods, the Bayesian methods
 unbounded, and the Bayesian methods bounded, for the Normal, Lognormal,
@@ -241,12 +248,16 @@ since the data here are already averages of 3 runs.</p>
 <span>                             data <span class="op">=</span> <span class="va">dat_exist</span>, </span>
 <span>                             minY <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat_exist</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>, </span>
 <span>                             future_runs <span class="op">=</span> <span class="fl">1</span>, significance <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="bayesian-results">Bayesian Results<a class="anchor" aria-label="anchor" href="#bayesian-results"></a>
+</h3>
 While the zero bounded and unbounded Bayesian results look very similar,
 there are slight differences caused by the zero hard boundary. As a
 result the bounded distributions look slightly better, and are more
 realistic.
 <div class="figure" style="text-align: center">
-<img src="Methods-Comparison_files/figure-html/plot3-1.png" alt="Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed." width="384"><p class="caption">
+<img src="Methods-Comparison_files/figure-html/plot3-1.png" class="r-plt" alt="Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed." width="100%"><p class="caption">
 Fitted likelihood distributions for zero bounded (right) and unbounded
 (left) Bayes distributions. The fitted distributions are colored blue
 for lognormal, orange for normal, and green for skewed.
@@ -276,9 +287,9 @@ worst fit when zero-bounded and did not integrate to 1.</p>
 </tr>
 <tr class="even">
 <td align="left">Skewed</td>
-<td align="right">2.58e+15</td>
+<td align="right">2.61e+15</td>
 <td align="right">18</td>
-<td align="right">0.9935676</td>
+<td align="right">0.9933224</td>
 <td align="left">Unbounded</td>
 </tr>
 <tr class="odd">
@@ -290,9 +301,9 @@ worst fit when zero-bounded and did not integrate to 1.</p>
 </tr>
 <tr class="even">
 <td align="left">Skewed</td>
-<td align="right">5.64e+14</td>
+<td align="right">5.73e+14</td>
 <td align="right">26</td>
-<td align="right">0.9935547</td>
+<td align="right">0.9933260</td>
 <td align="left">Zero bounded</td>
 </tr>
 <tr class="odd">
@@ -311,6 +322,10 @@ worst fit when zero-bounded and did not integrate to 1.</p>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section level3">
+<h3 id="upl-results">UPL Results<a class="anchor" aria-label="anchor" href="#upl-results"></a>
+</h3>
 <p>But we aren’t interested in finding the best distribution in this
 exercise (it is probably a Gamma distribution anyways), just comparing
 UPL methods. The Lognormal doesn’t change between bounded and unbounded
@@ -382,10 +397,14 @@ unbounded Bayesian, and zero bounded Bayesian.</caption>
 <tr class="odd">
 <td align="left">Skewed</td>
 <td align="left">Zero bounded</td>
-<td align="right">4.00e-08</td>
+<td align="right">4.02e-08</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section level3">
+<h3 id="stochastic-effects">Stochastic Effects<a class="anchor" aria-label="anchor" href="#stochastic-effects"></a>
+</h3>
 <p>The next logical question is how much does the UPL change if we use
 different random seeds when starting the MCMC iterations? We can explore
 this be re-running distribution fits with <code>random = TRUE</code>.
@@ -408,38 +427,14 @@ allowing the random seeds to change.</p>
 <p>Looking at the UPL results, we do see some variance in the UPL, but
 it is much smaller than the difference between approximation methods and
 distributions. The standard deviation in these 4 repeated UPL results is
-1.54^{-10} which is similar to the difference between the Bayesian and
+2.01^{-10} which is similar to the difference between the Bayesian and
 frequentist Normal UPL’s. It is worth pointing out that the more
 uncertainty in the fit, the more the stochastic component might affect
 the UPL results. This likely only a concern when the model struggles to
 converge because it is a poor fit or because there are not enough
 data.</p>
-<table class="table">
-<caption>UPL results for fitting unbounded Normal distributions with
-fixed and then 3 different random seeds.</caption>
-<thead><tr class="header">
-<th align="left">Type</th>
-<th align="right">UPL</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Fixed</td>
-<td align="right">4.938e-08</td>
-</tr>
-<tr class="even">
-<td align="left">Random 1</td>
-<td align="right">4.905e-08</td>
-</tr>
-<tr class="odd">
-<td align="left">Random 2</td>
-<td align="right">4.922e-08</td>
-</tr>
-<tr class="even">
-<td align="left">Random 3</td>
-<td align="right">4.908e-08</td>
-</tr>
-</tbody>
-</table>
+<pre><code><span><span class="co">#&gt; Error in kable_classic(., full_width = T, position = "center"): could not find function "kable_classic"</span></span></code></pre>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -452,7 +447,7 @@ fixed and then 3 different random seeds.</caption>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

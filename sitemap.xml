@@ -12,6 +12,7 @@
 <url><loc>https://luddaludwig.github.io/UPLforOAR/authors.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/contributing.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/index.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/BayesianGroups_UPL.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/Bayesian_UPL.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/DRE_trans.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/Lognormal_UPL.html</loc></url>
@@ -20,7 +21,9 @@
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/Normal_UPL.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/Skewed_UPL.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/converge_figs.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/converge_figsGroup.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/converge_likelihood.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/converge_likelihoodGroup.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/distribution_type.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/index.html</loc></url>
@@ -28,9 +31,13 @@
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/multi_source_theme.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/obs_density.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/output_likelihood.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/output_likelihoodGroup.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/pop_distr_theme.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/run_likelihood.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/run_likelihoodGroup.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/setup_likelihood.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/setup_likelihoodGroup.html</loc></url>
 <url><loc>https://luddaludwig.github.io/UPLforOAR/reference/write_likelihood.html</loc></url>
+<url><loc>https://luddaludwig.github.io/UPLforOAR/reference/write_likelihoodGroup.html</loc></url>
 </urlset>
 

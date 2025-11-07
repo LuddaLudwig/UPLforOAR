@@ -104,7 +104,9 @@ emissions data and better transparency and metrics of fit to support the
 UPL calculation.</p>
 <p>The <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> uses a Monte Carlo Markov Chain
 (MCMC) sampler (a Gibbs sampler implemented via JAGS) to fit probability
-distributions to emissions data. For example, when using a Normal
+distributions to emissions data. You will need to install <a href="https://sourceforge.net/projects/mcmc-jags/" class="external-link">JAGS</a> before being
+able to use <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code> or
+<code><a href="../reference/run_likelihood.html">run_likelihood()</a></code>. For example, when using a Normal
 distribution, this entails estimating the mean and standard deviation
 which define the distribution. Unlike the <code><a href="../reference/Normal_UPL.html">Normal_UPL()</a></code>
 analytical solution, we don’t merely get a point-estimate of the mean
@@ -197,7 +199,7 @@ below uses <code><a href="../reference/multi_source_theme.html">multi_source_the
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span><span class="fu">xlab</span><span class="op">(</span><span class="st">"IIS HCl emissions"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">'Top sources'</span>, color <span class="op">=</span> <span class="st">'Top sources'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure1-1.png" alt="Observation density of IIS HCl emissions by top performing source." width="528"><p class="caption">
+<img src="Bayesian-UPL_files/figure-html/figure1-1.png" class="r-plt" alt="Observation density of IIS HCl emissions by top performing source." width="528"><p class="caption">
 Observation density of IIS HCl emissions by top performing source.
 </p>
 </div>
@@ -239,7 +241,7 @@ underneath the plot.</p>
 <span>  <span class="fu">geom_rug</span><span class="op">(</span>sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure2-1.png" alt="Observation density of IIS HCl emissions top performers overall population." width="480"><p class="caption">
+<img src="Bayesian-UPL_files/figure-html/figure2-1.png" class="r-plt" alt="Observation density of IIS HCl emissions top performers overall population." width="480"><p class="caption">
 Observation density of IIS HCl emissions top performers overall
 population.
 </p>
@@ -283,7 +285,7 @@ observations including error bars are stored in
 along the range of <code>xvals</code> are stored in
 <code>results$pred_pdf_dat</code>.</p>
 <div class="figure" style="text-align: center">
-<img src="Bayesian-UPL_files/figure-html/figure3-1.png" alt="Fitted likelihood distributions for IIS HCl emissions." width="100%"><p class="caption">
+<img src="Bayesian-UPL_files/figure-html/figure3-1.png" class="r-plt" alt="Fitted likelihood distributions for IIS HCl emissions." width="100%"><p class="caption">
 Fitted likelihood distributions for IIS HCl emissions.
 </p>
 </div>
@@ -348,9 +350,9 @@ defined, so it integrates to less than 1.</p>
 </tr>
 <tr class="odd">
 <td align="left">Skewed</td>
-<td align="right">192000</td>
+<td align="right">191000</td>
 <td align="right">30</td>
-<td align="right">0.9879832</td>
+<td align="right">0.9878288</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal</td>
@@ -411,7 +413,7 @@ will change the UPL calculation. The UPL results are the variable
 <td align="left">UPL</td>
 <td align="right">0.00261</td>
 <td align="right">0.0026</td>
-<td align="right">0.00246</td>
+<td align="right">0.00249</td>
 <td align="right">0.00342</td>
 <td align="right">0.00291</td>
 </tr></tbody>
@@ -527,7 +529,7 @@ show the 3 MCMC chains (red, blue, and green lines) are well-mixed and
 without trend, indicating good convergence. The figures on the right are
 histograms of the posterior distributions of the Gamma parameters. Both
 indicate good convergence on values for the rate and shape.</p>
-<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" width="100%" style="display: block; margin: auto;"><img src="Bayesian-UPL_files/figure-html/figure4-2.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="Bayesian-UPL_files/figure-html/figure4-1.png" class="r-plt" width="100%" style="display: block; margin: auto;"><img src="Bayesian-UPL_files/figure-html/figure4-2.png" class="r-plt" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -737,7 +739,7 @@ previous step, are returned by <code><a href="../reference/fit_likelihood.html">
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

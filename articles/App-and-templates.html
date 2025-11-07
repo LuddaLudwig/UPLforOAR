@@ -84,7 +84,9 @@ access these by downloading directly from <a href="https://github.com/LuddaLudwi
 Make sure to keep the shiny app UPL_app.Rmd in the same location as the
 <a href="https://github.com/LuddaLudwig/UPLforOAR/tree/main/inst/templates" class="external-link">templates
 folder</a> with its contents included, since the shiny app and report
-templates use relative paths to find each other.</p>
+templates use relative paths to find each other. You will need LaTex or
+MikTex (for Windows) installed in order to generate PDF documents from
+the app report or other example templates.</p>
 <p>A couple quick notes about the shiny app and <code>UPLforOAR</code>
 package in general:</p>
 <ul>
@@ -105,7 +107,7 @@ but they will need to be implemented by the user.</li>
 <h2 id="shiny-app">Shiny app<a class="anchor" aria-label="anchor" href="#shiny-app"></a>
 </h2>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig1.png" alt="Click the green play button to run the app. This will launch the html in your browser." width="80%"><p class="caption">
+<img src="app_template_figs/fig1.png" class="r-plt" alt="Click the green play button to run the app. This will launch the html in your browser." width="80%"><p class="caption">
 Click the green play button to run the app. This will launch the html in
 your browser.
 </p>
@@ -119,7 +121,7 @@ html output. As such, you will need R installed as well as
 back end, and you would visit the website instead of launching the .Rmd
 file.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig2.png" alt="Input options and default settings." width="80%"><p class="caption">
+<img src="app_template_figs/fig2.png" class="r-plt" alt="Input options and default settings." width="80%"><p class="caption">
 Input options and default settings.
 </p>
 </div>
@@ -160,7 +162,7 @@ directory to render the PDF. Generating PDF’s from Rmarkdown documents
 requires the user to have some version of LaTex installed (MikTex for
 windows).</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig3.png" alt="Examine a summary of your uploaded data." width="80%"><p class="caption">
+<img src="app_template_figs/fig3.png" class="r-plt" alt="Examine a summary of your uploaded data." width="80%"><p class="caption">
 Examine a summary of your uploaded data.
 </p>
 </div>
@@ -171,7 +173,7 @@ what you are expecting. This should also include a <code>sources</code>
 variable described as Class: character with a length corresponding to
 the number of rows in your uploaded dataset.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig4.png" alt="Source selection." width="80%"><p class="caption">
+<img src="app_template_figs/fig4.png" class="r-plt" alt="Source selection." width="80%"><p class="caption">
 Source selection.
 </p>
 </div>
@@ -182,7 +184,7 @@ of the top five sources with the lowest emissions, their average
 emissions, and the number of runs within each source. Check to make sure
 these values are in line with expectations.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig5.png" alt="Densities of top performing sources." width="80%"><p class="caption">
+<img src="app_template_figs/fig5.png" class="r-plt" alt="Densities of top performing sources." width="80%"><p class="caption">
 Densities of top performing sources.
 </p>
 </div>
@@ -193,7 +195,7 @@ have a different color with a vertical line indicating the source mean
 emission. This figure is provided to give you an idea of inter- and
 intra-source variability in emissions.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig6.png" alt="UPL results." width="80%"><p class="caption">
+<img src="app_template_figs/fig6.png" class="r-plt" alt="UPL results." width="80%"><p class="caption">
 UPL results.
 </p>
 </div>
@@ -208,7 +210,7 @@ for the new source calculation those UPL results will be omitted. The
 Skewed function <code><a href="../reference/Skewed_UPL.html">Skewed_UPL()</a></code> requires greater than 3
 observations to calculate the UPL.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig7.png" alt="Observation density of existing source emissions population." width="80%"><p class="caption">
+<img src="app_template_figs/fig7.png" class="r-plt" alt="Observation density of existing source emissions population." width="80%"><p class="caption">
 Observation density of existing source emissions population.
 </p>
 </div>
@@ -233,7 +235,7 @@ having a negative emission. This lower boundary is <em>not</em>
 accounted for in the UPL functions and distribution selection criteria
 from the Excel workbook.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig8.png" alt="Observation density of new source emissions population." width="80%"><p class="caption">
+<img src="app_template_figs/fig8.png" class="r-plt" alt="Observation density of new source emissions population." width="80%"><p class="caption">
 Observation density of new source emissions population.
 </p>
 </div>
@@ -302,7 +304,7 @@ the results where desired. Alternatively, you can use one of the
 Rmarkdown example reports included in the templates folder, such as
 Example_report.Rmd.</p>
 <div class="figure" style="text-align: center">
-<img src="app_template_figs/fig9.png" alt="In the Example_report.Rmd, click kniw with parameters to create the PDF." width="80%"><p class="caption">
+<img src="app_template_figs/fig9.png" class="r-plt" alt="In the Example_report.Rmd, click kniw with parameters to create the PDF." width="80%"><p class="caption">
 In the Example_report.Rmd, click kniw with parameters to create the PDF.
 </p>
 </div>
@@ -337,7 +339,7 @@ conditions that produced them.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

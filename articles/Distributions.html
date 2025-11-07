@@ -393,7 +393,7 @@ density distribution to see how it looks.</p>
 <span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'black'</span>, <span class="st">'#FF7F00'</span><span class="op">)</span>,</span>
 <span>                    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Observations'</span>, <span class="st">'Lognormal'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure1-1.png" alt="Observation density of HCl emissions. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored orange. The UPL result is the vertical orange line." width="480"><p class="caption">
+<img src="Distributions_files/figure-html/figure1-1.png" class="r-plt" alt="Observation density of HCl emissions. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted lognormal distribution that is the basis of the UPL estimate is colored orange. The UPL result is the vertical orange line." width="480"><p class="caption">
 Observation density of HCl emissions. The obseration data are indicated
 in black as points and a rug along the axis, with the observation
 density distribution as a black line. The fitted lognormal distribution
@@ -432,7 +432,7 @@ changes.</p>
 <span>                           maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure2-1.png" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds." width="480"><p class="caption">
+<img src="Distributions_files/figure-html/figure2-1.png" class="r-plt" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds." width="480"><p class="caption">
 Example of three Lognormal distributions fit to the same data, but with
 different maximum emission thresholds.
 </p>
@@ -500,32 +500,32 @@ convergence. It is not so bad as to invalidate the results, but you can
 imagine that if we tried limits that were too small the model would
 fail.
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3a-1.png" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3a-1.png" class="r-plt" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
 Convergence figures from maxY = 2X.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3a-2.png" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3a-2.png" class="r-plt" alt="Convergence figures from maxY = 2X." width="100%"><p class="caption">
 Convergence figures from maxY = 2X.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3b-1.png" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3b-1.png" class="r-plt" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
 Convergence figures from maxY = 3X.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3b-2.png" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3b-2.png" class="r-plt" alt="Convergence figures from maxY = 3X." width="100%"><p class="caption">
 Convergence figures from maxY = 3X.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3c-1.png" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3c-1.png" class="r-plt" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
 Convergence figures from maxY = 25X.
 </p>
 </div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure3c-2.png" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure3c-2.png" class="r-plt" alt="Convergence figures from maxY = 25X." width="100%"><p class="caption">
 Convergence figures from maxY = 25X.
 </p>
 </div>
@@ -599,7 +599,7 @@ and 85% significance the UPL doesn’t change no matter how we vary
 <code>maxY</code> for 90%, and quite a lot as we increase
 <code>maxY</code> for 95% and 99% significance.
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure4-1.png" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL." width="480"><p class="caption">
+<img src="Distributions_files/figure-html/figure4-1.png" class="r-plt" alt="Example of three Lognormal distributions fit to the same data, but with different maximum emission thresholds and levels of significance. THe significnace only changes the UPL outcome, and each level has a different line type as a vertical line at the UPL." width="480"><p class="caption">
 Example of three Lognormal distributions fit to the same data, but with
 different maximum emission thresholds and levels of significance. THe
 significnace only changes the UPL outcome, and each level has a
@@ -757,7 +757,7 @@ sources, theoretically there could emissions higher than 1.</p>
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Distributions_files/figure-html/figure5-1.png" alt="Fitted likelihood distributions for Lime HCl emissions." width="100%"><p class="caption">
+<img src="Distributions_files/figure-html/figure5-1.png" class="r-plt" alt="Fitted likelihood distributions for Lime HCl emissions." width="100%"><p class="caption">
 Fitted likelihood distributions for Lime HCl emissions.
 </p>
 </div>
@@ -791,9 +791,9 @@ distributions</caption>
 <tr class="odd">
 <td align="left">Skewed</td>
 <td align="right">0.508</td>
-<td align="right">840.0</td>
+<td align="right">838.0</td>
 <td align="right">4</td>
-<td align="right">0.9450102</td>
+<td align="right">0.9453717</td>
 </tr>
 </tbody>
 </table>
@@ -861,7 +861,7 @@ limits</caption>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
