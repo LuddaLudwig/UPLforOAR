@@ -36,7 +36,7 @@ is \code{3} since compliance uses 1 test average of 3 runs.}
 \item{group}{Character string corresponding to the variable name in the data
 set by which to group for the hierarchical structure. If the group is not a
 factor it will be coerced using as.factor(). To avoid having unknown factor
-levels, please convert to factor first
+levels, please convert to factor first.
 (set using \code{as.factor(data$group_name)} if needed). Defaults to \code{'sources'}.}
 }
 \value{

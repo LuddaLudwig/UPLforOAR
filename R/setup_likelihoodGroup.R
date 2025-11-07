@@ -50,7 +50,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_normal_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group_emiss')
+                   'group_sd', 'group_mu', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_mu_mu' = mu, 'pop_sd_mu' = sigma,
@@ -69,7 +69,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
                                                  '/EmissionGroup_lnorm_JAGS.R'))
       par_list = c('emission_hat', 'pdf_obs', 'pdf_hat',
                    'pop_mu_mu', 'pop_sd_mu', 'pop_mu_sd', 'pop_sd_sd',
-                   'group_sd','group_mu','group_emiss')
+                   'group_sd', 'group_mu', 'group_emiss')
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_mu_mu' = ln_mu, 'pop_sd_mu' = ln_sig,
@@ -97,16 +97,16 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
       data_inits = list(
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5,
              'pop_xi_mu' = xi, 'pop_omega_mu' = omega, 'pop_alpha_mu' = alpha,
-             'pop_xi_sd' = xi / 10,  'pop_omega_sd' = 0.1 * maxX,
+             'pop_xi_sd' = maxX / 10,  'pop_omega_sd' = 0.1 * maxX,
              'pop_alpha_sd' = 5),
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 12,
              'pop_xi_mu' = 1.5 * xi, 'pop_omega_mu' = 0.5 * omega,
              'pop_alpha_mu' = 0.5 * alpha,
-             'pop_xi_sd' = xi,  'pop_omega_sd' = 0.5 * maxX, 'pop_alpha_sd' = 10),
+             'pop_xi_sd' = maxX / 100,  'pop_omega_sd' = 0.5 * maxX, 'pop_alpha_sd' = 10),
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
              'pop_xi_mu' = 0.5 * xi, 'pop_omega_mu' = 1.5 * omega,
              'pop_alpha_mu' = 1.5 * alpha,
-             'pop_xi_sd' = xi * 10,  'pop_omega_sd' = 0.01 * maxX,
+             'pop_xi_sd' = maxX / 50,  'pop_omega_sd' = 0.01 * maxX,
              'pop_alpha_sd' = 1))
     } else if (distribution == 'Gamma'){
       shape = mu^2 / sigma^2

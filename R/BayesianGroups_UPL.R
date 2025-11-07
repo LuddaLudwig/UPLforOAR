@@ -1,5 +1,5 @@
-#' Bayesian_UPL() wraps `_likelihood()` functions into results comparable for
-#' multiple distributions
+#' BayesianGroups_UPL() wraps `_likelihoodGroup()` functions into results comparable for
+#' multiple distributions with a hierarchical group structure
 #' @param distr_list A list including one or more of
 #' `c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')`. Note that if prior
 #' bounds are supplied manually, only one distribution can be used.
@@ -16,12 +16,19 @@
 #' distributions. Default is 0.
 #' @param data Emissions data from either the best source or top performers,
 #' must have a column named 'emissions'.
+#' @param group Character string corresponding to the variable name in the data
+#' set by which to group for the hierarchical structure. If the group is not a
+#' factor it will be coerced using as.factor(). To avoid having unknown factor
+#' levels, please convert to factor first.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
-#' distributions. For `'Normal'` they are ordered `c(sd_low, sd_high, mean_low, mean_high')`.
-#' For `'Lognormal'` they are ordered `c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)`.
-#' For `'Skewed'` they are ordered `c(omega_low, omega_high, xi_low, xi_high, alpha_low, alpha_high)`.
-#' For `'Gamma'` they are ordered `c(rate_low, rate_high, shape_low, shape_high)`. For
-#' `'Beta'` they are ordered `c(alpha_low, alpha_high, beta_low, beta_high)`.
+#' distributions. For `'Normal'` and `'Lognormal'` they are ordered
+#' `c(pop_sd_mu_low, pop_sd_mu_high, pop_mu_mu_low, pop_mu_mu_high, pop_sd_sd_low, pop_sd_sd_high, pop_mu_sd_low, pop_mu_sd_high)`.
+#' For `'Skewed'` they are ordered
+#' `c(pop_omega_mu_low, pop_omega_mu_high, pop_xi_mu_low, pop_xi_mu_high, pop_alpha_mu_low, pop_alpha_mu_high, pop_omega_sd_low, pop_omega_sd_high,  pop_xi_sd_low, pop_xi_sd_high, pop_alpha_sd_low, pop_alpha_sd_high)`.
+#' For `'Gamma'` they are ordered
+#' `c(pop_rate_mu_low, pop_rate_mu_high, pop_shape_mu_low, pop_shape_mu_high, pop_rate_sd_low, pop_rate_sd_high, pop_shape_sd_low, pop_shape_sd_high)`.
+#' For `'Beta'` they are ordered
+#' `c(pop_alpha_mu_low, pop_alpha_mu_high, pop_beta_mu_low, pop_beta_mu_high, pop_alpha_sd_low, pop_alpha_sd_high, pop_beta_sd_low, pop_beta_sd_high)`.
 #' @param convergence_report Default is `FALSE`, if a report containing
 #' convergence figures should be generated with results. If `TRUE`, a document
 #' Bayesian_UPL_convergence_MMDDYYY_HHMM.pdf will be written to the current
@@ -34,15 +41,18 @@
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
 #' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
 #' will use random values for `.RNG.name` and `.RNG.seed` instead.
-#' @returns A list of tibble results from [setup_likelihood()], [run_likelihood()],
-#' [output_likelihood()], [obs_density()], [fit_likelihood()], and
-#' [converge_likelihood()] for each distribution in `distr_list`.
+#' @returns A list of tibble results from [setup_likelihoodGroup()], [run_likelihoodGroup()],
+#' [output_likelihoodGroup()], [obs_density()], [fit_likelihood()], and
+#' [converge_likelihoodGroup()] for each distribution in `distr_list`.
 #' @export
 #' @description
-#' For each distribution in `distr_list`, [Bayesian_UPL()] will [setup_likelihood()],
-#' [run_likelihood()], organize mcmc results in [output_likelihood()], test for
-#' convergence of likelihood parameters using [converge_likelihood()], and
-#' calculate goodness of fit metrics using [fit_likelihood()]. Results include
+#' For each distribution in `distr_list`, [BayesianGroups_UPL()] will [setup_likelihoodGroup()],
+#' [run_likelihoodGroup()], organize mcmc results in [output_likelihoodGroup()], test for
+#' convergence of likelihood parameters using [converge_likelihoodGroup()], and
+#' calculate goodness of fit metrics using [fit_likelihood()]. Rather than
+#' independent runs defining the population distribution, hierarchical
+#' dependency within groups is allowed with the group-level distribution
+#' parameters drawn from the overall population distribution. Results include
 #' `$fit_table`: a tibble with the `UPL`, `pdf_integral`, `SSE`, and count of
 #' observations within 95 percent CI for each distribution in `'distr_list'`,
 #' `$conv_output`: a tibble with the parameters, Gelman-Rubin diagnostics, and if
@@ -60,9 +70,9 @@
 #' with corresponding lower and upper limits in `prior_list`. If manual priors
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
-Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
+BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
                         data, future_runs = 3, significance = 0.99,
-                        xvals = NULL, maxY = NULL, minY = 0,
+                        xvals = NULL, maxY = NULL, minY = 0, group = 'sources',
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){
@@ -75,17 +85,18 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
       stop('You can only run one distribution at a time if supplying priors manually')
     }
     distribution = distr_list[1]
-    mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                 manual_prior = manual_prior, random = random,
-                                 prior_list = prior_list)
-    mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
-                             future_runs = future_runs, xvals = xvals)
+    mod_bayes = setup_likelihoodGroup(distribution = distribution, data = data,
+                                      manual_prior = manual_prior,
+                                      random = random, prior_list = prior_list)
+    mod_run = run_likelihoodGroup(model_input = mod_bayes, maxY = maxY, minY = minY,
+                                  future_runs = future_runs, xvals = xvals,
+                                  group = group)
     manual_prior = mod_bayes$manual_prior
-    mod_output = output_likelihood(jags_model_run = mod_run,
-                                   significance = significance)
+    mod_output = output_likelihoodGroup(jags_model_run = mod_run,
+                                        significance = significance)
     mod_fit = fit_likelihood(likelihood_result = mod_output)
     mod_output_list[[1]] = mod_fit
-    mod_converge = converge_likelihood(mod_run)
+    mod_converge = converge_likelihoodGroup(mod_run)
     conv_output = rbind(conv_output, mod_converge)
     if (convergence_report == TRUE){
       fig_set = converge_figs(distribution, mod_run)
@@ -98,15 +109,16 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   if (!manual_prior){
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
-      mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                   manual_prior = FALSE, random = random)
-      mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
-                               future_runs = future_runs, xvals = xvals)
-      mod_output = output_likelihood(jags_model_run = mod_run,
-                                     significance = significance)
+      mod_bayes = setup_likelihoodGroup(distribution = distribution, data = data,
+                                        manual_prior = FALSE, random = random)
+      mod_run = run_likelihoodGroup(model_input = mod_bayes, maxY = maxY,
+                                    minY = minY, future_runs = future_runs,
+                                    xvals = xvals, group = group)
+      mod_output = output_likelihoodGroup(jags_model_run = mod_run,
+                                          significance = significance)
       mod_fit = fit_likelihood(likelihood_result = mod_output)
       mod_output_list[[j]] = mod_fit
-      mod_converge = converge_likelihood(mod_run)
+      mod_converge = converge_likelihoodGroup(mod_run)
       conv_output = rbind(conv_output, mod_converge)
       if (convergence_report == TRUE){
         fig_set = converge_figs(distribution, mod_run)
@@ -123,15 +135,15 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
                                 mustWork = TRUE)
     rmarkdown::render(paste0(template_path, '/convergence_template.Rmd'),
                       output_dir = current_wd,
-                      output_file = paste0('Bayesian_UPL_convergence_',
+                      output_file = paste0('BayesianGroup_UPL_convergence_',
                                            format(Sys.time(), "%m%d%Y-%H%M")))
   }
   fit_table = tibble::tibble(distr = unlist(lapply(mod_output_list, '[[','distr')),
-                     UPL = (as.numeric(lapply(mod_output_list, '[[','UPL_Bayes'))),
-                     SSE = (as.numeric(lapply(mod_output_list, '[[','SSE'))),
-                     Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
-                     pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
-                     )
+                             UPL = (as.numeric(lapply(mod_output_list, '[[','UPL_Bayes'))),
+                             SSE = (as.numeric(lapply(mod_output_list, '[[','SSE'))),
+                             Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
+                             pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
+  )
   obs_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
     obs_temp = mod_output_list[[i]]$obs_pdf_dat
