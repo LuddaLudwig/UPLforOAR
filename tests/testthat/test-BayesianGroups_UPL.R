@@ -30,9 +30,10 @@ test_that("BayesianGroups_UPL() wraps setup, run, and output likelihood", {
   load_results=readRDS(test_path('test_Bayes_UPL','test-BayesGroup_UPL.rds'))
   expect_equal(output_set,load_results)
   expect_equal(length(output_set),4)
-  expect_equal(output_set$fit_table$distr,c("Lognormal","Skewed"))
-  expect_equal(output_set$conv_output$convYN,c("Yes","Yes","Yes","Yes","Yes"))
-  expect_equal(ncol(output_set$obs_pdf_dat),7)
+  expect_equal(output_set$fit_table$distr,c("Gamma","Skewed"))
+  expect_equal(output_set$conv_output$convYN,
+               c(rep("Yes",15),"No","Yes","Yes","No",rep("Yes",16)))
+  expect_equal(ncol(output_set$obs_pdf_dat),8)
   expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat","x_hat","distr","ydens"))
 })
 
