@@ -149,7 +149,7 @@ them being inside the `ggplot` object. See the `vignette("Density")` article for
 a thorough description of how `obs_density()` works.
 
 ```{r obs_density, echo=TRUE}
-obs_dens_results = obs_density(data = dat_emiss)
+obs_dens_results = obs_density(data = dat_emiss, emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 ```
@@ -196,7 +196,8 @@ designed to run with minimal user input needed.
 
 ```{r bayesian_UPL, echo = TRUE, results = FALSE}
 distributions = c('Beta', 'Gamma', 'Lognormal', 'Normal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
+results = Bayesian_UPL(data = dat_emiss,  emissions = 'emissions',
+                       distr_list = distributions)
 ```
 
 First, let's look at plots of the resulting distributions. The points and error 
@@ -359,7 +360,8 @@ distributions of the Gamma parameters. Both indicate good convergence on values
 for the rate and shape. 
 
 ```{r figure4, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE}
-part1 = setup_likelihood(distribution = "Gamma", data = dat_emiss)
+part1 = setup_likelihood(distribution = "Gamma", data = dat_emiss, 
+                          emissions = 'emissions')
 part2 = run_likelihood(model_input = part1)
 part3 = converge_figs(distribution = "Gamma", jags_model_run = part2)
 part3

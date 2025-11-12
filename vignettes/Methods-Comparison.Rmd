@@ -137,11 +137,13 @@ dat_emiss$sources = paste0(dat_emiss$`Plant Name`, "_", dat_emiss$`Unit Number`,
 dat_emiss$emissions = dat_emiss$Mercury_min_lb_MMBtu
 dat_emiss = subset(dat_emiss, select = c(sources, emissions))
 
-dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist = MACT_existing(data = dat_emiss, emissions = 'emissions',
+                          sources = 'sources', CAA_section = 112)
 dat_exist_avg = dat_exist %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
 dat_exist_avg = arrange(dat_exist_avg, avg)
-distribution_result_exist = distribution_type(dat_exist)
+distribution_result_exist = distribution_type(dat_exist, 
+                                              emissions = 'emissions')
 ```
 ### Zero-Boundary
 
@@ -152,7 +154,8 @@ those ratio tests do not account for zero as a lower boundary.
 
 ```{r plot1, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line."}
 x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
-obs_dens_results = obs_density(dat_exist, xvals = x_hat)
+obs_dens_results = obs_density(dat_exist, xvals = x_hat,
+                               emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
@@ -193,7 +196,8 @@ account for boundaries in the analytical normal UPL calculation. In the Bayesian
 framework, we can explore both bounded and unbounded normal distributions.
 
 ```{r plot2, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line."}
-x_hat = seq(-mean(dat_exist$emissions), 3 * max(dat_exist$emissions), length.out = 1024)
+x_hat = seq(-mean(dat_exist$emissions), 
+            3 * max(dat_exist$emissions), length.out = 1024)
 pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
               sd = sd(dat_exist$emissions, na.rm = T))
 pred_dat = tibble(x_hat, pdf_n)
@@ -231,21 +235,24 @@ of 3 runs.
 
 ```{r UPL, echo = TRUE, results = FALSE}
 UPL_freq_N = Normal_UPL(data = dat_exist,
-                     future_runs = 1,
-                     significance = 0.99)
+                        emissions = 'emissions',
+                        future_runs = 1,
+                        significance = 0.99)
 UPL_freq_LN = Lognormal_UPL(data = dat_exist,
-                        future_runs = 1,
-                        significance = 0.99)
+                            emissions = 'emissions',
+                            future_runs = 1,
+                            significance = 0.99)
 UPL_freq_SN = Skewed_UPL(data = dat_exist,
-                        future_runs = 1,
-                        significance = 0.99)
+                         emissions = 'emissions',
+                         future_runs = 1,
+                         significance = 0.99)
 Bayes_0bounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
-                             data = dat_exist, minY = 0, 
-                             future_runs = 1, significance = 0.99)
+                              data = dat_exist,  emissions = 'emissions', 
+                              minY = 0, future_runs = 1, significance = 0.99)
 Bayes_unbounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
-                             data = dat_exist, 
-                             minY = -mean(dat_exist$emissions), 
-                             future_runs = 1, significance = 0.99)
+                               data = dat_exist, emissions = 'emissions',
+                               minY = -mean(dat_exist$emissions), 
+                               future_runs = 1, significance = 0.99)
 ```
 ### Bayesian Results
 
@@ -345,15 +352,18 @@ The next logical question is how much does the UPL change if we use different ra
 
 ```{r random, echo = TRUE, results = FALSE}
 Bayes_random1 = Bayesian_UPL(distr_list = c("Normal"),
-                             data = dat_exist, random = TRUE, 
+                             data = dat_exist, emissions = 'emissions',
+                             random = TRUE, 
                              minY = -mean(dat_exist$emissions), 
                              future_runs = 1, significance = 0.99)
 Bayes_random2 = Bayesian_UPL(distr_list = c("Normal"),
-                             data = dat_exist, random = TRUE, 
+                             data = dat_exist, emissions = 'emissions',
+                             random = TRUE, 
                              minY = -mean(dat_exist$emissions), 
                              future_runs = 1, significance = 0.99)
 Bayes_random3 = Bayesian_UPL(distr_list = c("Normal"),
-                             data = dat_exist, random = TRUE, 
+                             data = dat_exist, emissions = 'emissions',
+                             random = TRUE, 
                              minY = -mean(dat_exist$emissions), 
                              future_runs = 1, significance = 0.99)
 ```

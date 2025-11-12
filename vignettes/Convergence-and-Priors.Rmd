@@ -80,8 +80,9 @@ a Lognormal likelihood distribution. Unsurprisingly, it fails to converge.
 ```{r noise, echo = TRUE, results = FALSE}
 set.seed(1)
 emissions = runif(30, min = 0, max = 100)
+df = tibble(emissions = emissions)
 results = Bayesian_UPL(distr_list = c("Lognormal"),
-                       data = tibble(emissions = emissions))
+                       data = df, emissions = 'emissions')
 conv_metrics = results$conv_output
 ```
 ``` {r table1, fig.align = "center"}
@@ -97,7 +98,7 @@ a tangent and they are clearly not well-mixed or without trend. This is the kind
 of behavior that will result in the Gelman-Rubin diagnostic failing.
 ```{r figure1, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence in MCMC chains."}
 part1 = setup_likelihood(distribution = "Lognormal",
-                         data = tibble(emissions = emissions))
+                         data = df, emissions = 'emissions')
 part2 = run_likelihood(model_input = part1)
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
@@ -127,7 +128,8 @@ than any other value searched.
 ```{r figure2, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence where posterior is too flat."}
 dat_emiss2 = read.csv("Example_data1.csv")
 small_dat = MACT_new(dat_emiss2)
-part1 = setup_likelihood(distribution = "Normal", data = small_dat)
+part1 = setup_likelihood(distribution = "Normal", data = small_dat, 
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1)
 part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
 part3
@@ -153,6 +155,7 @@ and histogram (right) indicate improper prior distribution bounds.
 ```{r figure3, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence, where the prior limits are too restrictive."}
 dat_emiss = read.csv('Example_data2.csv')
 part1 = setup_likelihood(distribution = "Normal", data = dat_emiss, 
+                         emissions = 'emissions',
                          manual_prior = TRUE, 
                          prior_list = c(0.0001, 0.001, 0.01, 0.05))
 part2 = run_likelihood(model_input = part1)
@@ -200,9 +203,11 @@ This is expected given how little information we actually get from 3 observation
 The ability to quantify this uncertainty is a nice outcome of using a Bayesian approach.
 ```{r manual, echo = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE}
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                               emissions = 'emissions',
                                manual_prior = TRUE,
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
-result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat)
+result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                                 emissions = 'emissions')
 ```
 ```{r figure4, echo = FALSE, fig.height = 5, fig.width = 4, fig.align = "center", fig.cap = "Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well."}
 result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
@@ -264,7 +269,7 @@ with lower and upper bounds, but it is still a wide accommodation, and within
 that all parameter outcomes are equally likely before we consider the data.
 ```{r figure5, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, echo = FALSE, fig.cap = "Improved convergence of parameters by providing slightly more restrictive bounds as priors."}
 part1 = setup_likelihood(distribution = "Normal", data = small_dat,
-                         manual_prior = TRUE,
+                         emissions = 'emissions', manual_prior = TRUE,
                          prior_list = c(0.0001, 0.01, 0.005, 0.03))
 part2 = run_likelihood(model_input = part1)
 part3 = converge_figs(distribution = "Normal", jags_model_run = part2)
