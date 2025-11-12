@@ -25,8 +25,9 @@ BayesianGroups_UPL(
 \code{c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')}. Note that if prior
 bounds are supplied manually, only one distribution can be used.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'.}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions} and a column with character or
+factor \code{group} used for hierarchical structure.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
@@ -44,7 +45,7 @@ manually. Default is \code{NULL}, in which case is is calculated as \code{3 * ma
 \item{minY}{The minimum emission value possible, used to truncate likelihood
 distributions. Default is 0.}
 
-\item{group}{Character string corresponding to the variable name in the data
+\item{group}{Variable name or column number corresponding to the variable name in the data
 set by which to group for the hierarchical structure. If the group is not a
 factor it will be coerced using as.factor(). To avoid having unknown factor
 levels, please convert to factor first.}
@@ -73,6 +74,9 @@ For \code{'Gamma'} they are ordered
 \code{c(pop_rate_mu_low, pop_rate_mu_high, pop_shape_mu_low, pop_shape_mu_high, pop_rate_sd_low, pop_rate_sd_high, pop_shape_sd_low, pop_shape_sd_high)}.
 For \code{'Beta'} they are ordered
 \code{c(pop_alpha_mu_low, pop_alpha_mu_high, pop_beta_mu_low, pop_beta_mu_high, pop_alpha_sd_low, pop_alpha_sd_high, pop_beta_sd_low, pop_beta_sd_high)}.}
+
+\item{emissions}{Variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 }
 \value{
 A list of tibble results from \code{\link[=setup_likelihoodGroup]{setup_likelihoodGroup()}}, \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}},

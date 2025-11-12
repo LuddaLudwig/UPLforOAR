@@ -3,8 +3,10 @@
 #' This function defines the jagsmodel script to call based on the selected
 #' distribution. It also defines the initial values and variables to monitor.
 #' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named `emissions`.
+#' @param data Data from either the best source or top performers,
+#' must have a column with numeric `emissions`.
+#' @param emissions variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @param manual_prior Default is `FALSE`, priors are uninformative and calculated
 #' from range of emissions data. if `TRUE` priors should be specified manually in
 #' `prior_list`.
@@ -22,17 +24,16 @@
 #' the JAGS model, `dat_inits` which is a list of initial parameter values and
 #' random seeds for 3 chains, and the distribution used in likelihood model.
 #' @export
-setup_likelihood = function(distribution, data, manual_prior = FALSE,
+setup_likelihood = function(distribution, data, emissions,
+                            manual_prior = FALSE,
                             prior_list = NULL, random = FALSE){
   JAGS_path = system.file("JAGS", package = "UPLforOAR", mustWork = TRUE)
-  if (("emissions" %in% names(data)) == FALSE){
-    stop("data must have numeric column named 'emissions' ")
-  }
-  if (!is.numeric(data$emissions)){
+  data_temp = tibble::tibble(emissions = data[[emissions]])
+  if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric")
   }
-  mu = mean(data$emissions)
-  sigma = stats::sd(data$emissions)
+  mu = mean(data_temp$emissions)
+  sigma = stats::sd(data_temp$emissions)
   if (sigma == 0){
     stop("Cannot calculate UPL with zero variance data")
   }
@@ -50,7 +51,7 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'emission_mean' = 0.5 * mu, 'emission_sd' = 1.5 * sigma))
     } else if (distribution == "Lognormal"){
-      ln_emiss = log(data$emissions)
+      ln_emiss = log(data_temp$emissions)
       ln_mu = mean(ln_emiss, na.rm = TRUE)
       ln_sig = stats::sd(ln_emiss, na.rm=  TRUE)
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
@@ -65,8 +66,8 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
              'u_ln' = 0.5 * ln_mu, 'sd_ln' = 1.5 * ln_sig))
     } else if (distribution == "Skewed"){
-      skew1 = min(0.99, abs((1 / length(data$emissions)) *
-                              sum(((data$emissions - mu) / sigma)^3)))
+      skew1 = min(0.99, abs((1 / length(data_temp$emissions)) *
+                              sum(((data_temp$emissions - mu) / sigma)^3)))
       delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) /
                                  ((abs(skew1)^(2 / 3)) + ((4 - pi) / 2)^(2 / 3))))
       delta = delta * abs(skew1) / skew1
@@ -98,10 +99,10 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151,
              'rate_em' = 0.5 * rate, 'shape_em' = 1.5 * shape))
     } else if (distribution == 'Beta'){
-      if (min(data$emissions) < 0){
+      if (min(data_temp$emissions) < 0){
         stop('Cannot use beta distribution with emissions less than 0')
       }
-      if (max(data$emissions) > 1){
+      if (max(data_temp$emissions) > 1){
         stop('Cannot use beta distribution with emissions greater than 1')
       }
       alpha = mu^2 / sigma^2 - mu^3 / sigma^2 - mu
@@ -127,7 +128,7 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         data_inits[[3]][names(data_inits[[3]]) %in%
                           c(".RNG.name", ".RNG.seed") == FALSE])
     }
-    output = list(model_code = JAGS_model, par_list = par_list, data = data,
+    output = list(model_code = JAGS_model, par_list = par_list, data = data_temp,
                   distribution = distribution, dat_inits = data_inits,
                   manual_prior = manual_prior)
   } else if (manual_prior){
@@ -234,10 +235,10 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
              'rate_em' = 0.9 * prior_list[2],
              'shape_em' = 0.9 * prior_list[4]))
     } else if (distribution == 'Beta'){
-      if (min(data$emissions) < 0){
+      if (min(data_temp$emissions) < 0){
         stop('Cannot use beta distribution with emissions less than 0')
       }
-      if (max(data$emissions) > 1){
+      if (max(data_temp$emissions) > 1){
         stop('Cannot use beta distribution with emissions greater than 1')
       }
       if (prior_list[2] < 0){
@@ -296,7 +297,7 @@ setup_likelihood = function(distribution, data, manual_prior = FALSE,
         data_inits[[3]][names(data_inits[[3]]) %in%
                           c(".RNG.name", ".RNG.seed") == FALSE])
     }
-    output = list(model_code = JAGS_model, par_list = par_list, data = data,
+    output = list(model_code = JAGS_model, par_list = par_list, data = data_temp,
                 manual_prior = manual_prior, distribution = distribution,
                 dat_inits = data_inits, prior_list = prior_list)
   }

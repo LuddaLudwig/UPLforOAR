@@ -7,8 +7,16 @@
 #' distribution, hierarchical dependency within groups is allowed with the
 #' group-level distribution parameters drawn from the overall population distribution.
 #' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named `emissions`.
+#' @param data Data from either the best source or top performers,
+#' must have a column with numeric `emissions` and a column with character or
+#' factor `group` used for hierarchical structure.
+#' @param emissions Variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
+#' @param group Variable name or column number corresponding to the variable name in the data
+#' set by which to group for the hierarchical structure. If the group is not a
+#' factor it will be coerced using as.factor(). To avoid having unknown factor
+#' levels, please convert to factor first.
+#' (set using `as.factor(data$group_name)` if needed). Defaults to `'sources'`.
 #' @param manual_prior Default is `FALSE`, priors are uninformative and calculated
 #' from range of emissions data. if `TRUE` priors should be specified manually in
 #' `prior_list`.
@@ -27,23 +35,32 @@
 #' @returns Object `model_code`, which is a string for the written R script that
 #' JAGS can call, `par_list` which is the list of parameters traced while running
 #' the JAGS model, `dat_inits` which is a list of initial parameter values and
-#' random seeds for 3 chains, and the distribution used in likelihood model.
+#' random seeds for 3 chains, and the distribution used in likelihood model. Also
+#' included are a data set with `emissions` and `group` and `prior_list` if
+#' applicable to be passed along for use in [run_likelihoodGroup()].
 #' @export
-setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
-                            prior_list = NULL, random = FALSE){
+setup_likelihoodGroup = function(distribution, data, emissions,
+                                 manual_prior = FALSE, group = 'sources',
+                                 prior_list = NULL, random = FALSE){
   JAGS_path = system.file("JAGS", package = "UPLforOAR", mustWork = TRUE)
-  if (("emissions" %in% names(data)) == FALSE){
-    stop("data must have numeric column named 'emissions' ")
-  }
-  if (!is.numeric(data$emissions)){
+  data_temp = tibble::tibble(emissions = data[[emissions]],
+                             group = data[[group]])
+  if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric")
   }
-  mu = mean(data$emissions)
-  sigma = stats::sd(data$emissions)
-  maxX = max( data$emissions)
+  mu = mean(data_temp$emissions)
+  sigma = stats::sd(data_temp$emissions)
+  maxX = max( data_temp$emissions)
   if (sigma == 0){
     stop("Cannot calculate UPL with zero variance data")
   }
+  if (!is.character(emissions)){
+    emissions_name = colnames(data)[emissions]
+  }
+  if (!is.character(group)){
+    group_name = colnames(data)[group]
+  }
+  data_names = c(emissions_name, group_name)
   if(!manual_prior){
     if (distribution == "Normal"){
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
@@ -62,7 +79,7 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
              'pop_mu_mu' = 0.5 * mu, 'pop_sd_mu' = 1.5 * sigma,
              'pop_mu_sd' = 10 * sigma, 'pop_sd_sd' = 0.1 * sigma))
     } else if (distribution == "Lognormal"){
-      ln_emiss = log(data$emissions)
+      ln_emiss = log(data_temp$emissions)
       ln_mu = mean(ln_emiss, na.rm = TRUE)
       ln_sig = stats::sd(ln_emiss, na.rm=  TRUE)
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
@@ -81,8 +98,8 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
              'pop_mu_mu' = 0.5 * ln_mu, 'pop_sd_mu' = 1.5 * ln_sig,
              'pop_mu_sd' = 10 * ln_sig, 'pop_sd_sd' = 0.1 * ln_sig))
     } else if (distribution == "Skewed"){
-      skew1 = min(0.99, abs((1 / length(data$emissions)) *
-                              sum(((data$emissions - mu) / sigma)^3)))
+      skew1 = min(0.99, abs((1 / length(data_temp$emissions)) *
+                              sum(((data_temp$emissions - mu) / sigma)^3)))
       delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) /
                                  ((abs(skew1)^(2 / 3)) + ((4 - pi) / 2)^(2 / 3))))
       delta = delta * abs(skew1) / skew1
@@ -127,10 +144,10 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
              'pop_rate_mu' = 0.5 * rate, 'pop_shape_mu' = 1.5 * shape,
              'pop_rate_sd' = 0.3 * rate, 'pop_shape_sd' = 0.3 * shape))
     } else if (distribution == 'Beta'){
-      if (min(data$emissions) < 0){
+      if (min(data_temp$emissions) < 0){
         stop('Cannot use beta distribution with emissions less than 0')
       }
-      if (max(data$emissions) > 1){
+      if (max(data_temp$emissions) > 1){
         stop('Cannot use beta distribution with emissions greater than 1')
       }
       alpha = mu^2 / sigma^2 - mu^3 / sigma^2 - mu
@@ -160,9 +177,9 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
         data_inits[[3]][names(data_inits[[3]]) %in%
                           c(".RNG.name", ".RNG.seed") == FALSE])
     }
-    output = list(model_code = JAGS_model, par_list = par_list, data = data,
+    output = list(model_code = JAGS_model, par_list = par_list, data = data_temp,
                   distribution = distribution, dat_inits = data_inits,
-                  manual_prior = manual_prior)
+                  manual_prior = manual_prior, data_names = data_names)
   } else if (manual_prior){
     if (is.null(prior_list)){
       stop('Please provide a list of upper and lower bounds for manual priors')
@@ -302,10 +319,10 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
              'pop_rate_sd' = 0.9 * prior_list[6],
              'pop_shape_sd' = 0.9 * prior_list[8]))
     } else if (distribution == 'Beta'){
-      if (min(data$emissions) < 0){
+      if (min(data_temp$emissions) < 0){
         stop('Cannot use beta distribution with emissions less than 0')
       }
-      if (max(data$emissions) > 1){
+      if (max(data_temp$emissions) > 1){
         stop('Cannot use beta distribution with emissions greater than 1')
       }
       if (any(prior_list[5:8] <= 0)){
@@ -374,9 +391,10 @@ setup_likelihoodGroup = function(distribution, data, manual_prior = FALSE,
         data_inits[[3]][names(data_inits[[3]]) %in%
                           c(".RNG.name", ".RNG.seed") == FALSE])
     }
-    output = list(model_code = JAGS_model, par_list = par_list, data = data,
+    output = list(model_code = JAGS_model, par_list = par_list, data = data_temp,
                   manual_prior = manual_prior, distribution = distribution,
-                  dat_inits = data_inits, prior_list = prior_list)
+                  dat_inits = data_inits, prior_list = prior_list,
+                  data_names = data_names)
   }
   return(output)
 }

@@ -40,7 +40,8 @@ fit_likelihood = function(likelihood_result, up = Inf, low = 0,
   if (low > minY){
     low = minY
   }
-  obs_dens_results = obs_density(data = obs_pdf_temp, up = up, low = low,
+  obs_dens_results = obs_density(data = obs_pdf_temp, emissions = 'emissions',
+                                 up = up, low = low,
                                  bw = bw, kernel = kernel,
                                  xvals = pred_pdf_temp$x_hat)
   Obs_onPoint = obs_dens_results$Obs_onPoint

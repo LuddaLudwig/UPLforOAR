@@ -1,9 +1,11 @@
 #' Calculate UPL assuming lognormally distributed emissions data
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named `emissions`
+#' @param data Data from either the best source or top performers,
+#' must have a column with numeric `emissions`
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
+#' @param emissions variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @returns Upper predictive limit at significance level for the average of the
 #' number of future test runs
 #' @description
@@ -12,7 +14,7 @@
 #' @export
 #' @references "An upper prediction limit for the arithmetic mean of a lognormal
 #' random variable" authored by Dulal Kumar Bhaumik and Robert David Gibbons 2004
-Lognormal_UPL = function(data, future_runs = 3, significance = 0.99){
+Lognormal_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
@@ -26,14 +28,16 @@ Lognormal_UPL = function(data, future_runs = 3, significance = 0.99){
   if (significance <= 0){
     stop("significance must be greater then 0 and less than 1")
   }
-  data$ln_emiss = log(data$emissions)
-  data$ln_emiss = replace(data$ln_emiss, !is.finite(data$ln_emiss), NA)
-  n = length(data$emissions)
+  data_temp = tibble::tibble(emissions = data[[emissions]])
+  data_temp$ln_emiss = log(data_temp$emissions)
+  data_temp$ln_emiss = replace(data_temp$ln_emiss,
+                               !is.finite(data_temp$ln_emiss), NA)
+  n = length(data_temp$emissions)
   if (n < 3){
     stop("Need at least 3 observations for UPL calculation")
   }
-  mean_log = mean(data$ln_emiss, na.rm = TRUE)
-  sd_log = stats::sd(data$ln_emiss, na.rm = TRUE)
+  mean_log = mean(data_temp$ln_emiss, na.rm = TRUE)
+  sd_log = stats::sd(data_temp$ln_emiss, na.rm = TRUE)
   if (sd_log == 0){
     stop("Cannot perform UPL calculation on data with 0 variance")
   }

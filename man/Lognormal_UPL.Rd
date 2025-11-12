@@ -4,11 +4,14 @@
 \alias{Lognormal_UPL}
 \title{Calculate UPL assuming lognormally distributed emissions data}
 \usage{
-Lognormal_UPL(data, future_runs = 3, significance = 0.99)
+Lognormal_UPL(data, emissions, future_runs = 3, significance = 0.99)
 }
 \arguments{
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions}}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}

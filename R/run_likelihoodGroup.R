@@ -7,7 +7,8 @@
 #' dependency within groups is allowed with the
 #' group-level distribution parameters drawn from the overall population distribution.
 #' @returns `runjags` object named `run_results`, likelihood distribution from the
-#' JAGS model script, as well as `data`, `group` and `xval`s used as inputs.
+#' JAGS model script, as well as `emissions` and `group` from the `data` provided
+#' in [setup_likelihoodGroup()] and `xval`s used as inputs.
 #' @param model_input Results from [setup_likelihoodGroup()], including JAGS model
 #' script, emissions data, distribution, initial values list, and parameters to
 #' monitor.
@@ -22,14 +23,10 @@
 #' Default is `NULL`, in which case it is calculated as `3 * maximum(data$emissions)`.
 #' @param minY The minimum emission value possible, used to truncate likelihood
 #' distributions. Default is 0.
-#' @param group Character string corresponding to the variable name in the data
-#' set by which to group for the hierarchical structure. If the group is not a
-#' factor it will be coerced using as.factor(). To avoid having unknown factor
-#' levels, please convert to factor first.
-#' (set using `as.factor(data$group_name)` if needed). Defaults to `'sources'`.
+
 #' @export
 run_likelihoodGroup = function(model_input, xvals = NULL, minY = 0,
-                          maxY = NULL, future_runs = 3, group = 'sources'){
+                               maxY = NULL, future_runs = 3){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
@@ -50,11 +47,11 @@ run_likelihoodGroup = function(model_input, xvals = NULL, minY = 0,
   if ((model_input$distribution == 'Beta' ) & (maxY > 1)){
     stop('Cannot use beta distribution with max emissions greater than 1')
   }
-  if (!is.factor(data[[group]])){
+  if (!is.factor(data$group)){
     warning('Group variable is not a factor and will be coerced using as.factor()')
-    group_var = as.factor(data[[group]])
+    group_var = as.factor(data$group)
   } else {
-    group_var = data[[group]]
+    group_var = data$group
   }
   n_groups = length(unique(group_var))
   n.adapt = 10000
@@ -114,7 +111,7 @@ run_likelihoodGroup = function(model_input, xvals = NULL, minY = 0,
   output = list(run_results = rjm, distribution = model_input$distribution,
                 manual_prior = manual_prior, maxY = maxY, minY = minY,
                 data = model_input$data, xvals = xvals,
-                future_runs = future_runs, group = group)
+                future_runs = future_runs, data_names = model_input$data_names)
   parallel::stopCluster(cl3)
   return(output)
 }

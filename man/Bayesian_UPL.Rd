@@ -8,6 +8,7 @@ multiple distributions}
 Bayesian_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   data,
+  emissions,
   future_runs = 3,
   significance = 0.99,
   xvals = NULL,
@@ -24,8 +25,11 @@ Bayesian_UPL(
 \code{c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')}. Note that if prior
 bounds are supplied manually, only one distribution can be used.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'.}
+\item{data}{Data set from either the best source or top performers,
+must have a column with numeric 'emissions'.}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}

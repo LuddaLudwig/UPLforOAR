@@ -14,8 +14,10 @@
 #' manually. Default is `NULL`, in which case is is calculated as `3 * max(data$emissions)`.
 #' @param minY The minimum emission value possible, used to truncate likelihood
 #' distributions. Default is 0.
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named 'emissions'.
+#' @param data Data set from either the best source or top performers,
+#' must have a column with numeric 'emissions'.
+#' @param emissions variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
 #' distributions. For `'Normal'` they are ordered `c(sd_low, sd_high, mean_low, mean_high')`.
 #' For `'Lognormal'` they are ordered `c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)`.
@@ -61,7 +63,7 @@
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
-                        data, future_runs = 3, significance = 0.99,
+                        data, emissions, future_runs = 3, significance = 0.99,
                         xvals = NULL, maxY = NULL, minY = 0,
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
@@ -76,6 +78,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     }
     distribution = distr_list[1]
     mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                 emissions = emissions,
                                  manual_prior = manual_prior, random = random,
                                  prior_list = prior_list)
     mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
@@ -99,6 +102,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
       mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                   emissions = emissions,
                                    manual_prior = FALSE, random = random)
       mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                                future_runs = future_runs, xvals = xvals)

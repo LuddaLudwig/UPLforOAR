@@ -9,8 +9,7 @@ run_likelihoodGroup(
   xvals = NULL,
   minY = 0,
   maxY = NULL,
-  future_runs = 3,
-  group = "sources"
+  future_runs = 3
 )
 }
 \arguments{
@@ -32,16 +31,11 @@ Default is \code{NULL}, in which case it is calculated as \code{3 * maximum(data
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
-
-\item{group}{Character string corresponding to the variable name in the data
-set by which to group for the hierarchical structure. If the group is not a
-factor it will be coerced using as.factor(). To avoid having unknown factor
-levels, please convert to factor first.
-(set using \code{as.factor(data$group_name)} if needed). Defaults to \code{'sources'}.}
 }
 \value{
 \code{runjags} object named \code{run_results}, likelihood distribution from the
-JAGS model script, as well as \code{data}, \code{group} and \code{xval}s used as inputs.
+JAGS model script, as well as \code{emissions} and \code{group} from the \code{data} provided
+in \code{\link[=setup_likelihoodGroup]{setup_likelihoodGroup()}} and \code{xval}s used as inputs.
 }
 \description{
 Runs the JAGS model from \code{\link[=setup_likelihood]{setup_likelihood()}} model_code output using \code{\link[runjags:run.jags]{runjags::run.jags()}}.

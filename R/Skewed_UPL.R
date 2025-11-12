@@ -1,20 +1,23 @@
 #' Calculate UPL assuming skew-normal distributed emissions data
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named `emissions`.
+#' @param data Data from either the best source or top performers,
+#' must have a column with numeric `emissions`.
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
+#' @param emissions variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @returns Upper predictive limit (UPL) at significance level for the average
 #' of the number of future test runs.
 #' @export
-Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
-  n = length(data$emissions)
+Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
+  data_temp = tibble::tibble(emissions = data[[emissions]])
+  n = length(data_temp$emissions)
   if (n < 3){
     stop("Need at least 3 observations for UPL calculation")
   }
   future_runs = as.integer(future_runs)
-  emission_mean = mean(data$emissions, na.rm = T)
-  sigma = stats::sd(data$emissions, na.rm = T)
+  emission_mean = mean(data_temp$emissions, na.rm = T)
+  sigma = stats::sd(data_temp$emissions, na.rm = T)
   if (sigma == 0){
     stop("Cannot perform UPL calculation on data with 0 variance")
   }
@@ -34,10 +37,10 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
     Skewed_UPL = NA
     warning("data must have more than 3 observations for skew UPL method")
   } else {
-    K = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data$emissions - emission_mean) / sigma)^4) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
-    S = n / ((n - 1) * (n - 2)) * sum(((data$emissions - emission_mean) / sigma)^3)
+    K = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * sum(((data_temp$emissions - emission_mean) / sigma)^4) - (3 * (n - 1)^2) / ((n - 2) * (n - 3))
+    S = n / ((n - 1) * (n - 2)) * sum(((data_temp$emissions - emission_mean) / sigma)^3)
     df = n - 1
-    var.s = sum((data$emissions - mean(data$emissions))^2) * (1 / (n - 1))
+    var.s = sum((data_temp$emissions - mean(data_temp$emissions))^2) * (1 / (n - 1))
     tscore=stats::qt(significance, df)
     u0 = 1 / (1 + (tscore^2 / (n - 1)))
     b = c(0.5, 0.5, 0.5, 0.5, 1, 1)
@@ -59,7 +62,7 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
     coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
     current_prob = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
     if (abs(current_prob - significance) < 0.0001){
-      Skewed_UPL = mean(data$emissions) + tscore * sqrt(var.s * (1 / n + 1 / future_runs))
+      Skewed_UPL = mean(data_temp$emissions) + tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     } else if ((current_prob - significance) > 0){
       tstat_list = seq(from = tscore, length.out = 20000, by = -0.0001)
       new_prob = c()
@@ -85,7 +88,7 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
         new_prob[t] = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
       }
       new_tscore = tstat_list[(abs(new_prob - significance) < 0.0001)][1]
-      Skewed_UPL = mean(data$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
+      Skewed_UPL = mean(data_temp$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     } else if ((current_prob - significance) < 0){
       tstat_list = seq(from = tscore, length.out = 20000, by = 0.0001)
       new_prob = c()
@@ -111,7 +114,7 @@ Skewed_UPL = function(data, future_runs = 3, significance = 0.99){
         new_prob[t] = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
       }
       new_tscore = tstat_list[(abs(new_prob - significance) < 0.0001)][1]
-      Skewed_UPL = mean(data$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
+      Skewed_UPL = mean(data_temp$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     }
   }
   return(Skewed_UPL)

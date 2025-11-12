@@ -14,12 +14,15 @@
 #' manually. Default is `NULL`, in which case is is calculated as `3 * max(data$emissions)`.
 #' @param minY The minimum emission value possible, used to truncate likelihood
 #' distributions. Default is 0.
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named 'emissions'.
-#' @param group Character string corresponding to the variable name in the data
+#' @param data Data from either the best source or top performers,
+#' must have a column with numeric `emissions` and a column with character or
+#' factor `group` used for hierarchical structure.
+#' @param group Variable name or column number corresponding to the variable name in the data
 #' set by which to group for the hierarchical structure. If the group is not a
 #' factor it will be coerced using as.factor(). To avoid having unknown factor
 #' levels, please convert to factor first.
+#' @param emissions Variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
 #' distributions. For `'Normal'` and `'Lognormal'` they are ordered
 #' `c(pop_sd_mu_low, pop_sd_mu_high, pop_mu_mu_low, pop_mu_mu_high, pop_sd_sd_low, pop_sd_sd_high, pop_mu_sd_low, pop_mu_sd_high)`.
@@ -86,11 +89,11 @@ BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'G
     }
     distribution = distr_list[1]
     mod_bayes = setup_likelihoodGroup(distribution = distribution, data = data,
+                                      emissions = emissions, group = group,
                                       manual_prior = manual_prior,
                                       random = random, prior_list = prior_list)
     mod_run = run_likelihoodGroup(model_input = mod_bayes, maxY = maxY, minY = minY,
-                                  future_runs = future_runs, xvals = xvals,
-                                  group = group)
+                                  future_runs = future_runs, xvals = xvals)
     manual_prior = mod_bayes$manual_prior
     mod_output = output_likelihoodGroup(jags_model_run = mod_run,
                                         significance = significance)
@@ -110,10 +113,11 @@ BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'G
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
       mod_bayes = setup_likelihoodGroup(distribution = distribution, data = data,
+                                        emissions = emissions, group = group,
                                         manual_prior = FALSE, random = random)
       mod_run = run_likelihoodGroup(model_input = mod_bayes, maxY = maxY,
                                     minY = minY, future_runs = future_runs,
-                                    xvals = xvals, group = group)
+                                    xvals = xvals)
       mod_output = output_likelihoodGroup(jags_model_run = mod_run,
                                           significance = significance)
       mod_fit = fit_likelihood(likelihood_result = mod_output)

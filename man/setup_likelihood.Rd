@@ -7,6 +7,7 @@
 setup_likelihood(
   distribution,
   data,
+  emissions,
   manual_prior = FALSE,
   prior_list = NULL,
   random = FALSE
@@ -15,8 +16,11 @@ setup_likelihood(
 \arguments{
 \item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}.}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions}.}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{manual_prior}{Default is \code{FALSE}, priors are uninformative and calculated
 from range of emissions data. if \code{TRUE} priors should be specified manually in

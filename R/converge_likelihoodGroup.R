@@ -36,7 +36,7 @@ converge_likelihoodGroup = function(jags_model_run){
     params_list = c('pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
                     'group_alpha', 'group_beta')
   }
-  n_groups = length(unique(jags_model_run$data[[jags_model_run$group]]))
+  n_groups = length(unique(jags_model_run$data$group))
   n_pop_params = length(params_list) / 3 * 2
   params = params_list[1:n_pop_params]
   for (j in 1:(n_pop_params/2)){

@@ -29,7 +29,7 @@ converge_figsGroup = function(distribution, jags_model_run){
     par_list = c('pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
                  'group_alpha', 'group_beta')
   }
-  n_groups = length(unique(jags_model_run$data[[jags_model_run$group]]))
+  n_groups = length(unique(jags_model_run$data$group))
   n_pop_params = length(par_list) / 3 * 2
   params = c(par_list[1:n_pop_params],
              sprintf(paste0(par_list[n_pop_params+1], '[%s]'),
