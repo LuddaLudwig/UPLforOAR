@@ -109,11 +109,15 @@ dat_emiss = subset(dat_emiss, select = c(sources, emissions))
 nrow(dat_emiss) # number of tests in data set
 summary(dat_emiss$emissions)
 
-dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist = MACT_existing(data = dat_emiss, 
+                          emissions = 'emissions',
+                          sources = 'sources',
+                          CAA_section = 112)
 dat_exist_avg = dat_exist %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
 dat_exist_avg = arrange(dat_exist_avg, avg)
-distribution_result_exist = distribution_type(dat_exist)
+distribution_result_exist = distribution_type(data = dat_exist,
+                                              emissions = 'emissions')
 ```
 ```{r EGtable, fig.align = "center"}
 knitr::kable(dat_exist_avg %>% mutate(across(c(2), ~signif(., digits = 4))) %>% head(), 
@@ -124,11 +128,13 @@ knitr::kable(dat_exist_avg %>% mutate(across(c(2), ~signif(., digits = 4))) %>% 
 Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_exist)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_exist`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
 ```{r UPL, echo = TRUE}
 UPL1_exist = Normal_UPL(data = dat_exist,
-                     future_runs = 1,
-                     significance = 0.99)
-UPL2_exist = Lognormal_UPL(data = dat_exist,
+                        emissions = 'emissions',
                         future_runs = 1,
                         significance = 0.99)
+UPL2_exist = Lognormal_UPL(data = dat_exist,
+                           emissions = 'emissions',
+                           future_runs = 1,
+                           significance = 0.99)
 ```
 Next we calculate the UPL using the appropriate distribution, which results in a MACT floor standard of `r UPL1_exist` lb/MMBtu in Hg emissions. Lastly, we will want to plot observation density of emissions data as well as the `r distribution_result_exist` distribution that was used to as the probability density function for the UPL calculation. From the figure below, the Lognormal appears to better represent the data, which would yield a UPL MACT floor standard of `r UPL2_exist` lb/MMBtu in Hg emissions.
 ```{r distr, echo = TRUE}
@@ -137,7 +143,9 @@ Next we calculate the UPL using the appropriate distribution, which results in a
 x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
-obs_dens_results = obs_density(dat_exist, xvals = x_hat)
+obs_dens_results = obs_density(data = dat_exist, 
+                               emissions = 'emissions',
+                               xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat
