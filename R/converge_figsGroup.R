@@ -36,6 +36,12 @@ converge_figsGroup = function(distribution, jags_model_run){
                      seq(1:n_groups)),
              sprintf(paste0(par_list[n_pop_params+2], '[%s]'),
                      seq(1:n_groups)))
+  group_levels = levels(jags_model_run$data$group)
+  param_name = params
+  for (i in 1:n_groups){
+    param_name = stringr::str_replace(param_name, paste0('\\[', i, '\\]'),
+                                          paste0('_', group_levels[i]))
+  }
   fig_list = list()
   for (i in 1:length(params))
     local({
@@ -43,6 +49,7 @@ converge_figsGroup = function(distribution, jags_model_run){
       step3 = coda::as.mcmc.list(jags_model_run$run_results,
                                  vars = params[i])
       step4 = runjags::combine.mcmc(step3)
+      var_name = param_name[i]
       p1 = ggplot2::ggplot()+
         ggplot2::geom_line(ggplot2::aes(color = 'a', x = 1:10000,
                                         y = as.vector(step3[[1]])),
@@ -54,11 +61,11 @@ converge_figsGroup = function(distribution, jags_model_run){
                                         y = as.vector(step3[[3]])),
                            linewidth = 0.5,linetype = 3)+
         mcmc_theme() + ggplot2::xlab('Iterations') +
-        ggplot2::ylab(params[i])
+        ggplot2::ylab(var_name)
       p2 = ggplot2::ggplot() +
         ggplot2::geom_histogram(ggplot2::aes(step4),
                                 color = 'black', fill = 'grey')+
-        ggplot2::xlab(params[i]) + mcmc_theme()
+        ggplot2::xlab(var_name) + mcmc_theme()
       p12 = p1 + p2 + patchwork::plot_layout(ncol = 2) +
         patchwork::plot_annotation(title = distribution) &
         ggplot2::theme(plot.title =

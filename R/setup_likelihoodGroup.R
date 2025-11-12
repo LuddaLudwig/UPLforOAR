@@ -55,12 +55,12 @@ setup_likelihoodGroup = function(distribution, data, emissions,
     stop("Cannot calculate UPL with zero variance data")
   }
   if (!is.character(emissions)){
-    emissions_name = colnames(data)[emissions]
+    emissions = colnames(data)[emissions]
   }
   if (!is.character(group)){
-    group_name = colnames(data)[group]
+    group = colnames(data)[group]
   }
-  data_names = c(emissions_name, group_name)
+  data_names = c(emissions, group)
   if(!manual_prior){
     if (distribution == "Normal"){
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,
