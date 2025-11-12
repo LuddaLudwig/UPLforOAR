@@ -21,12 +21,13 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma')
+  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma',
+                                         emissions = 'emissions')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   N_parameter = 4
   N_groups = length(unique(top5$sources))
-  runmod=run_likelihoodGroup(model_input=JAGS_model_stuff, group = 'sources',
+  runmod=run_likelihoodGroup(model_input=JAGS_model_stuff,
                         xvals=xvals,future_runs=runcount)
   expect_equal(runmod$distribution,'Gamma')
   run_results=runmod$run_results
@@ -35,7 +36,9 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   load_results=readRDS(test_path('test_run','test_mcmc_group.rds'))
   expect_equal(run_mcmc,load_results)
   expect_equal(runmod$manual_prior,FALSE)
-  expect_equal(runmod$data,top5)
+  dat_comp = top5
+  names(dat_comp) = c('emissions', 'group')
+  expect_equal(runmod$data,dat_comp)
   expect_equal(runmod$xvals,xvals)
   expect_equal(runmod$future_runs,runcount)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+

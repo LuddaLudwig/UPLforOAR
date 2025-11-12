@@ -20,7 +20,8 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   output_set=Bayesian_UPL(data=top5,distr_list = c("Lognormal","Skewed"),
-               future_runs = runcount,significance = 0.99,xvals=xvals)
+               future_runs = runcount,significance = 0.99,xvals=xvals,
+               emissions = 'emissions')
   # saveRDS(output_set,test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   load_results=readRDS(test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   expect_equal(output_set,load_results)

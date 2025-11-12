@@ -16,13 +16,14 @@ test_that("Skewed_UPL() calculates UPL assuming emissions data are skew-normal",
                                    dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-  test_result=Skewed_UPL(data=top5)
+  test_result=Skewed_UPL(data=top5,emissions = 'emissions')
   expect_equal(test_result,2.50184469)
 
   small_dat=tibble::tibble(emissions=c(4.2,5.1,6.7),
                            sources=c("A","A","A"))
   test_result2=tryCatch({
-    result <- suppressWarnings(Skewed_UPL(data=small_dat))
+    result <- suppressWarnings(Skewed_UPL(data=small_dat,
+                                          emissions = 'emissions'))
     print(result)
   }, error = function(e) {
       output=(e$message)

@@ -17,7 +17,8 @@ test_that("setup_likelihood() calls JAGS model scripts with initial values and p
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
+  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal',
+                                    emissions = 'emissions')
 
   expect_equal(JAGS_model_stuff$par_list,c('emission_hat','pdf_obs','pdf_hat',
                                            'u_ln','sd_ln'))
@@ -33,7 +34,7 @@ test_that("setup_likelihood() calls JAGS model scripts with initial values and p
          'sd_ln'=1.5*stats::sd(ln_emiss,na.rm=TRUE))))
   expect_equal(JAGS_model_stuff$distribution,'Lognormal')
   expect_equal(length(JAGS_model_stuff),6)
-  expect_equal(JAGS_model_stuff$data,top5)
+  expect_equal(JAGS_model_stuff$data,subset(top5, select=c(emissions)))
   expect_equal(JAGS_model_stuff$manual_prior,FALSE)
   readjags=runjags::read.jagsfile(test_path('test_JAGS','test-Emission_lnorm_JAGS.R'))
   expect_equal(JAGS_model_stuff$model_code$model,readjags$model)

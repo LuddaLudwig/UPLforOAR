@@ -74,8 +74,9 @@
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
 BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
-                        data, future_runs = 3, significance = 0.99,
-                        xvals = NULL, maxY = NULL, minY = 0, group = 'sources',
+                        data, emissions, group = 'sources',
+                        future_runs = 3, significance = 0.99,
+                        xvals = NULL, maxY = NULL, minY = 0,
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){

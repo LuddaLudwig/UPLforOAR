@@ -25,9 +25,10 @@ test_that("setup_likelihoodGroup() calls JAGS model scripts with initial values 
   sigma = stats::sd(top5$emissions)
   shape = mu^2 / sigma^2
   rate = mu / sigma^2
-
-  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma')
-
+  dat_comp = top5
+  names(dat_comp) = c('emissions', 'group')
+  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma',
+                                         emissions = 'emissions')
   expect_equal(JAGS_model_stuff$par_list,
                c('emission_hat', 'pdf_obs', 'pdf_hat', 'pop_rate_mu',
                  'pop_shape_mu', 'pop_rate_sd', 'pop_shape_sd', 'group_rate',
@@ -43,8 +44,8 @@ test_that("setup_likelihoodGroup() calls JAGS model scripts with initial values 
          'pop_rate_mu' = 0.5 * rate, 'pop_shape_mu' = 1.5 * shape,
          'pop_rate_sd' = 0.3 * rate, 'pop_shape_sd' = 0.3 * shape)))
   expect_equal(JAGS_model_stuff$distribution,'Gamma')
-  expect_equal(length(JAGS_model_stuff),6)
-  expect_equal(JAGS_model_stuff$data,top5)
+  expect_equal(length(JAGS_model_stuff),7)
+  expect_equal(JAGS_model_stuff$data,dat_comp)
   expect_equal(JAGS_model_stuff$manual_prior,FALSE)
   readjags=runjags::read.jagsfile(test_path('test_JAGS',
                                             'test-EmissionGroup_gamma_JAGS.R'))
