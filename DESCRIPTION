@@ -42,6 +42,8 @@ Imports:
     runjags,
     scales,
     sfsmisc,
+    shiny,
+    shinycssloaders,
     sn,
     tibble,
     tidyr
