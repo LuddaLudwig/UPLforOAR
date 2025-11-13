@@ -42,6 +42,7 @@ library(sn)
 library(patchwork)
 library(grid)
 library(readr)
+library(kableExtra)
 ```
 
 ## Introduction
