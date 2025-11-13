@@ -38,6 +38,7 @@ Imports:
     readr,
     rjags,
     rmarkdown,
+    Rmpfr,
     runjags,
     scales,
     sfsmisc,
