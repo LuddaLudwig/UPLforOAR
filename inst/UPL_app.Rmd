@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = FALSE, error = TRUE, warning = FALSE, message = FAL
 library(tidyverse)
 library(kableExtra)
 library(UPLforOAR)
+library(shinycssloaders)
 ```
 
 ```{r inputs, echo = FALSE}
@@ -59,6 +60,7 @@ observeEvent(dat_upload(),{
 observeEvent(dat_upload(),{
     updateVarSelectInput(inputId = "getSource",data = dat_upload(),selected = "")
   })
+# add_busy_spinner(spin = "fading-circle")
 ```
 
 ```{r text_warn}
@@ -96,7 +98,7 @@ output$dat_display = eventReactive(input$submit, {
                 kable_styling("striped", full_width = T)
 })
   
-tableOutput('dat_display')
+tableOutput('dat_display') %>% withSpinner(color="#0dc5c1")
 
 CAA_text=eventReactive(input$submit, {
   if (input$CAA_section == 112){
@@ -256,7 +258,7 @@ output$mean_display = eventReactive(input$submit, {
         digits = 12, col.names = c('Source','Average emission','No. of Runs')) %>% 
         kable_styling("striped", full_width = T)
   })
-tableOutput('mean_display')
+tableOutput('mean_display') %>% withSpinner(color="#0dc5c1")
 ```
 
 ```{r nsps}
@@ -417,7 +419,7 @@ output$uiplot1 = renderUI({
     plotOutput(outputId = 'plot1')
   }
 })
-uiOutput(outputId = 'uiplot1')
+uiOutput(outputId = 'uiplot1') %>% withSpinner(color="#0dc5c1")
 ```
 
 ```{r label1}
@@ -544,7 +546,7 @@ output$upl_display = eventReactive(input$submit, {
               col.names = c('Distribution', 'Existing source UPL', 'new source UPL'), 
               digits = 10)%>% kable_styling("striped", full_width = T)
   })
-tableOutput('upl_display')
+tableOutput('upl_display') %>% withSpinner(color="#0dc5c1")
 ```
 
 \vspace{2cm}
@@ -586,7 +588,7 @@ renderPlot({
   scale_color_manual(values = c('black', '#984EA3', '#FF7F00', '#377EB8'),
                      labels = c('Observations', 'Lognormal', 'Normal', 'Skewed'))+
   guides(fill = 'none')
-})
+}) 
 ```
 
 Figure 2. Observation density of emission test run population. Test run average 
@@ -636,7 +638,7 @@ output$uiplot2 = renderUI({
     plotOutput(outputId = 'plot2')
   }
 })
-uiOutput(outputId = 'uiplot2')
+uiOutput(outputId = 'uiplot2') %>% withSpinner(color="#0dc5c1")
 ```
 
 ```{r label3}
