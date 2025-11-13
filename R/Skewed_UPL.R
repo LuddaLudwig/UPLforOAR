@@ -15,6 +15,9 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
   if (n < 3){
     stop("Need at least 3 observations for UPL calculation")
   }
+  if (n > 341){
+    warning("slower calculations due to requirement for high precision floating point")
+  }
   future_runs = as.integer(future_runs)
   emission_mean = mean(data_temp$emissions, na.rm = T)
   sigma = stats::sd(data_temp$emissions, na.rm = T)
@@ -49,22 +52,27 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
     I_term = c()
     for (i in 1:6){
       c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-      c2 = Rmpfr::igamma(a[i], 0)
-      c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
       c4 = (a[i] - 1 - w[i]) / (2 * b[i])
       c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
       c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
       c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-      I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
-    }
-    coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
+      if (n > 341){
+        c2 = Rmpfr::igamma(a[i], 0)
+        c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
+        I_term[i] =  Rmpfr::asNumeric(c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+      } else {
+        c2 = gamma(a[i])
+        c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+        I_term[i] =  (c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+      }    }
+    coeff1 = (2 * n - 1) * I_term[[5]] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[[6]] / (3 * sqrt(2 * n * pi))
     coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
     coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
     current_prob = 1 - (I_term[1] / 2 + S * coeff1 - K * coeff2 + S^2 * coeff3)
     if (abs(current_prob - significance) < 0.0001){
       Skewed_UPL = mean(data_temp$emissions) + tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     } else if ((current_prob - significance) > 0){
-      tstat_list = seq(from = tscore, length.out = 20000, by = -0.0001)
+      tstat_list = seq(from = tscore, length.out = 10000, by = -0.0001)
       new_prob = c()
       for (t in 1:length(tstat_list)){
         u0 = 1 / (1 + (tstat_list[t]^2 / (n - 1)))
@@ -74,13 +82,19 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         I_term = c()
         for (i in 1:6){
           c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c2 = Rmpfr::igamma(a[i], 0)
-          c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
           c4 = (a[i] - 1 - w[i]) / (2 * b[i])
           c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1/3)
           c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
           c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-          I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
+          if (n > 341){
+            c2 = Rmpfr::igamma(a[i], 0)
+            c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
+            I_term[i] =  Rmpfr::asNumeric(c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+          } else {
+            c2 = gamma(a[i])
+            c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+            I_term[i] =  (c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+          }
         }
         coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
         coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
@@ -90,7 +104,7 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
       new_tscore = tstat_list[(abs(new_prob - significance) < 0.0001)][1]
       Skewed_UPL = mean(data_temp$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
     } else if ((current_prob - significance) < 0){
-      tstat_list = seq(from = tscore, length.out = 20000, by = 0.0001)
+      tstat_list = seq(from = tscore, length.out = 10000, by = 0.0001)
       new_prob = c()
       for (t in 1:length(tstat_list)){
         u0 = 1 / (1 + (tstat_list[t]^2 / (n - 1)))
@@ -100,14 +114,19 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         I_term = c()
         for (i in 1:6){
           c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c2 = Rmpfr::igamma(a[i], 0)
-          c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
           c4 = (a[i] - 1 - w[i]) / (2 * b[i])
           c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
           c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
           c7 = w[i]^2 * (3 * a[i] / 2 - 1 / 6)
-          I_term[i] = c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2))
-        }
+          if (n > 341){
+            c2 = Rmpfr::igamma(a[i], 0)
+            c3 = ((exp(-w[i]) * w[i]^Rmpfr::mpfr(a[i], 128)) / Rmpfr::igamma(a[i], 0))
+            I_term[i] =  Rmpfr::asNumeric(c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+          } else {
+            c2 = gamma(a[i])
+            c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+            I_term[i] =  (c1 / c2 + c3 * (c4 + (1 / (2 * b[i])^2) * (c5 - c6 + c7 - w[i]^3 / 2)))
+          }        }
         coeff1 = (2 * n - 1) * I_term[5] / (6 * sqrt(2 * n * pi)) - (n - 1) * I_term[6] / (3 * sqrt(2 * n * pi))
         coeff2 = (n - 1) * I_term[1] / 24 - (n - 1) * (n + 2) * I_term[2] / (12 * n) + (n + 4) * (n - 1) * I_term[3] / (24 * n)
         coeff3 = (n - 1) * (2 * n + 5) * I_term[1] / 72 - (n - 1) * (2 * n^2 + 5 * n + 8) * I_term[2] / (24 * n) + (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[3] / (24 * n) - (n - 1) * (2 * n^2 + 5 * n + 12) * I_term[4] / (72 * n)
