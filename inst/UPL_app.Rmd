@@ -23,15 +23,16 @@ inputPanel(
                        multiple = FALSE, data = ""),
         varSelectInput('getSource', 'Select sources data',
                        multiple = FALSE, data = ""),
-        # textInput("source_input", label = "source variable name"),
-        # textInput("emiss_input", label = "emission variable name"),
+        actionButton("submit", "Submit"),
+        checkboxInput('runMACT', 'Subset data to top performers', FALSE),
         selectInput("CAA_section", label = "CAA Section:", selected = 112,
                     choices = c(112, 129)),
-        checkboxInput('runMACT', 'Subset data to top performers', FALSE),
+
         numericInput("future_runs",label = "Number of future test runs",
                      value = 3, min = 1),
         numericInput("significance",label = "Level of significance",
-                     value = 0.99, min = 0, max = 1)
+                     value = 0.99, min = 0, max = 1),
+
 )
 downloadButton('Sourcedownload1', 'Download top performers data')
 downloadButton('Sourcedownload2', 'Download best performer data')
@@ -60,18 +61,28 @@ observeEvent(dat_upload(),{
   })
 ```
 
+```{r text_warn}
+output$warn = renderText("Warning: calculations will take longer with large data sets due to the requirement for higher floating point precision for skew-normal UPL.")
+output$uiwarn = renderUI({
+  if (warn_EVAL()){
+    htmlOutput(outputId = 'warn')
+  }
+})
+uiOutput(outputId = 'uiwarn')
+```
+
 ## Emission dataset
 
 Check Table 1 below to ensure you have loaded the correct emission data set and 
 that the values are generally what you expect.
 
 ```{r data_summary}
-dat_emiss = reactive({
-  dat = dat_upload()
-  tibble(emissions = dat[[input$getEmiss]], sources = dat[[input$getSource]])
+dat_emiss = eventReactive(input$submit, {
+      dat = dat_upload()
+      out = tibble(emissions = dat[[input$getEmiss]], sources = dat[[input$getSource]])
+      out
 })
-
-zero_warn = reactive({
+zero_warn = eventReactive(input$submit, {
   dat = dat_emiss()
   if (any(dat$emissions == 0)){
     out = TRUE
@@ -80,21 +91,21 @@ zero_warn = reactive({
   }
   out
 })
-output$dat_display = reactive({
+output$dat_display = eventReactive(input$submit, {
   summary(dat_emiss()) %>% knitr::kable('html' ,caption = 'Summary of dataset') %>%
                 kable_styling("striped", full_width = T)
 })
   
 tableOutput('dat_display')
 
-CAA_text=reactive(
+CAA_text=eventReactive(input$submit, {
   if (input$CAA_section == 112){
   'CAA Section 112(d)(3)'
 } else if (input$CAA_section == 129){
   'CAA Section 129(a)(2)'
 }
-)
-mact_EVAL = reactive({
+})
+mact_EVAL = eventReactive(input$submit, {
   if (is.null(input$runMACT)){
     out = FALSE
   } else if (!input$runMACT){
@@ -121,7 +132,10 @@ uiOutput(outputId = 'uitext0c')
 ```{r text0a}
 output$text0a = renderText(paste0("For existing source standards calculations, ",
                                CAA_text(),
-                               " is used to determine the top sources, either the best 5 performers or the best 12% performers. The number of future tests for calculating the UPL is ",
+                               " is used to determine the top sources, resulting in ", 
+                               nrow(dat_top_exist()), " runs from ", 
+                               nrow(dat_topmeans_exist()), " sources. 
+                               The number of future tests for calculating the UPL is ",
                                input$future_runs,
                                " using a ", input$significance * 100,
                                "% limit."))
@@ -134,7 +148,14 @@ uiOutput(outputId = 'uitext0a')
 ```
 
 ```{r text0b}
-output$text0b = renderText(paste0("The emissions data were pre-selected to the top performing sources to use for the UPL calculation, thus the entire uploaded data set was used to characterize the emissions distribution. The number of future tests for calculating the UPL was ",
+output$text0b = renderText(paste0("The emissions data were pre-selected to the 
+                                  top performing sources to use for the UPL 
+                                  calculation, thus the entire uploaded data set 
+                                  of ", nrow(dat_top_exist())," runs from ", 
+                                  nrow(dat_topmeans_exist()), " sources was used 
+                                  to characterize the emissions distribution. 
+                                  The number of future tests for calculating the 
+                                  UPL was ",
                                input$future_runs,
                                " using a ", input$significance * 100,
                                "% limit."))
@@ -150,7 +171,7 @@ uiOutput(outputId = 'uitext0b')
 
 ```{r source_settings}
 
-dat_top_exist_raw = reactive({
+dat_top_exist_raw = eventReactive(input$submit, {
   if (input$runMACT){
     dat_out = MACT_existing(CAA_section = input$CAA_section,
                             data = dat_emiss(),
@@ -162,18 +183,28 @@ dat_top_exist_raw = reactive({
   }
   dat_out
 })
-  
-emission_mean_exist = reactive({
+warn_EVAL = eventReactive(input$submit, {
+  if (is.null(dat_top_exist_raw())){
+    out = FALSE
+  } else if (nrow(dat_top_exist_raw()) <= 341){
+    out = FALSE
+  } else if (nrow(dat_top_exist_raw()) > 341){
+    out = TRUE
+  }
+  out
+})
+emission_mean_exist = eventReactive(input$submit, {
   dat1 = dat_top_exist()
   results1 = mean(dat1$emissions)
   results1
 })
 
-dat_topmeans_exist_raw = reactive(dat_top_exist_raw() %>% 
-                                  group_by(sources) %>%
+dat_topmeans_exist_raw = eventReactive(input$submit, {
+  dat_top_exist_raw() %>% group_by(sources) %>%
                                   summarize(means = mean(emissions), 
-                                            counts = n()))
-dat_topmeans_exist = reactive({
+                                            counts = n())
+  })
+dat_topmeans_exist = eventReactive(input$submit, {
   ordered = dat_topmeans_exist_raw()
   ordered$sources = as.factor(ordered$sources)
   ordered$sources = fct_reorder(ordered$sources,
@@ -184,21 +215,22 @@ dat_topmeans_exist = reactive({
   ordered
 })
 
-dat_top_new_raw = reactive(MACT_new(data = dat_emiss(), 
-                                    emissions = 'emissions',
-                                    sources = 'sources'))
-emission_mean_new = reactive({
+dat_top_new_raw = eventReactive(input$submit, {
+  MACT_new(data = dat_emiss(), emissions = 'emissions',
+                                    sources = 'sources')
+  })
+emission_mean_new = eventReactive(input$submit, {
   dat2 = dat_top_new_raw()
   results2 = mean(dat2$emissions)
   results2
   })
-best_source = reactive({
+best_source = eventReactive(input$submit, {
   dat3 = dat_top_new_raw()
   result3 = as.character(dat3$sources)[1]
   result3
 })
 
-dat_top_exist = reactive({
+dat_top_exist = eventReactive(input$submit, {
   ordered2 = dat_top_exist_raw()
   ordered3 = dat_topmeans_exist()
   ordered2$sources = factor(ordered2$sources, 
@@ -218,14 +250,17 @@ output$Sourcedownload1 = downloadHandler(
   }
 )
 
-output$mean_display = reactive(dat_topmeans_exist() %>% head(5) %>% 
-                                 knitr::kable('html', caption = "Top five sources for existing source calculation", digits = 12, col.names = c('Source','Average emission','No. of Runs')) %>% 
-                kable_styling("striped", full_width = T))
+output$mean_display = eventReactive(input$submit, {
+  dat_topmeans_exist() %>% head(5) %>% knitr::kable('html', 
+        caption = "Top five sources for existing source calculation", 
+        digits = 12, col.names = c('Source','Average emission','No. of Runs')) %>% 
+        kable_styling("striped", full_width = T)
+  })
 tableOutput('mean_display')
 ```
 
 ```{r nsps}
-dat_top_new = reactive({
+dat_top_new = eventReactive(input$submit, {
   ordered2 = dat_top_new_raw()
   ordered2$ln_emiss = log(ordered2$emissions)
   ordered2$ln_emiss = replace(ordered2$ln_emiss,
@@ -240,7 +275,7 @@ output$Sourcedownload2 = downloadHandler(
     write.csv(dat_top_new(), file)
   }
 )
-nsps_EVAL = reactive({
+nsps_EVAL = eventReactive(input$submit, {
   if (nrow(dat_top_new()) < 3){
     out = FALSE
   } else {
@@ -255,15 +290,12 @@ nsps_EVAL = reactive({
   out
 })
 
-distribution_result_new = reactive({
-    # validate(
-    # need((nrow(dat_top_new_raw())>=3),
-    #      "data must have at least 3 observations"))
+distribution_result_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   distribution_type(data = dat_top_new(), emissions = 'emissions')
   })
 
-PI99_normal_new = reactive({
+PI99_normal_new = eventReactive(input$submit, {
   if (nsps_EVAL()){
       df4 = dat_top_new()
       out3 = Normal_UPL(data = df4, emissions = 'emissions',
@@ -274,7 +306,7 @@ PI99_normal_new = reactive({
   }
   out3
   })
-PI99_lognorm_new = reactive({
+PI99_lognorm_new = eventReactive(input$submit, {
   if (nsps_EVAL()){
     df5 = dat_top_new()
     out4 = Lognormal_UPL(data = df5, emissions = 'emissions',
@@ -285,7 +317,7 @@ PI99_lognorm_new = reactive({
   }
   out4
   })
-PI99_skew_new = reactive({
+PI99_skew_new = eventReactive(input$submit, {
   if (nsps_EVAL()){
     df6 = dat_top_new()
     out5 = Skewed_UPL(data = df6, emissions = 'emissions',
@@ -297,49 +329,49 @@ PI99_skew_new = reactive({
   out5
   })
 
-dat_freq1_new = reactive({
+dat_freq1_new = eventReactive(input$submit, {
     output = tibble(distribution = c('Normal', 'Skewed', 'Lognormal'),
                 UPL_new = c(PI99_normal_new(),
                           PI99_skew_new(),
                           PI99_lognorm_new()))
   output
   })
-dat_freq_new = reactive({
+dat_freq_new = eventReactive(input$submit, {
   dat_freq2_new = dat_freq1_new()
   dat_freq3_new = dat_freq2_new %>% mutate(across(where(is.numeric), 
                                                   ~signif(. ,digits = 4)))
   dat_freq3_new
   })
 
-best_UPL_NSPS = reactive({
+best_UPL_NSPS = eventReactive(input$submit, {
   req(nsps_EVAL())
   dat_freq1 = dat_freq_new()
   dat_freq1$UPL_new[dat_freq1$distribution == distribution_result_new()]
 })
 
-x_hat_new = reactive({
+x_hat_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   df = dat_top_new()
   seq(0, 3 * max(df$emissions), length.out = 1024)
 })
-obs_dens_results_new = reactive({
+obs_dens_results_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   obs_density(data = dat_top_new(), xvals = x_hat_new(), 
               emissions = 'emissions')
 }
 
 )
-Obs_onPoint_new = reactive({
+Obs_onPoint_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   out1 = obs_dens_results_new()
   out1$Obs_onPoint
 })
-obs_den_df_new = reactive({
+obs_den_df_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   out1 = obs_dens_results_new()
   out1$obs_den_df
 }) 
-pred_dat_new = reactive({
+pred_dat_new = eventReactive(input$submit, {
   req(nsps_EVAL())
   df = dat_top_new()
   pdf_norm = dnorm(x_hat_new(), mean = emission_mean_new(), 
@@ -351,7 +383,7 @@ pred_dat_new = reactive({
 ```
 
 ```{r figure1}
-source_fig = reactive({
+source_fig = eventReactive(input$submit, {
   dat_temp = dat_topmeans_exist()
   if (all(dat_temp$counts == 1)){
     output = FALSE
@@ -400,66 +432,63 @@ uiOutput(outputId = 'uitext1')
 ```
 
 ```{r frequentist}
-distribution_result_exist = reactive(distribution_type(data = dat_top_exist(),
-                                                       emissions = 'emissions'))
+distribution_result_exist = eventReactive(input$submit, {
+  distribution_type(data = dat_top_exist(),emissions = 'emissions')
+  })
 
-PI99_normal_exist = reactive(
+PI99_normal_exist = eventReactive(input$submit, {
   Normal_UPL(data = dat_top_exist(), emissions = 'emissions',
              future_runs = input$future_runs,
              significance = input$significance)
-)
-PI99_lognorm_exist = reactive({
-  df2 = dat_top_exist()
-  out1 = Lognormal_UPL(data = df2, emissions = 'emissions',
+})
+PI99_lognorm_exist = eventReactive(input$submit, {
+  Lognormal_UPL(data = dat_top_exist(), emissions = 'emissions',
                        future_runs = input$future_runs,
                        significance = input$significance)
-  out1
   })
-PI99_skew_exist = reactive({
-  df3 = dat_top_exist()
-  out2 = Skewed_UPL(data = df3, emissions = 'emissions',
+PI99_skew_exist = eventReactive(input$submit, {
+  Skewed_UPL(data = dat_top_exist(), emissions = 'emissions',
                     future_runs = input$future_runs,
                     significance = input$significance)
-  out2
   })
 
-dat_freq1 = reactive({
+dat_freq1 = eventReactive(input$submit, {
   pi1 = PI99_normal_exist()
   pi2 = PI99_skew_exist()
   pi3 = PI99_lognorm_exist()
   tibble(distribution = c('Normal', 'Skewed', 'Lognormal'),
                 UPL_exist = c(pi1, pi2, pi3))
   })
-dat_freq = reactive({
+dat_freq = eventReactive(input$submit, {
   dat_freq2 = dat_freq1()
   dat_freq3 = dat_freq2 %>% mutate(across(where(is.numeric), ~signif(., digits = 4)))
   dat_freq3
   })
 
-best_UPL = reactive({
+best_UPL = eventReactive(input$submit, {
   dat_freq1 = dat_freq()
   dat_freq1$UPL_exist[dat_freq1$distribution == distribution_result_exist()]
 })
 
-x_hat = reactive({
+x_hat = eventReactive(input$submit, {
   df = dat_top_exist()
   seq(0, 3 * max(df$emissions), length.out = 1024)
 })
 
-obs_dens_results = reactive(
+obs_dens_results = eventReactive(input$submit, {
   obs_density(data = dat_top_exist(), xvals = x_hat(),
               emissions = 'emissions')
-)
-Obs_onPoint = reactive({
+})
+Obs_onPoint = eventReactive(input$submit, {
   out1 = obs_dens_results()
   out1$Obs_onPoint
 })
-obs_den_df = reactive({
+obs_den_df = eventReactive(input$submit, {
   out1 = obs_dens_results()
   out1$obs_den_df
 })
 
-pred_dat = reactive({
+pred_dat = eventReactive(input$submit, {
   df = dat_top_exist()
   pdf_norm = dnorm(x_hat(), mean = emission_mean_exist(), 
                    sd = sd(df$emissions))
@@ -492,7 +521,7 @@ uiOutput(outputId = 'uitext2')
 ```
 
 ```{r freqtable}
-dat_UPL = reactive({
+dat_UPL = eventReactive(input$submit, {
   dat1 = dat_freq()
   dat2 = dat_freq_new()
   output = full_join(dat1, dat2, by = 'distribution')
@@ -506,13 +535,15 @@ output$UPLdownload = downloadHandler(
     write.csv(dat_UPL(), file)
   }
 )
-output$upl_display = reactive(dat_UPL() %>% knitr::kable('html',
-                            caption = paste0("UPL results from frequentist excel 
-                                           workbook using a significance of ",
-                                           input$significance * 100,'% and ',
-                                           input$future_runs, ' future test runs.'),
-              col.names = c('Distribution', 'Existing source UPL', 'new source UPL'), digits = 10)%>%
-                kable_styling("striped", full_width = T))
+output$upl_display = eventReactive(input$submit, {
+  dat_UPL() %>% knitr::kable('html',
+              caption = paste0("UPL results from frequentist excel 
+                      workbook using a significance of ",
+                    input$significance * 100,'% and ', input$future_runs,
+                    ' future test runs.'),
+              col.names = c('Distribution', 'Existing source UPL', 'new source UPL'), 
+              digits = 10)%>% kable_styling("striped", full_width = T)
+  })
 tableOutput('upl_display')
 ```
 
