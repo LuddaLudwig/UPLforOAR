@@ -49,8 +49,8 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
     I_term = c()
     for (i in 1:6){
       c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-      c2 = gamma(a[i])
-      c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+      c2 = Rmpfr::igamma(a[i], 0)
+      c3 = ((exp(-w[i]) * w[i]^a[i]) / Rmpfr::igamma(a[i], 0))
       c4 = (a[i] - 1 - w[i]) / (2 * b[i])
       c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
       c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
@@ -74,8 +74,8 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         I_term = c()
         for (i in 1:6){
           c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c2 = gamma(a[i])
-          c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+          c2 = Rmpfr::igamma(a[i], 0)
+          c3 = ((exp(-w[i]) * w[i]^a[i]) / Rmpfr::igamma(a[i], 0))
           c4 = (a[i] - 1 - w[i]) / (2 * b[i])
           c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1/3)
           c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
@@ -100,8 +100,8 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         I_term = c()
         for (i in 1:6){
           c1 = stats::pgamma(w[i], shape = a[i], rate = 1)
-          c2 = gamma(a[i])
-          c3 = ((exp(-w[i]) * w[i]^a[i]) / gamma(a[i]))
+          c2 = Rmpfr::igamma(a[i], 0)
+          c3 = ((exp(-w[i]) * w[i]^a[i]) / Rmpfr::igamma(a[i], 0))
           c4 = (a[i] - 1 - w[i]) / (2 * b[i])
           c5 = (a[i]^3 / 2 - 5 * a[i]^2 / 3 + 3 * a[i] / 2 - 1 / 3)
           c6 = w[i] * (3 * a[i]^2 / 2 - 11 * a[i] / 6 + 1 / 3)
