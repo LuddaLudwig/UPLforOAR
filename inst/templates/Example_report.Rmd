@@ -82,8 +82,10 @@ if (any(dat_emiss$emissions == 0)){
 } else {
   zero_warn = FALSE
 }
-dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss)
-dat_top_new = MACT_new(data = dat_emiss)
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss, 
+                              emissions = 'emissions', sources = 'sources')
+dat_top_new = MACT_new(data = dat_emiss, emissions = 'emissions', 
+                       sources = 'sources')
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
 dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
                                !is.finite(dat_top_exist$ln_emiss), NA)
@@ -98,35 +100,43 @@ if (all(dat_topmeans_exist$counts == 1)){
   source_fig = TRUE
 }
 best_source = as.character(dat_top_new$sources)[1]
-distribution_result_exist = distribution_type(data = dat_top_exist)
-distribution_result_new = distribution_type(data = dat_top_new)
+distribution_result_exist = distribution_type(data = dat_top_exist,
+                                              emissions = 'emissions')
+distribution_result_new = distribution_type(data = dat_top_new,
+                                            emissions = 'emissions')
 
 if (distribution_result_exist == "Normal"){
   UPL_exist = Normal_UPL(data = dat_top_exist,
+                         emissions = 'emissions',
                          significance = params$significance,
                          future_runs = params$future_runs)
 } else if (distribution_result_exist == "Lognormal"){
   UPL_exist = Lognormal_UPL(data = dat_top_exist,
+                            emissions = 'emissions',
                          significance = params$significance,
                          future_runs = params$future_runs)  
 } else if (distribution_result_exist == "Skewed"){
   UPL_exist = Skewed_UPL(data = dat_top_exist,
+                         emissions = 'emissions',
                          significance = params$significance,
                          future_runs = params$future_runs)  
 }
 
 if (distribution_result_new == "Normal"){
   UPL_new = Normal_UPL(data = dat_top_new,
-                         significance = params$significance,
-                         future_runs = params$future_runs)
+                       emissions = 'emissions',
+                       significance = params$significance,
+                       future_runs = params$future_runs)
 } else if (distribution_result_new == "Lognormal"){
   UPL_new = Lognormal_UPL(data = dat_top_new,
-                         significance = params$significance,
-                         future_runs = params$future_runs)  
+                          emissions = 'emissions',
+                          significance = params$significance,
+                          future_runs = params$future_runs)  
 } else if (distribution_result_new == "Skewed"){
   UPL_new = Skewed_UPL(data = dat_top_new,
-                         significance = params$significance,
-                         future_runs = params$future_runs)  
+                       emissions = 'emissions',
+                       significance = params$significance,
+                       future_runs = params$future_runs)  
 }
 ```
 
@@ -350,7 +360,8 @@ The distribution that best represents the existing source data set for *chemical
 
 ```{r plot2, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 x_hat = seq(0, 3*max(dat_top_exist$emissions), length.out = 1024)
-obs_dens_results = obs_density(dat_top_exist, xvals = x_hat)
+obs_dens_results = obs_density(dat_top_exist, xvals = x_hat,
+                               emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 if (distribution_result_exist == "Normal"){
@@ -400,7 +411,8 @@ The distribution that best represents the new source data set for *chemical x* i
 
 ```{r plot3, echo = FALSE, appendix = TRUE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcategory A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue. The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
 x_hat = seq(0, 3*max(dat_top_new$emissions), length.out = 1024)
-obs_dens_results = obs_density(dat_top_new, xvals = x_hat)
+obs_dens_results = obs_density(dat_top_new, xvals = x_hat,
+                               emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 if (distribution_result_new == "Normal"){

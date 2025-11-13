@@ -83,8 +83,10 @@ if (any(dat_emiss$emissions == 0)){
 } else {
   zero_warn = FALSE
 }
-dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss)
-dat_top_new = MACT_new(data = dat_emiss)
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss,
+                              emissions = 'emissions', sources = 'sources')
+dat_top_new = MACT_new(data = dat_emiss, emissions = 'emissions', 
+                       sources = 'sources')
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
 dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
                                !is.finite(dat_top_exist$ln_emiss), NA)
@@ -105,6 +107,7 @@ xvals = NULL # this defaults to a sequence from 0 to 3*max(emissions)
 # for this report, you only want one distribution per UPL that was the best choice
 distribution_ex = c('Gamma')
 results = Bayesian_UPL(data = dat_top_exist, distr_list = distribution_ex,
+                       emissions = 'emissions',
                        future_runs = params$future_runs, 
                        significance = params$significance,
                        maxY = maxY, xvals = xvals)
@@ -113,6 +116,7 @@ xvals_new = NULL # this defaults to a sequence from 0 to 3*max(emissions)
 # for this report, you only want one distribution per UPL that was the best choice
 distribution_new = c('Gamma') 
 results2 = Bayesian_UPL(data = dat_top_new, distr_list = distribution_new, 
+                        emissions = 'emissions',
                         future_runs = params$future_runs, 
                         significance = params$significance,
                         maxY = maxY_new, xvals = xvals_new)
@@ -512,7 +516,7 @@ Figures with density plots of emission test run data were created using `ggplot2
 
 ### Existing Source *Chemical X* in *Subcategory A*
 
-The distribution that best represents the existing source data set for *chemical X* in *subcategory A* is the gamma distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` *(insert measurement units)*. The gamma distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(dat_top_exist)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
+The distribution that best represents the existing source data set for *chemical X* in *subcategory A* is the `r distribution_ex` distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` *(insert measurement units)*. The `r distribution_ex` distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(dat_top_exist)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
 ```{r plot2, echo=FALSE, fig.dim = c(5,4), appendix = TRUE, fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 ggplot()+
   geom_line(data = results$pred_pdf_dat, size = 0.75,
@@ -544,11 +548,11 @@ ggplot()+
   geom_rug(sides = 'b', aes(x = emissions), data = results$obs_pdf_dat,
            alpha = 0.5, outside = TRUE, color = 'black')+
   scale_color_manual(values = c('black', '#FF7F00'),
-                     labels = c('Observations', 'Gamma'))+
+                     labels = c('Observations', distribution_ex))+
   scale_fill_manual(values = c('black', '#FF7F00'),
-                    labels = c('Observations', 'Gamma'))
+                    labels = c('Observations', distribution_ex))
 ```
-The gamma distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
+The `r distribution_ex` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
 
 ```{r conv_figs1, results = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for gamma parameters for existing source MACT floor analysis for chemical X in subcategory A."}
 part1 = setup_likelihood(distribution = distribution_ex, data = dat_top_exist)
@@ -560,7 +564,7 @@ part3
 
 ### New Source *Chemical X* in *Subcategory A*
 
-The distribution that best represents the new source data set for *chemical X* in *subcategory A* is the skew-normal distribution, with a corresponding UPL of `r signif(results2$fit_table$UPL, digits = 4)` *(insert measurement units)*. The skew-normal distribution was the best fit distribution with a $SSE$ of `r signif(results2$fit_table$SSE, digits = 4)`, `r results2$fit_table$Obs_in_CI` out of `r nrow(dat_top_new)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results2$fit_table$pdf_integral, digits = 2)`.
+The distribution that best represents the new source data set for *chemical X* in *subcategory A* is the `r distribution_new` distribution, with a corresponding UPL of `r signif(results2$fit_table$UPL, digits = 4)` *(insert measurement units)*. The `r distribution_new` distribution was the best fit distribution with a $SSE$ of `r signif(results2$fit_table$SSE, digits = 4)`, `r results2$fit_table$Obs_in_CI` out of `r nrow(dat_top_new)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results2$fit_table$pdf_integral, digits = 2)`.
 
 ```{r plot3, echo = FALSE, fig.dim = c(5, 4), appendix = TRUE, fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
 ggplot()+
@@ -593,12 +597,12 @@ ggplot()+
   geom_rug(sides = 'b', aes(x = emissions), data = results2$obs_pdf_dat,
            alpha = 0.5, outside = TRUE, color = 'black')+
   scale_color_manual(values = c('black', '#377EB8'),
-                     labels = c('Observations', 'Skew-normal'))+
+                     labels = c('Observations', distribution_new))+
   scale_fill_manual(values = c('black', '#377EB8'),
-                    labels = c('Observations', 'Skew-normal'))
+                    labels = c('Observations', distribution_new))
 ```
 
-The gamma distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
+The `r distribution_new` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
 ```{r conv_figs2, appendix = TRUE, results = FALSE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for skew-normal parameters for new source MACT floor analysis for chemical X in subcategory A."}
 part1 = setup_likelihood(distribution = distribution_new, data = dat_top_new)
 part2 = run_likelihood(model_input = part1, future_runs = params$future_runs, 
