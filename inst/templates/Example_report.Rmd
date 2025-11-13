@@ -481,6 +481,8 @@ Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmet
 
 Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
 
+Renault O. & O. Scaillet. On the way to recovery: A parametric bias free estimation of recovery rate densities. 2004. Journal of Banking and Finance. 28:12 p. 2915-2931.
+
 \newpage
 ## Appendix A: Existing Source Data Tables
 

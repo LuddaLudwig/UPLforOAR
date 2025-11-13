@@ -636,6 +636,8 @@ Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science 
 
 Hobbs, N. Thompson and Mevin B. Hooten. 2015. "Bayesian Models: A statistical Primer for Ecologists". Princeton University Press.
 
+Renault O. & O. Scaillet. On the way to recovery: A parametric bias free estimation of recovery rate densities. 2004. Journal of Banking and Finance. 28:12 p. 2915-2931.
+
 \newpage
 ## Appendix A: Existing Source Data Tables
 
