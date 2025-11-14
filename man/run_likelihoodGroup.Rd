@@ -34,7 +34,7 @@ is \code{3} since compliance uses 1 test average of 3 runs.}
 }
 \value{
 \code{runjags} object named \code{run_results}, likelihood distribution from the
-JAGS model script, as well as \code{emissions} and \code{group} from the \code{data} provided
+JAGS model script, as well as the RNG state, \code{emissions} and \code{group} from the \code{data} provided
 in \code{\link[=setup_likelihoodGroup]{setup_likelihoodGroup()}} and \code{xval}s used as inputs.
 }
 \description{

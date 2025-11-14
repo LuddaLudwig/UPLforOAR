@@ -11,6 +11,7 @@ setup_likelihood(
   manual_prior = FALSE,
   prior_list = NULL,
   random = FALSE,
+  RNG.state = NULL,
   custom_model = NULL,
   custom_params = NULL,
   custom_init = NULL
@@ -38,8 +39,15 @@ For \code{'Gamma'} they are ordered \code{c(rate_low, rate_high, shape_low, shap
 \code{'Beta'} they are ordered \code{c(alpha_low, alpha_high, beta_low, beta_high)}.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
-and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
-will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+and \code{.RNG.seed} and returned as \code{state} so JAGS runs will be exactly reproducible.
+Changing to \code{TRUE} will generate new random states to use for \code{.RNG.name} and
+\code{.RNG.state} instead, also returned as \code{state} so the results can be
+recreated exactly if desired.}
+
+\item{RNG.state}{Optional setting to specify a list of three lists setting the
+\code{.RNG.name} and \code{.RNG.state} for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If \code{random = TRUE} the RNG
+state is set randomly instead.}
 
 \item{custom_model}{String for the file path location and name
 (i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.}

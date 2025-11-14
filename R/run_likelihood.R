@@ -4,7 +4,7 @@
 #' Traces all variables in `par_list` running 3 chains in parallel with `burnin` and
 #' `adapt` of 10,000 each and keeping 10,000 iterations per chain.
 #' @returns `runjags` object named `run_results`, likelihood distribution from the
-#' JAGS model script, as well as `data` and `xval`s used as inputs.
+#' JAGS model script, as well as the RNG state, `data` and `xval`s used as inputs.
 #' @param model_input Results from [setup_likelihood()], including JAGS model
 #' script, emissions data, distribution, initial values list, and parameters to
 #' monitor.
@@ -97,7 +97,8 @@ run_likelihood = function(model_input, xvals = NULL, minY = 0,
                                            inits = model_input$dat_inits))
   output = list(run_results = rjm, distribution = model_input$distribution,
                 manual_prior = manual_prior, maxY = maxY, minY = minY,
-                data = model_input$data, xvals = xvals, future_runs = future_runs)
+                data = model_input$data, xvals = xvals,
+                future_runs = future_runs, state = model_input$state)
   parallel::stopCluster(cl3)
   return(output)
 }

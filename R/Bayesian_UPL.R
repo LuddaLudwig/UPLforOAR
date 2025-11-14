@@ -34,8 +34,14 @@
 #' are supplying priors manually than you can only run one type of distribution
 #' at a time.
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
-#' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
-#' will use random values for `.RNG.name` and `.RNG.seed` instead.
+#' and `.RNG.seed` and returned as `state` so JAGS runs will be exactly reproducible.
+#' Changing to `TRUE` will generate new random states to use for `.RNG.name` and
+#' `.RNG.state` instead, also returned as `state` so the results can be
+#' recreated exactly if desired.
+#' @param RNG.state Optional setting to specify a list of three lists setting the
+#' `.RNG.name` and `.RNG.state` for each MCMC chain. The default is a fixed set of
+#' RNG states so the results are always reproducible. If `random = TRUE` the RNG
+#' state is set randomly instead.
 #' @param up Argument passed to [obs_density()] inside [fit_likelihood()].
 #' Optional upper limit to bound density, default is `Inf`.
 #' @param low Argument passed to [obs_density()] inside [fit_likelihood()].
@@ -79,7 +85,7 @@
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
                         data, emissions, future_runs = 3, significance = 0.99,
                         xvals = NULL, maxY = NULL, minY = 0,
-                        up = Inf, low = 0,
+                        RNG.state = NULL, up = Inf, low = 0,
                         kernel = 'gamma', bw = NULL,
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
@@ -94,7 +100,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     }
     distribution = distr_list[1]
     mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                 emissions = emissions,
+                                 emissions = emissions, RNG.state = RNG.state,
                                  manual_prior = manual_prior, random = random,
                                  prior_list = prior_list)
     mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
@@ -118,8 +124,16 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   if (!manual_prior){
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
+      if (random == TRUE){
+        if (j == 1){
+          random = TRUE
+        } else if (j > 1){
+          random = FALSE
+          RNG.state = mod_output_list[[j-1]]$state
+        }
+      }
       mod_bayes = setup_likelihood(distribution = distribution, data = data,
-                                   emissions = emissions,
+                                   emissions = emissions, RNG.state = RNG.state,
                                    manual_prior = FALSE, random = random)
       mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                                future_runs = future_runs, xvals = xvals)
@@ -154,6 +168,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
                      Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
                      pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
                      )
+  state = mod_output_list[[length(distr_list)]]$state
   obs_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
     obs_temp = mod_output_list[[i]]$obs_pdf_dat
@@ -170,6 +185,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   return_list = list(fit_table = fit_table,
                      conv_output = conv_output,
                      obs_pdf_dat = obs_pdf_dat,
-                     pred_pdf_dat = pred_pdf_dat)
+                     pred_pdf_dat = pred_pdf_dat,
+                     state = state)
   return(return_list)
 }

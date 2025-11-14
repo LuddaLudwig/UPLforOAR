@@ -7,7 +7,7 @@
 #' dependency within groups is allowed with the
 #' group-level distribution parameters drawn from the overall population distribution.
 #' @returns `runjags` object named `run_results`, likelihood distribution from the
-#' JAGS model script, as well as `emissions` and `group` from the `data` provided
+#' JAGS model script, as well as the RNG state, `emissions` and `group` from the `data` provided
 #' in [setup_likelihoodGroup()] and `xval`s used as inputs.
 #' @param model_input Results from [setup_likelihoodGroup()], including JAGS model
 #' script, emissions data, distribution, initial values list, and parameters to
@@ -111,7 +111,8 @@ run_likelihoodGroup = function(model_input, xvals = NULL, minY = 0,
   output = list(run_results = rjm, distribution = model_input$distribution,
                 manual_prior = manual_prior, maxY = maxY, minY = minY,
                 data = model_input$data, xvals = xvals,
-                future_runs = future_runs, data_names = model_input$data_names)
+                future_runs = future_runs, data_names = model_input$data_names,
+                state = model_input$state)
   parallel::stopCluster(cl3)
   return(output)
 }

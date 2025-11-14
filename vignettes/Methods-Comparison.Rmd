@@ -153,7 +153,7 @@ The skewness and kurtosis ratio tests tell us the distribution is
 that the Normal (in orange) doesn't actually fit well (Fig. 1). This is because 
 those ratio tests do not account for zero as a lower boundary. 
 
-```{r plot1, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line."}
+```{r plot1, echo = FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, with a zero lower boundary. The average of the Hg emissions is the vertical black line."}
 x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
 obs_dens_results = obs_density(dat_exist, xvals = x_hat,
                                emissions = 'emissions')
@@ -196,7 +196,7 @@ unrealistic, since we know we cannot have negative emissions. However, we cannot
 account for boundaries in the analytical normal UPL calculation. In the Bayesian 
 framework, we can explore both bounded and unbounded normal distributions.
 
-```{r plot2, echo=FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line."}
+```{r plot2, echo = FALSE, fig.dim = c(5,4), fig.align = "center", fig.cap = "Observation density of Hg for the overall population. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted normal distribution that is the basis of the UPL estimate is colored orange, without boundaries. The average of the Hg emissions is the vertical black line."}
 x_hat = seq(-mean(dat_exist$emissions), 
             3 * max(dat_exist$emissions), length.out = 1024)
 pdf_n = dnorm(x_hat, mean = mean(dat_exist$emissions, na.rm = T),
@@ -349,7 +349,11 @@ knitr::kable(fit_metrics,
 
 ### Stochastic Effects
 
-The next logical question is how much does the UPL change if we use different random seeds when starting the MCMC iterations? We can explore this be re-running distribution fits with `random = TRUE`. These results will *not* be exactly reproducible. We will fit three sets of unbounded Normal distributions with identical inputs, but allowing the random seeds to change. 
+The next logical question is how much does the UPL change if we use different 
+random seeds when starting the MCMC iterations? We can explore this be re-running 
+distribution fits with `random = TRUE`. These results will be reproducible, as 
+long as you save the RNG state. We will fit three sets of unbounded Normal 
+distributions with identical inputs, but allowing the random seeds to change. 
 
 ```{r random, echo = TRUE, results = FALSE}
 Bayes_random1 = Bayesian_UPL(distr_list = c("Normal"),
@@ -395,4 +399,14 @@ knitr::kable(fit_metrics,
              caption = "UPL results for fitting unbounded Normal distributions with 
              fixed and then 3 different random seeds.",
              col.names = c("Type", "UPL"), digits = 11)
+```
+The exact random number generator and state used in each of these runs is saved 
+in `Bayes_random1$state` and should be included in any report for record 
+keeping. Each time you re-run a model with `random = TRUE` a new set of random 
+states is generated for use. In order to recreate these results, you will need 
+to pass the list containing `.RNG.name` and `.RNG.state` from this output as the 
+argument `RNG.state` when rerunning (while leaving `random = FALSE`). 
+
+```{r state, echo = TRUE, results = TRUE}
+Bayes_random1$state
 ```

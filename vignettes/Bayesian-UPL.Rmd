@@ -435,7 +435,10 @@ are concatenated in a list of tables for easy comparison and plotting.
   for the MCMC chains in JAGS. This allows the models to be re-run with perfect 
   reproducibility. You can turn this behavior off by setting the argument 
   `random = FALSE`, in which case a random number generator will be used in the 
-  MCMC search. 
+  MCMC search. You can also pass alternate RNG states in manually via the 
+  `RNG.state` argument if you want to recreate a specific run other than the 
+  default. Regardless of how the RNG is set, the state is always returned in the 
+  output so the results are documented and reproducible.
 
   If `manual_prior = TRUE`, then `setup_likelihood()` will load the JAGS model 
   script version with each prior defined on `~dunif(low, high)`. In this case, an 

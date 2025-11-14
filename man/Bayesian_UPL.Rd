@@ -14,6 +14,7 @@ Bayesian_UPL(
   xvals = NULL,
   maxY = NULL,
   minY = 0,
+  RNG.state = NULL,
   up = Inf,
   low = 0,
   kernel = "gamma",
@@ -51,6 +52,11 @@ manually. Default is \code{NULL}, in which case is is calculated as \code{3 * ma
 \item{minY}{The minimum emission value possible, used to truncate likelihood
 distributions. Default is 0.}
 
+\item{RNG.state}{Optional setting to specify a list of three lists setting the
+\code{.RNG.name} and \code{.RNG.state} for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If \code{random = TRUE} the RNG
+state is set randomly instead.}
+
 \item{up}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
 Optional upper limit to bound density, default is \code{Inf}.}
 
@@ -76,8 +82,10 @@ working directory. Note that this is an Rmarkdown document that requires
 either LaTex or MikTek installed in order to render the PDF.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
-and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
-will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+and \code{.RNG.seed} and returned as \code{state} so JAGS runs will be exactly reproducible.
+Changing to \code{TRUE} will generate new random states to use for \code{.RNG.name} and
+\code{.RNG.state} instead, also returned as \code{state} so the results can be
+recreated exactly if desired.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you

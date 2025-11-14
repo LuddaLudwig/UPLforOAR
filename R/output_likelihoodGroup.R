@@ -8,7 +8,7 @@
 #' upper predictive limit based on the `significance` level and average
 #' distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 #' probability density at each observation, and `pred_pdf`, the predicted
-#' probability density at each point in `xvals`.
+#' probability density at each point in `xvals`, and the RNG.state for record keeping.
 #' @description
 #' Output_likelihood() takes the `jags_model_run` produced by [run_likelihoodGroup()],
 #' merges the mcmc chains and calculates the UPL as well as
@@ -117,6 +117,6 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   output = list("predicted_mean" = pred_mean, "UPL_Bayes" = pred_99_3rep,
                 "obs_pdf" = pdf_obs_quant, 'pred_pdf' = density_hat,
                 distr = distribution, minY = minY, maxY = maxY,
-                group_dat = group_long)
+                group_dat = group_long, state = jags_model_run$state)
   return(output)
 }
