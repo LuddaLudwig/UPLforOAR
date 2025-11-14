@@ -36,6 +36,20 @@
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
 #' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
 #' will use random values for `.RNG.name` and `.RNG.seed` instead.
+#' @param up Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional upper limit to bound density, default is `Inf`.
+#' @param low Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional lower limit to bound density, default is `0`.
+#' @param bw Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional bandwidth, default is `NULL` in which case
+#' `bw = sd(emissions) * n^(-2/5)`, where `n` is number of emissions. The bandwidth
+#' can also be provided manually, or searched for using least squares cross-validation
+#' by `bw = "cv.ls"` or likelihood cross-validation with `bw = "cv.ml"`.
+#' @param kernel Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Kernel choice for density function, default is `gamma` defined
+#' on `(0,Inf)`. Other options include:
+#' `c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')`.
+#' See [np::npuniden.boundary()] for more information on kernel options.
 #' @returns A list of tibble results from [setup_likelihood()], [run_likelihood()],
 #' [output_likelihood()], [obs_density()], [fit_likelihood()], and
 #' [converge_likelihood()] for each distribution in `distr_list`.
@@ -65,6 +79,8 @@
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
                         data, emissions, future_runs = 3, significance = 0.99,
                         xvals = NULL, maxY = NULL, minY = 0,
+                        up = Inf, low = 0,
+                        kernel = 'gamma', bw = NULL,
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){
@@ -86,7 +102,8 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     manual_prior = mod_bayes$manual_prior
     mod_output = output_likelihood(jags_model_run = mod_run,
                                    significance = significance)
-    mod_fit = fit_likelihood(likelihood_result = mod_output)
+    mod_fit = fit_likelihood(likelihood_result = mod_output, up = up, low = low,
+                             kernel = kernel, bw = bw)
     mod_output_list[[1]] = mod_fit
     mod_converge = converge_likelihood(mod_run)
     conv_output = rbind(conv_output, mod_converge)
@@ -108,7 +125,8 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
                                future_runs = future_runs, xvals = xvals)
       mod_output = output_likelihood(jags_model_run = mod_run,
                                      significance = significance)
-      mod_fit = fit_likelihood(likelihood_result = mod_output)
+      mod_fit = fit_likelihood(likelihood_result = mod_output, up = up, low = low,
+                               kernel = kernel, bw = bw)
       mod_output_list[[j]] = mod_fit
       mod_converge = converge_likelihood(mod_run)
       conv_output = rbind(conv_output, mod_converge)

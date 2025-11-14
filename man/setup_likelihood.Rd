@@ -17,7 +17,8 @@ setup_likelihood(
 )
 }
 \arguments{
-\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'},
+or \code{'Beta'}. If using a custom model script, set as \code{'Custom'}.}
 
 \item{data}{Data from either the best source or top performers,
 must have a column with numeric \code{emissions}.}

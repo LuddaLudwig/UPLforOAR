@@ -4,10 +4,13 @@
 \alias{converge_likelihood}
 \title{Tests for convergence in likelihood parameters}
 \usage{
-converge_likelihood(jags_model_run)
+converge_likelihood(jags_model_run, custom_params = NULL)
 }
 \arguments{
 \item{jags_model_run}{The output list returned from \code{\link[=run_likelihood]{run_likelihood()}}.}
+
+\item{custom_params}{List of parameters to check for convergence if using a
+custom model, e.g. \code{c('parameter1', 'parameter2')}.}
 }
 \value{
 A tibble of parameters and convergence results from \code{\link[coda:gelman.diag]{coda::gelman.diag()}},

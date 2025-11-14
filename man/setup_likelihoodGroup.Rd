@@ -12,11 +12,15 @@ setup_likelihoodGroup(
   manual_prior = FALSE,
   group = "sources",
   prior_list = NULL,
-  random = FALSE
+  random = FALSE,
+  custom_model = NULL,
+  custom_params = NULL,
+  custom_init = NULL
 )
 }
 \arguments{
-\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'},
+or \code{'Beta'}. If using a custom model script, set as \code{'Custom'}.}
 
 \item{data}{Data from either the best source or top performers,
 must have a column with numeric \code{emissions} and a column with character or
@@ -48,6 +52,15 @@ For \code{'Beta'} they are ordered
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
 and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
 will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+
+\item{custom_model}{String for the file path location and name
+(i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.}
+
+\item{custom_params}{List of parameters to monitor in addition to
+\code{c('emission_hat', 'pdf_obs', 'pdf_hat', 'group_emiss')} if using a custom model.}
+
+\item{custom_init}{List of three lists with initial values for MCMC chains
+corresponding to parameters in \code{custom_params}.}
 }
 \value{
 Object \code{model_code}, which is a string for the written R script that

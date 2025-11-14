@@ -2,7 +2,8 @@
 #' @description
 #' This function defines the jagsmodel script to call based on the selected
 #' distribution. It also defines the initial values and variables to monitor.
-#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`,
+#' or `'Beta'`. If using a custom model script, set as `'Custom'`.
 #' @param data Data from either the best source or top performers,
 #' must have a column with numeric `emissions`.
 #' @param emissions variable name or column number corresponding to the
@@ -45,7 +46,7 @@ setup_likelihood = function(distribution, data, emissions,
   if (sigma == 0){
     stop("Cannot calculate UPL with zero variance data")
   }
-  if (!is.null(custom_model)){
+  if (distribution == 'Custom'){
     JAGS_model = runjags::read.jagsfile(custom_model)
     par_list = c('emission_hat', 'pdf_obs', 'pdf_hat', custom_params)
     data_inits = list(

@@ -6,7 +6,8 @@
 #' Rather than independent runs defining the population
 #' distribution, hierarchical dependency within groups is allowed with the
 #' group-level distribution parameters drawn from the overall population distribution.
-#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+#' @param distribution Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`,
+#' or `'Beta'`. If using a custom model script, set as `'Custom'`.
 #' @param data Data from either the best source or top performers,
 #' must have a column with numeric `emissions` and a column with character or
 #' factor `group` used for hierarchical structure.
@@ -32,6 +33,12 @@
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
 #' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
 #' will use random values for `.RNG.name` and `.RNG.seed` instead.
+#' @param custom_model String for the file path location and name
+#' (i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.
+#' @param custom_params List of parameters to monitor in addition to
+#' `c('emission_hat', 'pdf_obs', 'pdf_hat', 'group_emiss')` if using a custom model.
+#' @param custom_init List of three lists with initial values for MCMC chains
+#' corresponding to parameters in `custom_params`.
 #' @returns Object `model_code`, which is a string for the written R script that
 #' JAGS can call, `par_list` which is the list of parameters traced while running
 #' the JAGS model, `dat_inits` which is a list of initial parameter values and
@@ -41,7 +48,9 @@
 #' @export
 setup_likelihoodGroup = function(distribution, data, emissions,
                                  manual_prior = FALSE, group = 'sources',
-                                 prior_list = NULL, random = FALSE){
+                                 prior_list = NULL, random = FALSE,
+                                 custom_model = NULL, custom_params = NULL,
+                                 custom_init = NULL){
   JAGS_path = system.file("JAGS", package = "UPLforOAR", mustWork = TRUE)
   data_temp = tibble::tibble(emissions = data[[emissions]],
                              group = data[[group]])
@@ -61,6 +70,18 @@ setup_likelihoodGroup = function(distribution, data, emissions,
     group = colnames(data)[group]
   }
   data_names = c(emissions, group)
+  if (distribution == 'Custom'){
+    JAGS_model = runjags::read.jagsfile(custom_model)
+    par_list = c('emission_hat', 'pdf_obs', 'pdf_hat', 'group_emiss',
+                 custom_params)
+    data_inits = list(
+      c(list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 5),
+        custom_init[[1]]),
+      c(list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 12),
+        custom_init[[2]]),
+      c(list(".RNG.name" = "base::Wichmann-Hill", ".RNG.seed" = 151),
+        custom_init[[3]]))
+  }
   if(!manual_prior){
     if (distribution == "Normal"){
       JAGS_model = runjags::read.jagsfile(paste0(JAGS_path,

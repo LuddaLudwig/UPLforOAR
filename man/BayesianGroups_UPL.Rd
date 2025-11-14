@@ -15,6 +15,10 @@ BayesianGroups_UPL(
   xvals = NULL,
   maxY = NULL,
   minY = 0,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL,
   convergence_report = FALSE,
   random = FALSE,
   manual_prior = FALSE,
@@ -53,6 +57,24 @@ manually. Default is \code{NULL}, in which case is is calculated as \code{3 * ma
 
 \item{minY}{The minimum emission value possible, used to truncate likelihood
 distributions. Default is 0.}
+
+\item{up}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional upper limit to bound density, default is \code{Inf}.}
+
+\item{low}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional lower limit to bound density, default is \code{0}.}
+
+\item{kernel}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Kernel choice for density function, default is \code{gamma} defined
+on \verb{(0,Inf)}. Other options include:
+\code{c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')}.
+See \code{\link[np:npuniden.boundary]{np::npuniden.boundary()}} for more information on kernel options.}
+
+\item{bw}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional bandwidth, default is \code{NULL} in which case
+\code{bw = sd(emissions) * n^(-2/5)}, where \code{n} is number of emissions. The bandwidth
+can also be provided manually, or searched for using least squares cross-validation
+by \code{bw = "cv.ls"} or likelihood cross-validation with \code{bw = "cv.ml"}.}
 
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document
