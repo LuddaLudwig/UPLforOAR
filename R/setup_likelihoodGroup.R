@@ -61,6 +61,14 @@ setup_likelihoodGroup = function(distribution, data, emissions,
   JAGS_path = system.file("JAGS", package = "UPLforOAR", mustWork = TRUE)
   data_temp = tibble::tibble(emissions = data[[emissions]],
                              group = data[[group]])
+  if (any(is.na(data_temp$emissions))){
+    warning('Emissions with NA values have been removed')
+    data_temp = na.omit(data_temp)
+  }
+  if (any(is.na(data_temp$group))){
+    warning('Groups with NA values have been removed')
+    data_temp = na.omit(data_temp)
+  }
   if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric")
   }
