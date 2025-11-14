@@ -394,7 +394,5 @@ are not enough data.
 knitr::kable(fit_metrics,
              caption = "UPL results for fitting unbounded Normal distributions with 
              fixed and then 3 different random seeds.",
-             col.names = c("Type", "UPL"), digits = 11, 
-             table.attr = "style='width:40%;'" ) %>% 
-  kable_classic(full_width = T, position = "center")
+             col.names = c("Type", "UPL"), digits = 11)
 ```
