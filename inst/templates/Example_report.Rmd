@@ -366,7 +366,7 @@ Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 if (distribution_result_exist == "Normal"){
   pdf_n = dnorm(x_hat, mean = mean(dat_top_exist$emissions, na.rm = T),
-              sd=sd(dat_top_exist$emissions, na.rm = T))
+              sd = sd(dat_top_exist$emissions, na.rm = T))
   pred_dat = tibble(x_hat, pdf_n)
 } else if (distribution_result_exist == "Lognormal"){
   pdf_n = dlnorm(x_hat,mean = log(mean(dat_top_exist$emissions, na.rm = T)),
@@ -417,7 +417,7 @@ Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 if (distribution_result_new == "Normal"){
   pdf_n = dnorm(x_hat, mean = mean(dat_top_new$emissions, na.rm = T),
-              sd=sd(dat_top_new$emissions, na.rm = T))
+              sd = sd(dat_top_new$emissions, na.rm = T))
   pred_dat = tibble(x_hat, pdf_n)
 } else if (distribution_result_new == "Lognormal"){
   pdf_n = dlnorm(x_hat,mean = log(mean(dat_top_new$emissions, na.rm = T)),
