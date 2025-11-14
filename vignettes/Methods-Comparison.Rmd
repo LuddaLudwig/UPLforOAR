@@ -407,6 +407,19 @@ states is generated for use. In order to recreate these results, you will need
 to pass the list containing `.RNG.name` and `.RNG.state` from this output as the 
 argument `RNG.state` when rerunning (while leaving `random = FALSE`). 
 
-```{r state, echo = TRUE, results = TRUE}
-Bayes_random1$state
+```{r state, echo = FALSE}
+state_out = Bayes_random1$state
+chains = c('Chain 1', 'Chain 2', 'Chain 3')
+rng_name = c(state_out[[1]]$.RNG.name, 
+               state_out[[2]]$.RNG.name, 
+               state_out[[3]]$.RNG.name)
+rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
+              paste(state_out[[2]]$.RNG.state, collapse=', '), 
+              paste(state_out[[3]]$.RNG.state, collapse=', '))
+RNG1 = tibble(chains, rng_name, rng_state)
+RNG1 %>% knitr::kable(
+  caption="Random number generator (RNG) names and states used in MCMC chains",
+             col.names=c('MCMC Chain',
+                         'Name',
+                         'State'))
 ```
