@@ -401,7 +401,7 @@ knitr::kable(fit_metrics,
              col.names = c("Type", "UPL"), digits = 11)
 ```
 The exact random number generator and state used in each of these runs is saved 
-in `Bayes_random1$state` and should be included in any report for record 
+in `Bayes_random1$state` (for example) and should be included in any report for record 
 keeping. Each time you re-run a model with `random = TRUE` a new set of random 
 states is generated for use. In order to recreate these results, you will need 
 to pass the list containing `.RNG.name` and `.RNG.state` from this output as the 
