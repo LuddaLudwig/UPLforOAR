@@ -109,7 +109,7 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         closest_t = tstat_list[which.min(abs(new_prob - significance))]
         reset_t1 = tstat_list[which.min(abs(new_prob - significance)) - 1]
         reset_t2 = tstat_list[which.min(abs(new_prob - significance)) + 1]
-        tstat_list = seq(from = reset_t1, to = reset_t2, length.out = 1000)
+        tstat_list = seq(from = reset_t1, to = reset_t2, length.out = 5000)
         new_prob = c()
         for (t in 1:length(tstat_list)){
           u0 = 1 / (1 + (tstat_list[t]^2 / (n - 1)))
@@ -178,7 +178,7 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
           closest_t = tstat_list[which.min(abs(new_prob - significance))]
           reset_t1 = tstat_list[which.min(abs(new_prob - significance)) - 1]
           reset_t2 = tstat_list[which.min(abs(new_prob - significance)) + 1]
-          tstat_list = seq(from = reset_t1, to = reset_t2, length.out = 1000)
+          tstat_list = seq(from = reset_t1, to = reset_t2, length.out = 5000)
           new_prob = c()
           for (t in 1:length(tstat_list)){
             u0 = 1 / (1 + (tstat_list[t]^2 / (n - 1)))
