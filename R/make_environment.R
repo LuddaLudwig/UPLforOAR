@@ -30,11 +30,10 @@
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
-#' @param echo_val Logical if child.Rmd should echo, defaults to FALSE.
 make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
                             subcat_level = NA, type = c('New', 'Existing', 'As-is'),
                             CAA_section = 112, future_runs = 3,
-                            significance = 0.99, echo_val = FALSE){
+                            significance = 0.99){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
@@ -81,8 +80,7 @@ make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
                                data = data_temp, CAA_section = CAA_section,
                                sources = sources, type = type,
                                significance = significance,
-                               future_runs = future_runs,
-                               echo_val = echo_val),
+                               future_runs = future_runs),
                           parent = as.environment(2))
   return(analysis_env)
 }
