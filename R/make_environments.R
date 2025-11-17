@@ -67,11 +67,17 @@ make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
   if ((!is.character(data_temp$sources)) & (!is.factor(data_temp$sources))){
     stop("Sources must be a character or factor vector")
   }
+  if (!is.character(emissions)){
+    emissions = colnames(data[emissions])
+  }
+  if (!is.character(sources)){
+    sources = colnames(data[sources])
+  }
   analysis_env = list2env(list(HAP = HAP, emissions = emissions,
                                subcat_name =  subcat_name,
                                subcat_level = subcat_level,
                                data = data_temp, CAA_section = CAA_section,
-                               sourc = sources, type = type,
+                               sources = sources, type = type,
                                significance = significance,
                                future_runs = future_runs),
                           parent = as.environment(2))
