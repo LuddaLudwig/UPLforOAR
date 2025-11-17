@@ -59,7 +59,7 @@ make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
     if (!(subcat_level %in% levels(data_temp$subcat))){
       stop("subcat_level does not match levels of subcat_name")
     }
-    dat_temp = subset(data_temp, data_temp$subcat == subcat_level)
+    data_temp = subset(data_temp, data_temp$subcat == subcat_level)
   }
   if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric vector")
@@ -70,7 +70,7 @@ make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
   analysis_env = list2env(list(HAP = HAP, emissions = emissions,
                                subcat_name =  subcat_name,
                                subcat_level = subcat_level,
-                               data = dat_temp, CAA_section = CAA_section,
+                               data = data_temp, CAA_section = CAA_section,
                                sourc = sources, type = type,
                                significance = significance,
                                future_runs = future_runs),
