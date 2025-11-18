@@ -534,7 +534,7 @@ assessing fit, and plotting the full probability function. However, we have chan
 the name of the parameters, set specific prior distributions, and manually 
 specified to truncate the distribution between `(1000, 2000)`. 
 
-```{r write_custom echo = TRUE}
+```{r write_custom, echo = TRUE}
 JAGS_model = "Custom_JAGS.R"
 cat("# Custom model
       model {

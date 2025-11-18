@@ -105,7 +105,7 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
       if (length(good_tscore) > 0){
         new_tscore = tstat_list[good_tscore[which.min(abs(good_tscore - which(tstat_list == tscore)))]]
         Skewed_UPL = mean(data_temp$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
-      } else if (between(significance, min(new_prob), max(new_prob))){
+      } else if (dplyr::between(significance, min(new_prob), max(new_prob))){
         closest_t = tstat_list[which.min(abs(new_prob - significance))]
         reset_t1 = tstat_list[which.min(abs(new_prob - significance)) - 1]
         reset_t2 = tstat_list[which.min(abs(new_prob - significance)) + 1]
@@ -174,7 +174,7 @@ Skewed_UPL = function(data, emissions, future_runs = 3, significance = 0.99){
         if (length(good_tscore) > 0){
           new_tscore = tstat_list[good_tscore[which.min(abs(good_tscore - which(tstat_list == tscore)))]]
           Skewed_UPL = mean(data_temp$emissions) + new_tscore * sqrt(var.s * (1 / n + 1 / future_runs))
-        } else if (between(significance, min(new_prob), max(new_prob))){
+        } else if (dplyr::between(significance, min(new_prob), max(new_prob))){
           closest_t = tstat_list[which.min(abs(new_prob - significance))]
           reset_t1 = tstat_list[which.min(abs(new_prob - significance)) - 1]
           reset_t2 = tstat_list[which.min(abs(new_prob - significance)) + 1]

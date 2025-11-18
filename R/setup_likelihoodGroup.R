@@ -63,11 +63,11 @@ setup_likelihoodGroup = function(distribution, data, emissions,
                              group = data[[group]])
   if (any(is.na(data_temp$emissions))){
     warning('Emissions with NA values have been removed')
-    data_temp = na.omit(data_temp)
+    data_temp = stats::na.omit(data_temp)
   }
   if (any(is.na(data_temp$group))){
     warning('Groups with NA values have been removed')
-    data_temp = na.omit(data_temp)
+    data_temp = stats::na.omit(data_temp)
   }
   if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric")
@@ -194,7 +194,7 @@ setup_likelihoodGroup = function(distribution, data, emissions,
              'pop_beta_sd' = 0.5 * beta, 'pop_alpha_sd' = 0.1 * alpha))
     }
     if (random){
-      new_state = parallel.seeds('base::BaseRNG', 3)
+      new_state = rjags::parallel.seeds('base::BaseRNG', 3)
     } else if (!random){
       new_state = RNG.state
     }
@@ -394,7 +394,7 @@ setup_likelihoodGroup = function(distribution, data, emissions,
              'pop_alpha_sd' = 1.1 * prior_list[5]))
     }
     if (random){
-      new_state = parallel.seeds('base::BaseRNG', 3)
+      new_state = rjags::parallel.seeds('base::BaseRNG', 3)
     } else if (!random){
       new_state = RNG.state
     }

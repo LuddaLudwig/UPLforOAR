@@ -47,7 +47,7 @@ setup_likelihood = function(distribution, data, emissions,
   data_temp = tibble::tibble(emissions = data[[emissions]])
   if (any(is.na(data_temp$emissions))){
     warning('Emissions with NA values have been removed')
-    data_temp = na.omit(data_temp)
+    data_temp = stats::na.omit(data_temp)
   }
   if (!is.numeric(data_temp$emissions)){
     stop("Emissions must be numeric")
@@ -140,7 +140,7 @@ setup_likelihood = function(distribution, data, emissions,
         list('beta_em' = 0.5 * beta, 'alpha_em' = 1.5 * alpha))
     }
     if (random){
-      new_state = parallel.seeds('base::BaseRNG', 3)
+      new_state = rjags::parallel.seeds('base::BaseRNG', 3)
     } else if (!random){
       new_state = RNG.state
     }
@@ -293,7 +293,7 @@ setup_likelihood = function(distribution, data, emissions,
              'alpha_em' = initial2))
     }
     if (random){
-      new_state = parallel.seeds('base::BaseRNG', 3)
+      new_state = rjags::parallel.seeds('base::BaseRNG', 3)
     } else if (!random){
       new_state = RNG.state
     }
