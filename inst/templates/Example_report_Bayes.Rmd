@@ -235,9 +235,9 @@ $$
 
 \*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
 
-### Parameter Values in Bayesian MCMC
+### Settings used in Bayesian MCMC
 
-The selected distribution for the *chemical X* *subcategory A* existing source MACT floor analysis was the `r distribution_ex` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed below.
+The selected distribution for the *chemical X* *subcategory A* existing source MACT floor analysis was the `r distribution_ex` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
 <!-- If you specified priors manually, rather than using the defaults you will need to alter the table below -->
 
 ```{r gamma_params, appendix = TRUE}
@@ -245,8 +245,8 @@ if (is.null(maxY)){
   maxY = 3 * max(dat_top_exist$emissions)
 } 
 sdY =  sd(dat_top_exist$emissions)
-shape=mean(dat_top_exist$emissions)^2 / sdY^2
-rate=mean(dat_top_exist$emissions) / sdY^2
+shape = mean(dat_top_exist$emissions)^2 / sdY^2
+rate = mean(dat_top_exist$emissions) / sdY^2
 parameter = c('Rate', 'Shape')
 prior = c(paste0('~dunif (0, ', signif(maxY / (sdY^2), 3), ')'), 
           paste0('~dunif (0, ', signif((maxY^2) / (sdY^2), 3), ')'))
@@ -259,7 +259,7 @@ convYN = c(results$conv_output$convYN[1],
            results$conv_output$convYN[2])
 gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, 
                     diagnostics, convYN)
-gamm_exist%>%knitr::kable(
+gamm_exist %>% knitr::kable(
   caption="Parameter information for the gamma distribution 
   UPL calculation for existing source chemical X, subcategory A.",
              col.names=c('Parameter',
@@ -271,15 +271,32 @@ gamm_exist%>%knitr::kable(
                          'Converged?'))
 ```
 
-The selected distribution for the *chemical X* *subcategory A* new source MACT floor analysis was the `r distribution_new` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed below.
+```{r RNG1, appendix = TRUE}
+state_out = results$state
+chains = c('Chain 1', 'Chain 2', 'Chain 3')
+rng_name = c(state_out[[1]]$.RNG.name, 
+               state_out[[2]]$.RNG.name, 
+               state_out[[3]]$.RNG.name)
+rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
+              paste(state_out[[2]]$.RNG.state, collapse=', '), 
+              paste(state_out[[3]]$.RNG.state, collapse=', '))
+RNG1 = tibble(chains, rng_name, rng_state)
+RNG1 %>% knitr::kable(
+  caption="Random number generator (RNG) names and states used in MCMC chains",
+             col.names=c('MCMC Chain',
+                         'Name',
+                         'State'))
+```
+
+The selected distribution for the *chemical X* *subcategory A* new source MACT floor analysis was the `r distribution_new` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
 
 ```{r gamma_params2, appendix = TRUE}
 if (is.null(maxY_new)){
   maxY_new = 3 * max(dat_top_new$emissions)
 } 
 sdY =  sd(dat_top_new$emissions)
-shape=mean(dat_top_new$emissions)^2 / sdY^2
-rate=mean(dat_top_new$emissions) / sdY^2
+shape = mean(dat_top_new$emissions)^2 / sdY^2
+rate = mean(dat_top_new$emissions) / sdY^2
 parameter = c('Rate', 'Shape')
 prior = c(paste0('~dunif (0, ', signif(maxY_new / (sdY^2), 3), ')'), 
           paste0('~dunif (0, ', signif((maxY_new^2) / (sdY^2), 3), ')'))
@@ -292,7 +309,7 @@ convYN = c(results2$conv_output$convYN[1],
            results2$conv_output$convYN[2])
 gamm_new = tibble(parameter, prior, chain1, chain2, chain3, 
                     diagnostics, convYN)
-gamm_new%>%knitr::kable(
+gamm_new %>% knitr::kable(
   caption="Parameter information for the gamma distribution 
   UPL calculation for new source chemical X, subcategory A.",
              col.names=c('Parameter',
@@ -302,6 +319,23 @@ gamm_new%>%knitr::kable(
                          'Chain 3 initial value',
                          'Gelman-Rubin diagnostic',
                          'Converged?'))
+```
+
+```{r RNG1, appendix = TRUE}
+state_out = results2$state
+chains = c('Chain 1', 'Chain 2', 'Chain 3')
+rng_name = c(state_out[[1]]$.RNG.name, 
+               state_out[[2]]$.RNG.name, 
+               state_out[[3]]$.RNG.name)
+rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
+              paste(state_out[[2]]$.RNG.state, collapse=', '), 
+              paste(state_out[[3]]$.RNG.state, collapse=', '))
+RNG1 = tibble(chains, rng_name, rng_state)
+RNG1 %>% knitr::kable(
+  caption="Random number generator (RNG) names and states used in MCMC chains",
+             col.names=c('MCMC Chain',
+                         'Name',
+                         'State'))
 ```
 
 <!-- The skew-normal distribution parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence that were used in the *chemical X* *subcategory A* new source UPL calculation are listed below. -->
@@ -334,7 +368,7 @@ gamm_new%>%knitr::kable(
 <!--            results2$conv_output$convYN[3]) -->
 <!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
 <!--                     diagnostics, convYN) -->
-<!-- gamm_exist%>%knitr::kable( -->
+<!-- gamm_exist %>% knitr::kable( -->
 <!--   caption="Parameter information for the skew-normal distribution  -->
 <!--   UPL calculation for new source chemical X, subcategory A.", -->
 <!--              col.names=c('Parameter', -->
@@ -368,7 +402,7 @@ gamm_new%>%knitr::kable(
 <!--            results$conv_output$convYN[2]) -->
 <!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
 <!--                     diagnostics, convYN) -->
-<!-- gamm_exist%>%knitr::kable( -->
+<!-- gamm_exist %>% knitr::kable( -->
 <!--   caption="Parameter information for the normal distribution  -->
 <!--   UPL calculation for existing source chemical X, subcategory A.", -->
 <!--              col.names=c('Parameter', -->
@@ -400,7 +434,7 @@ gamm_new%>%knitr::kable(
 <!--           results$conv_output$convYN[2]) -->
 <!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
 <!--                    diagnostics, convYN) -->
-<!-- gamm_exist%>%knitr::kable( -->
+<!-- gamm_exist %>% knitr::kable( -->
 <!--   caption="Parameter information for the log-normal distribution  -->
 <!--   UPL calculation for existing source chemical X, subcategory A.", -->
 <!--             col.names=c('Parameter', -->
@@ -437,7 +471,7 @@ gamm_new%>%knitr::kable(
 <!--            results$conv_output$convYN[2]) -->
 <!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
 <!--                     diagnostics, convYN) -->
-<!-- gamm_exist%>%knitr::kable( -->
+<!-- gamm_exist %>% knitr::kable( -->
 <!--   caption="Parameter information for the beta distribution  -->
 <!--   UPL calculation for existing source chemical X, subcategory A.", -->
 <!--              col.names=c('Parameter', -->
