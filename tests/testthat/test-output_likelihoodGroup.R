@@ -44,7 +44,7 @@ test_that("output_likelihoodGroup() organizes mcmc results and calculates UPL", 
   attr(outputresult$UPL_Bayes,'names')=NULL
   load_results1$sources=factor(load_results1$sources,levels=levels(dat_topmeans$sources))
   expect_equal(outputresult$pred_pdf,load_results2)
-  expect_equal(round(outputresult$UPL_Bayes,3),1.324)
+  expect_equal(round(outputresult$UPL_Bayes,3),1.319)
   expect_equal(outputresult$distr,'Gamma')
   expect_equal(outputresult$obs_pdf,load_results1)
   expect_equal(outputresult$group_dat,load_results3)

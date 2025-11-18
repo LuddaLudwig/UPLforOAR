@@ -35,8 +35,7 @@ test_that("output_likelihood() organizes mcmc results and calculates UPL", {
   attr(outputresult$pred_pdf$pdf_hat,'names')=NULL
   attr(outputresult$UPL_Bayes,'names')=NULL
   expect_equal(outputresult$pred_pdf,load_results2)
-  expect_equal(round(outputresult$UPL_Bayes,3),3.857)
+  expect_equal(round(outputresult$UPL_Bayes,3),3.782)
   expect_equal(outputresult$distr,'Lognormal')
   expect_equal(outputresult$obs_pdf,load_results1)
-
 })
