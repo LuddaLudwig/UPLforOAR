@@ -1,5 +1,8 @@
 #' Tests for convergence in likelihood parameters with a hierarchical group structure
 #' @param jags_model_run The output list returned from [run_likelihoodGroup()].
+#' @param custom_params List of parameters to check for convergence if using a
+#' custom model, e.g. `c('parameter1', 'parameter2')`. These must be ordered such
+#' that all population-level parameters are first, followed by group-level parameters.
 #' @returns A tibble of parameters and convergence results from [coda::gelman.diag()],
 #' Values greater than 1.2 indicate problems in convergence. Values between 1.1
 #' and 1.2 indicate weak convergence. Values less than 1.1 indicate good
@@ -13,7 +16,7 @@
 #' group-level distribution parameters drawn from the overall population distribution.
 #' @export
 #'
-converge_likelihoodGroup = function(jags_model_run){
+converge_likelihoodGroup = function(jags_model_run, custom_params = NULL){
   distribution = jags_model_run$distribution
   if (distribution == "Skewed"){
     params_list = c('pop_xi_mu', 'pop_omega_mu',
@@ -36,7 +39,10 @@ converge_likelihoodGroup = function(jags_model_run){
     params_list = c('pop_alpha_mu', 'pop_beta_mu', 'pop_alpha_sd', 'pop_beta_sd',
                     'group_alpha', 'group_beta')
   }
-  n_groups = length(unique(jags_model_run$data[[jags_model_run$group]]))
+  if (distribution == 'Custom'){
+    params_list = custom_params
+  }
+  n_groups = length(unique(jags_model_run$data$group))
   n_pop_params = length(params_list) / 3 * 2
   params = params_list[1:n_pop_params]
   for (j in 1:(n_pop_params/2)){
@@ -59,6 +65,11 @@ converge_likelihoodGroup = function(jags_model_run){
                            ((result$gelman_diag > 1.1) &
                               (result$gelman_diag < 1.2)), "Weak convergence")
   distr_names = tibble::tibble(distr = rep(distribution, nrow(results)))
+  group_levels = levels(jags_model_run$data$group)
+  for (i in 1:n_groups){
+    results$params = stringr::str_replace(results$params, paste0('\\[', i, '\\]'),
+                         paste0('_', group_levels[i]))
+  }
   results = cbind(distr_names, results)
   return(results)
 }

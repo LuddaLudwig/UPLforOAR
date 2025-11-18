@@ -17,7 +17,8 @@ test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
+  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal',
+                                    emissions = 'emissions')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
@@ -29,7 +30,7 @@ test_that("run_likelihood() runs JAGS models from setup_likelihood()", {
   load_results=readRDS(test_path('test_run','test_mcmc.rds'))
   expect_equal(run_mcmc,load_results)
   expect_equal(runmod$manual_prior,FALSE)
-  expect_equal(runmod$data,top5)
+  expect_equal(runmod$data,subset(top5, select=c(emissions)))
   expect_equal(runmod$xvals,xvals)
   expect_equal(runmod$future_runs,runcount)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+

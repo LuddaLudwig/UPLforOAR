@@ -4,11 +4,14 @@
 \alias{distribution_type}
 \title{Determines the type of distribution from skewness and kurtosis ratios}
 \usage{
-distribution_type(data)
+distribution_type(data, emissions)
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}}
+must have a column with numeric \code{emissions}.}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 }
 \value{
 String with either \code{'Normal'}, \code{'Lognormal'}, or \code{'Skewed'}

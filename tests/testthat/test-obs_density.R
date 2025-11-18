@@ -17,8 +17,9 @@ test_that("obs_density() calculate densities for emissions observations", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   xhat=seq(0,3.1*max(top5$emissions),length.out=1050)
-  test_result=obs_density(data=top5,low=0,xvals=xhat)
-  test_result2=obs_density(data=top5,low=0,xvals=xhat, bw="cv.ml")
+  test_result=obs_density(data=top5,low=0,xvals=xhat,emissions = 'emissions')
+  test_result2=obs_density(data=top5,low=0,xvals=xhat, bw="cv.ml",
+                           emissions = 'emissions')
   # ggplot(data=test_result$Obs_onPoint)+
   #   geom_line(data=test_result$obs_den_df,aes(y=y,x=(x),color='red'),size=0.75)+
   #   geom_area(data=test_result$obs_den_df,aes(y=y,x=(x),fill='red'),alpha=0.25)+
@@ -58,7 +59,7 @@ test_that("obs_density() calculate densities for emissions observations", {
   expect_equal(test_result2$Obs_onPoint,compare3)
   expect_equal(test_result2$obs_den_df,compare4)
   expect_equal(length(test_result$obs_den_df$x_hat),length(xhat))
-  test_null=obs_density(data=top5,low=0)
+  test_null=obs_density(data=top5,low=0,emissions = 'emissions')
   expect_equal(length(test_null$obs_den_df$x_hat),1024)
 
 })

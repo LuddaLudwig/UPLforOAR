@@ -4,11 +4,22 @@
 \alias{obs_density}
 \title{Calculates the density of emissions observations}
 \usage{
-obs_density(data, xvals = NULL, up = Inf, low = 0, kernel = "gamma", bw = NULL)
+obs_density(
+  data,
+  emissions,
+  xvals = NULL,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL
+)
 }
 \arguments{
 \item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}.}
+must have a column with numeric \code{emissions}.}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{xvals}{Ordered sequence of emissions to define emission densities along.
 Default is \code{NULL}, in which case \code{xvals} is a 1024 length sequence.

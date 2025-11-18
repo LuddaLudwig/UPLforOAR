@@ -8,7 +8,7 @@
 #' upper predictive limit based on the `significance` level and average
 #' distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 #' probability density at each observation, and `pred_pdf`, the predicted
-#' probability density at each point in `xvals`.
+#' probability density at each point in `xvals`, and the RNG.state for record keeping.
 #' @description
 #' Output_likelihood() takes the `jags_model_run` produced by [run_likelihoodGroup()],
 #' merges the mcmc chains and calculates the UPL as well as
@@ -30,7 +30,6 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
-  group = jags_model_run$group
   if (distribution == "Skewed"){
     xi_pop = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pop_xi_mu")))
@@ -71,9 +70,9 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
     }
     hat_quant = tibble::as_tibble(hat_quant, .name_repair = 'minimal')
     group_quant = matrix(nrow = nrow(xi_group),
-                         ncol = length(unique(data[[group]])), data = NA)
+                         ncol = length(unique(data$group)), data = NA)
     for (i in 1:nrow(xi_group)){
-      for (j in 1:length(unique(data[[group]]))){
+      for (j in 1:length(unique(data$group))){
         Fy_sn = sn::dsn(xvals, xi = (xi_group[i, j]),
                         omega = (omega_group[i, j]),
                         alpha = (alpha_group[i, j]))
@@ -106,18 +105,18 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   pdf_obs_quant = tibble::as_tibble(
     matrixStats::colQuantiles(pdf_obs, probs = c(0.025 ,0.5, 0.975)),
     .name_repair = 'minimal')
-  names(group_quant) = levels(data[[group]])
+  names(group_quant) = levels(data$group)
   group_long = tidyr::pivot_longer(group_quant, cols = 1:ncol(group_quant),
                           names_to = 'groups',values_to = 'emissions')
-  names(pdf_obs_quant) = c('low', 'med', 'up')
   pdf_obs_quant$emissions = data$emissions
-  pdf_obs_quant[[group]] = data[[group]]
+  pdf_obs_quant$group = data$group
+  names(pdf_obs_quant) = c('low', 'med', 'up', jags_model_run$data_names)
   density_hat$distr = rep(distribution, nrow(density_hat))
   pdf_obs_quant$distr = rep(distribution, nrow(pdf_obs_quant))
   pred_mean = mean(hat_quant$run1, na.rm = TRUE)
   output = list("predicted_mean" = pred_mean, "UPL_Bayes" = pred_99_3rep,
                 "obs_pdf" = pdf_obs_quant, 'pred_pdf' = density_hat,
                 distr = distribution, minY = minY, maxY = maxY,
-                group_dat = group_long)
+                group_dat = group_long, state = jags_model_run$state)
   return(output)
 }

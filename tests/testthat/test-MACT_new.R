@@ -23,6 +23,6 @@ test_that("MACT_new() selects top sources", {
                              sources=rep('TP',3))
   best_source$sources=factor(best_source$sources)
   dat_test=rbind(top5,others,best_source)
-  test_result=MACT_new(data=dat_test)
+  test_result=MACT_new(data=dat_test,emissions = 'emissions',sources = 'sources')
   expect_equal(test_result,best_source)
 })

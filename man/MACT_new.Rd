@@ -4,11 +4,17 @@
 \alias{MACT_new}
 \title{Selects best performer from emissions data}
 \usage{
-MACT_new(data)
+MACT_new(data, emissions, sources)
 }
 \arguments{
 \item{data}{Data.frame or tibble with columns for \code{emissions} (numeric)
 and \code{sources} (character or factor)}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
+
+\item{sources}{variable name or column number corresponding to the source
+designation, either a character or factor.}
 }
 \value{
 Data set (tibble) containing the emissions data for the best

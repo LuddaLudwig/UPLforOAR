@@ -17,16 +17,17 @@ test_that("fit_likelihood() compares predicted and observed density distribution
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
+  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal',
+                                    emissions = 'emissions')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
                         xvals=xvals,future_runs=runcount)
   outputresult=output_likelihood(runmod)
   fit_results=fit_likelihood(outputresult)
-  expect_equal(round(fit_results$pdf_integral,3),0.921)
+  expect_equal(round(fit_results$pdf_integral,3),0.925)
   expect_equal(fit_results$distr,'Lognormal')
-  expect_equal(round(fit_results$SSE,3),0.371)
+  expect_equal(round(fit_results$SSE,3),0.393)
   expect_equal(nrow(fit_results$obs_pdf_dat),nrow(top5))
   expect_equal(nrow(fit_results$xhat_pdf_dat),length(xvals))
 })

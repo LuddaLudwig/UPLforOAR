@@ -8,12 +8,18 @@ multiple distributions with a hierarchical group structure}
 BayesianGroups_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   data,
+  emissions,
+  group = "sources",
   future_runs = 3,
   significance = 0.99,
   xvals = NULL,
   maxY = NULL,
   minY = 0,
-  group = "sources",
+  RNG.state = NULL,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL,
   convergence_report = FALSE,
   random = FALSE,
   manual_prior = FALSE,
@@ -25,8 +31,17 @@ BayesianGroups_UPL(
 \code{c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta')}. Note that if prior
 bounds are supplied manually, only one distribution can be used.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named 'emissions'.}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions} and a column with character or
+factor \code{group} used for hierarchical structure.}
+
+\item{emissions}{Variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
+
+\item{group}{Variable name or column number corresponding to the variable name in the data
+set by which to group for the hierarchical structure. If the group is not a
+factor it will be coerced using as.factor(). To avoid having unknown factor
+levels, please convert to factor first.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
@@ -44,10 +59,28 @@ manually. Default is \code{NULL}, in which case is is calculated as \code{3 * ma
 \item{minY}{The minimum emission value possible, used to truncate likelihood
 distributions. Default is 0.}
 
-\item{group}{Character string corresponding to the variable name in the data
-set by which to group for the hierarchical structure. If the group is not a
-factor it will be coerced using as.factor(). To avoid having unknown factor
-levels, please convert to factor first.}
+\item{RNG.state}{Optional setting to specify a list of three lists setting the
+\code{.RNG.name} and \code{.RNG.state} for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If \code{random = TRUE} the RNG
+state is set randomly instead.}
+
+\item{up}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional upper limit to bound density, default is \code{Inf}.}
+
+\item{low}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional lower limit to bound density, default is \code{0}.}
+
+\item{kernel}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Kernel choice for density function, default is \code{gamma} defined
+on \verb{(0,Inf)}. Other options include:
+\code{c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')}.
+See \code{\link[np:npuniden.boundary]{np::npuniden.boundary()}} for more information on kernel options.}
+
+\item{bw}{Argument passed to \code{\link[=obs_density]{obs_density()}} inside \code{\link[=fit_likelihood]{fit_likelihood()}}.
+Optional bandwidth, default is \code{NULL} in which case
+\code{bw = sd(emissions) * n^(-2/5)}, where \code{n} is number of emissions. The bandwidth
+can also be provided manually, or searched for using least squares cross-validation
+by \code{bw = "cv.ls"} or likelihood cross-validation with \code{bw = "cv.ml"}.}
 
 \item{convergence_report}{Default is \code{FALSE}, if a report containing
 convergence figures should be generated with results. If \code{TRUE}, a document
@@ -56,8 +89,10 @@ working directory. Note that this is an Rmarkdown document that requires
 either LaTex or MikTek installed in order to render the PDF.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
-and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
-will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+and \code{.RNG.seed} and returned as \code{state} so JAGS runs will be exactly reproducible.
+Changing to \code{TRUE} will generate new random states to use for \code{.RNG.name} and
+\code{.RNG.state} instead, also returned as \code{state} so the results can be
+recreated exactly if desired.}
 
 \item{manual_prior}{Default is \code{FALSE}, if priors should be specified manually
 or be uninformative calculated from range of emissions data. Note that if you

@@ -17,23 +17,23 @@ test_that("setup_likelihood() calls JAGS model scripts with initial values and p
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal')
-
+  JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal',
+                                    emissions = 'emissions')
   expect_equal(JAGS_model_stuff$par_list,c('emission_hat','pdf_obs','pdf_hat',
                                            'u_ln','sd_ln'))
   expect_equal(JAGS_model_stuff$dat_inits,list(
-    list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5,
-         'u_ln'=mean(ln_emiss,na.rm=TRUE),
-         'sd_ln'=stats::sd(ln_emiss,na.rm=TRUE)),
-    list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 12,
-         'u_ln'=1.5*mean(ln_emiss,na.rm=TRUE),
-         'sd_ln'=0.5*stats::sd(ln_emiss,na.rm=TRUE)),
-    list(".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 151,
-         'u_ln'=0.5*mean(ln_emiss,na.rm=TRUE),
-         'sd_ln'=1.5*stats::sd(ln_emiss,na.rm=TRUE))))
+    list('u_ln'=mean(ln_emiss,na.rm=TRUE),
+         'sd_ln'=stats::sd(ln_emiss,na.rm=TRUE),
+         ".RNG.name" = "base::Wichmann-Hill",".RNG.seed" = 5),
+    list('u_ln'=1.5*mean(ln_emiss,na.rm=TRUE),
+         'sd_ln'=0.5*stats::sd(ln_emiss,na.rm=TRUE),
+         ".RNG.name" = "base::Marsaglia-Multicarry",".RNG.seed" = 12),
+    list('u_ln'=0.5*mean(ln_emiss,na.rm=TRUE),
+         'sd_ln'=1.5*stats::sd(ln_emiss,na.rm=TRUE),
+         ".RNG.name" = "base::Super-Duper",".RNG.seed" = 151)))
   expect_equal(JAGS_model_stuff$distribution,'Lognormal')
-  expect_equal(length(JAGS_model_stuff),6)
-  expect_equal(JAGS_model_stuff$data,top5)
+  expect_equal(length(JAGS_model_stuff),7)
+  expect_equal(JAGS_model_stuff$data,subset(top5, select=c(emissions)))
   expect_equal(JAGS_model_stuff$manual_prior,FALSE)
   readjags=runjags::read.jagsfile(test_path('test_JAGS','test-Emission_lnorm_JAGS.R'))
   expect_equal(JAGS_model_stuff$model_code$model,readjags$model)

@@ -21,10 +21,11 @@ test_that("output_likelihoodGroup() organizes mcmc results and calculates UPL", 
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma')
+  JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma',
+                                         emissions = 'emissions')
   xvals=seq(0,2*max(top5$emissions),length.out=1050)
   runcount=4
-  runmod=run_likelihoodGroup(model_input=JAGS_model_stuff, group = 'sources',
+  runmod=run_likelihoodGroup(model_input=JAGS_model_stuff,
                             xvals=xvals,future_runs=runcount)
   outputresult=output_likelihoodGroup(runmod)
   # write.csv(outputresult$obs_pdf,test_path('test_output','test-obsGroup_pdf.csv'))
@@ -43,7 +44,7 @@ test_that("output_likelihoodGroup() organizes mcmc results and calculates UPL", 
   attr(outputresult$UPL_Bayes,'names')=NULL
   load_results1$sources=factor(load_results1$sources,levels=levels(dat_topmeans$sources))
   expect_equal(outputresult$pred_pdf,load_results2)
-  expect_equal(round(outputresult$UPL_Bayes,3),1.324)
+  expect_equal(round(outputresult$UPL_Bayes,3),1.319)
   expect_equal(outputresult$distr,'Gamma')
   expect_equal(outputresult$obs_pdf,load_results1)
   expect_equal(outputresult$group_dat,load_results3)

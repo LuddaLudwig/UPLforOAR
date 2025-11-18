@@ -252,8 +252,8 @@ load the data and use the Excel workbook methods to pick a distribution and
 calculate the UPL.
 ```{r lime, echo = TRUE}
 dat_emiss = read.csv("Example_data1.csv")
-distr_choice = distribution_type(data = dat_emiss)
-UPL_excel = Lognormal_UPL(data = dat_emiss)
+distr_choice = distribution_type(data = dat_emiss, emissions = 'emissions')
+UPL_excel = Lognormal_UPL(data = dat_emiss, emissions = 'emissions')
 ```
 The emissions are a `r distr_choice` distribution with a corresponding UPL of 
 `r round(UPL_excel,2)` (Lb/ton of stone fed Lime). Next we will plot the density of the 
@@ -261,7 +261,8 @@ emission observations along with the corresponding `r distr_choice` probability
 density distribution to see how it looks.
 ```{r density, echo = FALSE}
 x_hat = seq(0, 2.6, length.out = 1024)
-obs_dens_results = obs_density(dat_emiss, xvals = x_hat)
+obs_dens_results = obs_density(dat_emiss, xvals = x_hat, 
+                               emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 pdf_ln = dlnorm(x_hat,mean = log(mean(dat_emiss$emissions, na.rm = T)),
@@ -314,11 +315,14 @@ default, this is `3*max(data$emissions)`. We will also look setting `maxY` to `2
 changes.
 ```{r maxy, echo = TRUE, results = FALSE}
 results_3X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                          emissions = 'emissions',
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                          emissions = 'emissions',
                           maxY = 2*max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 results_25X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                           emissions = 'emissions',
                            maxY = 25*max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```
@@ -423,7 +427,8 @@ aren't as Gaussian as can expect with good convergence. It is not so bad as to
 invalidate the results, but you can imagine that if we tried limits that were 
 too small the model would fail.
 ```{r figure3a, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 2X."}
-part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
+part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss,
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1, maxY = 2 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
@@ -431,14 +436,16 @@ part3
 ```
 
 ```{r figure3b, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 3X."}
-part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
+part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss,
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1, maxY = 3 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
 part3
 ```
 ```{r figure3c, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Convergence figures from maxY = 25X."}
-part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss)
+part1 = setup_likelihood(distribution = "Lognormal", data = dat_emiss,
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1, maxY = 25 * max(dat_emiss$emissions),
                           xvals = seq(0, 10, length.out = 3000))
 part3 = converge_figs(distribution = "Lognormal", jags_model_run = part2)
@@ -455,47 +462,47 @@ ncertainty and stochasticity in the tail of the distribution.
 Let's investigate the sensitivity of different UPL significance levels to `maxY`. Ideally we will find a level that is insensitive to `maxY` and converges well. 
 ```{r sig, echo = TRUE, results = FALSE}
 results_3X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                             maxY = 25*max(dat_emiss$emissions),
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_3X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.90,
+                            significance = 0.90, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.90,
+                            significance = 0.90, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.90,
+                             significance = 0.90, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 results_3X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.85,
+                            significance = 0.85, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.85,
+                            significance = 0.85, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.85,
+                             significance = 0.85, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 results_3X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.80,
+                            significance = 0.80, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.80,
+                            significance = 0.80, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.80,
+                             significance = 0.80, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 ```
@@ -613,7 +620,8 @@ knitr::kable(fit_metrics,
 Logically the next step is to try other distributions and see if we can find something better. We won't bother with the Normal distribution since the data are so heavily skewed. We also won't look at the Beta distribution since it has an upper limit of 1, and while the emissions observations are all less than that in our set of top performing sources, theoretically there could emissions higher than 1.
 ```{r bayesian_UPL, echo = TRUE, results = FALSE}
 distributions = c('Gamma', 'Lognormal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
+results = Bayesian_UPL(data = dat_emiss, emissions = 'emissions', 
+                       distr_list = distributions)
 ```
 ```{r figure5, echo = FALSE, out.width = "100%", fig.height = 7, fig.align = "center", fig.cap = "Fitted likelihood distributions for Lime HCl emissions."}
 palette_line = c("#377EB8", "#4DAF4A", "#FF7F00")
@@ -664,11 +672,14 @@ The Gamma distribution looks the best and also has the lowest SSE. Furthermore,
 the Gamma distribution converges well. It still has a bit of a tail so we might want to repeat our experiments with increasingly larger values of `maxY`:
 ```{r maxy2, echo = TRUE, results = FALSE}
 results_3X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                          emissions = 'emissions',
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                          emissions = 'emissions',
                           maxY = 2 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 results_25X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                           emissions = 'emissions',
                            maxY = 25 * max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```

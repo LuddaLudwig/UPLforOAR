@@ -8,20 +8,37 @@ initial values, and variable list to monitor}
 setup_likelihoodGroup(
   distribution,
   data,
+  emissions,
   manual_prior = FALSE,
+  group = "sources",
   prior_list = NULL,
-  random = FALSE
+  random = FALSE,
+  RNG.state = NULL,
+  custom_model = NULL,
+  custom_params = NULL,
+  custom_init = NULL
 )
 }
 \arguments{
-\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'},
+or \code{'Beta'}. If using a custom model script, set as \code{'Custom'}.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}.}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions} and a column with character or
+factor \code{group} used for hierarchical structure.}
+
+\item{emissions}{Variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{manual_prior}{Default is \code{FALSE}, priors are uninformative and calculated
 from range of emissions data. if \code{TRUE} priors should be specified manually in
 \code{prior_list}.}
+
+\item{group}{Variable name or column number corresponding to the variable name in the data
+set by which to group for the hierarchical structure. If the group is not a
+factor it will be coerced using as.factor(). To avoid having unknown factor
+levels, please convert to factor first.
+(set using \code{as.factor(data$group_name)} if needed). Defaults to \code{'sources'}.}
 
 \item{prior_list}{Optional list of \code{\link[stats:Uniform]{stats::dunif()}} upper and lower bounds for prior
 distributions. For \code{'Normal'} and \code{'Lognormal'} they are ordered
@@ -34,14 +51,32 @@ For \code{'Beta'} they are ordered
 \code{c(pop_alpha_mu_low, pop_alpha_mu_high, pop_beta_mu_low, pop_beta_mu_high, pop_alpha_sd_low, pop_alpha_sd_high, pop_beta_sd_low, pop_beta_sd_high)}.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
-and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
-will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+and \code{.RNG.seed} and returned as \code{state} so JAGS runs will be exactly reproducible.
+Changing to \code{TRUE} will generate new random states to use for \code{.RNG.name} and
+\code{.RNG.state} instead, also returned as \code{state} so the results can be
+recreated exactly if desired.}
+
+\item{RNG.state}{Optional setting to specify a list of three lists setting the
+\code{.RNG.name} and \code{.RNG.state} for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If \code{random = TRUE} the RNG
+state is set randomly instead.}
+
+\item{custom_model}{String for the file path location and name
+(i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.}
+
+\item{custom_params}{List of parameters to monitor in addition to
+\code{c('emission_hat', 'pdf_obs', 'pdf_hat', 'group_emiss')} if using a custom model.}
+
+\item{custom_init}{List of three lists with initial values for MCMC chains
+corresponding to parameters in \code{custom_params}.}
 }
 \value{
 Object \code{model_code}, which is a string for the written R script that
 JAGS can call, \code{par_list} which is the list of parameters traced while running
 the JAGS model, \code{dat_inits} which is a list of initial parameter values and
-random seeds for 3 chains, and the distribution used in likelihood model.
+random seeds for 3 chains, and the distribution used in likelihood model. Also
+included are a data set with \code{emissions} and \code{group} and \code{prior_list} if
+applicable to be passed along for use in \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}}.
 }
 \description{
 This function defines the jagsmodel script to call based on the selected

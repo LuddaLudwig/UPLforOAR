@@ -1,0 +1,8 @@
+`r type` source MACT floor analysis data set for HAP `r HAP` `r subcat_text`:
+
+```{r, echo = FALSE, appendix = FALSE}
+col_names = c(emissions, sources, 'log emissions')
+df %>% knitr::kable(
+  caption = "Top performering source emissions data used in MACT floor 
+  UPL calculations.", digits = 12, col.names = col_names)
+```

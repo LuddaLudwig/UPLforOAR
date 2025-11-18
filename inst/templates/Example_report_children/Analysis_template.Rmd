@@ -1,0 +1,69 @@
+```{r, echo = FALSE, appendix = FALSE}
+if (type == 'Existing'){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  df = MACT_existing(CAA_section = CAA_section, data = df, 
+                              emissions = 'emissions', sources = 'sources')
+  df_mean = df %>% group_by(sources) %>% 
+                              summarize(means = mean(emissions), 
+                                        counts = n())
+  if (all(df_mean$counts == 1)){
+  source_fig = FALSE
+} else {
+  source_fig = TRUE
+}
+} else if (type == "New"){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  source_fig = FALSE
+  df = MACT_new(data = df,  emissions = 'emissions', sources = 'sources')
+} else if (type == "As-is"){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  df_mean = df %>% group_by(sources) %>% 
+                              summarize(means = mean(emissions), 
+                                        counts = n())
+  if (all(df_mean$counts == 1)){
+    source_fig = FALSE
+  } else {
+    source_fig = TRUE
+  }
+}
+best_source = as.character(df$sources)[1]
+df$ln_emiss = log(df$emissions)
+df$ln_emiss = replace(df$ln_emiss, !is.finite(df$ln_emiss), NA)
+distribution_result = distribution_type(data = df, emissions = 'emissions')
+if (distribution_result == "Normal"){
+  UPL = Normal_UPL(data = df,
+                   emissions = 'emissions',
+                   significance = significance,
+                   future_runs = future_runs)
+} else if (distribution_result == "Lognormal"){
+  UPL = Lognormal_UPL(data = df,
+                      emissions = 'emissions',
+                      significance = significance,
+                      future_runs = future_runs)  
+} else if (distribution_result == "Skewed"){
+  UPL = Skewed_UPL(data = df,
+                   emissions = 'emissions',
+                   significance = significance,
+                   future_runs = future_runs)  
+}
+if (!is.na(subcat_name)){
+  subcat_text = paste0('for ', subcat_name, ' subcategory ', subcat_level)
+} else {
+  subcat_text = ''
+}
+```

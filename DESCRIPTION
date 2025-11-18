@@ -38,10 +38,14 @@ Imports:
     readr,
     rjags,
     rmarkdown,
+    Rmpfr,
     runjags,
     scales,
     sfsmisc,
+    shiny,
+    shinycssloaders,
     sn,
+    stringr,
     tibble,
     tidyr
 RoxygenNote: 7.3.3

@@ -25,11 +25,12 @@ test_that("BayesianGroups_UPL() wraps setup, run, and output likelihood", {
   runcount=4
   output_set=BayesianGroups_UPL(data=top5,distr_list = c("Gamma","Skewed"),
                                 future_runs = runcount,significance = 0.99,
-                                xvals=xvals, group = 'sources')
+                                xvals=xvals, group = 'sources',
+                                emissions = 'emissions')
   # saveRDS(output_set,test_path('test_Bayes_UPL','test-BayesGroup_UPL.rds'))
   load_results=readRDS(test_path('test_Bayes_UPL','test-BayesGroup_UPL.rds'))
   expect_equal(output_set,load_results)
-  expect_equal(length(output_set),4)
+  expect_equal(length(output_set),5)
   expect_equal(output_set$fit_table$distr,c("Gamma","Skewed"))
   expect_equal(output_set$conv_output$convYN,
                c(rep("Yes",15),"No","Yes","Yes","No",rep("Yes",16)))

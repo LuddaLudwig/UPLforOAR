@@ -7,16 +7,25 @@
 setup_likelihood(
   distribution,
   data,
+  emissions,
   manual_prior = FALSE,
   prior_list = NULL,
-  random = FALSE
+  random = FALSE,
+  RNG.state = NULL,
+  custom_model = NULL,
+  custom_params = NULL,
+  custom_init = NULL
 )
 }
 \arguments{
-\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'}, or \code{'Beta'}.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'},
+or \code{'Beta'}. If using a custom model script, set as \code{'Custom'}.}
 
-\item{data}{Emissions data from either the best source or top performers,
-must have a column named \code{emissions}.}
+\item{data}{Data from either the best source or top performers,
+must have a column with numeric \code{emissions}.}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
 
 \item{manual_prior}{Default is \code{FALSE}, priors are uninformative and calculated
 from range of emissions data. if \code{TRUE} priors should be specified manually in
@@ -30,8 +39,24 @@ For \code{'Gamma'} they are ordered \code{c(rate_low, rate_high, shape_low, shap
 \code{'Beta'} they are ordered \code{c(alpha_low, alpha_high, beta_low, beta_high)}.}
 
 \item{random}{Default is \code{FALSE} where random seeds are defined via \code{.RNG.name}
-and \code{.RNG.seed} so JAGS runs will be exactly reproducible. Changing to \code{TRUE}
-will use random values for \code{.RNG.name} and \code{.RNG.seed} instead.}
+and \code{.RNG.seed} and returned as \code{state} so JAGS runs will be exactly reproducible.
+Changing to \code{TRUE} will generate new random states to use for \code{.RNG.name} and
+\code{.RNG.state} instead, also returned as \code{state} so the results can be
+recreated exactly if desired.}
+
+\item{RNG.state}{Optional setting to specify a list of three lists setting the
+\code{.RNG.name} and \code{.RNG.state} for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If \code{random = TRUE} the RNG
+state is set randomly instead.}
+
+\item{custom_model}{String for the file path location and name
+(i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.}
+
+\item{custom_params}{List of parameters to monitor in addition to
+c('emission_hat', 'pdf_obs', 'pdf_hat') if using a custom model.}
+
+\item{custom_init}{List of three lists with initial values for MCMC chains
+corresponding to parameters in \code{custom_params}.}
 }
 \value{
 Object \code{model_code}, which is a string for the written R script that

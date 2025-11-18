@@ -21,6 +21,6 @@ test_that("MACT_existing() selects top sources", {
                             15,4,5.7),
                 sources=c(rep('F',12),rep('G',3)))
   dat_test=rbind(top5,others)
-  test_result=MACT_existing(data=dat_test)
+  test_result=MACT_existing(data=dat_test,emissions = 'emissions',sources = 'sources')
   expect_equal(test_result,top5)
 })

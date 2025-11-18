@@ -39,7 +39,7 @@ merged data sets of observed and predicted densities at each emission value
 and each \code{xval}, named \code{obs_pdf_dat} and \code{xhat_pdf_dat} respectively. The
 \code{obs_pdf_dat} also includes the upper and lower 95 percent and median around predicted
 pdf. The UPL estimate from \code{\link[=output_likelihood]{output_likelihood()}} or \code{\link[=output_likelihoodGroup]{output_likelihoodGroup()}}
-is included as well.
+is included as well as the RNG.state for record keeping.
 }
 \description{
 This function takes the list of results from \code{\link[=output_likelihood]{output_likelihood()}} or

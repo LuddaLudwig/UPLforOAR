@@ -4,14 +4,19 @@
 \alias{converge_figsGroup}
 \title{Converge_figsGroup() pulls convergence figures for each parameter with a hierarchical group structure}
 \usage{
-converge_figsGroup(distribution, jags_model_run)
+converge_figsGroup(distribution, jags_model_run, custom_params = NULL)
 }
 \arguments{
-\item{distribution}{One of \code{'Normal'}, \code{'Skewed'}, \code{'Lognormal'}, \code{'Gamma'}, or \code{'Beta'}.}
+\item{distribution}{Any of \code{'Normal'}, \code{'Gamma'}, \code{'Skewed'}, \code{'Lognormal'},
+or \code{'Beta'}. If using a custom model script, set as \code{'Custom'}.}
 
 \item{jags_model_run}{The output list returned from \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}},
 which includes the jags model \code{run_results}, likelihood distribution type,
-\code{data}, \code{xvals}, and \code{future_tests} that were used as inputs to \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}}}
+\code{data}, \code{xvals}, and \code{future_tests} that were used as inputs to \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}}.}
+
+\item{custom_params}{List of parameters to check for convergence if using a
+custom model, e.g. \code{c('parameter1', 'parameter2')}. These must be ordered
+such that all population-level parameters are first followed by group-level parameters.}
 }
 \value{
 A list of histograms and MCMC chain plots per parameter

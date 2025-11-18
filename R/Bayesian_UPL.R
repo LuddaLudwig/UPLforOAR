@@ -14,8 +14,10 @@
 #' manually. Default is `NULL`, in which case is is calculated as `3 * max(data$emissions)`.
 #' @param minY The minimum emission value possible, used to truncate likelihood
 #' distributions. Default is 0.
-#' @param data Emissions data from either the best source or top performers,
-#' must have a column named 'emissions'.
+#' @param data Data set from either the best source or top performers,
+#' must have a column with numeric 'emissions'.
+#' @param emissions variable name or column number corresponding to the
+#' emissions used for selecting top performing sources.
 #' @param prior_list Optional list of [stats::dunif()] upper and lower bounds for prior
 #' distributions. For `'Normal'` they are ordered `c(sd_low, sd_high, mean_low, mean_high')`.
 #' For `'Lognormal'` they are ordered `c(log_sd_low, log_sd_high, log_mean_low, log_mean_high)`.
@@ -32,8 +34,28 @@
 #' are supplying priors manually than you can only run one type of distribution
 #' at a time.
 #' @param random Default is `FALSE` where random seeds are defined via `.RNG.name`
-#' and `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to `TRUE`
-#' will use random values for `.RNG.name` and `.RNG.seed` instead.
+#' and `.RNG.seed` and returned as `state` so JAGS runs will be exactly reproducible.
+#' Changing to `TRUE` will generate new random states to use for `.RNG.name` and
+#' `.RNG.state` instead, also returned as `state` so the results can be
+#' recreated exactly if desired.
+#' @param RNG.state Optional setting to specify a list of three lists setting the
+#' `.RNG.name` and `.RNG.state` for each MCMC chain. The default is a fixed set of
+#' RNG states so the results are always reproducible. If `random = TRUE` the RNG
+#' state is set randomly instead.
+#' @param up Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional upper limit to bound density, default is `Inf`.
+#' @param low Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional lower limit to bound density, default is `0`.
+#' @param bw Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Optional bandwidth, default is `NULL` in which case
+#' `bw = sd(emissions) * n^(-2/5)`, where `n` is number of emissions. The bandwidth
+#' can also be provided manually, or searched for using least squares cross-validation
+#' by `bw = "cv.ls"` or likelihood cross-validation with `bw = "cv.ml"`.
+#' @param kernel Argument passed to [obs_density()] inside [fit_likelihood()].
+#' Kernel choice for density function, default is `gamma` defined
+#' on `(0,Inf)`. Other options include:
+#' `c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')`.
+#' See [np::npuniden.boundary()] for more information on kernel options.
 #' @returns A list of tibble results from [setup_likelihood()], [run_likelihood()],
 #' [output_likelihood()], [obs_density()], [fit_likelihood()], and
 #' [converge_likelihood()] for each distribution in `distr_list`.
@@ -61,8 +83,10 @@
 #' are used, only a single distribution can be run at a time in `distr_list`.
 #'
 Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma', 'Beta'),
-                        data, future_runs = 3, significance = 0.99,
+                        data, emissions, future_runs = 3, significance = 0.99,
                         xvals = NULL, maxY = NULL, minY = 0,
+                        RNG.state = NULL, up = Inf, low = 0,
+                        kernel = 'gamma', bw = NULL,
                         convergence_report = FALSE, random = FALSE,
                         manual_prior = FALSE, prior_list = NULL){
   if (convergence_report == TRUE){
@@ -76,6 +100,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     }
     distribution = distr_list[1]
     mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                 emissions = emissions, RNG.state = RNG.state,
                                  manual_prior = manual_prior, random = random,
                                  prior_list = prior_list)
     mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
@@ -83,7 +108,8 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
     manual_prior = mod_bayes$manual_prior
     mod_output = output_likelihood(jags_model_run = mod_run,
                                    significance = significance)
-    mod_fit = fit_likelihood(likelihood_result = mod_output)
+    mod_fit = fit_likelihood(likelihood_result = mod_output, up = up, low = low,
+                             kernel = kernel, bw = bw)
     mod_output_list[[1]] = mod_fit
     mod_converge = converge_likelihood(mod_run)
     conv_output = rbind(conv_output, mod_converge)
@@ -98,13 +124,23 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   if (!manual_prior){
     for (j in 1:length(distr_list)){
       distribution = distr_list[j]
+      if (random == TRUE){
+        if (j == 1){
+          random = TRUE
+        } else if (j > 1){
+          random = FALSE
+          RNG.state = mod_output_list[[j-1]]$state
+        }
+      }
       mod_bayes = setup_likelihood(distribution = distribution, data = data,
+                                   emissions = emissions, RNG.state = RNG.state,
                                    manual_prior = FALSE, random = random)
       mod_run = run_likelihood(model_input = mod_bayes, maxY = maxY, minY = minY,
                                future_runs = future_runs, xvals = xvals)
       mod_output = output_likelihood(jags_model_run = mod_run,
                                      significance = significance)
-      mod_fit = fit_likelihood(likelihood_result = mod_output)
+      mod_fit = fit_likelihood(likelihood_result = mod_output, up = up, low = low,
+                               kernel = kernel, bw = bw)
       mod_output_list[[j]] = mod_fit
       mod_converge = converge_likelihood(mod_run)
       conv_output = rbind(conv_output, mod_converge)
@@ -132,6 +168,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
                      Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
                      pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
                      )
+  state = mod_output_list[[length(distr_list)]]$state
   obs_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
     obs_temp = mod_output_list[[i]]$obs_pdf_dat
@@ -148,6 +185,7 @@ Bayesian_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'Gamma',
   return_list = list(fit_table = fit_table,
                      conv_output = conv_output,
                      obs_pdf_dat = obs_pdf_dat,
-                     pred_pdf_dat = pred_pdf_dat)
+                     pred_pdf_dat = pred_pdf_dat,
+                     state = state)
   return(return_list)
 }

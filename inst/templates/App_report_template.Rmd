@@ -14,6 +14,8 @@ params:
   data_nsps: "NA"
   dat_UPL: "NA"
   zero_warn: "NA"
+  emissions: "NA"
+  sources: "NA"
 ---
 
 ```{r setup, include = FALSE}
@@ -50,7 +52,8 @@ if (all(dat_topmeans_exist$counts == 1)){
 dat_top_new = params$data_nsps
 emission_mean_new = mean(dat_top_new$emissions)
 best_source = as.character(dat_top_new$sources)[1]
-distribution_result_exist = distribution_type(data = dat_top_exist)
+distribution_result_exist = distribution_type(data = dat_top_exist,
+                                              emissions = 'emissions')
 UPL_table = params$dat_UPL
 best_UPL = UPL_table$UPL_exist[UPL_table$distribution == distribution_result_exist]
 if (nrow(dat_top_new) < 3){
@@ -58,7 +61,8 @@ if (nrow(dat_top_new) < 3){
 } else if (stats::sd(dat_top_new$emissions, na.rm = TRUE) == 0){
   nsps_EVAL = FALSE
 } else {
-  distribution_result_new = distribution_type(data = dat_top_new)
+  distribution_result_new = distribution_type(data = dat_top_new,
+                                              emissions = 'emissions')
   best_UPL_NSPS = UPL_table$UPL_new[UPL_table$distribution == distribution_result_new]
   nsps_EVAL = TRUE
 }
@@ -125,8 +129,8 @@ caption = paste0("UPL results from frequentist excel workbook equivalent
 ```{r plot1, echo = FALSE, eval = source_fig, results = FALSE, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
 ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
           geom_density(alpha = 0.75, bounds = c(0, Inf))+
-          ylab("Density")+ xlab("Emissions")+
-          ggtitle("Top sources observed populations")+
+          ylab("Density")+ xlab(params$emissions)+
+          ggtitle(paste0(input$getSource," observed populations"))+
           multi_source_theme()+ labs(fill = 'Top sources', 
                                      color = 'Top sources')+
           geom_vline(aes(xintercept = means, color = sources),
@@ -143,7 +147,8 @@ ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
 ```{r plot2, echo = FALSE, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of emission test run population. Test run average and existing source UPL calculations are indicated by vertical lines."}
 
 x_hat = seq(0, 3 * max(dat_top_exist$emissions), length.out = 1024)
-obs_dens_results = obs_density(data = dat_top_exist, xvals = x_hat)
+obs_dens_results = obs_density(data = dat_top_exist, xvals = x_hat, 
+                               emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 pdf_norm = dnorm(x_hat, mean = emission_mean_exist, 
@@ -167,7 +172,7 @@ ggplot(data = Obs_onPoint)+
                data = pred_dat, linewidth = 0.75, linetype = 2)+
   geom_area(aes(y = pdf_ln, x = x_hat), alpha = 0.25,
             data = pred_dat, fill = '#984EA3')+
-  ylab("Density")+ xlab("Emissions")+
+  ylab("Density")+ xlab(params$emissions)+
   ggtitle("Existing source test run population")+
   pop_distr_theme()+
   geom_vline(aes(xintercept = emission_mean_exist, color = 'a'),
@@ -192,7 +197,8 @@ ggplot(data = Obs_onPoint)+
 ```{r plot3, echo = FALSE, eval = nsps_EVAL, fig.height = 4, appendix = TRUE, fig.cap = "Observation density of best performer test run population. Best performer average and new source UPL calculations are indicated by vertical lines."}
 
 x_hat_new = seq(0, 3 * max(dat_top_new$emissions), length.out = 1024)
-obs_dens_results_new = obs_density(data = dat_top_new, xvals = x_hat_new)
+obs_dens_results_new = obs_density(data = dat_top_new, xvals = x_hat_new, 
+                                   emissions = 'emissions')
 Obs_onPoint_new = obs_dens_results_new$Obs_onPoint
 obs_den_df_new = obs_dens_results_new$obs_den_df
 pdf_norm_new = dnorm(x_hat_new, mean = emission_mean_new, 
@@ -217,7 +223,7 @@ ggplot(data = Obs_onPoint_new)+
                data = pred_dat_new, linewidth = 0.75, linetype = 2)+
   geom_area(aes(y = pdf_ln, x = x_hat), alpha = 0.25,
             data = pred_dat_new, fill = '#984EA3')+
-  ylab("Density")+ xlab("Emissions")+
+  ylab("Density")+ xlab(params$emissions)+
   ggtitle("New source test run population")+
   pop_distr_theme()+
   geom_vline(aes(xintercept = emission_mean_new, color = 'a'),

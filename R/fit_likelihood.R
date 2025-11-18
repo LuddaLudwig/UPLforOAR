@@ -27,7 +27,7 @@
 #' and each `xval`, named `obs_pdf_dat` and `xhat_pdf_dat` respectively. The
 #' `obs_pdf_dat` also includes the upper and lower 95 percent and median around predicted
 #' pdf. The UPL estimate from [output_likelihood()] or [output_likelihoodGroup()]
-#' is included as well.
+#' is included as well as the RNG.state for record keeping.
 fit_likelihood = function(likelihood_result, up = Inf, low = 0,
                           kernel = 'gamma', bw = NULL){
   obs_pdf_temp = likelihood_result$obs_pdf
@@ -40,7 +40,8 @@ fit_likelihood = function(likelihood_result, up = Inf, low = 0,
   if (low > minY){
     low = minY
   }
-  obs_dens_results = obs_density(data = obs_pdf_temp, up = up, low = low,
+  obs_dens_results = obs_density(data = obs_pdf_temp, emissions = 'emissions',
+                                 up = up, low = low,
                                  bw = bw, kernel = kernel,
                                  xvals = pred_pdf_temp$x_hat)
   Obs_onPoint = obs_dens_results$Obs_onPoint
@@ -65,6 +66,7 @@ fit_likelihood = function(likelihood_result, up = Inf, low = 0,
                   SSE = SSE, good_vals = sum(obs_pdf_dat$inCI),
                   obs_pdf_dat = obs_pdf_dat,
                   xhat_pdf_dat = xhat_pdf_dat,
-                  UPL_Bayes = likelihood_result$UPL_Bayes)
+                  UPL_Bayes = likelihood_result$UPL_Bayes,
+                  state = likelihood_result$state)
   return(fit_temp)
 }

@@ -4,13 +4,19 @@
 \alias{MACT_existing}
 \title{Selects top sources from emissions data}
 \usage{
-MACT_existing(CAA_section = 112, data)
+MACT_existing(data, emissions, sources, CAA_section = 112)
 }
 \arguments{
-\item{CAA_section}{Applicable Clean Air Act section, either 112 or 129}
-
 \item{data}{Data.frame or tibble with columns for \code{emissions} (numeric) and
-\code{sources} (character or factor)}
+\code{sources} (character or factor).}
+
+\item{emissions}{variable name or column number corresponding to the
+emissions used for selecting top performing sources.}
+
+\item{sources}{variable name or column number corresponding to the source
+designation, either a character or factor.}
+
+\item{CAA_section}{Applicable Clean Air Act section, either 112 or 129}
 }
 \value{
 Data set (tibble) of the top 5 or 12 percent of sources, depending on the
