@@ -71,4 +71,4 @@ from
 [`output_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihood.md)
 or
 [`output_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihoodGroup.md)
-is included as well.
+is included as well as the RNG.state for record keeping.

@@ -56,6 +56,10 @@
   : fit_likelihood() calculates the error between fitted density and
   observed density distributions
 
+- [`make_environment()`](https://luddaludwig.github.io/UPLforOAR/reference/make_environment.md)
+  : Makes a list of environments for automating analysis in reg text
+  templates
+
 - [`mcmc_theme()`](https://luddaludwig.github.io/UPLforOAR/reference/mcmc_theme.md)
   : Custom theme for ggplot mcmc iterations
 

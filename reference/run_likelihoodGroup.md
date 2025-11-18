@@ -19,8 +19,7 @@ run_likelihoodGroup(
   xvals = NULL,
   minY = 0,
   maxY = NULL,
-  future_runs = 3,
-  group = "sources"
+  future_runs = 3
 )
 ```
 
@@ -57,16 +56,10 @@ run_likelihoodGroup(
   Integer of future runs to use in prediction, the default is `3` since
   compliance uses 1 test average of 3 runs.
 
-- group:
-
-  Character string corresponding to the variable name in the data set by
-  which to group for the hierarchical structure. If the group is not a
-  factor it will be coerced using as.factor(). To avoid having unknown
-  factor levels, please convert to factor first. (set using
-  `as.factor(data$group_name)` if needed). Defaults to `'sources'`.
-
 ## Value
 
 `runjags` object named `run_results`, likelihood distribution from the
-JAGS model script, as well as `data`, `group` and `xval`s used as
-inputs.
+JAGS model script, as well as the RNG state, `emissions` and `group`
+from the `data` provided in
+[`setup_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/setup_likelihoodGroup.md)
+and `xval`s used as inputs.

@@ -5,15 +5,20 @@ Calculate UPL assuming normally distributed emissions data
 ## Usage
 
 ``` r
-Normal_UPL(data, future_runs = 3, significance = 0.99)
+Normal_UPL(data, emissions, future_runs = 3, significance = 0.99)
 ```
 
 ## Arguments
 
 - data:
 
-  Emissions data from either the best source or top performers, must
-  have a column named `emissions`.
+  Data from either the best source or top performers, must have a column
+  with numeric `emissions`.
+
+- emissions:
+
+  variable name or column number corresponding to the emissions used for
+  selecting top performing sources.
 
 - future_runs:
 

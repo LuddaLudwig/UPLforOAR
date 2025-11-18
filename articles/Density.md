@@ -115,7 +115,7 @@ Furthermore, we can store the results directly in our environment rather
 than them being inside the `ggplot` object.
 
 ``` r
-obs_dens_results = obs_density(data = dat_emiss)
+obs_dens_results = obs_density(data = dat_emiss, emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 ```
@@ -221,19 +221,23 @@ exmpl_dat = tibble(xval = xval, pval = pval)
 exmpl_emiss = tibble(emissions = yval)
 # Empirical densities using different bandwidths:
 # default settings
-dens1 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval) 
+dens1 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval,
+                    emissions = 'emissions') 
 dens_pts1 = dens1$Obs_onPoint
 dens_vals1 = dens1$obs_den_df
 # manual bandwidth
-dens2 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = 0.1)
+dens2 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = 0.1,
+                    emissions = 'emissions')
 dens_pts2 = dens2$Obs_onPoint
 dens_vals2 = dens2$obs_den_df
 # least squares search
-dens3 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = "cv.ls") 
+dens3 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = "cv.ls",
+                    emissions = 'emissions') 
 dens_pts3 = dens3$Obs_onPoint
 dens_vals3 = dens3$obs_den_df
 # maximum likelihood search
-dens4 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = "cv.ml")
+dens4 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, bw = "cv.ml",
+                    emissions = 'emissions')
 dens_pts4 = dens4$Obs_onPoint
 dens_vals4 = dens4$obs_den_df
 ```
@@ -252,22 +256,23 @@ Next we can change the type of kernel used:
 ``` r
 # Empirical densities using different kernels:
 # default settings (Gamma kernel)
-dens1 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval) 
+dens1 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval,
+                    emissions = 'emissions') 
 dens_pts1 = dens1$Obs_onPoint
 dens_vals1 = dens1$obs_den_df
 # Gaussian kernel
 dens2 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval, 
-                    kernel = "gaussian1")
+                    emissions = 'emissions', kernel = "gaussian1")
 dens_pts2 = dens2$Obs_onPoint
 dens_vals2 = dens2$obs_den_df
 # Floating boundary kernel
 dens3 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval,
-                    kernel = "fbl") 
+                    emissions = 'emissions', kernel = "fbl") 
 dens_pts3 = dens3$Obs_onPoint
 dens_vals3 = dens3$obs_den_df
 # Reciprocal inverse Gaussian
 dens4 = obs_density(data = exmpl_emiss, xvals = exmpl_dat$xval,
-                    kernel = "rigaussian")
+                    emissions = 'emissions', kernel = "rigaussian")
 dens_pts4 = dens4$Obs_onPoint
 dens_vals4 = dens4$obs_den_df
 ```

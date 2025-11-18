@@ -7,14 +7,15 @@ for the defining parameters of the selected distribution
 ## Usage
 
 ``` r
-converge_figs(distribution, jags_model_run)
+converge_figs(distribution, jags_model_run, custom_params = NULL)
 ```
 
 ## Arguments
 
 - distribution:
 
-  One of `'Normal'`, `'Skewed'`, `'Lognormal'`, `'Gamma'`, or `'Beta'`.
+  Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+  If using a custom model script, set as `'Custom'`.
 
 - jags_model_run:
 
@@ -23,6 +24,11 @@ converge_figs(distribution, jags_model_run)
   which includes the jags model `run_results`, likelihood distribution
   type, `data`, `xvals`, and `future_tests` that were used as inputs to
   [`run_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihood.md)
+
+- custom_params:
+
+  List of parameters to check for convergence if using a custom model,
+  e.g. `c('parameter1', 'parameter2')`.
 
 ## Value
 

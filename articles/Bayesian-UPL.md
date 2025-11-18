@@ -144,7 +144,7 @@ article for a thorough description of how
 works.
 
 ``` r
-obs_dens_results = obs_density(data = dat_emiss)
+obs_dens_results = obs_density(data = dat_emiss, emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 ```
@@ -212,7 +212,8 @@ is designed to run with minimal user input needed.
 
 ``` r
 distributions = c('Beta', 'Gamma', 'Lognormal', 'Normal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
+results = Bayesian_UPL(data = dat_emiss,  emissions = 'emissions',
+                       distr_list = distributions)
 ```
 
 First, let’s look at plots of the resulting distributions. The points
@@ -274,11 +275,11 @@ fit_metrics = results$fit_table
 
 | Distribution |     SSE | No. Obs. in 95% CI |  integral |
 |:-------------|--------:|-------------------:|----------:|
-| Gamma        |   98400 |                 34 | 0.9870868 |
-| Beta         |  108000 |                 34 | 0.9875739 |
-| Skewed       |  191000 |                 30 | 0.9878288 |
-| Lognormal    |  220000 |                 35 | 0.9858015 |
-| Normal       | 2810000 |                  4 | 0.5671120 |
+| Beta         |  101000 |                 34 | 0.9876855 |
+| Gamma        |  105000 |                 34 | 0.9872816 |
+| Skewed       |  190000 |                 30 | 0.9882073 |
+| Lognormal    |  219000 |                 35 | 0.9859322 |
+| Normal       | 2810000 |                  4 | 0.5674335 |
 
 Goodness of fit results for IIS HCl emissions
 
@@ -316,7 +317,7 @@ The UPL results are the variable `UPL` stored in `results$fit_table`:
 
 |     |   Gamma |   Beta |  Skewed | Lognormal |  Normal |
 |:----|--------:|-------:|--------:|----------:|--------:|
-| UPL | 0.00261 | 0.0026 | 0.00249 |   0.00342 | 0.00291 |
+| UPL | 0.00261 | 0.0026 | 0.00246 |    0.0034 | 0.00288 |
 
 Upper Predictive Limits for IIS HCl emissions
 
@@ -340,15 +341,15 @@ be used.
 | Distribution | Parameter     | Diagnostic | Converged |
 |:-------------|:--------------|-----------:|:----------|
 | Beta         | alpha_em      |      1.001 | Yes       |
-| Beta         | beta_em       |      1.002 | Yes       |
-| Gamma        | rate_em       |      1.000 | Yes       |
-| Gamma        | shape_em      |      1.000 | Yes       |
+| Beta         | beta_em       |      1.001 | Yes       |
+| Gamma        | rate_em       |      1.001 | Yes       |
+| Gamma        | shape_em      |      1.001 | Yes       |
 | Lognormal    | u_ln          |      1.000 | Yes       |
 | Lognormal    | sd_ln         |      1.000 | Yes       |
 | Normal       | emission_mean |      1.000 | Yes       |
 | Normal       | emission_sd   |      1.000 | Yes       |
-| Skewed       | omega         |      1.000 | Yes       |
-| Skewed       | xi            |      1.001 | Yes       |
+| Skewed       | omega         |      1.001 | Yes       |
+| Skewed       | xi            |      1.003 | Yes       |
 | Skewed       | alpha         |      1.000 | Yes       |
 
 Gelman-Rubin convergence tests for likelihood parameters
@@ -472,7 +473,11 @@ list of initial values,
 will specify the random seeds for the MCMC chains in JAGS. This allows
 the models to be re-run with perfect reproducibility. You can turn this
 behavior off by setting the argument `random = FALSE`, in which case a
-random number generator will be used in the MCMC search.
+random number generator will be used in the MCMC search. You can also
+pass alternate RNG states in manually via the `RNG.state` argument if
+you want to recreate a specific run other than the default. Regardless
+of how the RNG is set, the state is always returned in the output so the
+results are documented and reproducible.
 
 If `manual_prior = TRUE`, then
 [`setup_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/setup_likelihood.md)
@@ -591,3 +596,173 @@ curve can be compared to the predicted density function from the
 Bayesian model fit. The results, along the UPL determined in the
 previous step, are returned by
 [`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+
+## Customize Bayesian Model
+
+There might be circumstances where the
+[`Bayesian_UPL()`](https://luddaludwig.github.io/UPLforOAR/reference/Bayesian_UPL.md)
+function isn’t flexible enough, and a customized option is needed. Below
+is an example of how you can write your own JAGS model script and use it
+with the `_likelihood()` functions. The JAGS model script below will
+create the file ‘Custom_JAGS.R’ in your working directory. This is a
+normal probability distribution with the same `pdf_obs`, `emission_hat`,
+and `pdf_hat` variables that are needed for calculating the UPL,
+assessing fit, and plotting the full probability function. However, we
+have changed the name of the parameters, set specific prior
+distributions, and manually specified to truncate the distribution
+between `(1000, 2000)`.
+
+``` r
+JAGS_model = "Custom_JAGS.R"
+cat("# Custom model
+      model {
+      # priors
+          parameter1 ~ dnorm(1500, 1 / 5^2)
+          parameter2 ~ dunif(0, 100)
+
+      #likelihood
+          for (i in 1:length(emission_xi)) {
+            emission_xi[i] ~ dnorm(parameter1, 1 / parameter2^2)T(1000, 2000)
+            pdf_obs[i] = dnorm(emission_xi[i], parameter1, 1 / parameter2^2)
+          }
+
+      # derived quantities
+      # predict new emission tests
+          for (k in 1:n_draws){
+            emission_hat[k] ~ dnorm(parameter1, 1 / parameter2^2)T(1000, 2000)
+          }
+          for (h in 1:n_x_hat){
+            pdf_hat[h] = dnorm(x_hat[h], parameter1, 1 / parameter2^2)
+          }
+        }", file = JAGS_model)
+```
+
+Next, we need to setup the likelihood model. We are going to simulate
+some emissions data that our custom model might work with. Since it is
+custom, we have to pass the path location and name of the JAGS script as
+a string, and also include lists of the parameter names to monitor that
+are new in our custom scripts as well as their initial starting values.
+The initial values need to be viable with regards to the prior
+distributions we customized (i.e. since `'parameter2'` cannot be greater
+than 100, setting an initial position `'parameter2' = 178` would cause
+it to fail), organized as a list of three lists, with each of the three
+lists having different enough values that convergence can be assessed.
+
+``` r
+set.seed(1)
+emissions = rnorm(300, mean = 1550, sd = 10)
+dat_emiss = tibble(emissions)
+custom_init = list(list('parameter1' = 1400, 'parameter2' = 0.2), 
+                   list('parameter1' = 1600, 'parameter2' = 75), 
+                   list('parameter1' = 1555, 'parameter2' = 8))
+custom_setup = setup_likelihood(data = dat_emiss, emissions = 'emissions',
+                                distribution = 'Custom',
+                                custom_model = 'Custom_JAGS.R',
+                                custom_params = c('parameter1', 'parameter2'),
+                                custom_init = custom_init)
+```
+
+Running the custom model works much the same once it has been setup. We
+will use the default settings: `minY = 0`, `maxY = 3*max(emissions)`,
+`xvals = seq(minY, maxY, length.out = 1024)`, and `future_runs = 3`.
+
+``` r
+custom_run = run_likelihood(custom_setup)
+#> Compiling rjags model...
+#> Starting 3 rjags simulations using a PSOCK cluster with 3 nodes on host
+#> 'localhost'
+#> Simulation complete
+#> Finished running the simulation
+```
+
+The output and UPL calculations are fundamentally the same, the 99^(th)
+percentile of the average of the distributions of future runs. The
+fitted probabilities at the emission observations with confidence
+intervals and along `xvals` are returned as normal as well using
+[`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+Since we know the data are normal and don’t need bounds, we are also
+using a better kernel and bandwidth to match.
+
+``` r
+custom_output = output_likelihood(custom_run)
+custom_fit = fit_likelihood(custom_output, kernel = 'gaussian1', 
+                            bw = "cv.ls")
+```
+
+This results in a UPL of 1563, and we can plot the distributions below.
+Note that even though we gave very specific prior information in the
+form of a narrow normal distribution with a different mean in our custom
+model, the posterior distribution clearly still aligns with the data.
+
+``` r
+palette_line = c("#377EB8", "#FF7F00")
+x_hat = seq(1400, 1700, length.out = 3000)
+pdf_n = dnorm(x_hat, mean = 1500, sd = 5)
+pred_dat = tibble(x_hat, pdf_n)
+ggplot()+
+  geom_line(data = custom_fit$xhat_pdf_dat,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = custom_fit$xhat_pdf_dat,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = custom_fit$obs_pdf_dat,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = custom_fit$xhat_pdf_dat,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = custom_fit$xhat_pdf_dat,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_line(data = pred_dat,
+            aes(x = x_hat, y = pdf_n, color = 'prior'), size = 0.75)+
+  geom_area(data = pred_dat,
+            aes(x = x_hat, y = pdf_n, fill = 'prior'), alpha = 0.5)+
+  geom_errorbar(data = custom_fit$obs_pdf,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = custom_fit$obs_pdf_dat,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
+  ylab("Density")+ xlab("Simulated emissions")+
+  pop_distr_theme()+ labs(color = 'Distribution:', fill = "Distribution:")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(1400,1700))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_rug(data = custom_fit$obs_pdf_dat,
+           sides = 'b', aes(x = emissions),
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  coord_cartesian(clip = 'off')+ 
+  scale_color_manual(values = palette_line, labels = c('Posterior', 'Prior'))+
+  scale_fill_manual(values = palette_line, labels = c('Posterior', 'Prior'))+
+  theme(legend.title = element_blank())
+```
+
+![](Bayesian-UPL_files/figure-html/custom_fig-1.png)
+
+In order to check the convergence, we have to pass the parameter names
+that we customized.
+
+``` r
+custom_conv = converge_likelihood(custom_run, 
+                                  custom_params = c('parameter1', 'parameter2'))
+conv_metrics = mutate(custom_conv, across(c(3), ~signif(., digits = 4)))
+knitr::kable(conv_metrics,
+             caption = "Gelman-Rubin convergence tests for custom likelihood parameters",
+             col.names = c("Distribution",'Parameter',"Diagnostic","Converged"))
+```
+
+| Distribution | Parameter  | Diagnostic | Converged |
+|:-------------|:-----------|-----------:|:----------|
+| Custom       | parameter1 |          1 | Yes       |
+| Custom       | parameter2 |          1 | Yes       |
+
+Gelman-Rubin convergence tests for custom likelihood parameters
+
+And lastly, we can plot the convergence figures for our custom
+parameters. Here we need to specify we are using a custom distribution
+and again provide a list of the parameters to produce the plots for.
+
+``` r
+part3 = converge_figs(distribution = "Custom", jags_model_run = custom_run, 
+                      custom_params = c('parameter1', 'parameter2'))
+part3
+```
+
+![](Bayesian-UPL_files/figure-html/custom_figs-1.png)![](Bayesian-UPL_files/figure-html/custom_figs-2.png)

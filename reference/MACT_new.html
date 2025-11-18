@@ -46,7 +46,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MACT_new</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MACT_new</span><span class="op">(</span><span class="va">data</span>, <span class="va">emissions</span>, <span class="va">sources</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -56,6 +56,16 @@
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Data.frame or tibble with columns for <code>emissions</code> (numeric)
 and <code>sources</code> (character or factor)</p></dd>
+
+
+<dt id="arg-emissions">emissions<a class="anchor" aria-label="anchor" href="#arg-emissions"></a></dt>
+<dd><p>variable name or column number corresponding to the
+emissions used for selecting top performing sources.</p></dd>
+
+
+<dt id="arg-sources">sources<a class="anchor" aria-label="anchor" href="#arg-sources"></a></dt>
+<dd><p>variable name or column number corresponding to the source
+designation, either a character or factor.</p></dd>
 
 </dl></div>
     <div class="section level2">

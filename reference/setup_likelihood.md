@@ -10,9 +10,14 @@ monitor.
 setup_likelihood(
   distribution,
   data,
+  emissions,
   manual_prior = FALSE,
   prior_list = NULL,
-  random = FALSE
+  random = FALSE,
+  RNG.state = NULL,
+  custom_model = NULL,
+  custom_params = NULL,
+  custom_init = NULL
 )
 ```
 
@@ -21,11 +26,17 @@ setup_likelihood(
 - distribution:
 
   Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+  If using a custom model script, set as `'Custom'`.
 
 - data:
 
-  Emissions data from either the best source or top performers, must
-  have a column named `emissions`.
+  Data from either the best source or top performers, must have a column
+  with numeric `emissions`.
+
+- emissions:
+
+  variable name or column number corresponding to the emissions used for
+  selecting top performing sources.
 
 - manual_prior:
 
@@ -49,8 +60,33 @@ setup_likelihood(
 - random:
 
   Default is `FALSE` where random seeds are defined via `.RNG.name` and
-  `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to
-  `TRUE` will use random values for `.RNG.name` and `.RNG.seed` instead.
+  `.RNG.seed` and returned as `state` so JAGS runs will be exactly
+  reproducible. Changing to `TRUE` will generate new random states to
+  use for `.RNG.name` and `.RNG.state` instead, also returned as `state`
+  so the results can be recreated exactly if desired.
+
+- RNG.state:
+
+  Optional setting to specify a list of three lists setting the
+  `.RNG.name` and `.RNG.state` for each MCMC chain. The default is a
+  fixed set of RNG states so the results are always reproducible. If
+  `random = TRUE` the RNG state is set randomly instead.
+
+- custom_model:
+
+  String for the file path location and name (i.e.
+  "working_directory/Custom_JAGS.R") if using a custom JAGS model
+  script.
+
+- custom_params:
+
+  List of parameters to monitor in addition to c('emission_hat',
+  'pdf_obs', 'pdf_hat') if using a custom model.
+
+- custom_init:
+
+  List of three lists with initial values for MCMC chains corresponding
+  to parameters in `custom_params`.
 
 ## Value
 

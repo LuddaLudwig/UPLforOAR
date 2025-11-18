@@ -234,8 +234,8 @@ distribution and calculate the UPL.
 
 ``` r
 dat_emiss = read.csv("Example_data1.csv")
-distr_choice = distribution_type(data = dat_emiss)
-UPL_excel = Lognormal_UPL(data = dat_emiss)
+distr_choice = distribution_type(data = dat_emiss, emissions = 'emissions')
+UPL_excel = Lognormal_UPL(data = dat_emiss, emissions = 'emissions')
 ```
 
 The emissions are a Lognormal distribution with a corresponding UPL of
@@ -307,11 +307,14 @@ estimate changes.
 
 ``` r
 results_3X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                          emissions = 'emissions',
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                          emissions = 'emissions',
                           maxY = 2*max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 results_25X = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
+                           emissions = 'emissions',
                            maxY = 25*max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```
@@ -325,7 +328,7 @@ different maximum emission thresholds.
 
 Clearly, the longer the tail the larger the UPL: when the tail limit
 increases from 1.15, to 1.72, and then 5.74 we get UPL estimates of
-0.68, 0.83, and 3.01. However, not all of these results are equal in
+0.67, 0.84, and 3.01. However, not all of these results are equal in
 terms of performance.
 
 Let’s look at the results from
@@ -344,9 +347,9 @@ probability density function is truncated, the farther below 1.
 
 | Upper Limit |  UPL | SSE | No. Obs. in 95% CI | pdf integral |
 |:------------|-----:|----:|-------------------:|-------------:|
-| 2X Max      | 0.68 | 110 |                 15 |         0.65 |
-| 3X Max      | 0.83 | 190 |                 15 |         0.86 |
-| 25X Max     | 3.00 | 570 |                 10 |         0.93 |
+| 2X Max      | 0.67 |  91 |                 15 |         0.67 |
+| 3X Max      | 0.84 | 180 |                 15 |         0.86 |
+| 25X Max     | 3.00 | 570 |                 11 |         0.93 |
 
 Performance of Lognormal distributions with different MaxY limits
 
@@ -408,47 +411,47 @@ and converges well.
 
 ``` r
 results_3X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X95 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
                             maxY = 25*max(dat_emiss$emissions),
-                            significance = 0.95,
+                            significance = 0.95, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_3X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.90,
+                            significance = 0.90, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.90,
+                            significance = 0.90, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X90 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.90,
+                             significance = 0.90, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 results_3X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.85,
+                            significance = 0.85, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.85,
+                            significance = 0.85, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X85 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.85,
+                             significance = 0.85, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 results_3X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.80,
+                            significance = 0.80, emissions = 'emissions',
                             xvals = seq(0, 3, length.out = 1000))
 results_2X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                            significance = 0.80,
+                            significance = 0.80, emissions = 'emissions',
                             maxY = 2*max(dat_emiss$emissions),
                             xvals = seq(0, 3, length.out = 1000))
 results_25X80 = Bayesian_UPL(distr_list = c("Lognormal"), data = dat_emiss,
-                             significance = 0.80,
+                             significance = 0.80, emissions = 'emissions',
                              maxY = 25*max(dat_emiss$emissions),
                              xvals = seq(0, 3, length.out = 1000))
 ```
@@ -495,18 +498,18 @@ point forcing bad behavior.
 
 | Upper Limit |  UPL | SSE | No. Obs. in 95% CI | pdf integral | Significance |
 |:------------|-----:|----:|-------------------:|-------------:|:-------------|
-| 2X Max      | 0.33 | 110 |                 15 |         0.65 | 80th         |
-| 3X Max      | 0.33 | 190 |                 15 |         0.86 | 80th         |
-| 25X Max     | 0.31 | 570 |                 10 |         0.93 | 80th         |
-| 2X Max      | 0.37 | 110 |                 15 |         0.65 | 85th         |
-| 3X Max      | 0.40 | 190 |                 15 |         0.86 | 85th         |
-| 25X Max     | 0.42 | 570 |                 10 |         0.93 | 85th         |
-| 2X Max      | 0.42 | 110 |                 15 |         0.65 | 90th         |
-| 3X Max      | 0.48 | 190 |                 15 |         0.86 | 90th         |
-| 25X Max     | 0.61 | 570 |                 10 |         0.93 | 90th         |
-| 2X Max      | 0.51 | 110 |                 15 |         0.65 | 95th         |
-| 3X Max      | 0.58 | 190 |                 15 |         0.86 | 95th         |
-| 25X Max     | 1.10 | 570 |                 10 |         0.93 | 95th         |
+| 2X Max      | 0.32 |  91 |                 15 |         0.67 | 80th         |
+| 3X Max      | 0.33 | 180 |                 15 |         0.86 | 80th         |
+| 25X Max     | 0.31 | 570 |                 11 |         0.93 | 80th         |
+| 2X Max      | 0.36 |  91 |                 15 |         0.67 | 85th         |
+| 3X Max      | 0.40 | 180 |                 15 |         0.86 | 85th         |
+| 25X Max     | 0.42 | 570 |                 11 |         0.93 | 85th         |
+| 2X Max      | 0.41 |  91 |                 15 |         0.67 | 90th         |
+| 3X Max      | 0.48 | 180 |                 15 |         0.86 | 90th         |
+| 25X Max     | 0.62 | 570 |                 11 |         0.93 | 90th         |
+| 2X Max      | 0.50 |  91 |                 15 |         0.67 | 95th         |
+| 3X Max      | 0.59 | 180 |                 15 |         0.86 | 95th         |
+| 25X Max     | 1.10 | 570 |                 11 |         0.93 | 95th         |
 
 Performance of Lognormal distributions with different MaxY limits and
 different significance levels.
@@ -522,7 +525,8 @@ sources, theoretically there could emissions higher than 1.
 
 ``` r
 distributions = c('Gamma', 'Lognormal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss, distr_list = distributions)
+results = Bayesian_UPL(data = dat_emiss, emissions = 'emissions', 
+                       distr_list = distributions)
 ```
 
 ![Fitted likelihood distributions for Lime HCl
@@ -536,9 +540,9 @@ fit_metrics = results$fit_table
 
 | Distribution |   UPL |   SSE | No. Obs. in 95% CI | pdf integral |
 |:-------------|------:|------:|-------------------:|-------------:|
-| Gamma        | 0.609 |  40.9 |                 15 |    0.8966921 |
-| Lognormal    | 0.830 | 194.0 |                 15 |    0.8558586 |
-| Skewed       | 0.508 | 838.0 |                  4 |    0.9453717 |
+| Gamma        | 0.624 |  41.2 |                 15 |    0.8960532 |
+| Lognormal    | 0.836 | 181.0 |                 15 |    0.8482302 |
+| Skewed       | 0.506 | 839.0 |                  4 |    0.9457529 |
 
 Comparing goodness of fit results for other distributions
 
@@ -549,11 +553,14 @@ larger values of `maxY`:
 
 ``` r
 results_3X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                          emissions = 'emissions',
                           xvals = seq(0, 3, length.out = 1000))
 results_2X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                          emissions = 'emissions',
                           maxY = 2 * max(dat_emiss$emissions),
                           xvals = seq(0, 3, length.out = 1000))
 results_25X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
+                           emissions = 'emissions',
                            maxY = 25 * max(dat_emiss$emissions),
                            xvals = seq(0, 3, length.out = 1000))
 ```
@@ -561,12 +568,12 @@ results_25X = Bayesian_UPL(distr_list = c("Gamma"), data = dat_emiss,
 The outcome shows the tail is way more stable at the 99^(th) percentile
 for Gamma than it was for Lognormal. Furthermore, the fit is just as
 good (SSE barely changes) and the UPL hardly changes. This is all great
-news, and leads us to finally recommend a UPL of 0.66.
+news, and leads us to finally recommend a UPL of 0.67.
 
 | Upper Limit |  UPL | SSE | No. Obs. in 95% CI | pdf integral |
 |:------------|-----:|----:|-------------------:|-------------:|
 | 2X Max      | 0.54 |  43 |                 15 |         0.87 |
-| 3X Max      | 0.61 |  41 |                 15 |         0.87 |
-| 25X Max     | 0.66 |  41 |                 15 |         0.87 |
+| 3X Max      | 0.62 |  41 |                 15 |         0.87 |
+| 25X Max     | 0.67 |  41 |                 15 |         0.87 |
 
 Performance of Gamma distributions with different MaxY limits

@@ -80,11 +80,15 @@ summary(dat_emiss$emissions)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 #> 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05
 
-dat_exist = MACT_existing(CAA_section=112, dat_emiss)
+dat_exist = MACT_existing(data = dat_emiss, 
+                          emissions = 'emissions',
+                          sources = 'sources',
+                          CAA_section = 112)
 dat_exist_avg = dat_exist %>% group_by(sources) %>% 
   summarize(avg = mean(emissions), counts = n())
 dat_exist_avg = arrange(dat_exist_avg, avg)
-distribution_result_exist = distribution_type(dat_exist)
+distribution_result_exist = distribution_type(data = dat_exist,
+                                              emissions = 'emissions')
 ```
 
 | Source                           | Average emission | No. of Tests |
@@ -111,11 +115,13 @@ positive.
 
 ``` r
 UPL1_exist = Normal_UPL(data = dat_exist,
-                     future_runs = 1,
-                     significance = 0.99)
-UPL2_exist = Lognormal_UPL(data = dat_exist,
+                        emissions = 'emissions',
                         future_runs = 1,
                         significance = 0.99)
+UPL2_exist = Lognormal_UPL(data = dat_exist,
+                           emissions = 'emissions',
+                           future_runs = 1,
+                           significance = 0.99)
 ```
 
 Next we calculate the UPL using the appropriate distribution, which
@@ -133,7 +139,9 @@ emissions.
 x_hat = seq(0, 3 * max(dat_exist$emissions), length.out = 1024)
 # next define the probability density along x_hat
 # and at each emission observation.
-obs_dens_results = obs_density(dat_exist, xvals = x_hat)
+obs_dens_results = obs_density(data = dat_exist, 
+                               emissions = 'emissions',
+                               xvals = x_hat)
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
 # create a probability density function along the same x_hat

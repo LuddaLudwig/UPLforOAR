@@ -36,4 +36,5 @@ A list including `distr`, the distribution used in
 upper predictive limit based on the `significance` level and average
 distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 probability density at each observation, and `pred_pdf`, the predicted
-probability density at each point in `xvals`.
+probability density at each point in `xvals`, and the RNG.state for
+record keeping.

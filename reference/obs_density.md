@@ -5,7 +5,15 @@ Calculates the density of emissions observations
 ## Usage
 
 ``` r
-obs_density(data, xvals = NULL, up = Inf, low = 0, kernel = "gamma", bw = NULL)
+obs_density(
+  data,
+  emissions,
+  xvals = NULL,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL
+)
 ```
 
 ## Arguments
@@ -13,7 +21,12 @@ obs_density(data, xvals = NULL, up = Inf, low = 0, kernel = "gamma", bw = NULL)
 - data:
 
   Emissions data from either the best source or top performers, must
-  have a column named `emissions`.
+  have a column with numeric `emissions`.
+
+- emissions:
+
+  variable name or column number corresponding to the emissions used for
+  selecting top performing sources.
 
 - xvals:
 

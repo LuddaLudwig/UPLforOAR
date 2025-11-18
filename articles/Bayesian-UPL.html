@@ -213,7 +213,7 @@ results directly in our environment rather than them being inside the
 article for a thorough description of how <code><a href="../reference/obs_density.html">obs_density()</a></code>
 works.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
 <span><span class="va">Obs_onPoint</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
 <p>The figure below shows the overall observation density of the top
@@ -270,7 +270,8 @@ adjusted manually or evaluated step-wise, but
 needed.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Beta'</span>, <span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Normal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>,  emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
+<span>                       distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <p>First, let’s look at plots of the resulting distributions. The points
 and error bars on these figures represent the median and 95% confidence
 interval around the predicted probability for each emission observation,
@@ -337,34 +338,34 @@ defined, so it integrates to less than 1.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Gamma</td>
-<td align="right">98400</td>
+<td align="left">Beta</td>
+<td align="right">101000</td>
 <td align="right">34</td>
-<td align="right">0.9870868</td>
+<td align="right">0.9876855</td>
 </tr>
 <tr class="even">
-<td align="left">Beta</td>
-<td align="right">108000</td>
+<td align="left">Gamma</td>
+<td align="right">105000</td>
 <td align="right">34</td>
-<td align="right">0.9875739</td>
+<td align="right">0.9872816</td>
 </tr>
 <tr class="odd">
 <td align="left">Skewed</td>
-<td align="right">191000</td>
+<td align="right">190000</td>
 <td align="right">30</td>
-<td align="right">0.9878288</td>
+<td align="right">0.9882073</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal</td>
-<td align="right">220000</td>
+<td align="right">219000</td>
 <td align="right">35</td>
-<td align="right">0.9858015</td>
+<td align="right">0.9859322</td>
 </tr>
 <tr class="odd">
 <td align="left">Normal</td>
 <td align="right">2810000</td>
 <td align="right">4</td>
-<td align="right">0.5671120</td>
+<td align="right">0.5674335</td>
 </tr>
 </tbody>
 </table>
@@ -413,9 +414,9 @@ will change the UPL calculation. The UPL results are the variable
 <td align="left">UPL</td>
 <td align="right">0.00261</td>
 <td align="right">0.0026</td>
-<td align="right">0.00249</td>
-<td align="right">0.00342</td>
-<td align="right">0.00291</td>
+<td align="right">0.00246</td>
+<td align="right">0.0034</td>
+<td align="right">0.00288</td>
 </tr></tbody>
 </table>
 </div>
@@ -453,19 +454,19 @@ parameters</caption>
 <tr class="even">
 <td align="left">Beta</td>
 <td align="left">beta_em</td>
-<td align="right">1.002</td>
+<td align="right">1.001</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
 <td align="left">Gamma</td>
 <td align="left">rate_em</td>
-<td align="right">1.000</td>
+<td align="right">1.001</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Gamma</td>
 <td align="left">shape_em</td>
-<td align="right">1.000</td>
+<td align="right">1.001</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
@@ -495,13 +496,13 @@ parameters</caption>
 <tr class="odd">
 <td align="left">Skewed</td>
 <td align="left">omega</td>
-<td align="right">1.000</td>
+<td align="right">1.001</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Skewed</td>
 <td align="left">xi</td>
-<td align="right">1.001</td>
+<td align="right">1.003</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
@@ -618,7 +619,11 @@ chains respectively. In addition to the list of initial values,
 MCMC chains in JAGS. This allows the models to be re-run with perfect
 reproducibility. You can turn this behavior off by setting the argument
 <code>random = FALSE</code>, in which case a random number generator
-will be used in the MCMC search.</p>
+will be used in the MCMC search. You can also pass alternate RNG states
+in manually via the <code>RNG.state</code> argument if you want to
+recreate a specific run other than the default. Regardless of how the
+RNG is set, the state is always returned in the output so the results
+are documented and reproducible.</p>
 <p>If <code>manual_prior = TRUE</code>, then
 <code><a href="../reference/setup_likelihood.html">setup_likelihood()</a></code> will load the JAGS model script version
 with each prior defined on <code>~dunif(low, high)</code>. In this case,
@@ -727,6 +732,176 @@ curve can be compared to the predicted density function from the
 Bayesian model fit. The results, along the UPL determined in the
 previous step, are returned by <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code>.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="customize-bayesian-model">Customize Bayesian Model<a class="anchor" aria-label="anchor" href="#customize-bayesian-model"></a>
+</h2>
+<p>There might be circumstances where the <code><a href="../reference/Bayesian_UPL.html">Bayesian_UPL()</a></code>
+function isn’t flexible enough, and a customized option is needed. Below
+is an example of how you can write your own JAGS model script and use it
+with the <code>_likelihood()</code> functions. The JAGS model script
+below will create the file ‘Custom_JAGS.R’ in your working directory.
+This is a normal probability distribution with the same
+<code>pdf_obs</code>, <code>emission_hat</code>, and
+<code>pdf_hat</code> variables that are needed for calculating the UPL,
+assessing fit, and plotting the full probability function. However, we
+have changed the name of the parameters, set specific prior
+distributions, and manually specified to truncate the distribution
+between <code>(1000, 2000)</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">JAGS_model</span> <span class="op">=</span> <span class="st">"Custom_JAGS.R"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"# Custom model</span></span>
+<span><span class="st">      model {</span></span>
+<span><span class="st">      # priors</span></span>
+<span><span class="st">          parameter1 ~ dnorm(1500, 1 / 5^2)</span></span>
+<span><span class="st">          parameter2 ~ dunif(0, 100)</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">      #likelihood</span></span>
+<span><span class="st">          for (i in 1:length(emission_xi)) {</span></span>
+<span><span class="st">            emission_xi[i] ~ dnorm(parameter1, 1 / parameter2^2)T(1000, 2000)</span></span>
+<span><span class="st">            pdf_obs[i] = dnorm(emission_xi[i], parameter1, 1 / parameter2^2)</span></span>
+<span><span class="st">          }</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">      # derived quantities</span></span>
+<span><span class="st">      # predict new emission tests</span></span>
+<span><span class="st">          for (k in 1:n_draws){</span></span>
+<span><span class="st">            emission_hat[k] ~ dnorm(parameter1, 1 / parameter2^2)T(1000, 2000)</span></span>
+<span><span class="st">          }</span></span>
+<span><span class="st">          for (h in 1:n_x_hat){</span></span>
+<span><span class="st">            pdf_hat[h] = dnorm(x_hat[h], parameter1, 1 / parameter2^2)</span></span>
+<span><span class="st">          }</span></span>
+<span><span class="st">        }"</span>, file <span class="op">=</span> <span class="va">JAGS_model</span><span class="op">)</span></span></code></pre></div>
+<p>Next, we need to setup the likelihood model. We are going to simulate
+some emissions data that our custom model might work with. Since it is
+custom, we have to pass the path location and name of the JAGS script as
+a string, and also include lists of the parameter names to monitor that
+are new in our custom scripts as well as their initial starting values.
+The initial values need to be viable with regards to the prior
+distributions we customized (i.e. since <code>'parameter2'</code> cannot
+be greater than 100, setting an initial position
+<code>'parameter2' = 178</code> would cause it to fail), organized as a
+list of three lists, with each of the three lists having different
+enough values that convergence can be assessed.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">emissions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">300</span>, mean <span class="op">=</span> <span class="fl">1550</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span></span>
+<span><span class="va">custom_init</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'parameter1'</span> <span class="op">=</span> <span class="fl">1400</span>, <span class="st">'parameter2'</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>, </span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'parameter1'</span> <span class="op">=</span> <span class="fl">1600</span>, <span class="st">'parameter2'</span> <span class="op">=</span> <span class="fl">75</span><span class="op">)</span>, </span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'parameter1'</span> <span class="op">=</span> <span class="fl">1555</span>, <span class="st">'parameter2'</span> <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">custom_setup</span> <span class="op">=</span> <span class="fu"><a href="../reference/setup_likelihood.html">setup_likelihood</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
+<span>                                distribution <span class="op">=</span> <span class="st">'Custom'</span>,</span>
+<span>                                custom_model <span class="op">=</span> <span class="st">'Custom_JAGS.R'</span>,</span>
+<span>                                custom_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'parameter1'</span>, <span class="st">'parameter2'</span><span class="op">)</span>,</span>
+<span>                                custom_init <span class="op">=</span> <span class="va">custom_init</span><span class="op">)</span></span></code></pre></div>
+<p>Running the custom model works much the same once it has been setup.
+We will use the default settings: <code>minY = 0</code>,
+<code>maxY = 3*max(emissions)</code>,
+<code>xvals = seq(minY, maxY, length.out = 1024)</code>, and
+<code>future_runs = 3</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">custom_run</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_likelihood.html">run_likelihood</a></span><span class="op">(</span><span class="va">custom_setup</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Compiling rjags model...</span></span>
+<span><span class="co">#&gt; Starting 3 rjags simulations using a PSOCK cluster with 3 nodes on host</span></span>
+<span><span class="co">#&gt; 'localhost'</span></span>
+<span><span class="co">#&gt; Simulation complete</span></span>
+<span><span class="co">#&gt; Finished running the simulation</span></span></code></pre></div>
+<p>The output and UPL calculations are fundamentally the same, the
+99<sup>th</sup> percentile of the average of the distributions of future
+runs. The fitted probabilities at the emission observations with
+confidence intervals and along <code>xvals</code> are returned as normal
+as well using <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code>. Since we know the data are
+normal and don’t need bounds, we are also using a better kernel and
+bandwidth to match.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">custom_output</span> <span class="op">=</span> <span class="fu"><a href="../reference/output_likelihood.html">output_likelihood</a></span><span class="op">(</span><span class="va">custom_run</span><span class="op">)</span></span>
+<span><span class="va">custom_fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/fit_likelihood.html">fit_likelihood</a></span><span class="op">(</span><span class="va">custom_output</span>, kernel <span class="op">=</span> <span class="st">'gaussian1'</span>, </span>
+<span>                            bw <span class="op">=</span> <span class="st">"cv.ls"</span><span class="op">)</span></span></code></pre></div>
+<p>This results in a UPL of 1563, and we can plot the distributions
+below. Note that even though we gave very specific prior information in
+the form of a narrow normal distribution with a different mean in our
+custom model, the posterior distribution clearly still aligns with the
+data.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">palette_line</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#377EB8"</span>, <span class="st">"#FF7F00"</span><span class="op">)</span></span>
+<span><span class="va">x_hat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1400</span>, <span class="fl">1700</span>, length.out <span class="op">=</span> <span class="fl">3000</span><span class="op">)</span></span>
+<span><span class="va">pdf_n</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x_hat</span>, mean <span class="op">=</span> <span class="fl">1500</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">pred_dat</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span><span class="va">x_hat</span>, <span class="va">pdf_n</span><span class="op">)</span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">xhat_pdf_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.75</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">xhat_pdf_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">'grey'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">obs_pdf_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">ydens</span>, x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>,</span>
+<span>            size <span class="op">=</span> <span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, shape <span class="op">=</span> <span class="fl">19</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">xhat_pdf_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_hat</span>, y <span class="op">=</span> <span class="va">pdf_hat</span>, color <span class="op">=</span> <span class="va">distr</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">xhat_pdf_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_hat</span>, y <span class="op">=</span> <span class="va">pdf_hat</span>, fill <span class="op">=</span> <span class="va">distr</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pred_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_hat</span>, y <span class="op">=</span> <span class="va">pdf_n</span>, color <span class="op">=</span> <span class="st">'prior'</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_area</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pred_dat</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_hat</span>, y <span class="op">=</span> <span class="va">pdf_n</span>, fill <span class="op">=</span> <span class="st">'prior'</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_errorbar</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">obs_pdf</span>,</span>
+<span>                <span class="fu">aes</span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">low</span>, ymax <span class="op">=</span> <span class="va">up</span>, x <span class="op">=</span> <span class="va">emissions</span>, color <span class="op">=</span> <span class="va">distr</span><span class="op">)</span>,</span>
+<span>                alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">obs_pdf_dat</span>,</span>
+<span>             <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span>, y <span class="op">=</span> <span class="va">med</span>, fill <span class="op">=</span> <span class="va">distr</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, shape <span class="op">=</span> <span class="fl">21</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span><span class="op">+</span> <span class="fu">xlab</span><span class="op">(</span><span class="st">"Simulated emissions"</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/pop_distr_theme.html">pop_distr_theme</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span> <span class="fu">labs</span><span class="op">(</span>color <span class="op">=</span> <span class="st">'Distribution:'</span>, fill <span class="op">=</span> <span class="st">"Distribution:"</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1400</span>,<span class="fl">1700</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">geom_rug</span><span class="op">(</span>data <span class="op">=</span> <span class="va">custom_fit</span><span class="op">$</span><span class="va">obs_pdf_dat</span>,</span>
+<span>           sides <span class="op">=</span> <span class="st">'b'</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span>,</span>
+<span>           alpha <span class="op">=</span> <span class="fl">0.5</span>, outside <span class="op">=</span> <span class="cn">TRUE</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">coord_cartesian</span><span class="op">(</span>clip <span class="op">=</span> <span class="st">'off'</span><span class="op">)</span><span class="op">+</span> </span>
+<span>  <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="va">palette_line</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Posterior'</span>, <span class="st">'Prior'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="va">palette_line</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Posterior'</span>, <span class="st">'Prior'</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span>legend.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Bayesian-UPL_files/figure-html/custom_fig-1.png" class="r-plt" width="700" style="display: block; margin: auto;"></p>
+<p>In order to check the convergence, we have to pass the parameter
+names that we customized.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">custom_conv</span> <span class="op">=</span> <span class="fu"><a href="../reference/converge_likelihood.html">converge_likelihood</a></span><span class="op">(</span><span class="va">custom_run</span>, </span>
+<span>                                  custom_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'parameter1'</span>, <span class="st">'parameter2'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">conv_metrics</span> <span class="op">=</span> <span class="fu">mutate</span><span class="op">(</span><span class="va">custom_conv</span>, <span class="fu">across</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">.</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">conv_metrics</span>,</span>
+<span>             caption <span class="op">=</span> <span class="st">"Gelman-Rubin convergence tests for custom likelihood parameters"</span>,</span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Distribution"</span>,<span class="st">'Parameter'</span>,<span class="st">"Diagnostic"</span>,<span class="st">"Converged"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Gelman-Rubin convergence tests for custom likelihood
+parameters</caption>
+<thead><tr class="header">
+<th align="left">Distribution</th>
+<th align="left">Parameter</th>
+<th align="right">Diagnostic</th>
+<th align="left">Converged</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Custom</td>
+<td align="left">parameter1</td>
+<td align="right">1</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">Custom</td>
+<td align="left">parameter2</td>
+<td align="right">1</td>
+<td align="left">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>And lastly, we can plot the convergence figures for our custom
+parameters. Here we need to specify we are using a custom distribution
+and again provide a list of the parameters to produce the plots for.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">part3</span> <span class="op">=</span> <span class="fu"><a href="../reference/converge_figs.html">converge_figs</a></span><span class="op">(</span>distribution <span class="op">=</span> <span class="st">"Custom"</span>, jags_model_run <span class="op">=</span> <span class="va">custom_run</span>, </span>
+<span>                      custom_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'parameter1'</span>, <span class="st">'parameter2'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">part3</span></span></code></pre></div>
+<p><img src="Bayesian-UPL_files/figure-html/custom_figs-1.png" class="r-plt" width="100%" style="display: block; margin: auto;"><img src="Bayesian-UPL_files/figure-html/custom_figs-2.png" class="r-plt" width="100%" style="display: block; margin: auto;"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

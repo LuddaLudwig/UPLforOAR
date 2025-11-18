@@ -359,8 +359,8 @@ First we will load the data and use the Excel workbook methods to pick a
 distribution and calculate the UPL.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Example_data1.csv"</span><span class="op">)</span></span>
-<span><span class="va">distr_choice</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
-<span><span class="va">UPL_excel</span> <span class="op">=</span> <span class="fu"><a href="../reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">distr_choice</span> <span class="op">=</span> <span class="fu"><a href="../reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
+<span><span class="va">UPL_excel</span> <span class="op">=</span> <span class="fu"><a href="../reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span></code></pre></div>
 <p>The emissions are a Lognormal distribution with a corresponding UPL
 of 2.57 (Lb/ton of stone fed Lime). Next we will plot the density of the
 emission observations along with the corresponding Lognormal probability
@@ -424,11 +424,14 @@ truncate the upper limit of emission probabilities, called
 changes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                          maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                           emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                           maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -439,7 +442,7 @@ different maximum emission thresholds.
 </div>
 <p>Clearly, the longer the tail the larger the UPL: when the tail limit
 increases from 1.15, to 1.72, and then 5.74 we get UPL estimates of
-0.68, 0.83, and 3.01. However, not all of these results are equal in
+0.67, 0.84, and 3.01. However, not all of these results are equal in
 terms of performance.</p>
 <p>Let’s look at the results from <code><a href="../reference/fit_likelihood.html">fit_likelihood()</a></code> to
 evaluate which distribution did a better job representing the actual
@@ -466,15 +469,15 @@ limits</caption>
 <tbody>
 <tr class="odd">
 <td align="left">2X Max</td>
-<td align="right">0.68</td>
-<td align="right">110</td>
+<td align="right">0.67</td>
+<td align="right">91</td>
 <td align="right">15</td>
-<td align="right">0.65</td>
+<td align="right">0.67</td>
 </tr>
 <tr class="even">
 <td align="left">3X Max</td>
-<td align="right">0.83</td>
-<td align="right">190</td>
+<td align="right">0.84</td>
+<td align="right">180</td>
 <td align="right">15</td>
 <td align="right">0.86</td>
 </tr>
@@ -482,7 +485,7 @@ limits</caption>
 <td align="left">25X Max</td>
 <td align="right">3.00</td>
 <td align="right">570</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">0.93</td>
 </tr>
 </tbody>
@@ -545,47 +548,47 @@ levels to <code>maxY</code>. Ideally we will find a level that is
 insensitive to <code>maxY</code> and converges well.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X95</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
 <span>                            maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.95</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_3X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.90</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X90</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                             significance <span class="op">=</span> <span class="fl">0.90</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.90</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_3X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.85</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X85</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                             significance <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.85</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_3X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                            significance <span class="op">=</span> <span class="fl">0.80</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                            maxY <span class="op">=</span> <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                            xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X80</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
-<span>                             significance <span class="op">=</span> <span class="fl">0.80</span>,</span>
+<span>                             significance <span class="op">=</span> <span class="fl">0.80</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                             maxY <span class="op">=</span> <span class="fl">25</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                             xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 The fitted probability density distribution won’t change with
@@ -647,16 +650,16 @@ limits and different significance levels.</caption>
 <tbody>
 <tr class="odd">
 <td align="left">2X Max</td>
-<td align="right">0.33</td>
-<td align="right">110</td>
+<td align="right">0.32</td>
+<td align="right">91</td>
 <td align="right">15</td>
-<td align="right">0.65</td>
+<td align="right">0.67</td>
 <td align="left">80th</td>
 </tr>
 <tr class="even">
 <td align="left">3X Max</td>
 <td align="right">0.33</td>
-<td align="right">190</td>
+<td align="right">180</td>
 <td align="right">15</td>
 <td align="right">0.86</td>
 <td align="left">80th</td>
@@ -665,22 +668,22 @@ limits and different significance levels.</caption>
 <td align="left">25X Max</td>
 <td align="right">0.31</td>
 <td align="right">570</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">0.93</td>
 <td align="left">80th</td>
 </tr>
 <tr class="even">
 <td align="left">2X Max</td>
-<td align="right">0.37</td>
-<td align="right">110</td>
+<td align="right">0.36</td>
+<td align="right">91</td>
 <td align="right">15</td>
-<td align="right">0.65</td>
+<td align="right">0.67</td>
 <td align="left">85th</td>
 </tr>
 <tr class="odd">
 <td align="left">3X Max</td>
 <td align="right">0.40</td>
-<td align="right">190</td>
+<td align="right">180</td>
 <td align="right">15</td>
 <td align="right">0.86</td>
 <td align="left">85th</td>
@@ -689,46 +692,46 @@ limits and different significance levels.</caption>
 <td align="left">25X Max</td>
 <td align="right">0.42</td>
 <td align="right">570</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">0.93</td>
 <td align="left">85th</td>
 </tr>
 <tr class="odd">
 <td align="left">2X Max</td>
-<td align="right">0.42</td>
-<td align="right">110</td>
+<td align="right">0.41</td>
+<td align="right">91</td>
 <td align="right">15</td>
-<td align="right">0.65</td>
+<td align="right">0.67</td>
 <td align="left">90th</td>
 </tr>
 <tr class="even">
 <td align="left">3X Max</td>
 <td align="right">0.48</td>
-<td align="right">190</td>
+<td align="right">180</td>
 <td align="right">15</td>
 <td align="right">0.86</td>
 <td align="left">90th</td>
 </tr>
 <tr class="odd">
 <td align="left">25X Max</td>
-<td align="right">0.61</td>
+<td align="right">0.62</td>
 <td align="right">570</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">0.93</td>
 <td align="left">90th</td>
 </tr>
 <tr class="even">
 <td align="left">2X Max</td>
-<td align="right">0.51</td>
-<td align="right">110</td>
+<td align="right">0.50</td>
+<td align="right">91</td>
 <td align="right">15</td>
-<td align="right">0.65</td>
+<td align="right">0.67</td>
 <td align="left">95th</td>
 </tr>
 <tr class="odd">
 <td align="left">3X Max</td>
-<td align="right">0.58</td>
-<td align="right">190</td>
+<td align="right">0.59</td>
+<td align="right">180</td>
 <td align="right">15</td>
 <td align="right">0.86</td>
 <td align="left">95th</td>
@@ -737,7 +740,7 @@ limits and different significance levels.</caption>
 <td align="left">25X Max</td>
 <td align="right">1.10</td>
 <td align="right">570</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">0.93</td>
 <td align="left">95th</td>
 </tr>
@@ -755,7 +758,8 @@ observations are all less than that in our set of top performing
 sources, theoretically there could emissions higher than 1.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distributions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Gamma'</span>, <span class="st">'Lognormal'</span>, <span class="st">'Skewed'</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>, </span>
+<span>                       distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="Distributions_files/figure-html/figure5-1.png" class="r-plt" alt="Fitted likelihood distributions for Lime HCl emissions." width="100%"><p class="caption">
 Fitted likelihood distributions for Lime HCl emissions.
@@ -776,24 +780,24 @@ distributions</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Gamma</td>
-<td align="right">0.609</td>
-<td align="right">40.9</td>
+<td align="right">0.624</td>
+<td align="right">41.2</td>
 <td align="right">15</td>
-<td align="right">0.8966921</td>
+<td align="right">0.8960532</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal</td>
-<td align="right">0.830</td>
-<td align="right">194.0</td>
+<td align="right">0.836</td>
+<td align="right">181.0</td>
 <td align="right">15</td>
-<td align="right">0.8558586</td>
+<td align="right">0.8482302</td>
 </tr>
 <tr class="odd">
 <td align="left">Skewed</td>
-<td align="right">0.508</td>
-<td align="right">838.0</td>
+<td align="right">0.506</td>
+<td align="right">839.0</td>
 <td align="right">4</td>
-<td align="right">0.9453717</td>
+<td align="right">0.9457529</td>
 </tr>
 </tbody>
 </table>
@@ -803,17 +807,20 @@ of a tail so we might want to repeat our experiments with increasingly
 larger values of <code>maxY</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_3X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_2X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                          emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                          maxY <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                          xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">results_25X</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gamma"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat_emiss</span>,</span>
+<span>                           emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                           maxY <span class="op">=</span> <span class="fl">25</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_emiss</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>,</span>
 <span>                           xvals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The outcome shows the tail is way more stable at the 99<sup>th</sup>
 percentile for Gamma than it was for Lognormal. Furthermore, the fit is
 just as good (SSE barely changes) and the UPL hardly changes. This is
-all great news, and leads us to finally recommend a UPL of 0.66.</p>
+all great news, and leads us to finally recommend a UPL of 0.67.</p>
 <table class="table">
 <caption>Performance of Gamma distributions with different MaxY
 limits</caption>
@@ -834,14 +841,14 @@ limits</caption>
 </tr>
 <tr class="even">
 <td align="left">3X Max</td>
-<td align="right">0.61</td>
+<td align="right">0.62</td>
 <td align="right">41</td>
 <td align="right">15</td>
 <td align="right">0.87</td>
 </tr>
 <tr class="odd">
 <td align="left">25X Max</td>
-<td align="right">0.66</td>
+<td align="right">0.67</td>
 <td align="right">41</td>
 <td align="right">15</td>
 <td align="right">0.87</td>

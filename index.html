@@ -104,11 +104,15 @@
 <span><span class="co">#&gt;      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span></span>
 <span><span class="co">#&gt; 2.630e-09 2.805e-07 1.570e-06 2.713e-06 3.820e-06 2.990e-05</span></span>
 <span></span>
-<span><span class="va">dat_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/MACT_existing.html">MACT_existing</a></span><span class="op">(</span>CAA_section<span class="op">=</span><span class="fl">112</span>, <span class="va">dat_emiss</span><span class="op">)</span></span>
+<span><span class="va">dat_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/MACT_existing.html">MACT_existing</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, </span>
+<span>                          emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
+<span>                          sources <span class="op">=</span> <span class="st">'sources'</span>,</span>
+<span>                          CAA_section <span class="op">=</span> <span class="fl">112</span><span class="op">)</span></span>
 <span><span class="va">dat_exist_avg</span> <span class="op">=</span> <span class="va">dat_exist</span> <span class="op">%&gt;%</span> <span class="fu">group_by</span><span class="op">(</span><span class="va">sources</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">summarize</span><span class="op">(</span>avg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">emissions</span><span class="op">)</span>, counts <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dat_exist_avg</span> <span class="op">=</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">dat_exist_avg</span>, <span class="va">avg</span><span class="op">)</span></span>
-<span><span class="va">distribution_result_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/distribution_type.html">distribution_type</a></span><span class="op">(</span><span class="va">dat_exist</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">distribution_result_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/distribution_type.html">distribution_type</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>,</span>
+<span>                                              emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Source</th>
@@ -152,11 +156,13 @@
 <p>Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded 47 sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is Normal, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">UPL1_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/Normal_UPL.html">Normal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>,</span>
-<span>                     future_runs <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                     significance <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span>
-<span><span class="va">UPL2_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>,</span>
+<span>                        emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                        future_runs <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                        significance <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+<span>                        significance <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span>
+<span><span class="va">UPL2_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/Lognormal_UPL.html">Lognormal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>,</span>
+<span>                           emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
+<span>                           future_runs <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                           significance <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p>Next we calculate the UPL using the appropriate distribution, which results in a MACT floor standard of 4.8582101^{-8} lb/MMBtu in Hg emissions. Lastly, we will want to plot observation density of emissions data as well as the Normal distribution that was used to as the probability density function for the UPL calculation. From the figure below, the Lognormal appears to better represent the data, which would yield a UPL MACT floor standard of 8.4825717^{-8} lb/MMBtu in Hg emissions.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># make an ordered sequence of emissions </span></span>
@@ -164,7 +170,9 @@
 <span><span class="va">x_hat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dat_exist</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">1024</span><span class="op">)</span></span>
 <span><span class="co"># next define the probability density along x_hat</span></span>
 <span><span class="co"># and at each emission observation.</span></span>
-<span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="reference/obs_density.html">obs_density</a></span><span class="op">(</span><span class="va">dat_exist</span>, xvals <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span></span>
+<span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>, </span>
+<span>                               emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
+<span>                               xvals <span class="op">=</span> <span class="va">x_hat</span><span class="op">)</span></span>
 <span><span class="va">Obs_onPoint</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># create a probability density function along the same x_hat</span></span>
@@ -259,7 +267,7 @@ Observation density of Hg for the overall population. The obseration data are in
 <li><a href="https://codecov.io/gh/LuddaLudwig/UPLforOAR" class="external-link"><img src="https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258" alt="codecov"></a></li>
 <li><a href="https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://choosealicense.com/licenses/mit/" class="external-link"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a></li>
-<li><a href="/commits/main"><img src="https://img.shields.io/badge/last%20change-2025--11--04-green.svg" alt="Last-changedate"></a></li>
+<li><a href="/commits/main"><img src="https://img.shields.io/badge/last%20change-2025--11--12-green.svg" alt="Last-changedate"></a></li>
 </ul>
 </div>
 

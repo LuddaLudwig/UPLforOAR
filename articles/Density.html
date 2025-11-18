@@ -177,7 +177,7 @@ non-zero data, as well as a better default bandwidth estimator.
 Furthermore, we can store the results directly in our environment rather
 than them being inside the <code>ggplot</code> object.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">obs_dens_results</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_emiss</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
 <span><span class="va">Obs_onPoint</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">obs_den_df</span> <span class="op">=</span> <span class="va">obs_dens_results</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
 <p>The figure below shows the overall observation density of the
@@ -268,19 +268,23 @@ in the help pages.</p>
 <span><span class="va">exmpl_emiss</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span>emissions <span class="op">=</span> <span class="va">yval</span><span class="op">)</span></span>
 <span><span class="co"># Empirical densities using different bandwidths:</span></span>
 <span><span class="co"># default settings</span></span>
-<span><span class="va">dens1</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span><span class="op">)</span> </span>
+<span><span class="va">dens1</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>,</span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span> </span>
 <span><span class="va">dens_pts1</span> <span class="op">=</span> <span class="va">dens1</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals1</span> <span class="op">=</span> <span class="va">dens1</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># manual bandwidth</span></span>
-<span><span class="va">dens2</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="va">dens2</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
 <span><span class="va">dens_pts2</span> <span class="op">=</span> <span class="va">dens2</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals2</span> <span class="op">=</span> <span class="va">dens2</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># least squares search</span></span>
-<span><span class="va">dens3</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="st">"cv.ls"</span><span class="op">)</span> </span>
+<span><span class="va">dens3</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="st">"cv.ls"</span>,</span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span> </span>
 <span><span class="va">dens_pts3</span> <span class="op">=</span> <span class="va">dens3</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals3</span> <span class="op">=</span> <span class="va">dens3</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># maximum likelihood search</span></span>
-<span><span class="va">dens4</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="st">"cv.ml"</span><span class="op">)</span></span>
+<span><span class="va">dens4</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, bw <span class="op">=</span> <span class="st">"cv.ml"</span>,</span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
 <span><span class="va">dens_pts4</span> <span class="op">=</span> <span class="va">dens4</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals4</span> <span class="op">=</span> <span class="va">dens4</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -294,22 +298,23 @@ various empirical densities overlaid in color.
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Empirical densities using different kernels:</span></span>
 <span><span class="co"># default settings (Gamma kernel)</span></span>
-<span><span class="va">dens1</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span><span class="op">)</span> </span>
+<span><span class="va">dens1</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>,</span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span> </span>
 <span><span class="va">dens_pts1</span> <span class="op">=</span> <span class="va">dens1</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals1</span> <span class="op">=</span> <span class="va">dens1</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># Gaussian kernel</span></span>
 <span><span class="va">dens2</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>, </span>
-<span>                    kernel <span class="op">=</span> <span class="st">"gaussian1"</span><span class="op">)</span></span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span>, kernel <span class="op">=</span> <span class="st">"gaussian1"</span><span class="op">)</span></span>
 <span><span class="va">dens_pts2</span> <span class="op">=</span> <span class="va">dens2</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals2</span> <span class="op">=</span> <span class="va">dens2</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># Floating boundary kernel</span></span>
 <span><span class="va">dens3</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>,</span>
-<span>                    kernel <span class="op">=</span> <span class="st">"fbl"</span><span class="op">)</span> </span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span>, kernel <span class="op">=</span> <span class="st">"fbl"</span><span class="op">)</span> </span>
 <span><span class="va">dens_pts3</span> <span class="op">=</span> <span class="va">dens3</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals3</span> <span class="op">=</span> <span class="va">dens3</span><span class="op">$</span><span class="va">obs_den_df</span></span>
 <span><span class="co"># Reciprocal inverse Gaussian</span></span>
 <span><span class="va">dens4</span> <span class="op">=</span> <span class="fu"><a href="../reference/obs_density.html">obs_density</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">exmpl_emiss</span>, xvals <span class="op">=</span> <span class="va">exmpl_dat</span><span class="op">$</span><span class="va">xval</span>,</span>
-<span>                    kernel <span class="op">=</span> <span class="st">"rigaussian"</span><span class="op">)</span></span>
+<span>                    emissions <span class="op">=</span> <span class="st">'emissions'</span>, kernel <span class="op">=</span> <span class="st">"rigaussian"</span><span class="op">)</span></span>
 <span><span class="va">dens_pts4</span> <span class="op">=</span> <span class="va">dens4</span><span class="op">$</span><span class="va">Obs_onPoint</span></span>
 <span><span class="va">dens_vals4</span> <span class="op">=</span> <span class="va">dens4</span><span class="op">$</span><span class="va">obs_den_df</span></span></code></pre></div>
 <p>Note that the Gaussian kernel is likely a poor choice since we used a

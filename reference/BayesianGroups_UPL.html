@@ -115,12 +115,18 @@ are used, only a single distribution can be run at a time in <code>distr_list</c
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">BayesianGroups_UPL</span><span class="op">(</span></span>
 <span>  distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span>, <span class="st">"Skewed"</span>, <span class="st">"Lognormal"</span>, <span class="st">"Gamma"</span>, <span class="st">"Beta"</span><span class="op">)</span>,</span>
 <span>  <span class="va">data</span>,</span>
+<span>  <span class="va">emissions</span>,</span>
+<span>  group <span class="op">=</span> <span class="st">"sources"</span>,</span>
 <span>  future_runs <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  significance <span class="op">=</span> <span class="fl">0.99</span>,</span>
 <span>  xvals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  maxY <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minY <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  group <span class="op">=</span> <span class="st">"sources"</span>,</span>
+<span>  RNG.state <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  up <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  low <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  kernel <span class="op">=</span> <span class="st">"gamma"</span>,</span>
+<span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  convergence_report <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  random <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  manual_prior <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -139,8 +145,21 @@ bounds are supplied manually, only one distribution can be used.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Emissions data from either the best source or top performers,
-must have a column named 'emissions'.</p></dd>
+<dd><p>Data from either the best source or top performers,
+must have a column with numeric <code>emissions</code> and a column with character or
+factor <code>group</code> used for hierarchical structure.</p></dd>
+
+
+<dt id="arg-emissions">emissions<a class="anchor" aria-label="anchor" href="#arg-emissions"></a></dt>
+<dd><p>Variable name or column number corresponding to the
+emissions used for selecting top performing sources.</p></dd>
+
+
+<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
+<dd><p>Variable name or column number corresponding to the variable name in the data
+set by which to group for the hierarchical structure. If the group is not a
+factor it will be coerced using as.factor(). To avoid having unknown factor
+levels, please convert to factor first.</p></dd>
 
 
 <dt id="arg-future-runs">future_runs<a class="anchor" aria-label="anchor" href="#arg-future-runs"></a></dt>
@@ -169,11 +188,37 @@ manually. Default is <code>NULL</code>, in which case is is calculated as <code>
 distributions. Default is 0.</p></dd>
 
 
-<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
-<dd><p>Character string corresponding to the variable name in the data
-set by which to group for the hierarchical structure. If the group is not a
-factor it will be coerced using as.factor(). To avoid having unknown factor
-levels, please convert to factor first.</p></dd>
+<dt id="arg-rng-state">RNG.state<a class="anchor" aria-label="anchor" href="#arg-rng-state"></a></dt>
+<dd><p>Optional setting to specify a list of three lists setting the
+<code>.RNG.name</code> and <code>.RNG.state</code> for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If <code>random = TRUE</code> the RNG
+state is set randomly instead.</p></dd>
+
+
+<dt id="arg-up">up<a class="anchor" aria-label="anchor" href="#arg-up"></a></dt>
+<dd><p>Argument passed to <code><a href="obs_density.html">obs_density()</a></code> inside <code><a href="fit_likelihood.html">fit_likelihood()</a></code>.
+Optional upper limit to bound density, default is <code>Inf</code>.</p></dd>
+
+
+<dt id="arg-low">low<a class="anchor" aria-label="anchor" href="#arg-low"></a></dt>
+<dd><p>Argument passed to <code><a href="obs_density.html">obs_density()</a></code> inside <code><a href="fit_likelihood.html">fit_likelihood()</a></code>.
+Optional lower limit to bound density, default is <code>0</code>.</p></dd>
+
+
+<dt id="arg-kernel">kernel<a class="anchor" aria-label="anchor" href="#arg-kernel"></a></dt>
+<dd><p>Argument passed to <code><a href="obs_density.html">obs_density()</a></code> inside <code><a href="fit_likelihood.html">fit_likelihood()</a></code>.
+Kernel choice for density function, default is <code>gamma</code> defined
+on <code>(0,Inf)</code>. Other options include:
+<code>c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')</code>.
+See <code><a href="https://rdrr.io/pkg/np/man/npuniden.boundary.html" class="external-link">np::npuniden.boundary()</a></code> for more information on kernel options.</p></dd>
+
+
+<dt id="arg-bw">bw<a class="anchor" aria-label="anchor" href="#arg-bw"></a></dt>
+<dd><p>Argument passed to <code><a href="obs_density.html">obs_density()</a></code> inside <code><a href="fit_likelihood.html">fit_likelihood()</a></code>.
+Optional bandwidth, default is <code>NULL</code> in which case
+<code>bw = sd(emissions) * n^(-2/5)</code>, where <code>n</code> is number of emissions. The bandwidth
+can also be provided manually, or searched for using least squares cross-validation
+by <code>bw = "cv.ls"</code> or likelihood cross-validation with <code>bw = "cv.ml"</code>.</p></dd>
 
 
 <dt id="arg-convergence-report">convergence_report<a class="anchor" aria-label="anchor" href="#arg-convergence-report"></a></dt>
@@ -186,8 +231,10 @@ either LaTex or MikTek installed in order to render the PDF.</p></dd>
 
 <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
 <dd><p>Default is <code>FALSE</code> where random seeds are defined via <code>.RNG.name</code>
-and <code>.RNG.seed</code> so JAGS runs will be exactly reproducible. Changing to <code>TRUE</code>
-will use random values for <code>.RNG.name</code> and <code>.RNG.seed</code> instead.</p></dd>
+and <code>.RNG.seed</code> and returned as <code>state</code> so JAGS runs will be exactly reproducible.
+Changing to <code>TRUE</code> will generate new random states to use for <code>.RNG.name</code> and
+<code>.RNG.state</code> instead, also returned as <code>state</code> so the results can be
+recreated exactly if desired.</p></dd>
 
 
 <dt id="arg-manual-prior">manual_prior<a class="anchor" aria-label="anchor" href="#arg-manual-prior"></a></dt>

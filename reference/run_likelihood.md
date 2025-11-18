@@ -56,4 +56,5 @@ run_likelihood(
 ## Value
 
 `runjags` object named `run_results`, likelihood distribution from the
-JAGS model script, as well as `data` and `xval`s used as inputs.
+JAGS model script, as well as the RNG state, `data` and `xval`s used as
+inputs.

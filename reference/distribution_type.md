@@ -12,7 +12,7 @@ an unknown population.
 ## Usage
 
 ``` r
-distribution_type(data)
+distribution_type(data, emissions)
 ```
 
 ## Arguments
@@ -20,7 +20,12 @@ distribution_type(data)
 - data:
 
   Emissions data from either the best source or top performers, must
-  have a column named `emissions`
+  have a column with numeric `emissions`.
+
+- emissions:
+
+  variable name or column number corresponding to the emissions used for
+  selecting top performing sources.
 
 ## Value
 

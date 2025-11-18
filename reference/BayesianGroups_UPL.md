@@ -38,12 +38,18 @@ be run at a time in `distr_list`.
 BayesianGroups_UPL(
   distr_list = c("Normal", "Skewed", "Lognormal", "Gamma", "Beta"),
   data,
+  emissions,
+  group = "sources",
   future_runs = 3,
   significance = 0.99,
   xvals = NULL,
   maxY = NULL,
   minY = 0,
-  group = "sources",
+  RNG.state = NULL,
+  up = Inf,
+  low = 0,
+  kernel = "gamma",
+  bw = NULL,
   convergence_report = FALSE,
   random = FALSE,
   manual_prior = FALSE,
@@ -61,8 +67,21 @@ BayesianGroups_UPL(
 
 - data:
 
-  Emissions data from either the best source or top performers, must
-  have a column named 'emissions'.
+  Data from either the best source or top performers, must have a column
+  with numeric `emissions` and a column with character or factor `group`
+  used for hierarchical structure.
+
+- emissions:
+
+  Variable name or column number corresponding to the emissions used for
+  selecting top performing sources.
+
+- group:
+
+  Variable name or column number corresponding to the variable name in
+  the data set by which to group for the hierarchical structure. If the
+  group is not a factor it will be coerced using as.factor(). To avoid
+  having unknown factor levels, please convert to factor first.
 
 - future_runs:
 
@@ -91,12 +110,53 @@ BayesianGroups_UPL(
   The minimum emission value possible, used to truncate likelihood
   distributions. Default is 0.
 
-- group:
+- RNG.state:
 
-  Character string corresponding to the variable name in the data set by
-  which to group for the hierarchical structure. If the group is not a
-  factor it will be coerced using as.factor(). To avoid having unknown
-  factor levels, please convert to factor first.
+  Optional setting to specify a list of three lists setting the
+  `.RNG.name` and `.RNG.state` for each MCMC chain. The default is a
+  fixed set of RNG states so the results are always reproducible. If
+  `random = TRUE` the RNG state is set randomly instead.
+
+- up:
+
+  Argument passed to
+  [`obs_density()`](https://luddaludwig.github.io/UPLforOAR/reference/obs_density.md)
+  inside
+  [`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+  Optional upper limit to bound density, default is `Inf`.
+
+- low:
+
+  Argument passed to
+  [`obs_density()`](https://luddaludwig.github.io/UPLforOAR/reference/obs_density.md)
+  inside
+  [`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+  Optional lower limit to bound density, default is `0`.
+
+- kernel:
+
+  Argument passed to
+  [`obs_density()`](https://luddaludwig.github.io/UPLforOAR/reference/obs_density.md)
+  inside
+  [`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+  Kernel choice for density function, default is `gamma` defined on
+  `(0,Inf)`. Other options include:
+  `c('gaussian1', 'gaussian2', 'beta1', 'beta2', 'fb', 'fbl', 'fbu', 'rigaussian')`.
+  See
+  [`np::npuniden.boundary()`](https://rdrr.io/pkg/np/man/npuniden.boundary.html)
+  for more information on kernel options.
+
+- bw:
+
+  Argument passed to
+  [`obs_density()`](https://luddaludwig.github.io/UPLforOAR/reference/obs_density.md)
+  inside
+  [`fit_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihood.md).
+  Optional bandwidth, default is `NULL` in which case
+  `bw = sd(emissions) * n^(-2/5)`, where `n` is number of emissions. The
+  bandwidth can also be provided manually, or searched for using least
+  squares cross-validation by `bw = "cv.ls"` or likelihood
+  cross-validation with `bw = "cv.ml"`.
 
 - convergence_report:
 
@@ -110,8 +170,10 @@ BayesianGroups_UPL(
 - random:
 
   Default is `FALSE` where random seeds are defined via `.RNG.name` and
-  `.RNG.seed` so JAGS runs will be exactly reproducible. Changing to
-  `TRUE` will use random values for `.RNG.name` and `.RNG.seed` instead.
+  `.RNG.seed` and returned as `state` so JAGS runs will be exactly
+  reproducible. Changing to `TRUE` will generate new random states to
+  use for `.RNG.name` and `.RNG.state` instead, also returned as `state`
+  so the results can be recreated exactly if desired.
 
 - manual_prior:
 

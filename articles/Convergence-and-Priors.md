@@ -54,15 +54,16 @@ Unsurprisingly, it fails to converge.
 ``` r
 set.seed(1)
 emissions = runif(30, min = 0, max = 100)
+df = tibble(emissions = emissions)
 results = Bayesian_UPL(distr_list = c("Lognormal"),
-                       data = tibble(emissions = emissions))
+                       data = df, emissions = 'emissions')
 conv_metrics = results$conv_output
 ```
 
 | Distribution | Parameter | Diagnostic | Converged |
 |:-------------|:----------|-----------:|:----------|
-| Lognormal    | u_ln      |      1.344 | No        |
-| Lognormal    | sd_ln     |      1.329 | No        |
+| Lognormal    | u_ln      |      1.024 | Yes       |
+| Lognormal    | sd_ln     |      1.009 | Yes       |
 
 Gelman-Rubin convergence tests for likelihood parameters
 
@@ -104,7 +105,11 @@ has not converged well. The histograms on the right show the posterior
 is too flat. Note that there is a slight peak for the `emission_mean`
 posterior around 0.01, which is indeed the average of the 3 points, but
 there is not enough information to definitely say this is much more
-likely than any other value searched.  
+likely than any other value searched.
+
+    #> Error: argument "emissions" is missing, with no default
+    #> Error: object 'small_dat' not found
+    #> Error: No matches found for the following variable name(s): emission_mean
 
 ![Example of bad convergence where posterior is too
 flat.](Convergence-and-Priors_files/figure-html/figure2-1.png)
@@ -190,20 +195,25 @@ of using a Bayesian approach.
 
 ``` r
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                               emissions = 'emissions',
                                manual_prior = TRUE,
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
-result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat)
+#> Error: object 'small_dat' not found
+result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
+                                 emissions = 'emissions')
+#> Error: object 'small_dat' not found
 ```
 
-![Example of two Normal distributions fit to the same 3 points of data,
-where one was more informative using slightly smaller bounds on prior
-distributions, and the other was completely uninformative and did not
-converge well.](Convergence-and-Priors_files/figure-html/figure4-1.png)
-
-Example of two Normal distributions fit to the same 3 points of data,
-where one was more informative using slightly smaller bounds on prior
-distributions, and the other was completely uninformative and did not
-converge well.
+    #> Error: object 'result_uninformed' not found
+    #> Error: object 'result_uninformed' not found
+    #> Error: object 'result_informed' not found
+    #> Error: object 'result_informed' not found
+    #> Error: object 'result_informed' not found
+    #> Error: object 'result_informed' not found
+    #> Error: object 'result_uninformed' not found
+    #> Error: object 'result_uninformed' not found
+    #> Error: object 'result_uninformed' not found
+    #> Error: object 'combined_pdf' not found
 
 We can look at how the convergence figures are different in the case
 where we provided slightly more prior information. Note that the
@@ -213,6 +223,8 @@ provided the prior distributions manually, they are still considered to
 be uninformative. We have restricted the parameter space with lower and
 upper bounds, but it is still a wide accommodation, and within that all
 parameter outcomes are equally likely before we consider the data.
+
+    #> Error: object 'small_dat' not found
 
 ![Improved convergence of parameters by providing slightly more
 restrictive bounds as

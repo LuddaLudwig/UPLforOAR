@@ -49,7 +49,7 @@ parameters of the selected distribution</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">converge_figs</span><span class="op">(</span><span class="va">distribution</span>, <span class="va">jags_model_run</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">converge_figs</span><span class="op">(</span><span class="va">distribution</span>, <span class="va">jags_model_run</span>, custom_params <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,13 +57,19 @@ parameters of the selected distribution</p>
 
 
 <dl><dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
-<dd><p>One of <code>'Normal'</code>, <code>'Skewed'</code>, <code>'Lognormal'</code>, <code>'Gamma'</code>, or <code>'Beta'</code>.</p></dd>
+<dd><p>Any of <code>'Normal'</code>, <code>'Gamma'</code>, <code>'Skewed'</code>, <code>'Lognormal'</code>,
+or <code>'Beta'</code>. If using a custom model script, set as <code>'Custom'</code>.</p></dd>
 
 
 <dt id="arg-jags-model-run">jags_model_run<a class="anchor" aria-label="anchor" href="#arg-jags-model-run"></a></dt>
 <dd><p>The output list returned from <code><a href="run_likelihood.html">run_likelihood()</a></code>,
 which includes the jags model <code>run_results</code>, likelihood distribution type,
 <code>data</code>, <code>xvals</code>, and <code>future_tests</code> that were used as inputs to <code><a href="run_likelihood.html">run_likelihood()</a></code></p></dd>
+
+
+<dt id="arg-custom-params">custom_params<a class="anchor" aria-label="anchor" href="#arg-custom-params"></a></dt>
+<dd><p>List of parameters to check for convergence if using a
+custom model, e.g. <code>c('parameter1', 'parameter2')</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

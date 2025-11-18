@@ -10,14 +10,15 @@ parameters drawn from the overall population distribution.
 ## Usage
 
 ``` r
-converge_figsGroup(distribution, jags_model_run)
+converge_figsGroup(distribution, jags_model_run, custom_params = NULL)
 ```
 
 ## Arguments
 
 - distribution:
 
-  One of `'Normal'`, `'Skewed'`, `'Lognormal'`, `'Gamma'`, or `'Beta'`.
+  Any of `'Normal'`, `'Gamma'`, `'Skewed'`, `'Lognormal'`, or `'Beta'`.
+  If using a custom model script, set as `'Custom'`.
 
 - jags_model_run:
 
@@ -25,7 +26,14 @@ converge_figsGroup(distribution, jags_model_run)
   [`run_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihoodGroup.md),
   which includes the jags model `run_results`, likelihood distribution
   type, `data`, `xvals`, and `future_tests` that were used as inputs to
-  [`run_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihoodGroup.md)
+  [`run_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihoodGroup.md).
+
+- custom_params:
+
+  List of parameters to check for convergence if using a custom model,
+  e.g. `c('parameter1', 'parameter2')`. These must be ordered such that
+  all population-level parameters are first followed by group-level
+  parameters.
 
 ## Value
 

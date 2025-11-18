@@ -52,9 +52,14 @@ distribution. It also defines the initial values and variables to monitor.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">setup_likelihood</span><span class="op">(</span></span>
 <span>  <span class="va">distribution</span>,</span>
 <span>  <span class="va">data</span>,</span>
+<span>  <span class="va">emissions</span>,</span>
 <span>  manual_prior <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  prior_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  random <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  random <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  RNG.state <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  custom_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  custom_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  custom_init <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -63,12 +68,18 @@ distribution. It also defines the initial values and variables to monitor.</p>
 
 
 <dl><dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
-<dd><p>Any of <code>'Normal'</code>, <code>'Gamma'</code>, <code>'Skewed'</code>, <code>'Lognormal'</code>, or <code>'Beta'</code>.</p></dd>
+<dd><p>Any of <code>'Normal'</code>, <code>'Gamma'</code>, <code>'Skewed'</code>, <code>'Lognormal'</code>,
+or <code>'Beta'</code>. If using a custom model script, set as <code>'Custom'</code>.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Emissions data from either the best source or top performers,
-must have a column named <code>emissions</code>.</p></dd>
+<dd><p>Data from either the best source or top performers,
+must have a column with numeric <code>emissions</code>.</p></dd>
+
+
+<dt id="arg-emissions">emissions<a class="anchor" aria-label="anchor" href="#arg-emissions"></a></dt>
+<dd><p>variable name or column number corresponding to the
+emissions used for selecting top performing sources.</p></dd>
 
 
 <dt id="arg-manual-prior">manual_prior<a class="anchor" aria-label="anchor" href="#arg-manual-prior"></a></dt>
@@ -88,8 +99,32 @@ For <code>'Gamma'</code> they are ordered <code>c(rate_low, rate_high, shape_low
 
 <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
 <dd><p>Default is <code>FALSE</code> where random seeds are defined via <code>.RNG.name</code>
-and <code>.RNG.seed</code> so JAGS runs will be exactly reproducible. Changing to <code>TRUE</code>
-will use random values for <code>.RNG.name</code> and <code>.RNG.seed</code> instead.</p></dd>
+and <code>.RNG.seed</code> and returned as <code>state</code> so JAGS runs will be exactly reproducible.
+Changing to <code>TRUE</code> will generate new random states to use for <code>.RNG.name</code> and
+<code>.RNG.state</code> instead, also returned as <code>state</code> so the results can be
+recreated exactly if desired.</p></dd>
+
+
+<dt id="arg-rng-state">RNG.state<a class="anchor" aria-label="anchor" href="#arg-rng-state"></a></dt>
+<dd><p>Optional setting to specify a list of three lists setting the
+<code>.RNG.name</code> and <code>.RNG.state</code> for each MCMC chain. The default is a fixed set of
+RNG states so the results are always reproducible. If <code>random = TRUE</code> the RNG
+state is set randomly instead.</p></dd>
+
+
+<dt id="arg-custom-model">custom_model<a class="anchor" aria-label="anchor" href="#arg-custom-model"></a></dt>
+<dd><p>String for the file path location and name
+(i.e. "working_directory/Custom_JAGS.R") if using a custom JAGS model script.</p></dd>
+
+
+<dt id="arg-custom-params">custom_params<a class="anchor" aria-label="anchor" href="#arg-custom-params"></a></dt>
+<dd><p>List of parameters to monitor in addition to
+c('emission_hat', 'pdf_obs', 'pdf_hat') if using a custom model.</p></dd>
+
+
+<dt id="arg-custom-init">custom_init<a class="anchor" aria-label="anchor" href="#arg-custom-init"></a></dt>
+<dd><p>List of three lists with initial values for MCMC chains
+corresponding to parameters in <code>custom_params</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

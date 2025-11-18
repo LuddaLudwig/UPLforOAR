@@ -119,8 +119,9 @@ likelihood distribution. Unsurprisingly, it fails to converge.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">emissions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">30</span>, min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span>emissions <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lognormal"</span><span class="op">)</span>,</span>
-<span>                       data <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span>emissions <span class="op">=</span> <span class="va">emissions</span><span class="op">)</span><span class="op">)</span></span>
+<span>                       data <span class="op">=</span> <span class="va">df</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
 <span><span class="va">conv_metrics</span> <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">conv_output</span></span></code></pre></div>
 <table class="table">
 <caption>Gelman-Rubin convergence tests for likelihood
@@ -135,14 +136,14 @@ parameters</caption>
 <tr class="odd">
 <td align="left">Lognormal</td>
 <td align="left">u_ln</td>
-<td align="right">1.344</td>
-<td align="left">No</td>
+<td align="right">1.024</td>
+<td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal</td>
 <td align="left">sd_ln</td>
-<td align="right">1.329</td>
-<td align="left">No</td>
+<td align="right">1.009</td>
+<td align="left">Yes</td>
 </tr>
 </tbody>
 </table>
@@ -175,7 +176,7 @@ parameter-space.</p>
 <div class="section level3">
 <h3 id="problems-flat-posterior">Problems: Flat posterior<a class="anchor" aria-label="anchor" href="#problems-flat-posterior"></a>
 </h3>
-In the example below, we use only 3 observations used to fit a Normal
+<p>In the example below, we use only 3 observations used to fit a Normal
 distribution. This is as small a data set as one could conceivably use,
 and with only 3 runs there is not likely to be enough information to
 pick an appropriate distribution or determine its defining parameters
@@ -186,7 +187,11 @@ is too flat. Note that there is a slight peak for the
 <code>emission_mean</code> posterior around 0.01, which is indeed the
 average of the 3 points, but there is not enough information to
 definitely say this is much more likely than any other value
-searched.<br><div class="figure" style="text-align: center">
+searched.</p>
+<pre><code><span><span class="co">#&gt; Error: argument "emissions" is missing, with no default</span></span>
+<span><span class="co">#&gt; Error: object 'small_dat' not found</span></span>
+<span><span class="co">#&gt; Error: No matches found for the following variable name(s): emission_mean</span></span></code></pre>
+<div class="figure" style="text-align: center">
 <img src="Convergence-and-Priors_files/figure-html/figure2-1.png" class="r-plt" alt="Example of bad convergence where posterior is too flat." width="100%"><p class="caption">
 Example of bad convergence where posterior is too flat.
 </p>
@@ -269,27 +274,34 @@ the probability density at the emission observations. This is expected
 given how little information we actually get from 3 observations. The
 ability to quantify this uncertainty is a nice outcome of using a
 Bayesian approach.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result_informed</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">small_dat</span>,</span>
+<span>                               emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
 <span>                               manual_prior <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                               prior_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0001</span>, <span class="fl">0.01</span>, <span class="fl">0.005</span>, <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">result_uninformed</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">small_dat</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="Convergence-and-Priors_files/figure-html/figure4-1.png" class="r-plt" alt="Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well." width="384"><p class="caption">
-Example of two Normal distributions fit to the same 3 points of data,
-where one was more informative using slightly smaller bounds on prior
-distributions, and the other was completely uninformative and did not
-converge well.
-</p>
-</div>
-We can look at how the convergence figures are different in the case
+<span><span class="co">#&gt; Error: object 'small_dat' not found</span></span>
+<span><span class="va">result_uninformed</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>distr_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">small_dat</span>,</span>
+<span>                                 emissions <span class="op">=</span> <span class="st">'emissions'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'small_dat' not found</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Error: object 'result_uninformed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_uninformed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_informed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_informed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_informed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_informed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_uninformed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_uninformed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'result_uninformed' not found</span></span>
+<span><span class="co">#&gt; Error: object 'combined_pdf' not found</span></span></code></pre>
+<p>We can look at how the convergence figures are different in the case
 where we provided slightly more prior information. Note that the
 histograms are much more converged than the flat horizontal coverage
 they were when using the automated uninformed priors. Even though we
 provided the prior distributions manually, they are still considered to
 be uninformative. We have restricted the parameter space with lower and
 upper bounds, but it is still a wide accommodation, and within that all
-parameter outcomes are equally likely before we consider the data.
+parameter outcomes are equally likely before we consider the data.</p>
+<pre><code><span><span class="co">#&gt; Error: object 'small_dat' not found</span></span></code></pre>
 <div class="figure" style="text-align: center">
 <img src="Convergence-and-Priors_files/figure-html/figure5-1.png" class="r-plt" alt="Improved convergence of parameters by providing slightly more restrictive bounds as priors." width="100%"><p class="caption">
 Improved convergence of parameters by providing slightly more

@@ -9,7 +9,7 @@ overall population distribution.
 ## Usage
 
 ``` r
-converge_likelihoodGroup(jags_model_run)
+converge_likelihoodGroup(jags_model_run, custom_params = NULL)
 ```
 
 ## Arguments
@@ -18,6 +18,13 @@ converge_likelihoodGroup(jags_model_run)
 
   The output list returned from
   [`run_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihoodGroup.md).
+
+- custom_params:
+
+  List of parameters to check for convergence if using a custom model,
+  e.g. `c('parameter1', 'parameter2')`. These must be ordered such that
+  all population-level parameters are first, followed by group-level
+  parameters.
 
 ## Value
 

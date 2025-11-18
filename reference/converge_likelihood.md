@@ -6,7 +6,7 @@ likelihood distribution.
 ## Usage
 
 ``` r
-converge_likelihood(jags_model_run)
+converge_likelihood(jags_model_run, custom_params = NULL)
 ```
 
 ## Arguments
@@ -15,6 +15,11 @@ converge_likelihood(jags_model_run)
 
   The output list returned from
   [`run_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/run_likelihood.md).
+
+- custom_params:
+
+  List of parameters to check for convergence if using a custom model,
+  e.g. `c('parameter1', 'parameter2')`.
 
 ## Value
 

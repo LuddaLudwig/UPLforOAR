@@ -53,31 +53,41 @@ instead of launching the .Rmd file.
 Input options and default settings.
 
 The panel across the top of the page will include several input options.
-First, upload your emissions data as a .csv file. Your data need to
-include a named `emissions` column of numeric values and a corresponding
-column named `sources`. Each row should be a single run emission
-observation and its source. Runs from the same source need to have an
-identical source name. Next choose the Clean Air Act section which
-applies to your emissions data, either 129 for hazardous waste
-combustion or 112 for everything else. If you uploaded all emissions
-observations for your pollutant you will want to check the box to subset
-to top performers. This will automatically use the correct CAA section
-to rank the sources and select the correct number of top performers. If
-you are using data that were pre-selected to the population you want to
-use for the UPL calculation, leave this unchecked and all of the data
-uploaded will be included. Lastly, you can set the number of future test
-runs and level of significance. For the most part, you will want to
-leave these at their default values of 3 and 0.99 respectively.
+First, upload your emissions data as a .csv file. This should be a
+single sheet of tabular data with rows as individual test runs and
+columns including at a minimum the run’s source and emission value.
+Multiple columns of emissions that might have different measurement
+units or are different hazardous air pollutants are acceptable. However,
+only one header row with column names is permissible and expected.
+Please use NA to indicate any missing/absent data, for example if a
+source only has data for some but not all of the pollutants. Runs from
+the same source need to have an identical source name. Once you have
+uploaded data, select the column names corresponding to you sources and
+emissions.
 
-Once you have uploaded data it will take a moment to calculate and
-render the results. The environment is reactive, meaning anytime you
-change any inputs in the browser, the results will recalculate using the
-changed inputs.
+Next choose the Clean Air Act section which applies to your emissions
+data, either 129 for hazardous waste combustion or 112 for everything
+else. If you uploaded all emissions observations for your pollutant you
+will want to check the box to subset to top performers. This will
+automatically use the correct CAA section to rank the sources and select
+the correct number of top performers. If you are using data that were
+pre-selected to the population you want to use for the UPL calculation,
+leave this unchecked and all of the data uploaded will be included.
+Lastly, you can set the number of future test runs and level of
+significance. For the most part, you will want to leave these at their
+default values of 3 and 0.99 respectively.
+
+Once you have uploaded data, click the ‘Submit’ button. It will take a
+moment to calculate and render the results, and will take a few minutes
+longer if you are using a data set larger than 340 runs for the UPL
+calculation. You can change the inputs at anytime, such as selecting a
+different column of emissions to use, and click submit again to re-run
+the results.
 
 Below the input panel there are several download buttons. Once your
 uploaded data has been processed, you will be able to download .csv
 files with the subsetted top performing sources, the best performer, and
-a table with the UPL results. The EG and NSPS emission datasets will be
+a table with the UPL results. The EG and NSPS emission data sets will be
 named similarly to your uploaded data, with the same emissions and
 sources columns, and an additional column named `ln_emiss` with
 log-transformed emissions. The UPL spreadsheet will include all of the
