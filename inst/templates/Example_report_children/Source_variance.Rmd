@@ -1,0 +1,40 @@
+The final data set for the `r HAP` `r type` source MACT floor `r subcat_text` included `r nrow(df)` test runs from `r length(unique(df$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(df$emissions), digits = 4)` from `r nrow(df)` test runs. 
+
+```{r, echo = FALSE, fig.align = "center", fig.height = 4, appendix = FALSE, eval = source_fig, fig.cap = "Observation density of `r HAP` emissions by source type. Source averages are indicated by vertical lines."}
+if (!is.na(subcat_name)){
+  ggplot(data = df, aes(emissions, fill = sources))+
+          geom_density(alpha = 0.5, bounds = c(0, Inf))+
+          ylab("Density")+xlab(paste0(HAP, " emissions (units)"))+
+          ggtitle(paste0(subcat_name, " ", subcat_level, " ", type, 
+                         " source test runs"))+
+          multi_source_theme()+labs(fill = 'Top sources', 
+                                    color = 'Top sources')+
+          geom_vline(aes(xintercept = means, color = sources),
+             data = df_mean, linewidth = 1)+
+          guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+                color = guide_legend(nrow = 2, byrow = TRUE))+
+          scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+          scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+          coord_cartesian(clip = 'off')+
+          geom_rug(sides = 'b', aes(x = emissions, 
+                                    color = sources), 
+                   data = df, alpha = 0.5, outside = TRUE)
+} else {
+    ggplot(data = df, aes(emissions, fill = sources))+
+          geom_density(alpha = 0.5, bounds = c(0, Inf))+
+          ylab("Density")+xlab(paste0(HAP, " emissions (units)"))+
+          ggtitle(paste0(type," source test run densities"))+
+          multi_source_theme()+labs(fill = 'Top sources', 
+                                    color = 'Top sources')+
+          geom_vline(aes(xintercept = means, color = sources),
+             data = df_mean, linewidth = 1)+
+          guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+                color = guide_legend(nrow = 2, byrow = TRUE))+
+          scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+          scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+          coord_cartesian(clip = 'off')+
+          geom_rug(sides = 'b', aes(x = emissions, 
+                                    color = sources), 
+                   data = df, alpha = 0.5, outside = TRUE)
+}
+```
