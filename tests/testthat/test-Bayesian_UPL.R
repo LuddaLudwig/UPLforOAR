@@ -25,7 +25,7 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   # saveRDS(output_set,test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   load_results=readRDS(test_path('test_Bayes_UPL','test-Bayes_UPL.rds'))
   expect_equal(output_set,load_results)
-  expect_equal(length(output_set),4)
+  expect_equal(length(output_set),5)
   expect_equal(output_set$fit_table$distr,c("Lognormal","Skewed"))
   expect_equal(output_set$conv_output$convYN,c("Yes","Yes","Yes","Yes","Yes"))
   expect_equal(ncol(output_set$obs_pdf_dat),7)
