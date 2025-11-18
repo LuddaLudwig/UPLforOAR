@@ -260,7 +260,7 @@ Bayes_unbounded = Bayesian_UPL(distr_list = c("Normal", "Lognormal", "Skewed"),
 While the zero bounded and unbounded Bayesian results look very similar, there 
 are slight differences caused by the zero hard boundary. As a result the bounded 
 distributions look slightly better, and are more realistic.
-```{r plot3, echo = FALSE, out.width = "100%", fig.height = 7, fig.align = "center", fig.cap = "Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed."}
+```{r plot3, echo = FALSE, out.width = "100%", fig.height = 7, fig.align = "center", fig.cap = "Fitted likelihood distributions for zero bounded (right) and unbounded (left) Bayes distributions. The fitted distributions are colored blue for lognormal, orange for normal, and green for skewed. Vertical lines indicate the UPL results for each distribution and method."}
 Bayes_0bounded$obs_pdf_dat$type = rep("Zero bounded", 
                                           nrow(Bayes_0bounded$obs_pdf_dat))
 Bayes_0bounded$pred_pdf_dat$type = rep("Zero bounded", 
@@ -280,36 +280,53 @@ combined_obs = rbind(Bayes_0bounded$obs_pdf_dat,
 combined_fit = rbind(Bayes_0bounded$fit_table, 
                      Bayes_unbounded$fit_table)
 
+fit_metrics = subset(combined_fit, select = c(distr, type, UPL)) 
+fit_metrics = rbind(fit_metrics, c("Normal", "Frequentist", UPL_freq_N))
+fit_metrics = rbind(fit_metrics, c("Lognormal", "Frequentist", UPL_freq_LN))
+fit_metrics = rbind(fit_metrics, c("Skewed", "Frequentist", UPL_freq_SN))
+fit_metrics$UPL = as.numeric(fit_metrics$UPL)
+fit_metrics = fit_metrics %>% group_by(distr)
+fit_metrics = arrange(fit_metrics, type, .by_group = TRUE)
+freq_upl = subset(fit_metrics, fit_metrics$type == 'Frequentist')
+freq_upl = subset(freq_upl, select = -c(type))
+
 palette_line = c("#377EB8", "#FF7F00", "#4DAF4A")
 ggplot()+
-  geom_line(data = combined_pdf,
+  geom_line(data = combined_pdf, show.legend = FALSE,
             aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
-  geom_area(data = combined_pdf,
+  geom_area(data = combined_pdf, show.legend = FALSE,
             aes(y = ydens, x = x_hat), fill = 'grey')+
-  geom_point(data = combined_obs,
+  geom_point(data = combined_obs, show.legend = FALSE,
             aes(y = ydens, x = emissions),
             size = 3, alpha = 0.5, shape = 19, color = 'black')+
-  geom_line(data = combined_pdf,
+  geom_line(data = combined_pdf, show.legend = FALSE,
             aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
-  geom_area(data = combined_pdf,
+  geom_area(data = combined_pdf, show.legend = FALSE,
             aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
-  geom_errorbar(data = combined_obs, width = 1e-9,
+  geom_errorbar(data = combined_obs, width = 1e-9, show.legend = FALSE,
                 aes(ymin = low, ymax = up, x = emissions, color = distr),
                 alpha = 0.5)+
-  geom_point(data = combined_obs,
+  geom_point(data = combined_obs, show.legend = FALSE,
              aes(x = emissions, y = med, fill = distr),
              size = 3, alpha = 0.5, shape = 21, color = 'black')+
   ylab("Density")+ xlab("Hg emissions")+
-  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  geom_vline(aes(xintercept = UPL, color = distr, linetype = type), size = 1,
+             data = subset(fit_metrics, fit_metrics$type != 'Frequentist'))+
+  geom_vline(aes(xintercept = UPL, color = distr, linetype = 'a'), size =1,
+             data = freq_upl)+
+  pop_distr_theme()+ labs(color = 'Distribution:', fill = "Distribution",
+                          linetype = 'Type:')+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
-  geom_rug(data = combined_obs,
+  geom_rug(data = combined_obs, show.legend = FALSE,
            sides = 'b', aes(x = emissions),
            alpha = 0.5, outside = TRUE, color = 'black')+
   coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
   scale_fill_manual(values = palette_line)+
+  scale_linetype_manual(values = c(1, 2, 3), 
+                        labels = c('Frequentist', 'Unbounded', 'Zero bounded'))+
   facet_wrap(~distr+type, scales = 'fixed', nrow = 3)+
-  theme(legend.position = 'none')+theme(panel.spacing.x = unit(5, "mm"))+
+  theme(legend.position = 'top')+theme(panel.spacing.x = unit(5, "mm"))+
   theme(axis.text.y = element_text(size = 10), 
         axis.text.x = element_text(size = 10))+
   theme(strip.text = element_text(color = 'black', size = 12))
@@ -321,9 +338,9 @@ distribution did have the most points within 95\% CI, but had the worst fit when
 zero-bounded and did not integrate to 1. 
 
 ``` {r table1, fig.align = "center", echo = FALSE}
-fit_metrics = subset(combined_fit, select = -c(UPL)) %>% group_by(type)
-fit_metrics = arrange(fit_metrics, SSE, .by_group = TRUE)
-knitr::kable(mutate(fit_metrics, across(c(2, 3), ~signif(., digits = 3))),
+fit_metrics2 = subset(combined_fit, select = -c(UPL)) %>% group_by(type)
+fit_metrics2 = arrange(fit_metrics2, SSE, .by_group = TRUE)
+knitr::kable(mutate(fit_metrics2, across(c(2, 3), ~signif(., digits = 3))),
              caption = "Goodness of fit results for Hg emissions",
              col.names = c('Distribution', 'SSE', 'No. Obs. in 95% CI', 
                            'integral', 'Type'))
@@ -334,13 +351,6 @@ knitr::kable(mutate(fit_metrics, across(c(2, 3), ~signif(., digits = 3))),
 But we aren't interested in finding the best distribution in this exercise (it is probably a Gamma distribution anyways), just comparing UPL methods. The Lognormal doesn't change between bounded and unbounded Bayesian methods. That's because it already is strictly positive. The frequentist Lognormal result is similar but not the same, but it uses an approximation that is not replicated in the Bayesian method that isn't unexpected. All Lognormal results are similarly larger than all others, which is typical for the long-tailed distribution. The Skewed changes a little with the zero boundary, since it isn't strictly positive but is asymmetric. It changes a similar amount with the frequentist method, which again is an approximation, and not actually the 99$^{th}$ percentile of a skew-normal distribution. The unbounded Bayesian and frequentist UPL's for the Normal distribution are very similar to one another. Since the frequentist method has an exact analytical solution, we should be aiming to arrive at the same values with the Bayesian method, excepting the stochastic component and added accountability to uncertainty. The zero-bounded Bayesian Normal UPL is quite different, since we are essentially fitting a partial Normal.
 
 ```{r table2, echo = FALSE}
-fit_metrics = subset(combined_fit, select = c(distr, type, UPL)) 
-fit_metrics = rbind(fit_metrics, c("Normal", "Frequentist", UPL_freq_N))
-fit_metrics = rbind(fit_metrics, c("Lognormal", "Frequentist", UPL_freq_LN))
-fit_metrics = rbind(fit_metrics, c("Skewed", "Frequentist", UPL_freq_SN))
-fit_metrics$UPL = as.numeric(fit_metrics$UPL)
-fit_metrics = fit_metrics %>% group_by(distr)
-fit_metrics = arrange(fit_metrics, type, .by_group = TRUE)
 knitr::kable(fit_metrics,
              caption = "UPL results for fitting 3 distributions with 
              frequentist, unbounded Bayesian, and zero bounded Bayesian.",
