@@ -23,14 +23,6 @@ params:
     label: "Number of sources nation-wide (for CAA 129 only)"
     input: numeric
     value: NA
-  future_runs: 
-    label: "Number of future test runs"
-    value: 3
-    input: numeric
-  significance:
-    label: "Level of significance" 
-    value: 0.99
-    input: numeric
 ---
 <!-- Change the document title and authors as needed -->
 
@@ -52,14 +44,6 @@ knitr::opts_chunk$set(
   fig.pos="H",
   out.extra = ""
 )
-library(htmltools)
-knitr::knit_hooks$set(imgcenter = function(before, options, envir){
-  if (before) {
-    HTML("<p align='center'>")
-  } else {
-    HTML("</p>")
-  }
-})
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -68,65 +52,107 @@ library(grid)
 library(np)
 library(sfsmisc)
 library(UPLforOAR)
+library(knitr)
 if (params$CAA_section == 112){
   CAA_text = 'CAA Section 112(d)(3)'
 } else if (params$CAA_section == 129){
   CAA_text = 'CAA Section 129(a)(2)'
 }
 ```
-<!-- Repeat the analysis block below with unique names if you have multiple HAPS or subcategories -->
-```{r analysis_1, results = FALSE, appendix = TRUE}
+
+```{r load_data, appendix = TRUE}
 # Below is an example of loading data, sorting and selecting to top performers, 
 # and calculating the correct distribution and UPL for existing source and NSPS. 
 # If there are multiple HAP or subcategories, simply repeat with code block for 
 # those data, making sure to use unique names so you don't overwrite the results.
 
-dat_emiss = read_csv(params$data)
-if (any(dat_emiss$emissions == 0)){
-  zero_warn = TRUE
-} else {
-  zero_warn = FALSE
+if (params$CAA_section == 112){
+  CAA_text = 'CAA Section 112(d)(3)'
+} else if (params$CAA_section == 129){
+  CAA_text = 'CAA Section 129(a)(2)'
 }
-dat_top_exist = MACT_existing(CAA_section = params$CAA_section, 
-                              data = dat_emiss, national_N = params$national_N,
-                              emissions = 'emissions', sources = 'sources')
-dat_top_new = MACT_new(data = dat_emiss, emissions = 'emissions', 
-                       sources = 'sources')
-dat_top_exist$ln_emiss = log(dat_top_exist$emissions)
-dat_top_exist$ln_emiss = replace(dat_top_exist$ln_emiss, 
-                               !is.finite(dat_top_exist$ln_emiss), NA)
-dat_top_new$ln_emiss = log(dat_top_new$emissions)
-dat_top_new$ln_emiss = replace(dat_top_new$ln_emiss, 
-                               !is.finite(dat_top_new$ln_emiss), NA)
-dat_topmeans_exist = dat_top_exist %>% group_by(sources) %>% 
-                              summarize(means = mean(emissions), counts = n())
-if (all(dat_topmeans_exist$counts == 1)){
-  source_fig = FALSE
-} else {
-  source_fig = TRUE
-}
-best_source = as.character(dat_top_new$sources)[1]
-maxY = NULL # this defaults to 3*max(emissions)
-xvals = NULL # this defaults to a sequence from 0 to 3*max(emissions)
 
-# for this report, you only want one distribution per UPL that was the best choice
-distribution_ex = c('Gamma')
-results = Bayesian_UPL(data = dat_top_exist, distr_list = distribution_ex,
-                       emissions = 'emissions',
-                       future_runs = params$future_runs, 
-                       significance = params$significance,
-                       maxY = maxY, xvals = xvals)
-maxY_new = NULL # this defaults to 3*max(emissions)
-xvals_new = NULL # this defaults to a sequence from 0 to 3*max(emissions)
-# for this report, you only want one distribution per UPL that was the best choice
-distribution_new = c('Gamma') 
-results2 = Bayesian_UPL(data = dat_top_new, distr_list = distribution_new, 
-                        emissions = 'emissions',
-                        future_runs = params$future_runs, 
-                        significance = params$significance,
-                        maxY = maxY_new, xvals = xvals_new)
+# If using a single data set then upload with params:
+dat_industry = read_csv(params$data)
+
+# Or load manually:
+dat_industry = read_csv('Example_data2.csv')
+# If it is not in your working directory, you will need to include the file path:
+# dat_industry = read_csv('USER/name/data/Example_data2.csv')
+
+# In this example data, column 1 is the sources, there are two HAPS, Chemical X 
+# and Chemical Y in columns 2 and 3 in your data, named 'chemX' and 'chemY', and 
+# one subcategory, Size, with levels A and B. 
+
+# Let's suppose we want Existing source UPL calculations for both HAP's, the Size 
+# subcategory only applies to one HAP (Chemical X), and we also want New source on 
+# subcategory B. This is four analyses: existing source UPL's for Chemical X 
+# subcategory A & B, and Chemical Y, and new source UPL for Chemical X subcategory B.
+
+# Next, designate lists (of length four, the number of calculations) for the 
+# emissions, sources, and  subcategory for which
+# you will be doing each UPL calculation, and whether or not it is for an existing 
+# or new source, or as-is (no subsetting):
+subcat_list = c('Size', 'Size', 'Size', NA)
+subcat_levels = c('A', 'B', 'B', NA)
+type_list = c('Existing', 'Existing', 'New', 'Existing')
+HAP_list = c('Chemical X', 'Chemical X', 'Chemical X', 'Chemical Y')
+emiss_list = c('chemX', 'chemX', 'chemX', 'chemY')
+meas_unit_list = c('ppm', 'ppm', 'ppm', 'mg/m3/s')
+sources = 1
+
+# Note that HAP_list are the names as we want them in text or labels
+# the lists for emissions, sources, and subcat_list can be the variable names 
+# as a string or indicate the column number in the data set.
+# For example, let's say your sources are in column 1 and are named 'boiler units'
+# R doesn't like spaces and will replace them (and special characters) with periods.
+# We can designate the sources by name ('boiler.units') or position (1).
+
+# We will do the default 3 future runs and 0.99 significance for all four UPLs:
+future_run_list = c(3, 3, 3, 3)
+sig_list = c(0.99, 0.99, 0.99, 0.99)
+
+# For the Bayes methods, we will assume you have already done an exploratory 
+# analysis to determine the best distribution for each UPL calculation, and only 
+# need to include the one we are using in this report.
+distr_list = c('Gamma', 'Gamma', 'Gamma', 'Normal')
+
+# Additional optional arguments to Bayesian_UPL() can be passed as well, 
+# for example, maxY = maxY_list[i] and if left blank will use the default states.
+
+# since the fourth distribution is normal, it ought to have alternatives to the default:
+kernel_list = c(NA, NA, NA, 'gaussian1')
+bw_list = c(NA, NA, NA, 'cv.ls')
+
+# Now we can create a list of environments to populate the .Rmd document:
+env_list = list()
+for (i in 1:length(HAP_list)){
+  env_temp = make_environment(data = dat_industry, 
+                              distr = distr_list[i],
+                              HAP = HAP_list[i], 
+                              emissions = emiss_list[i], 
+                              sources = sources, 
+                              subcat_name = subcat_list[i], 
+                              subcat_level = subcat_levels[i],
+                              type = type_list[i], 
+                              meas_unit = meas_unit_list[i],
+                              CAA_section = params$CAA_section,
+                              national_N = params$national_N,
+                              future_runs = future_run_list[i], 
+                              significance = sig_list[i],
+                              bw = bw_list[i],
+                              kernel = kernel_list[i])
+  env_list = c(env_list, env_temp)
+}
+
+# You also use the make_environment() function outside of the for loop
+
+# Run the analysis for each environment set:
+# for (i in 1:length(env_list)){
+  cat(asis_output(knit_child('Example_report_Bayes_children/Bayes_Analysis_template.Rmd',
+                           envir = env_list[[4]], quiet = TRUE)))
+# }
 ```
-
 <!-- Edit/add/remove any content as appropriate -->
 <!-- Italicized comments in * * likely need to be edited for each use -->
 
@@ -138,7 +164,7 @@ The purpose of this memorandum is to present the methodology and the results of 
 
 ## MACT Floor Analysis Hazardous Air Pollutants
 
-The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: *chemical X, chemical Y, chemical Z...*.
+The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(HAP_list, collapse = ', ')`.
 
 ## MACT Floor Analysis subcategories
 
@@ -146,15 +172,23 @@ Under *CAA section 112(d)(1)*, the EPA has the discretion to “...distinguish a
 
 For the MACT floor analysis, the following `r params$source` subcategories were defined:
 
-- **Subcategory 1.** *describe it here and how/why it was determined*
-
-- **Subcategory 2.** *describe it here and how/why it was determined*
+- **HAP *Chemical X*: Subcategory, Size:** 
+  *describe it here and how/why it was determined*  
+  *Facility size* was determined as greater or less than ... and indicated by *'A'* 
+  for the first set and *'B'* for the second set. Since subcategory *'B'* is a new 
+  designation, both existing and new source MACT floor analyses were needed. For 
+  *facility size 'A'* only existing source MACT floor analyses were calculated. 
+  
+- **HAP *Chemical Y*: No subcategory** 
+  *describe it here and how/why it was determined*  
+  The facility size subcategory does not affect HAP *Chemical Y*, no subcategory 
+  differentiation was applied.
 
 ## Calculating Emission Values used in the MACT Floor Analysis
 
 The EPA received emissions data from industry respondents under the `r params$source` 
 MACT ICR in a number of different units of measure and converted these units of measure 
-to a common *insert measurement units*. 
+to a common `r paste0(meas_unit_list, collapse = ', ')` for `r paste0(HAP_list, collapse = ', ')` respectively.
 
 *If any outlier analysis or subsequent QA/QC was done on the emissions data prior to MACT floor analysis, please include it here.*
 
