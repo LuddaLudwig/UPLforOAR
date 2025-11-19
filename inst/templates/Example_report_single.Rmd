@@ -52,14 +52,6 @@ knitr::opts_chunk$set(
   fig.pos="H",
   out.extra = ""
 )
-library(htmltools)
-knitr::knit_hooks$set(imgcenter = function(before, options, envir){
-  if (before) {
-    HTML("<p align='center'>")
-  } else {
-    HTML("</p>")
-  }
-})
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
