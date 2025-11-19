@@ -1,6 +1,6 @@
 ### `r type` Source `r HAP` `r subcat_text`
 
-The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` is the `r distribution_result` distribution, with a corresponding UPL of `r signif(UPL, digits = 4)` *(insert measurement units)*. 
+The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` is the `r distribution_result` distribution, with a corresponding UPL of `r signif(UPL, digits = 4)` (`r meas_unit`). 
 
 ```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of emissions for overall population of test runs. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 x_hat = seq(0, 3*max(df$emissions), length.out = 1024)
@@ -31,7 +31,7 @@ if (!is.na(subcat_name)){
                data = pred_dat, size = 0.75, linetype = 2)+
   geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
             data = pred_dat, show.legend = FALSE)+
-  ylab("Density")+xlab(paste0(HAP, " emissions (units)"))+
+  ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
   ggtitle(paste0(subcat_name, " ", subcat_level, " ", type, 
                          " source\nMACT floor test run population"))+
   pop_distr_theme()+
@@ -61,7 +61,7 @@ if (!is.na(subcat_name)){
                data = pred_dat, size = 0.75, linetype = 2)+
   geom_area(aes(y = pdf_n, x = x_hat, fill = 'b'), alpha = 0.25,
             data = pred_dat, show.legend = FALSE)+
-  ylab("Density")+xlab(paste0(HAP, " emissions (units)"))+
+  ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
   ggtitle(paste0(type, 
                          " source\nMACT floor test run population"))+
   pop_distr_theme()+

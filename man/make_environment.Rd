@@ -14,6 +14,7 @@ make_environment(
   type = c("New", "Existing", "As-is"),
   CAA_section = 112,
   national_N = NA,
+  meas_unit,
   future_runs = 3,
   significance = 0.99
 )
@@ -51,6 +52,8 @@ will select the top performing source for the HAP using \code{\link[=MACT_new]{M
 \item{national_N}{For Clean Air Act section 129 (\code{CAA_section = 129}), the
 additional argument providing the total number of sources nation-wide
 regardless of whether or not they contributed emissions data is required.}
+
+\item{meas_unit}{String of measurment units to be used in text and figure axes labels.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
