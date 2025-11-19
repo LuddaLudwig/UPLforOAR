@@ -47,14 +47,6 @@ knitr::opts_chunk$set(
   fig.pos="H",
   out.extra = ""
 )
-library(htmltools)
-knitr::knit_hooks$set(imgcenter = function(before, options, envir){
-  if (before) {
-    HTML("<p align='center'>")
-  } else {
-    HTML("</p>")
-  }
-})
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -154,7 +146,7 @@ The purpose of this memorandum is to present the methodology and the results of 
 
 ## MACT Floor Analysis Hazardous Air Pollutants
 
-The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(HAP_list, sep = ', ')`.
+The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(HAP_list, collapse = ', ')`.
 
 ## MACT Floor Analysis subcategories
 
@@ -178,7 +170,7 @@ For the MACT floor analysis, the following `r params$source` subcategories were 
 
 The EPA received emissions data from industry respondents under the `r params$source` 
 MACT ICR in a number of different units of measure and converted these units of measure 
-to a common *insert measurement units*. 
+to a common `r paste0(meas_unit_list, collapse = ', ')` for `r paste0(HAP_list, collapse = ', ')` respectively.
 
 *If any outlier analysis or subsequent QA/QC was done on the emissions data prior to MACT floor analysis, please include it here.*
 
