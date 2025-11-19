@@ -28,7 +28,8 @@ inputPanel(
         checkboxInput('runMACT', 'Subset data to top performers', FALSE),
         selectInput("CAA_section", label = "CAA Section:", selected = 112,
                     choices = c(112, 129)),
-
+        numericInput("national_N", label = "Total number of sources nation-wide for CAA 129",
+                     value = NULL),
         numericInput("future_runs",label = "Number of future test runs",
                      value = 3, min = 1),
         numericInput("significance",label = "Level of significance",
@@ -178,7 +179,8 @@ dat_top_exist_raw = eventReactive(input$submit, {
     dat_out = MACT_existing(CAA_section = input$CAA_section,
                             data = dat_emiss(),
                             emissions = 'emissions',
-                            sources = 'sources')
+                            sources = 'sources',
+                            national_N = input$national_N)
   } else {
     dat_out = dat_emiss()
     dat_out = subset(dat_out, dat_out$emissions != 0)
