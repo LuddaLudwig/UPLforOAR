@@ -4,7 +4,7 @@
 \alias{MACT_existing}
 \title{Selects top sources from emissions data}
 \usage{
-MACT_existing(data, emissions, sources, CAA_section = 112, national_N = NULL)
+MACT_existing(data, emissions, sources, CAA_section = 112, national_N = NA)
 }
 \arguments{
 \item{data}{Data.frame or tibble with columns for \code{emissions} (numeric) and

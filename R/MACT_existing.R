@@ -18,7 +18,7 @@
 #' and number of sources with data available.
 #' @export
 MACT_existing = function(data, emissions, sources, CAA_section = 112,
-                         national_N = NULL){
+                         national_N = NA){
   data_temp = tibble::tibble(emissions = data[[emissions]],
                         sources = data[[sources]])
   if (!is.numeric(data_temp$emissions)){
@@ -38,7 +38,7 @@ MACT_existing = function(data, emissions, sources, CAA_section = 112,
                                .by = 'sources')
   n_sources = length(unique(data_temp$sources))
   if (CAA_section == 129){
-    if (is.null(national_N)){
+    if (is.na(national_N)){
       stop("Must provide total number of sources as national_N")
     }
     n_topsources = ceiling(0.12 * national_N)

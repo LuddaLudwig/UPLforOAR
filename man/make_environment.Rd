@@ -13,6 +13,7 @@ make_environment(
   subcat_level = NA,
   type = c("New", "Existing", "As-is"),
   CAA_section = 112,
+  national_N = NA,
   future_runs = 3,
   significance = 0.99
 )
@@ -45,7 +46,11 @@ run the UPL analysis on the HAP emissions in \code{data} with no subsetting. \co
 will select the top performing source for the HAP using \code{\link[=MACT_new]{MACT_new()}}, and
 \code{'Existing'} will select the top performing sources for the HAP using \code{\link[=MACT_existing]{MACT_existing()}}.}
 
-\item{CAA_section}{Applicable Clean Air Act section, either 112 or 129}
+\item{CAA_section}{Applicable Clean Air Act section, either 112 or 129.}
+
+\item{national_N}{For Clean Air Act section 129 (\code{CAA_section = 129}), the
+additional argument providing the total number of sources nation-wide
+regardless of whether or not they contributed emissions data is required.}
 
 \item{future_runs}{Integer of future runs to use in prediction, the default
 is \code{3} since compliance uses 1 test average of 3 runs.}
