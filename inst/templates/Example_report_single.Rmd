@@ -19,6 +19,10 @@ params:
     value: 112
     input: select
     choices: [112, 129]
+  national_N:
+    label: "Number of sources nation-wide (for CAA 129 only)"
+    input: numeric
+    value: NULL
   future_runs: 
     label: "Number of future test runs"
     value: 3
@@ -83,7 +87,8 @@ if (any(dat_emiss$emissions == 0)){
   zero_warn = FALSE
 }
 dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss, 
-                              emissions = 'emissions', sources = 'sources')
+                              emissions = 'emissions', sources = 'sources',
+                              national_N = params$national_N)
 dat_top_new = MACT_new(data = dat_emiss, emissions = 'emissions', 
                        sources = 'sources')
 dat_top_exist$ln_emiss = log(dat_top_exist$emissions)

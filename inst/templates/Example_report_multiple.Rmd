@@ -22,6 +22,10 @@ params:
     value: 112
     input: select
     choices: [112, 129]
+  national_N:
+    label: "Number of sources nation-wide (for CAA 129 only)"
+    value: NULL
+    input: numeric
 ---
 <!-- Change the document title and authors as needed -->
 
@@ -125,6 +129,7 @@ for (i in 1:length(HAP_list)){
                               subcat_level = subcat_levels[i],
                               type = type_list[i], 
                               CAA_section = params$CAA_section,
+                              national_N = params$national_N,
                               future_runs = future_run_list[i], 
                               significance = sig_list[i])
   env_list = c(env_list, env_temp)

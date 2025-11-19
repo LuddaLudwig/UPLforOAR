@@ -7,7 +7,8 @@ if (type == 'Existing'){
     zero_warn = FALSE
   }
   df = MACT_existing(CAA_section = CAA_section, data = df, 
-                              emissions = 'emissions', sources = 'sources')
+                     emissions = 'emissions', sources = 'sources',
+                     national_N = national_N)
   df_mean = df %>% group_by(sources) %>% 
                               summarize(means = mean(emissions), 
                                         counts = n())
