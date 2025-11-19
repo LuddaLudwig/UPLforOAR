@@ -16,7 +16,8 @@ make_environment(
   national_N = NA,
   meas_unit,
   future_runs = 3,
-  significance = 0.99
+  significance = 0.99,
+  ...
 )
 }
 \arguments{
@@ -59,6 +60,8 @@ regardless of whether or not they contributed emissions data is required.}
 is \code{3} since compliance uses 1 test average of 3 runs.}
 
 \item{significance}{Level of significance from 0 to 1, the default is \code{0.99}.}
+
+\item{...}{Other arguments passed on to \code{\link[=Bayesian_UPL]{Bayesian_UPL()}}.}
 }
 \value{
 A list of environments with length equal to the number of UPL
