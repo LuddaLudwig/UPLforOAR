@@ -1,0 +1,112 @@
+### `r type` Source `r HAP` `r subcat_text`
+
+The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` (`r meas_unit`). The `r distr` distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(df)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
+
+```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of  emissions for population of test runs. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
+
+if (!is.na(subcat_name)){
+  ggplot()+
+  geom_line(data = results$pred_pdf_dat, size = 0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = results$pred_pdf_dat, alpha = 0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = results$obs_pdf_dat,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_errorbar(data=results$obs_pdf_dat,alpha=0.5,
+                aes(ymin=low,ymax=up,x=emissions,color='b'))+
+  geom_point(data=results$obs_pdf_dat,
+             aes(x=emissions,y=med,fill='b'),
+             size=3,alpha=0.5,shape=21,color='black')+
+  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
+               data = results$pred_pdf_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = results$pred_pdf_dat)+
+  ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
+  ggtitle(paste0(subcat_name, " ", subcat_level, " ", type, 
+                         " source\nMACT floor test run population"))+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = (mean(df$emissions)), 
+                 color = 'a'), linewidth = 1, linetype = 1)+
+  geom_vline(aes(xintercept = results$fit_table$UPL, color = 'b'), 
+             linewidth = 1, linetype = 2)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = results$obs_pdf_dat,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00'),
+                     labels = c('Observations', distr))+
+  scale_fill_manual(values = c('black', '#FF7F00'),
+                    labels = c('Observations', distr))
+} else {
+    ggplot()+
+  geom_line(data = results$pred_pdf_dat, size = 0.75,
+            aes(y = ydens, x = x_hat, color = 'a'))+
+  geom_area(data = results$pred_pdf_dat, alpha = 0.25,
+            aes(y = ydens, x = x_hat, fill = 'a'))+
+  geom_point(aes(y = ydens, x = emissions), data = results$obs_pdf_dat,
+             size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_errorbar(data=results$obs_pdf_dat,alpha=0.5,
+                aes(ymin=low,ymax=up,x=emissions,color='b'))+
+  geom_point(data=results$obs_pdf_dat,
+             aes(x=emissions,y=med,fill='b'),
+             size=3,alpha=0.5,shape=21,color='black')+
+  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
+               data = results$pred_pdf_dat, size = 0.75, linetype = 2)+
+  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
+            data = results$pred_pdf_dat)+
+  ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
+  ggtitle(paste0(type, 
+                         " source\nMACT floor test run population"))+
+  pop_distr_theme()+
+  geom_vline(aes(xintercept = (mean(df$emissions)), 
+                 color = 'a'), linewidth = 1, linetype = 1)+
+  geom_vline(aes(xintercept = results$fit_table$UPL, color = 'b'), 
+             linewidth = 1, linetype = 2)+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  coord_cartesian(clip = 'off')+
+  labs(color = 'Distribution:', fill = 'Distribution:')+
+  geom_rug(sides = 'b', aes(x = emissions), data = results$obs_pdf_dat,
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  scale_color_manual(values = c('black', '#FF7F00'),
+                     labels = c('Observations', distr))+
+  scale_fill_manual(values = c('black', '#FF7F00'),
+                    labels = c('Observations', distr))
+}
+if (is.null(bw)){
+  bw_result = sd(df$emissions) * nrow(df)^(-2/5)
+} else if (is.character(bw)){
+  raw_dens = npuniden.boundary(X = df$emissions, Y = xvals,
+                               a = low, b = up, proper = TRUE,
+                               kertype = kernel, bwmethod=bw)
+  bw_result = raw_dens$h
+} else if (is.numeric(bw)){
+  bw_result = bw
+}
+if (any(results$conv_output$convYN == 'No')){
+  conv_text = TRUE
+} else {
+  conv_text = FALSE
+}
+```
+
+The density plot above of emission test run data was created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `r kernel` kernel type, bounds of (`r c(low, up)`), and a bandwidth of `r signif(bw_result, 3)`. For further details see the `R` code in Appendix B. 
+
+```{r, eval = !conv_text, echo = FALSE, results = 'asis'}
+cat(paste0("The ", distr, " distribution's parameters converged well, passing all Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below)."))
+```
+```{r, eval = conv_text, echo = FALSE, results = 'asis'}
+cat(paste0("The ", distr, " distribution's parameters did not converge, failing some Gelman-Rubin diagnostic checks. Check the figures below to see if MCMC chains (left figures below) are well-mixed and posterior distributions are approximately normal around the converged value (right figures below). Results from this distribution model should not be used until the convergence issues is corrected. Consider a more appropriate choice of distribution, or manually specifying better prior and likelihood limits."))
+```
+```{r, echo = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for distribution parameters."}
+part1 = setup_likelihood(distribution = distr, data = df,
+                         emissions = 'emissions', RNG.state = RNG.state,
+                         manual_prior = manual_prior, random = FALSE,
+                         prior_list = prior_list)
+part2 = run_likelihood(model_input = part1, future_runs = future_runs, 
+                       xvals = xvals, maxY = maxY, minY = minY)
+part3 = converge_figs(distribution = distr, jags_model_run = part2)
+part3
+```

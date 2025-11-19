@@ -1,0 +1,130 @@
+#### `r type` Source `r HAP` `r subcat_text`
+
+The selected distribution for the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution. The parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
+
+```{r, echo = FALSE, appendix = FALSE}
+if (!exists(maxY)){
+  maxY = 3 * max(df$emissions)
+} else if (is.na(maxY)){
+  maxY = 3 * max(df$emissions)
+}
+if (distr == 'Gamma'){
+  sdY =  sd(df$emissions)
+  shape = mean(df$emissions)^2 / sdY^2
+  rate = mean(df$emissions) / sdY^2
+  parameter = c('Rate', 'Shape')
+  prior = c(paste0('~dunif (0, ', signif(maxY / (sdY^2), 3), ')'), 
+            paste0('~dunif (0, ', signif((maxY^2) / (sdY^2), 3), ')'))
+  chain1 = c(signif(rate, 3), signif(shape, 3))
+  chain2 = c(signif(1.5 * rate, 3), signif(0.5 * shape, 3))
+  chain3 = c(signif(0.5 * rate, 3), signif(1.5 * shape, 3))
+  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), 
+                  signif(results$conv_output$gelman_diag[2], 3))
+  convYN = c(results$conv_output$convYN[1], 
+             results$conv_output$convYN[2])
+} else if (distr == 'Normal'){
+  sdY =  sd(df$emissions)
+  meanY = mean(df$emissions)
+  parameter = c('Mean', 'Standard deviation')
+  prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
+            paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
+                  signif(1000 * sdY, 3), ')'))
+  chain1 = c(signif(meanY, 3), signif(sdY, 3))
+  chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
+  chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
+  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                signif(results$conv_output$gelman_diag[2], 3))
+  convYN = c(results$conv_output$convYN[1],
+           results$conv_output$convYN[2])
+} else if (distr == 'Skewed'){
+  sdY =  sd(df$emissions)
+  meanY = mean(df$emissions)
+  skew1 = min(0.99, abs((1 / length(df$emissions)) *
+                          sum(((df$emissions - meanY) / sdY)^3)))
+  delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) / ((abs(skew1)^(2 / 3)) +
+                                                   ((4 - pi) / 2)^(2 / 3))))
+  delta = delta * abs(skew1) / skew1
+  alpha = delta / sqrt(1 - delta^2)
+  omega = sdY / sqrt(1 - 2 * delta^2 / pi)
+  xi = meanY - omega * delta * sqrt(2 / pi)
+  parameter = c('Omega', 'Xi', 'Alpha')
+  prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
+            paste0('~dnorm (0, ', signif(1 / (100 * maxY), 3), ')'),
+            '~dunif (-100, 100)')
+  chain1 = c(signif(xi, 3), signif(omega, 3), signif(alpha, 3))
+  chain2 = c(signif(1.5 * xi, 3), signif(0.5 * omega, 3), signif(0.5 * alpha, 3))
+  chain3 = c(signif(0.5 * xi, 3), signif(1.5 * omega, 3), signif(1.5 * alpha, 3))
+  diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
+                  signif(results2$conv_output$gelman_diag[2],3),
+                  signif(results2$conv_output$gelman_diag[3],3))
+  convYN = c(results2$conv_output$convYN[1],
+            results2$conv_output$convYN[2],
+            results2$conv_output$convYN[3])
+} else if(distr == "Lognormal"){
+  sdY =  sd(df$ln_emiss)
+  meanY = mean(df$ln_emiss)
+  parameter = c('Mean', 'Standard deviation')
+  prior = c(paste0('~dnorm (', meanY, ', ', signif(0.001 / (sdY^2), 3), ')'),
+            paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
+                   signif(1000 * sdY, 3), ')'))
+  chain1 = c(signif(meanY, 3), signif(sdY, 3))
+  chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
+  chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
+  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                  signif(results$conv_output$gelman_diag[2], 3))
+  convYN = c(results$conv_output$convYN[1],
+             results$conv_output$convYN[2])
+} else if (distr == 'Beta'){
+  sdY =  sd(df$emissions)
+  meanY = mean(df$emissions)
+  alpha = meanY^2 / sdY^2 - meanY^3 / sdY^2 - meanY
+  beta = meanY - 1 + meanY / sdY^2 + meanY^3 / sdY^2 - 2 * meanY^2 / sdY^2
+  parameter = c('Alpha', 'Beta')
+  prior = c(paste0('~dunif (-1, ', signif((0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)
+                                        * 1.25, 3), ')'),
+            paste0('~dunif (-1, ', signif((0.25 - 1 + 0.25 / sdY^2 +
+                                           0.25^3 / sdY^2 - 2 * 0.25^2 / sdY^2)
+                                        * 1.25, 3), ')'))
+  chain1 = c(signif(alpha, 3), signif(beta, 3))
+  chain2 = c(signif(1.5 * alpha, 3), signif(0.5 * beta, 3))
+  chain3 = c(signif(0.5 * alpha, 3), signif(1.5 * beta, 3))
+  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                  signif(results$conv_output$gelman_diag[2], 3))
+  convYN = c(results$conv_output$convYN[1],
+             results$conv_output$convYN[2])
+}
+param_tab = tibble(parameter, prior, chain1, chain2, chain3, 
+                   diagnostics, convYN)
+param_tab %>% knitr::kable(
+  caption = paste0("Parameter information for the ", distr, " distribution 
+  UPL calculation for ", type, " source", HAP, " ", subcat_text),
+             col.names = c('Parameter',
+                         'Prior',
+                         'Chain 1 initial value',
+                         'Chain 2 initial value',
+                         'Chain 3 initial value',
+                         'Gelman-Rubin diagnostic',
+                         'Converged?'))
+```
+
+
+```{r, appendix = FALSE, echo = FALSE}
+state_out = results$state
+chains = c('Chain 1', 'Chain 2', 'Chain 3')
+rng_name = c(state_out[[1]]$.RNG.name, 
+               state_out[[2]]$.RNG.name, 
+               state_out[[3]]$.RNG.name)
+if (is.null(RNG.state)){
+  rng_state = c('seed = 5', 'seed = 12', 'seed = 151')
+} else {
+  rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
+                paste(state_out[[2]]$.RNG.state, collapse=', '), 
+                paste(state_out[[3]]$.RNG.state, collapse=', '))
+}
+RNG1 = tibble(chains, rng_name, rng_state)
+RNG1 %>% knitr::kable(
+  caption="Random number generator (RNG) names and states used in MCMC chains",
+             col.names=c('MCMC Chain',
+                         'Name',
+                         'State'))
+```

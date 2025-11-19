@@ -95,11 +95,15 @@ if (!exists('prior_list')){
 } else if (is.na(prior_list)){
   prior_list = NULL
 }
-
+if (!exists('RNG.state')){
+  RNG.state = NULL
+} else if (is.na(RNG.state)){
+  RNG.state = NULL
+}
 results = Bayesian_UPL(data = df, distr_list = distr,
                        emissions = 'emissions',
                        future_runs = future_runs, 
-                       significance = significance,
+                       significance = significance, RNG.state = RNG.state,
                        maxY = maxY, minY = minY, xvals = xvals,
                        up = up, low = low,  kernel = kernel, bw = bw,
                        convergence_report = FALSE, random = FALSE,

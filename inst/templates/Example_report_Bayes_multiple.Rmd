@@ -148,17 +148,17 @@ for (i in 1:length(HAP_list)){
 # You also use the make_environment() function outside of the for loop
 
 # Run the analysis for each environment set:
-# for (i in 1:length(env_list)){
-  cat(asis_output(knit_child('Example_report_Bayes_children/Bayes_Analysis_template.Rmd',
-                           envir = env_list[[4]], quiet = TRUE)))
-# }
+for (i in 1:length(env_list)){
+  cat(asis_output(knit_child('Example_report_children/Bayes_Analysis_template.Rmd',
+                           envir = env_list[[i]], quiet = TRUE)))
+}
 ```
 <!-- Edit/add/remove any content as appropriate -->
 <!-- Italicized comments in * * likely need to be edited for each use -->
 
 ## Introduction
 
-Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources, or the best-performing 5 sources for source categories with fewer than 30 sources. 
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources governed by CAA Section 112(d)(3). 
 
 The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
 
@@ -194,7 +194,7 @@ to a common `r paste0(meas_unit_list, collapse = ', ')` for `r paste0(HAP_list, 
 
 ## MACT Floor Analysis Methodology
 
-The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix C. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix C. 
+The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix B. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix B. 
 
 For the existing-source MACT floors, selection of the MACT floor pool size (i.e., number of units to be included in the determination of the average emission limitation value) was determined on an individual subcategory basis as described below. 
 
@@ -208,21 +208,21 @@ The next step in the MACT floor analysis was to incorporate data variability int
 
 ### Implementation
 
-The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were normally, log-normally, skew-normally, beta, or gamma distributed. For each distribution, a probability density function was fit to the test run emissions using Bayesian Markov Chain Monte Carlo (MCMC). This analysis was implemented in `R` using `runjags` and JAGS (Just Another Gibbs Sampler) software, with three MCMC chains with different initial values, completely uninformed priors, a burn-in and adapt of 10,000 iterations each, and a final set of 10,000 iterations retained in posterior distributions. Random seeds were specified to control for stochasticity and ensure reproducibility. The JAGS model scripts were defined using the function `write_likelihood()`, and executed using functions `setup_likelihood()` and `run_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix C for more details. 
+The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were normally, log-normally, skew-normally, beta, or gamma distributed. For each distribution, a probability density function was fit to the test run emissions using Bayesian Markov Chain Monte Carlo (MCMC). This analysis was implemented in `R` using `runjags` and JAGS (Just Another Gibbs Sampler) software, with three MCMC chains with different initial values, completely uninformed priors, a burn-in and adapt of 10,000 iterations each, and a final set of 10,000 iterations retained in posterior distributions. Random seeds were specified to control for stochasticity and ensure reproducibility. The JAGS model scripts were defined using the function `write_likelihood()`, and executed using functions `setup_likelihood()` and `run_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-Convergence was assessed quantitatively by checking Gelman-Rubin diagnostics and qualitatively by viewing plots of the iteration chains to ensure they were well-mixed and without trend, as well as histograms of the posterior distributions to ensure they converged. These checks were carried out using the functions `converge_likelihood()` and `converge_figs()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix C for more details. 
+Convergence was assessed quantitatively by checking Gelman-Rubin diagnostics and qualitatively by viewing plots of the iteration chains to ensure they were well-mixed and without trend, as well as histograms of the posterior distributions to ensure they converged. These checks were carried out using the functions `converge_likelihood()` and `converge_figs()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
 Both quantitative and qualitative evaluations were used to select the appropriate distribution. For each distribution, the Sum of Squared Errors ($SSE$) is calculated as:
 
 $$SSE=\displaystyle\sum(y_i-\hat{y_i})^2$$
 
-Where $y_i$ is the empirical test run probability density at emission value $x_{i}$ and $\hat{y_i}$ is the predicted probability density at emission value $x_{i}$. The lower the $SSE$, the better the probability distribution represents the probability of the emission values. The empirical test run probability densities, $y_{i}$, were also checked if they were significantly different than the predicted probability densities, $\hat{y_i}$, by comparing them to the 95\% confidence interval (CI) around the predicted densities derived from posterior distributions. The uncertainty around the predicted probability density can be variable; thus one can have a very different probability at the same $x_{i}$ but be within the 95\% CI if the uncertainty is very large, or have a significantly different probability at the same $x_{i}$ even though the $y_{i}$ and $\hat{y_i}$ are extremely similar if there is very little uncertainty. The more $y_{i}$ that are statistically equivalent to $\hat{y_i}$, the better the distribution represents the probability of $x_{i}$ emission values. A proper probability density function will integrate to $1$, so if the integral of the fitted distribution is substantially different from $1$ this can indicate an issue. Lastly, a visual assessment comparing the empirical and predicted probability densities across the range of possible emission values can identify any problematic behavior or differentiate between distributions. These fit metrics were calculated using the functions `fit_likelihood()` and `obs_density()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix C for more details. 
+Where $y_i$ is the empirical test run probability density at emission value $x_{i}$ and $\hat{y_i}$ is the predicted probability density at emission value $x_{i}$. The lower the $SSE$, the better the probability distribution represents the probability of the emission values. The empirical test run probability densities, $y_{i}$, were also checked if they were significantly different than the predicted probability densities, $\hat{y_i}$, by comparing them to the 95\% confidence interval (CI) around the predicted densities derived from posterior distributions. The uncertainty around the predicted probability density can be variable; thus one can have a very different probability at the same $x_{i}$ but be within the 95\% CI if the uncertainty is very large, or have a significantly different probability at the same $x_{i}$ even though the $y_{i}$ and $\hat{y_i}$ are extremely similar if there is very little uncertainty. The more $y_{i}$ that are statistically equivalent to $\hat{y_i}$, the better the distribution represents the probability of $x_{i}$ emission values. A proper probability density function will integrate to $1$, so if the integral of the fitted distribution is substantially different from $1$ this can indicate an issue. Lastly, a visual assessment comparing the empirical and predicted probability densities across the range of possible emission values can identify any problematic behavior or differentiate between distributions. These fit metrics were calculated using the functions `fit_likelihood()` and `obs_density()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
 <!-- Note that if a different upper bound was used, the text below needs to be updated to `r maxY` rather than $3\times max(x_i)$. -->
 
-To calculate the UPL, which is the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` future emission test values, the posterior distributions of `r params$future_runs` new draws from the fitted probability distribution were averaged and then the UPL is determined as the `r (params$significance)*100`$^{th}$ quantile of this resulting distribution. The fitted distribution is truncated by lower and upper bounds of $0$ and $3\times max(x_i)$ emissions, which prevents extreme values from long-tailed distributions biasing the UPL and otherwise has no effect on the results. The $2.5^{th}$ and $97.5^{th}$ quantiles of the posterior distributions of the predicted probability density $\hat{y_i}$ at each $x_i$ test run value were used to calculate 95\% CI for the goodness-of-fit metrics. The median of the posterior distributions of the predicted probability density $\hat{y_i}$ were used in comparisons to $y_i$ to calculate the $SSE$. The median of the posterior distributions for all $\hat{y_i}$ across the possible range of emission test run values was monitored for use in plotting the distributions and visual comparisons to the empirical distributions. All of these computations were done using the function `output_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix C for more details. 
+To calculate the UPL, which is the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` future emission test values, the posterior distributions of `r params$future_runs` new draws from the fitted probability distribution were averaged and then the UPL is determined as the `r (params$significance)*100`$^{th}$ quantile of this resulting distribution. The fitted distribution is truncated by lower and upper bounds of $0$ and $3\times max(x_i)$ emissions, which prevents extreme values from long-tailed distributions biasing the UPL and otherwise has no effect on the results. The $2.5^{th}$ and $97.5^{th}$ quantiles of the posterior distributions of the predicted probability density $\hat{y_i}$ at each $x_i$ test run value were used to calculate 95\% CI for the goodness-of-fit metrics. The median of the posterior distributions of the predicted probability density $\hat{y_i}$ were used in comparisons to $y_i$ to calculate the $SSE$. The median of the posterior distributions for all $\hat{y_i}$ across the possible range of emission test run values was monitored for use in plotting the distributions and visual comparisons to the empirical distributions. All of these computations were done using the function `output_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-The parameter estimation and UPL calculations for each distribution investigated were performed using the function `Bayesian_UPL()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, which wraps the functions described above and concatenates the results for easy comparison. See Appendix C for more details. 
+The parameter estimation and UPL calculations for each distribution investigated were performed using the function `Bayesian_UPL()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, which wraps the functions described above and concatenates the results for easy comparison. See Appendix B for more details. 
 
 ### UPL Calculation for Normal Data
 
@@ -274,253 +274,7 @@ $$
 
 \*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
 
-### Settings used in Bayesian MCMC
 
-The selected distribution for the *chemical X* *subcategory A* existing source MACT floor analysis was the `r distribution_ex` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
-<!-- If you specified priors manually, rather than using the defaults you will need to alter the table below -->
-
-```{r gamma_params, appendix = TRUE}
-if (is.null(maxY)){
-  maxY = 3 * max(dat_top_exist$emissions)
-} 
-sdY =  sd(dat_top_exist$emissions)
-shape = mean(dat_top_exist$emissions)^2 / sdY^2
-rate = mean(dat_top_exist$emissions) / sdY^2
-parameter = c('Rate', 'Shape')
-prior = c(paste0('~dunif (0, ', signif(maxY / (sdY^2), 3), ')'), 
-          paste0('~dunif (0, ', signif((maxY^2) / (sdY^2), 3), ')'))
-chain1 = c(signif(rate, 3), signif(shape, 3))
-chain2 = c(signif(1.5 * rate, 3), signif(0.5 * shape, 3))
-chain3 = c(signif(0.5 * rate, 3), signif(1.5 * shape, 3))
-diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), 
-                signif(results$conv_output$gelman_diag[2], 3))
-convYN = c(results$conv_output$convYN[1], 
-           results$conv_output$convYN[2])
-gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, 
-                    diagnostics, convYN)
-gamm_exist %>% knitr::kable(
-  caption="Parameter information for the gamma distribution 
-  UPL calculation for existing source chemical X, subcategory A.",
-             col.names=c('Parameter',
-                         'Prior',
-                         'Chain 1 initial value',
-                         'Chain 2 initial value',
-                         'Chain 3 initial value',
-                         'Gelman-Rubin diagnostic',
-                         'Converged?'))
-```
-
-```{r RNG1, appendix = TRUE}
-state_out = results$state
-chains = c('Chain 1', 'Chain 2', 'Chain 3')
-rng_name = c(state_out[[1]]$.RNG.name, 
-               state_out[[2]]$.RNG.name, 
-               state_out[[3]]$.RNG.name)
-rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
-              paste(state_out[[2]]$.RNG.state, collapse=', '), 
-              paste(state_out[[3]]$.RNG.state, collapse=', '))
-RNG1 = tibble(chains, rng_name, rng_state)
-RNG1 %>% knitr::kable(
-  caption="Random number generator (RNG) names and states used in MCMC chains",
-             col.names=c('MCMC Chain',
-                         'Name',
-                         'State'))
-```
-
-The selected distribution for the *chemical X* *subcategory A* new source MACT floor analysis was the `r distribution_new` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
-
-```{r gamma_params2, appendix = TRUE}
-if (is.null(maxY_new)){
-  maxY_new = 3 * max(dat_top_new$emissions)
-} 
-sdY =  sd(dat_top_new$emissions)
-shape = mean(dat_top_new$emissions)^2 / sdY^2
-rate = mean(dat_top_new$emissions) / sdY^2
-parameter = c('Rate', 'Shape')
-prior = c(paste0('~dunif (0, ', signif(maxY_new / (sdY^2), 3), ')'), 
-          paste0('~dunif (0, ', signif((maxY_new^2) / (sdY^2), 3), ')'))
-chain1 = c(signif(rate, 3), signif(shape, 3))
-chain2 = c(signif(1.5 * rate, 3), signif(0.5 * shape, 3))
-chain3 = c(signif(0.5 * rate, 3), signif(1.5 * shape, 3))
-diagnostics = c(signif(results2$conv_output$gelman_diag[1], 3), 
-                signif(results$conv_output$gelman_diag[2], 3))
-convYN = c(results2$conv_output$convYN[1], 
-           results2$conv_output$convYN[2])
-gamm_new = tibble(parameter, prior, chain1, chain2, chain3, 
-                    diagnostics, convYN)
-gamm_new %>% knitr::kable(
-  caption="Parameter information for the gamma distribution 
-  UPL calculation for new source chemical X, subcategory A.",
-             col.names=c('Parameter',
-                         'Prior',
-                         'Chain 1 initial value',
-                         'Chain 2 initial value',
-                         'Chain 3 initial value',
-                         'Gelman-Rubin diagnostic',
-                         'Converged?'))
-```
-
-```{r RNG1, appendix = TRUE}
-state_out = results2$state
-chains = c('Chain 1', 'Chain 2', 'Chain 3')
-rng_name = c(state_out[[1]]$.RNG.name, 
-               state_out[[2]]$.RNG.name, 
-               state_out[[3]]$.RNG.name)
-rng_state = c(paste(state_out[[1]]$.RNG.state, collapse=', '), 
-              paste(state_out[[2]]$.RNG.state, collapse=', '), 
-              paste(state_out[[3]]$.RNG.state, collapse=', '))
-RNG1 = tibble(chains, rng_name, rng_state)
-RNG1 %>% knitr::kable(
-  caption="Random number generator (RNG) names and states used in MCMC chains",
-             col.names=c('MCMC Chain',
-                         'Name',
-                         'State'))
-```
-
-<!-- The skew-normal distribution parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence that were used in the *chemical X* *subcategory A* new source UPL calculation are listed below. -->
-<!-- ```{r skew_params, appendix = TRUE} -->
-<!-- if (is.null(maxY)){ -->
-<!--  maxY = 3 * max(dat_top_new$emissions) -->
-<!-- } -->
-<!-- sdY =  sd(dat_top_new$emissions) -->
-<!-- meanY = mean(dat_top_new$emissions) -->
-<!-- skew1 = min(0.99, abs((1 / length(dat_top_new$emissions)) *  -->
-<!--                         sum(((dat_top_new$emissions - meanY) / sdY)^3))) -->
-<!-- delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) / ((abs(skew1)^(2 / 3)) +  -->
-<!--                                                    ((4 - pi) / 2)^(2 / 3)))) -->
-<!-- delta = delta * abs(skew1) / skew1 -->
-<!-- alpha = delta / sqrt(1 - delta^2) -->
-<!-- omega = sdY / sqrt(1 - 2 * delta^2 / pi) -->
-<!-- xi = meanY - omega * delta * sqrt(2 / pi) -->
-<!-- parameter = c('Omega', 'Xi', 'Alpha') -->
-<!-- prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'), -->
-<!--          paste0('~dnorm (0, ', signif(1 / (100 * maxY), 3), ')'), -->
-<!--         '~dunif (-100, 100)') -->
-<!-- chain1 = c(signif(xi, 3), signif(omega, 3), signif(alpha, 3)) -->
-<!-- chain2 = c(signif(1.5 * xi, 3), signif(0.5 * omega, 3), signif(0.5 * alpha, 3)) -->
-<!-- chain3 = c(signif(0.5 * xi, 3), signif(1.5 * omega, 3), signif(1.5 * alpha, 3)) -->
-<!-- diagnostics = c(signif(results2$conv_output$gelman_diag[1],3), -->
-<!--                 signif(results2$conv_output$gelman_diag[2],3), -->
-<!--                 signif(results2$conv_output$gelman_diag[3],3)) -->
-<!-- convYN = c(results2$conv_output$convYN[1], -->
-<!--            results2$conv_output$convYN[2], -->
-<!--            results2$conv_output$convYN[3]) -->
-<!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
-<!--                     diagnostics, convYN) -->
-<!-- gamm_exist %>% knitr::kable( -->
-<!--   caption="Parameter information for the skew-normal distribution  -->
-<!--   UPL calculation for new source chemical X, subcategory A.", -->
-<!--              col.names=c('Parameter', -->
-<!--                          'Prior', -->
-<!--                          'Chain 1 initial value', -->
-<!--                          'Chain 2 initial value', -->
-<!--                          'Chain 3 initial value', -->
-<!--                          'Gelman-Rubin diagnostic', -->
-<!--                          'Converged?')) -->
-<!-- ``` -->
-
-<!-- The parameter tables for the other distributions not used in the example are commented-out below -->
-
-<!-- The normal distribution parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence that were used in the *chemical X* *subcategory A* existing source UPL calculation are listed below. -->
-<!-- ```{r normal_params, appendix = TRUE} -->
-<!-- if (is.null(maxY)){ -->
-<!--   maxY = 3 * max(dat_top_exist$emissions) -->
-<!-- } -->
-<!-- sdY =  sd(dat_top_exist$emissions) -->
-<!-- meanY = mean(dat_top_exist$emissions) -->
-<!-- parameter = c('Mean', 'Standard deviation') -->
-<!-- prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'), -->
-<!--           paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',  -->
-<!--                  signif(1000 * sdY, 3), ')')) -->
-<!-- chain1 = c(signif(meanY, 3), signif(sdY, 3)) -->
-<!-- chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3)) -->
-<!-- chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3)) -->
-<!-- diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), -->
-<!--                 signif(results$conv_output$gelman_diag[2], 3)) -->
-<!-- convYN = c(results$conv_output$convYN[1], -->
-<!--            results$conv_output$convYN[2]) -->
-<!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
-<!--                     diagnostics, convYN) -->
-<!-- gamm_exist %>% knitr::kable( -->
-<!--   caption="Parameter information for the normal distribution  -->
-<!--   UPL calculation for existing source chemical X, subcategory A.", -->
-<!--              col.names=c('Parameter', -->
-<!--                          'Prior', -->
-<!--                          'Chain 1 initial value', -->
-<!--                          'Chain 2 initial value', -->
-<!--                          'Chain 3 initial value', -->
-<!--                          'Gelman-Rubin diagnostic', -->
-<!--                          'Converged?')) -->
-<!-- ``` -->
-
-<!-- The log-normal distribution parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence that were used in the *chemical X* *subcategory A* existing source UPL calculation are listed below. -->
-<!-- ```{r lognormal_params, appendix = TRUE} -->
-<!-- if (is.null(maxY)){ -->
-<!--  maxY = 3 * max(dat_top_exist$emissions) -->
-<!-- } -->
-<!-- sdY =  sd(dat_top_exist$ln_emiss) -->
-<!-- meanY = mean(dat_top_exist$ln_emiss) -->
-<!-- parameter = c('Mean', 'Standard deviation') -->
-<!-- prior = c(paste0('~dnorm (', meanY, ', ', signif(0.001 / (sdY^2), 3), ')'), -->
-<!--          paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',  -->
-<!--                 signif(1000 * sdY, 3), ')')) -->
-<!-- chain1 = c(signif(meanY, 3), signif(sdY, 3)) -->
-<!-- chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3)) -->
-<!-- chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3)) -->
-<!-- diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), -->
-<!--                signif(results$conv_output$gelman_diag[2], 3)) -->
-<!-- convYN = c(results$conv_output$convYN[1], -->
-<!--           results$conv_output$convYN[2]) -->
-<!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
-<!--                    diagnostics, convYN) -->
-<!-- gamm_exist %>% knitr::kable( -->
-<!--   caption="Parameter information for the log-normal distribution  -->
-<!--   UPL calculation for existing source chemical X, subcategory A.", -->
-<!--             col.names=c('Parameter', -->
-<!--                         'Prior', -->
-<!--                         'Chain 1 initial value', -->
-<!--                         'Chain 2 initial value', -->
-<!--                         'Chain 3 initial value', -->
-<!--                         'Gelman-Rubin diagnostic', -->
-<!--                         'Converged?')) -->
-<!-- ``` -->
-
-<!-- The beta distribution parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence that were used in the *chemical X* *subcategory A* existing source UPL calculation are listed below. -->
-<!-- ```{r beta_params, appendix = TRUE} -->
-<!-- if (is.null(maxY)){ -->
-<!--   maxY = 3 * max(dat_top_exist$emissions) -->
-<!-- } -->
-<!-- sdY =  sd(dat_top_exist$emissions) -->
-<!-- meanY = mean(dat_top_exist$emissions) -->
-<!-- alpha = meanY^2 / sdY^2 - meanY^3 / sdY^2 - meanY -->
-<!-- beta = meanY - 1 + meanY / sdY^2 + meanY^3 / sdY^2 - 2 * meanY^2 / sdY^2 -->
-
-<!-- parameter = c('Alpha', 'Beta') -->
-<!-- prior = c(paste0('~dunif (-1, ', signif((0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)  -->
-<!--                                         * 1.25, 3), ')'), -->
-<!--           paste0('~dunif (-1, ', signif((0.25 - 1 + 0.25 / sdY^2 +  -->
-<!--                                            0.25^3 / sdY^2 - 2 * 0.25^2 / sdY^2)  -->
-<!--                                         * 1.25, 3), ')')) -->
-<!-- chain1 = c(signif(alpha, 3), signif(beta, 3)) -->
-<!-- chain2 = c(signif(1.5 * alpha, 3), signif(0.5 * beta, 3)) -->
-<!-- chain3 = c(signif(0.5 * alpha, 3), signif(1.5 * beta, 3)) -->
-<!-- diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), -->
-<!--                 signif(results$conv_output$gelman_diag[2], 3)) -->
-<!-- convYN = c(results$conv_output$convYN[1], -->
-<!--            results$conv_output$convYN[2]) -->
-<!-- gamm_exist = tibble(parameter, prior, chain1, chain2, chain3, -->
-<!--                     diagnostics, convYN) -->
-<!-- gamm_exist %>% knitr::kable( -->
-<!--   caption="Parameter information for the beta distribution  -->
-<!--   UPL calculation for existing source chemical X, subcategory A.", -->
-<!--              col.names=c('Parameter', -->
-<!--                          'Prior', -->
-<!--                          'Chain 1 initial value', -->
-<!--                          'Chain 2 initial value', -->
-<!--                          'Chain 3 initial value', -->
-<!--                          'Gelman-Rubin diagnostic', -->
-<!--                          'Converged?')) -->
-<!-- ``` -->
 
 ## Adjustment for Below Detection Level Emissions Data 
 
@@ -551,155 +305,69 @@ table1%>%knitr::kable(
 
 *describe any data that was excluded here and why*
 
-```{r cond1, child = 'App_report_children/conditional5.Rmd', eval = zero_warn}
+```{r, echo = FALSE, results = 'asis'}
+for (i in 1:length(env_list)){
+res=knit_child('Example_report_children/zero_warn.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
 ```
 
-Tables with the full data sets used for each existing source MACT floor analysis can be found listed in Appendix A. Tables with the full data sets used for each new source MACT floor analysis can be found listed in Appendix B.
 
-<!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
+Tables with the full data sets used for each MACT floor analysis can be found listed in Appendix A. 
 
-The final data set for the *chemical X* existing source MACT floor for *subcategory A* included `r nrow(dat_top_exist)` test runs from `r length(unique(dat_top_exist$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(dat_top_new$emissions), digits = 4)` from `r nrow(dat_top_new)` test runs. 
-
-```{r plot1, echo=FALSE, eval=source_fig, appendix = TRUE, results=FALSE, fig.align = "center", fig.height=4, fig.cap="Observation density of emissions by source type. Source averages are indicated by vertical lines."}
-ggplot(data = dat_top_exist, aes(emissions, fill = sources))+
-          geom_density(alpha = 0.5, bounds = c(0, Inf))+
-          ylab("Density")+xlab("Chemical X emissions (units)")+
-          ggtitle("Subcategory A top sources test run densities")+
-          multi_source_theme()+labs(fill = 'Top sources', 
-                                    color = 'Top sources')+
-          geom_vline(aes(xintercept = means, color = sources),
-             data = dat_topmeans_exist, linewidth = 1)+
-          guides(fill = guide_legend(nrow = 2, byrow = TRUE),
-                color = guide_legend(nrow = 2, byrow = TRUE))+
-          scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
-          scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
-          coord_cartesian(clip = 'off')+
-          geom_rug(sides = 'b', aes(x = emissions, color = sources), 
-                   data = dat_top_exist, alpha = 0.5, outside = TRUE)
+```{r, echo = FALSE, results = 'asis'}
+for (i in 1:length(env_list)){
+res=knit_child('Example_report_children/Source_variance.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
 ```
-
-<!-- If you used non-default options in obs_density() then you will need to alter the text below -->
-
-Figures with density plots of emission test run data were created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `gamma` kernel type, a zero lower bound, a bandwidth of $\sigma n^{-2/5}$ where $\sigma$ is the emission value standard deviation and $n$ is the number of runs. For further details see the `R` code in Appendix C. 
 
 \newpage
 ## MACT Floor Analysis Results
 
-<!-- Repeat the section below for each HAP or subcategory that you want a figure and UPL calculation for -->
-
-### Existing Source *Chemical X* in *Subcategory A*
-
-The distribution that best represents the existing source data set for *chemical X* in *subcategory A* is the `r distribution_ex` distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` *(insert measurement units)*. The `r distribution_ex` distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(dat_top_exist)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
-```{r plot2, echo=FALSE, fig.dim = c(5,4), appendix = TRUE, fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the existing source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
-ggplot()+
-  geom_line(data = results$pred_pdf_dat, size = 0.75,
-            aes(y = ydens, x = x_hat, color = 'a'))+
-  geom_area(data = results$pred_pdf_dat, alpha = 0.25,
-            aes(y = ydens, x = x_hat, fill = 'a'))+
-  geom_point(aes(y = ydens, x = emissions), data = results$obs_pdf_dat,
-             size = 3, alpha = 0.5, shape = 19, color = 'black')+
-  geom_errorbar(data=results$obs_pdf_dat,alpha=0.5,
-                aes(ymin=low,ymax=up,x=emissions,color='b'))+
-  geom_point(data=results$obs_pdf_dat,
-             aes(x=emissions,y=med,fill='b'),
-             size=3,alpha=0.5,shape=21,color='black')+
-  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
-               data = results$pred_pdf_dat, size = 0.75, linetype = 2)+
-  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
-            data = results$pred_pdf_dat)+
-  ylab("Density")+xlab("Chemical X emissions (units)")+
-  ggtitle("Subcategory A existing source\nMACT floor test run population")+
-  pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_top_exist$emissions)), 
-                 color = 'a'), linewidth = 1, linetype = 1)+
-  geom_vline(aes(xintercept = results$fit_table$UPL, color = 'b'), 
-             linewidth = 1, linetype = 2)+
-  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
-  coord_cartesian(clip = 'off')+
-  labs(color = 'Distribution:', fill = 'Distribution:')+
-  geom_rug(sides = 'b', aes(x = emissions), data = results$obs_pdf_dat,
-           alpha = 0.5, outside = TRUE, color = 'black')+
-  scale_color_manual(values = c('black', '#FF7F00'),
-                     labels = c('Observations', distribution_ex))+
-  scale_fill_manual(values = c('black', '#FF7F00'),
-                    labels = c('Observations', distribution_ex))
-```
-The `r distribution_ex` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
-
-```{r conv_figs1, results = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for gamma parameters for existing source MACT floor analysis for chemical X in subcategory A."}
-part1 = setup_likelihood(distribution = distribution_ex, data = dat_top_exist)
-part2 = run_likelihood(model_input = part1, future_runs = params$future_runs, 
-                       xvals = xvals, maxY = maxY)
-part3 = converge_figs(distribution = distribution_ex, jags_model_run = part2)
-part3
+```{r, echo = FALSE, results = 'asis'}
+for (i in 1:length(env_list)){
+res = knit_child('Example_report_children/Bayes_Analysis_results.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
 ```
 
-### New Source *Chemical X* in *Subcategory A*
 
-The distribution that best represents the new source data set for *chemical X* in *subcategory A* is the `r distribution_new` distribution, with a corresponding UPL of `r signif(results2$fit_table$UPL, digits = 4)` *(insert measurement units)*. The `r distribution_new` distribution was the best fit distribution with a $SSE$ of `r signif(results2$fit_table$SSE, digits = 4)`, `r results2$fit_table$Obs_in_CI` out of `r nrow(dat_top_new)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results2$fit_table$pdf_integral, digits = 2)`.
-
-```{r plot3, echo = FALSE, fig.dim = c(5, 4), appendix = TRUE, fig.align = "center", fig.cap = "Observation density of chemical X emissions for the overall population of test runs for the new source MACT floor for subcateogry A. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored blue The average of the emission test runs is the vertical black line and the UPL result is the vertical blue line."}
-ggplot()+
-  geom_line(data = results2$pred_pdf_dat, size = 0.75,
-            aes(y = ydens, x = x_hat, color = 'a'))+
-  geom_area(data = results2$pred_pdf_dat, alpha = 0.25,
-            aes(y = ydens, x = x_hat, fill = 'a'))+
-  geom_point(aes(y = ydens, x = emissions), data = results2$obs_pdf_dat,
-             size = 3, alpha = 0.5, shape = 19, color = 'black')+
-  geom_errorbar(data=results2$obs_pdf_dat,alpha=0.5,
-                aes(ymin=low,ymax=up,x=emissions,color='b'))+
-  geom_point(data=results2$obs_pdf_dat,
-             aes(x=emissions,y=med,fill='b'),
-             size=3,alpha=0.5,shape=21,color='black')+
-  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
-               data = results2$pred_pdf_dat, size = 0.75, linetype = 2)+
-  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
-            data = results2$pred_pdf_dat)+
-  ylab("Density")+xlab("Chemical X emissions (units)")+
-  ggtitle("Subcategory A new source\nMACT floor test run population")+
-  pop_distr_theme()+
-  geom_vline(aes(xintercept = (mean(dat_top_new$emissions)), 
-                 color = 'a'), linewidth = 1, linetype = 1)+
-  geom_vline(aes(xintercept = results2$fit_table$UPL, color = 'b'), 
-             linewidth = 1, linetype = 2)+
-  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
-  coord_cartesian(clip = 'off')+
-  labs(color = 'Distribution:', fill = 'Distribution:')+
-  geom_rug(sides = 'b', aes(x = emissions), data = results2$obs_pdf_dat,
-           alpha = 0.5, outside = TRUE, color = 'black')+
-  scale_color_manual(values = c('black', '#377EB8'),
-                     labels = c('Observations', distribution_new))+
-  scale_fill_manual(values = c('black', '#377EB8'),
-                    labels = c('Observations', distribution_new))
-```
-
-The `r distribution_new` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
-```{r conv_figs2, appendix = TRUE, results = FALSE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for skew-normal parameters for new source MACT floor analysis for chemical X in subcategory A."}
-part1 = setup_likelihood(distribution = distribution_new, data = dat_top_new)
-part2 = run_likelihood(model_input = part1, future_runs = params$future_runs, 
-                       xvals = xvals_new, maxY = maxY_new)
-part3 = converge_figs(distribution = distribution_ex, jags_model_run = part2)
-part3
-```
 ### UPL Calculation Summary
 
-<!-- If you have multiple HAP emissions or subcategories, consider combining into one table summarizing the UPL -->
-
-The table below includes all UPL calculations for `r params$source` existing and new source MACT floor analyses using a significance of `r (params$significance)*100`\% and `r params$future_runs` future test runs.
+The table below includes all UPL calculations for `r params$source` MACT floor analyses.
 
 ```{r UPL_table, out.width = "80%", appendix = TRUE}
-dat_UPL = tibble(HAP = c("Chemical X"), 
-                 Subcategory = c("Type A"), 
-                 Existing = c(signif(results$fit_table$UPL,4)), 
-                 New = c(signif(results2$fit_table$UPL, 4)))
+UPL_list = c()
+for (i in 1:length(env_list)){
+  UPL_temp = signif(env_list[[i]]$results$fit_table$UPL, digits = 4)
+  UPL_list = c(UPL_list, UPL_temp)
+}
+dat_UPL = tibble(HAP = HAP_list, 
+                 Subcategory = subcat_list, 
+                 Level = subcat_levels,
+                 Type = type_list,
+                 UPL = UPL_list,
+                 Sig = sig_list,
+                 Runs = future_run_list)
 dat_UPL %>% knitr::kable(
-  caption = "Upper Predictive Limit (UPL) results for existing and new source 
-  MACT floors in (measurement units)", digits = 12, 
-                         col.names = c("HAP", "Subcategory", 
-                                       "Existing source UPL", 
-                                       "New source UPL"))
+  caption = "Upper Predictive Limit (UPL) results for MACT floors in 
+  (measurement units)", escape = FALSE,
+  col.names = c("HAP", "Subcategory<br/>Name", "Subcategory<br/>Level", "Source Type", 
+                "UPL", "Significance", "No. Future<br/>Runs"))
+```
+
+### Settings used in Bayesian MCMC
+
+```{r, echo = FALSE, results = 'asis'}
+for (i in 1:length(env_list)){
+res=knit_child('Example_report_children/Bayes_MCMC_settings.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
 ```
 
 \newpage
@@ -712,33 +380,18 @@ Hobbs, N. Thompson and Mevin B. Hooten. 2015. "Bayesian Models: A statistical Pr
 Renault O. & O. Scaillet. On the way to recovery: A parametric bias free estimation of recovery rate densities. 2004. Journal of Banking and Finance. 28:12 p. 2915-2931.
 
 \newpage
-## Appendix A: Existing Source Data Tables
+## Appendix A: `r params$source` MACT Floor Data Tables
 
-<!-- Add more tables for additional HAP or subcategories -->
-
-`r params$source` existing source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
-
-```{r dat_EG, echo = FALSE, appendix = TRUE}
-dat_top_exist %>% knitr::kable(
-  caption = "Top performering source emissions data used in existing source 
-  UPL calculations.", digits = 12, col.names = names(dat_top_exist))
+```{r, echo = FALSE, results = 'asis'}
+for (i in 1:length(env_list)){
+res = knit_child('Example_report_children/Appendix_data.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
 ```
 
 \newpage
-## Appendix B: New source Data Tables
-
-<!-- Add more tables for additional HAP or subcategories -->
-
-`r params$source` new source MACT floor analysis data set for HAP *chemical X* in *subcategory A*:
-
-```{r dat_NSPS, echo = FALSE, appendix = TRUE}
-dat_top_new %>% knitr::kable(
-  caption = "Best performering source emissions data used in new source 
-  UPL calculations.", digits = 12, col.names = names(dat_top_new))
-```
-
-\newpage
-## Appendix C: `R` Function Code
+## Appendix B: `R` Function Code
 
 ### Disclaimer
 
@@ -799,13 +452,18 @@ Bayesian_UPL
 obs_density
 ```  
 
-### JAGS Model Scripts
+### make_environment()
 ```{r function_docs12, results = TRUE, message = TRUE, echo = FALSE}
+make_environment
+```  
+
+### JAGS Model Scripts
+```{r function_docs13, results = TRUE, message = TRUE, echo = FALSE}
 readLines("./../JAGS/Emission_beta_JAGS.R")
 readLines("./../JAGS/Emission_gamma_JAGS.R")
 readLines("./../JAGS/Emission_lnorm_JAGS.R")
 readLines("./../JAGS/Emission_normal_JAGS.R")
-readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
+readLines("./../JAGS/Emission_skewed_JAGS.R")
 readLines("./../JAGS/Manual_emission_beta_JAGS.R")
 readLines("./../JAGS/Manual_emission_gamma_JAGS.R")
 readLines("./../JAGS/Manual_emission_lnorm_JAGS.R")
@@ -814,14 +472,42 @@ readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
 ```
 
 \newpage
-## Appendix D: System and package versions
+## Appendix C: System and package versions
 ```{r versions, results = TRUE, echo = FALSE}
 sessionInfo()
 ```
 
 \newpage
-## Appendix E: Rmd Code Chunks
+## Appendix D: Rmd Code Chunks
+
+### Main document code chunks:
 
 ```{r ref.label = knitr::all_labels(appendix == TRUE), echo = TRUE, eval = FALSE}
 ```
 
+### Child document code chunks:
+
+Analysis_template.Rmd
+```{embed, file = "Example_report_children/Bayes_Analysis_template.Rmd", echo = TRUE}
+
+```
+
+Bayes_MCMC_settings.Rmd
+```{embed, file = "Example_report_children/Bayes_MCMC_settings.Rmd", echo = TRUE}
+
+```
+
+Source_variance.Rmd
+```{embed, file = "Example_report_children/Source_variance.Rmd", echo = TRUE}
+
+```
+
+Analysis_results.Rmd
+```{embed, file = "Example_report_children/Bayes_Analysis_results.Rmd", echo = TRUE}
+
+```
+
+Appendix_data.Rmd
+```{embed, file = "Example_report_children/Appendix_data.Rmd", echo = TRUE}
+
+```
