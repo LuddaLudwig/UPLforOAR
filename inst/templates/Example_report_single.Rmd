@@ -22,7 +22,7 @@ params:
   national_N:
     label: "Number of sources nation-wide (for CAA 129 only)"
     input: numeric
-    value: NULL
+    value: NA
   future_runs: 
     label: "Number of future test runs"
     value: 3

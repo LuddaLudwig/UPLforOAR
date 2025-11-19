@@ -24,7 +24,7 @@ params:
     choices: [112, 129]
   national_N:
     label: "Number of sources nation-wide (for CAA 129 only)"
-    value: NULL
+    value: NA
     input: numeric
 ---
 <!-- Change the document title and authors as needed -->
@@ -105,6 +105,7 @@ subcat_levels = c('A', 'B', 'B', NA)
 type_list = c('Existing', 'Existing', 'New', 'Existing')
 HAP_list = c('Chemical X', 'Chemical X', 'Chemical X', 'Chemical Y')
 emiss_list = c('chemX', 'chemX', 'chemX', 'chemY')
+meas_unit_list = c('ppm', 'ppm', 'ppm', 'mg/m3/s')
 sources = 1
 
 # Note that HAP_list are the names as we want them in text or labels
@@ -128,6 +129,7 @@ for (i in 1:length(HAP_list)){
                               subcat_name = subcat_list[i], 
                               subcat_level = subcat_levels[i],
                               type = type_list[i], 
+                              meas_unit = meas_unit_list[i],
                               CAA_section = params$CAA_section,
                               national_N = params$national_N,
                               future_runs = future_run_list[i], 
