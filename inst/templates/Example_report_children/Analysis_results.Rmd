@@ -2,7 +2,7 @@
 
 The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` is the `r distribution_result` distribution, with a corresponding UPL of `r signif(UPL, digits = 4)` *(insert measurement units)*. 
 
-```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of `r HAP`  emissions for the overall population of test runs for the `r type` source MACT floor `r subcat_text`. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
+```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of emissions for overall population of test runs. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
 x_hat = seq(0, 3*max(df$emissions), length.out = 1024)
 obs_dens_results = obs_density(df, xvals = x_hat,
                                emissions = 'emissions')

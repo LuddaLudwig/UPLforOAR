@@ -1,6 +1,6 @@
 The final data set for the `r HAP` `r type` source MACT floor `r subcat_text` included `r nrow(df)` test runs from `r length(unique(df$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(df$emissions), digits = 4)` from `r nrow(df)` test runs. 
 
-```{r, echo = FALSE, fig.align = "center", fig.height = 4, appendix = FALSE, eval = source_fig, fig.cap = "Observation density of `r HAP` emissions by source type. Source averages are indicated by vertical lines."}
+```{r, echo = FALSE, fig.align = "center", fig.height = 4, appendix = FALSE, eval = source_fig, fig.cap = "Observation density of emissions by source type. Source averages are indicated by vertical lines."}
 if (!is.na(subcat_name)){
   ggplot(data = df, aes(emissions, fill = sources))+
           geom_density(alpha = 0.5, bounds = c(0, Inf))+
