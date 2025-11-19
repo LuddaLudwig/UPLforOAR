@@ -127,7 +127,7 @@ but there is not enough information to definitely say this is much more likely
 than any other value searched.  
 ```{r figure2, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE, fig.cap = "Example of bad convergence where posterior is too flat."}
 dat_emiss2 = read.csv("Example_data1.csv")
-small_dat = MACT_new(dat_emiss2)
+small_dat = MACT_new(dat_emiss2, emissions = 'emissions', sources = 'sources')
 part1 = setup_likelihood(distribution = "Normal", data = small_dat, 
                          emissions = 'emissions')
 part2 = run_likelihood(model_input = part1)
@@ -203,11 +203,12 @@ This is expected given how little information we actually get from 3 observation
 The ability to quantify this uncertainty is a nice outcome of using a Bayesian approach.
 ```{r manual, echo = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", results = FALSE}
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
-                               emissions = 'emissions',
-                               manual_prior = TRUE,
+                               emissions = 'emissions', kernel = 'gaussian1',
+                               manual_prior = TRUE, bw = 'cv.ls',
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
 result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
-                                 emissions = 'emissions')
+                                 emissions = 'emissions', kernel = 'gaussian1',
+                                 bw = 'cv.ls')
 ```
 ```{r figure4, echo = FALSE, fig.height = 5, fig.width = 4, fig.align = "center", fig.cap = "Example of two Normal distributions fit to the same 3 points of data, where one was more informative using slightly smaller bounds on prior distributions, and the other was completely uninformative and did not converge well."}
 result_uninformed$obs_pdf_dat$distr = rep("Uninformed", 
