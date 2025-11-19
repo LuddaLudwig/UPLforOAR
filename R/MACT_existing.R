@@ -9,12 +9,16 @@
 #' @returns Data set (tibble) of the top 5 or 12 percent of sources, depending on the
 #' number of sources, to be used in UPL calculations for Maximum Achievable
 #' Control Technology (MACT) floor analysis for Existing Source Guidelines.
+#' @param national_N For Clean Air Act section 129 (`CAA_section = 129`), the
+#' additional argument providing the total number of sources nation-wide
+#' regardless of whether or not they contributed emissions data is required.
 #' @description
 #' Ranks the sources by their average emission from best to worst, then selects
 #' either the top 5 or top 12 percent depending on the applicable CAA section
 #' and number of sources with data available.
 #' @export
-MACT_existing = function(data, emissions, sources, CAA_section = 112){
+MACT_existing = function(data, emissions, sources, CAA_section = 112,
+                         national_N = NULL){
   data_temp = tibble::tibble(emissions = data[[emissions]],
                         sources = data[[sources]])
   if (!is.numeric(data_temp$emissions)){
@@ -34,10 +38,16 @@ MACT_existing = function(data, emissions, sources, CAA_section = 112){
                                .by = 'sources')
   n_sources = length(unique(data_temp$sources))
   if (CAA_section == 129){
-    n_topsources = ceiling(0.12 * n_sources)
-    set.seed(1)
-    source_index = sample.int(n_sources, n_topsources)
-    dat_top = data_temp[source_index,]
+    if (is.null(national_N)){
+      stop("Must provide total number of sources as national_N")
+    }
+    n_topsources = ceiling(0.12 * national_N)
+    if (n_sources < n_topsources){
+      n_topsources = n_sources
+    }
+    top_list = dat_means[order(dat_means$means, decreasing = F), ]
+    top_list = top_list$sources[1:n_topsources]
+    dat_top = subset(data_temp, data_temp$sources%in%top_list)
   } else if (CAA_section == 112){
     if (n_sources >= 30){
       n_topsources = ceiling(0.12 * n_sources)
