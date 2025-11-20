@@ -52,7 +52,7 @@ and number of sources with data available.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MACT_existing</span><span class="op">(</span><span class="va">data</span>, <span class="va">emissions</span>, <span class="va">sources</span>, CAA_section <span class="op">=</span> <span class="fl">112</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MACT_existing</span><span class="op">(</span><span class="va">data</span>, <span class="va">emissions</span>, <span class="va">sources</span>, CAA_section <span class="op">=</span> <span class="fl">112</span>, national_N <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,6 +76,12 @@ designation, either a character or factor.</p></dd>
 
 <dt id="arg-caa-section">CAA_section<a class="anchor" aria-label="anchor" href="#arg-caa-section"></a></dt>
 <dd><p>Applicable Clean Air Act section, either 112 or 129</p></dd>
+
+
+<dt id="arg-national-n">national_N<a class="anchor" aria-label="anchor" href="#arg-national-n"></a></dt>
+<dd><p>For Clean Air Act section 129 (<code>CAA_section = 129</code>), the
+additional argument providing the total number of sources nation-wide
+regardless of whether or not they contributed emissions data is required.</p></dd>
 
 </dl></div>
     <div class="section level2">

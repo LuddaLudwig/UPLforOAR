@@ -16,8 +16,11 @@ make_environment(
   subcat_level = NA,
   type = c("New", "Existing", "As-is"),
   CAA_section = 112,
+  national_N = NA,
+  meas_unit,
   future_runs = 3,
-  significance = 0.99
+  significance = 0.99,
+  ...
 )
 ```
 
@@ -71,7 +74,17 @@ make_environment(
 
 - CAA_section:
 
-  Applicable Clean Air Act section, either 112 or 129
+  Applicable Clean Air Act section, either 112 or 129.
+
+- national_N:
+
+  For Clean Air Act section 129 (`CAA_section = 129`), the additional
+  argument providing the total number of sources nation-wide regardless
+  of whether or not they contributed emissions data is required.
+
+- meas_unit:
+
+  String of measurment units to be used in text and figure axes labels.
 
 - future_runs:
 
@@ -81,6 +94,15 @@ make_environment(
 - significance:
 
   Level of significance from 0 to 1, the default is `0.99`.
+
+- ...:
+
+  Other arguments passed on to
+  [`Bayesian_UPL()`](https://luddaludwig.github.io/UPLforOAR/reference/Bayesian_UPL.md)
+  or
+  [`obs_density()`](https://luddaludwig.github.io/UPLforOAR/reference/obs_density.md).
+  Check the child .Rmd to figure match the arguments to expected name in
+  template.
 
 ## Value
 

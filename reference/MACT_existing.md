@@ -7,7 +7,7 @@ CAA section and number of sources with data available.
 ## Usage
 
 ``` r
-MACT_existing(data, emissions, sources, CAA_section = 112)
+MACT_existing(data, emissions, sources, CAA_section = 112, national_N = NA)
 ```
 
 ## Arguments
@@ -30,6 +30,12 @@ MACT_existing(data, emissions, sources, CAA_section = 112)
 - CAA_section:
 
   Applicable Clean Air Act section, either 112 or 129
+
+- national_N:
+
+  For Clean Air Act section 129 (`CAA_section = 129`), the additional
+  argument providing the total number of sources nation-wide regardless
+  of whether or not they contributed emissions data is required.
 
 ## Value
 

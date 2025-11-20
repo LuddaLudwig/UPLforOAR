@@ -105,11 +105,7 @@ has not converged well. The histograms on the right show the posterior
 is too flat. Note that there is a slight peak for the `emission_mean`
 posterior around 0.01, which is indeed the average of the 3 points, but
 there is not enough information to definitely say this is much more
-likely than any other value searched.
-
-    #> Error: argument "emissions" is missing, with no default
-    #> Error: object 'small_dat' not found
-    #> Error: No matches found for the following variable name(s): emission_mean
+likely than any other value searched.  
 
 ![Example of bad convergence where posterior is too
 flat.](Convergence-and-Priors_files/figure-html/figure2-1.png)
@@ -195,25 +191,23 @@ of using a Bayesian approach.
 
 ``` r
 result_informed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
-                               emissions = 'emissions',
-                               manual_prior = TRUE,
+                               emissions = 'emissions', kernel = 'gaussian1',
+                               manual_prior = TRUE, bw = 'cv.ls',
                                prior_list = c(0.0001, 0.01, 0.005, 0.03))
-#> Error: object 'small_dat' not found
 result_uninformed = Bayesian_UPL(distr_list = c("Normal"), data = small_dat,
-                                 emissions = 'emissions')
-#> Error: object 'small_dat' not found
+                                 emissions = 'emissions', kernel = 'gaussian1',
+                                 bw = 'cv.ls')
 ```
 
-    #> Error: object 'result_uninformed' not found
-    #> Error: object 'result_uninformed' not found
-    #> Error: object 'result_informed' not found
-    #> Error: object 'result_informed' not found
-    #> Error: object 'result_informed' not found
-    #> Error: object 'result_informed' not found
-    #> Error: object 'result_uninformed' not found
-    #> Error: object 'result_uninformed' not found
-    #> Error: object 'result_uninformed' not found
-    #> Error: object 'combined_pdf' not found
+![Example of two Normal distributions fit to the same 3 points of data,
+where one was more informative using slightly smaller bounds on prior
+distributions, and the other was completely uninformative and did not
+converge well.](Convergence-and-Priors_files/figure-html/figure4-1.png)
+
+Example of two Normal distributions fit to the same 3 points of data,
+where one was more informative using slightly smaller bounds on prior
+distributions, and the other was completely uninformative and did not
+converge well.
 
 We can look at how the convergence figures are different in the case
 where we provided slightly more prior information. Note that the
@@ -223,8 +217,6 @@ provided the prior distributions manually, they are still considered to
 be uninformative. We have restricted the parameter space with lower and
 upper bounds, but it is still a wide accommodation, and within that all
 parameter outcomes are equally likely before we consider the data.
-
-    #> Error: object 'small_dat' not found
 
 ![Improved convergence of parameters by providing slightly more
 restrictive bounds as
