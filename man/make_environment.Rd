@@ -61,7 +61,8 @@ is \code{3} since compliance uses 1 test average of 3 runs.}
 
 \item{significance}{Level of significance from 0 to 1, the default is \code{0.99}.}
 
-\item{...}{Other arguments passed on to \code{\link[=Bayesian_UPL]{Bayesian_UPL()}}.}
+\item{...}{Other arguments passed on to \code{\link[=Bayesian_UPL]{Bayesian_UPL()}} or \code{\link[=obs_density]{obs_density()}}.
+Check the child .Rmd to figure match the arguments to expected name in template.}
 }
 \value{
 A list of environments with length equal to the number of UPL

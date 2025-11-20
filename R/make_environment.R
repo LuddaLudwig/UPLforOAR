@@ -34,7 +34,8 @@
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
-#' @param ... Other arguments passed on to [Bayesian_UPL()].
+#' @param ... Other arguments passed on to [Bayesian_UPL()] or [obs_density()].
+#' Check the child .Rmd to figure match the arguments to expected name in template.
 make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
                             subcat_level = NA, type = c('New', 'Existing', 'As-is'),
                             CAA_section = 112, national_N = NA, meas_unit,
