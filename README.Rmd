@@ -95,9 +95,10 @@ This example uses Hg emissions data from the recent [EPA rule-making](https://ww
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. This 
 data set contains a lot of test report information, but only columns for 
 `emissions` and `sources` are needed for the MACT floor UPL analysis. The 
-`emissions` and `sources` need to be named such explicitly. The emissions 
-should all be in consistent units, and the sources should be unique at the 
-unit-level (e.g. a single boiler), not including sub-categories. 
+`emissions` and `sources` need to be referred to by their variable name or 
+column position in the data set. The emissions should all be in consistent
+units, and the sources should be unique at the unit-level (e.g. a single 
+boiler), not including sub-categories. 
 
 ```{r example, echo=TRUE}
 library(UPLforOAR)
@@ -125,7 +126,7 @@ knitr::kable(dat_exist_avg %>% mutate(across(c(2), ~signif(., digits = 4))) %>% 
              col.names = c('Source', 'Average emission', 'No. of Tests'), digits = 12)
 ```
 
-Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded `r nrow(dat_exist)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_exist`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
+Since there were more than 30 sources in the emissions data, the top 12% were selected to represent the top sources. This yielded `r nrow(dat_exist)` sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is `r distribution_result_exist`, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.
 ```{r UPL, echo = TRUE}
 UPL1_exist = Normal_UPL(data = dat_exist,
                         emissions = 'emissions',

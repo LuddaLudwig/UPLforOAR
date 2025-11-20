@@ -13,7 +13,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![codecov](https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258)](https://codecov.io/gh/LuddaLudwig/UPLforOAR)
 [![R-CMD-check](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--12-green.svg)](/commits/main)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--11--20-green.svg)](/commits/main)
 <!-- badges: end -->
 
 The goal of `UPLforOAR` is to provide a set of functions for supporting
@@ -75,10 +75,10 @@ rule-making](https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132)
 NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units.
 This data set contains a lot of test report information, but only
 columns for `emissions` and `sources` are needed for the MACT floor UPL
-analysis. The `emissions` and `sources` need to be named such
-explicitly. The emissions should all be in consistent units, and the
-sources should be unique at the unit-level (e.g. a single boiler), not
-including sub-categories.
+analysis. The `emissions` and `sources` need to be referred to by their
+variable name or column position in the data set. The emissions should
+all be in consistent units, and the sources should be unique at the
+unit-level (e.g. a single boiler), not including sub-categories.
 
 ``` r
 library(UPLforOAR)
@@ -116,7 +116,7 @@ distribution_result_exist = distribution_type(data = dat_exist,
 Top 5 of 42 sources for existing source UPL calculation
 
 Since there were more than 30 sources in the emissions data, the top 12%
-were chosen to represent the top sources. This yielded 47 sources. The
+were selected to represent the top sources. This yielded 47 sources. The
 data included in this regulatory docket were test averages as opposed to
 individual runs. As such the number of future runs used in UPL
 calculations will be 1 instead of the default, an average of 3 runs. The
