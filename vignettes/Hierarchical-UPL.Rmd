@@ -1,0 +1,49 @@
+---
+title: "Hierarchical UPL"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hierarchical-UPL}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  error = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+library(htmltools)
+knitr::knit_hooks$set(imgcenter = function(before, options, envir){
+  if (before) {
+    HTML("<p align='center'>")
+  } else {
+    HTML("</p>")
+  }
+})
+```
+
+```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(UPLforOAR)
+library(matrixStats)
+library(np)
+library(sfsmisc)
+library(parallel)
+library(rjags)
+library(runjags)
+library(sn)
+library(patchwork)
+```
+
+## Introduction
+
+One of the benefits of using the Bayesian method for UPL calculations, is that there are many ways the basic application in `Bayesian_UPL()` can be expanded upon for complex situations that need more nuance. Hierarchical Bayesian modeling offers solutions to many situations that cannot be handled when using `Normal_UPL()`, `Lognormal_UPL()`, or `Skewed_UPL()` due to their restrictive assumptions. For example, the assumption that emission values were perfectly measured is often not valid, and we would like a method that can take into account measurement uncertainty. The hierarchical structure we can use with Bayesian methods can allow us to say that the *true* emission value is a latent, unobserved, state, but we can use a prior distribution to inform it with a mean and variance based on the observed measurement and its associated uncertainty. The *true* emission values then inform the likelihood distribution for the population of top performing source emissions. 
+
+Another assumption that is not always valid is that the emission test run values are all independent of one another. Typically, there are three runs within a test with some spacing of time between them to encourage independence, which might be minutes or hours depending on the type of measurement. Some sources might only have one test a year, or many within a year, or a much longer or shorter record of testing. 
