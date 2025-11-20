@@ -1,10 +1,39 @@
 ### `r type` Source `r HAP` `r subcat_text`
 
+```{r, eval = UPL_warn, echo = FALSE, results = 'asis'}
+cat(paste0("The ", HAP, " ", subcat_text," UPL calculated for the New source data set, ", signif(UPL_old, 3), " was larger than the UPL for the Existing source data set. Therefore, the Existing source UPL was used instead."))
+```
+
 The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` is the `r distribution_result` distribution, with a corresponding UPL of `r signif(UPL, digits = 4)` (`r meas_unit`). 
 
 ```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of emissions for overall population of test runs. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
-x_hat = seq(0, 3*max(df$emissions), length.out = 1024)
-obs_dens_results = obs_density(df, xvals = x_hat,
+if (!exists('xvals')){
+  xvals = NULL
+} else if (is.na(xvals)){
+  xvals = NULL
+}
+if (!exists('up')){
+  up = Inf
+} else if (is.na(up)){
+  up = Inf
+}
+if (!exists('low')){
+  low = 0
+} else if (is.na(low)){
+  low = 0
+}
+if (!exists('kernel')){
+  kernel = 'gamma'
+} else if (is.na(kernel)){
+  kernel = 'gamma'
+}
+if (!exists('bw')){
+  bw = NULL
+} else if (is.na(bw)){
+  bw = NULL
+}
+obs_dens_results = obs_density(df, xvals = xvals, low = low, up = up,
+                               bw = bw, kernel = kernel,
                                emissions = 'emissions')
 Obs_onPoint = obs_dens_results$Obs_onPoint
 obs_den_df = obs_dens_results$obs_den_df
@@ -80,4 +109,16 @@ if (!is.na(subcat_name)){
   scale_fill_manual(values = c('black', '#FF7F00'),
                     labels = c('Observations', distribution_result))
 }
+if (is.null(bw)){
+  bw_result = sd(df$emissions) * nrow(df)^(-2/5)
+} else if (is.character(bw)){
+  raw_dens = npuniden.boundary(X = df$emissions, Y = xvals,
+                               a = low, b = up, proper = TRUE,
+                               kertype = kernel, bwmethod=bw)
+  bw_result = raw_dens$h
+} else if (is.numeric(bw)){
+  bw_result = bw
+}
 ```
+
+The density plot above of emission test run data was created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `r kernel` kernel type, bounds of (`r c(low, up)`), and a bandwidth of `r signif(bw_result, 3)`. For further details see the `R` code in Appendix B.

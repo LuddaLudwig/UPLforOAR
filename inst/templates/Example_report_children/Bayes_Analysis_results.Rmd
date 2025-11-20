@@ -1,4 +1,9 @@
+
 ### `r type` Source `r HAP` `r subcat_text`
+
+```{r, eval = UPL_warn, echo = FALSE, results = 'asis'}
+cat(paste0("The ", HAP, " ", subcat_text," UPL calculated for the New source data set, ", signif(UPL_old, 3), " was larger than the UPL for the Existing source data set. Therefore, the Existing source UPL was used instead."))
+```
 
 The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` (`r meas_unit`). The `r distr` distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(df)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
 
@@ -100,7 +105,7 @@ cat(paste0("The ", distr, " distribution's parameters converged well, passing al
 ```{r, eval = conv_text, echo = FALSE, results = 'asis'}
 cat(paste0("The ", distr, " distribution's parameters did not converge, failing some Gelman-Rubin diagnostic checks. Check the figures below to see if MCMC chains (left figures below) are well-mixed and posterior distributions are approximately normal around the converged value (right figures below). Results from this distribution model should not be used until the convergence issues is corrected. Consider a more appropriate choice of distribution, or manually specifying better prior and likelihood limits."))
 ```
-```{r, echo = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for distribution parameters."}
+```{r, echo = FALSE, results = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for distribution parameters."}
 part1 = setup_likelihood(distribution = distr, data = df,
                          emissions = 'emissions', RNG.state = RNG.state,
                          manual_prior = manual_prior, random = FALSE,

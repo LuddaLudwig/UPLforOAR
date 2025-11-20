@@ -140,7 +140,7 @@ for (i in 1:length(env_list)){
 
 ## Introduction
 
-Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources governed by CAA Section 112(d)(3). 
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources for those governed by CAA Section 112(d)(3). 
 
 The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
 
@@ -186,7 +186,7 @@ For the existing-source MACT floors, selection of the MACT floor pool size (i.e.
 
 ### Probability distribution Selection
 
-The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using a `r (params$significance)*100`\% upper prediction limit (UPL) approach. Specifically, the MACT floor limit is an UPL calculated with the Student’s t-distribution using the `qt()` function in the `R` `stats` software. The Student’s t-distribution has also been used in other EPA rulemakings (e.g., NESHAP for Portland Cement, NSPS for Hospital/Medical/Infectious Waste Incinerators [HMIWI], NESHAP for Industrial, Commercial, and Institutional Boilers and Process Heaters) in accounting for variability and reflects the level of confidence. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
+The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using an upper prediction limit (UPL) approach. Specifically, the MACT floor limit is an UPL calculated with the Student’s t-distribution using the `qt()` function in the `R` `stats` software. The Student’s t-distribution has also been used in other EPA rulemakings (e.g., NESHAP for Portland Cement, NSPS for Hospital/Medical/Infectious Waste Incinerators [HMIWI], NESHAP for Industrial, Commercial, and Institutional Boilers and Process Heaters) in accounting for variability and reflects the level of confidence. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, with significance of $\alpha = 0.99$, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
 
 The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were distributed normally, log-normally, or skew-normally. Statistical tests of the kurtosis and skewness are then used to evaluate the normality assumption. The skewness statistic, $S$, characterizes the degree of asymmetry of a given data distribution, and is calculated according to the Fisher method as: 
 
@@ -214,21 +214,21 @@ For each data set to which the UPL was applied (i.e., the separate data sets for
 In the case of normally distributed data, the MACT floor limit is an UPL calculated as:
 
 $$
-UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+UPL = \overline{x} + t_{df,\alpha}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
 $$
-Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ quantile of the *t*-distribution with $df$ degrees of freedom. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
+Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~\alpha}$ is the quantile of the *t*-distribution with $df$ degrees of freedom at $\alpha$ significance. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
 
 ### UPL Calculation for Log-normal Data
 
 In the case of log-normally distributed data, the MACT floor limit is an UPL calculated from a log-normal approximation described in Bhaumik and Gibbons, 2004 using the Gram-Charlier Type-A Series expansion. 
 
 $$
-UPL= e^{\hat{\mu}+\frac{\hat{\sigma}^2}{2}}+\frac{z_{~`r params$significance`}}{m}\sqrt{m e^{2\hat{\mu}+\hat{\sigma}^{2}}(e^{\hat{\sigma}^{2}}-1)+m^{2}e^{2\hat{\mu}+\hat{\sigma}^{2}}\left(\frac{\hat{\sigma}^{2}}{n}+\frac{\hat{\sigma}^{4}}{2(n-1)}\right)}
+UPL= e^{\hat{\mu}+\frac{\hat{\sigma}^2}{2}}+\frac{z_{\alpha}}{m}\sqrt{m e^{2\hat{\mu}+\hat{\sigma}^{2}}(e^{\hat{\sigma}^{2}}-1)+m^{2}e^{2\hat{\mu}+\hat{\sigma}^{2}}\left(\frac{\hat{\sigma}^{2}}{n}+\frac{\hat{\sigma}^{4}}{2(n-1)}\right)}
 $$
-Where $n$ is the number of test runs, $m$ is the number of future test runs,  $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~`r params$significance`}$ is the `r (params$significance)*100`$^{th}$ percentile of the log-normal distribution estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
+Where $n$ is the number of test runs, $m$ is the number of future test runs,  $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~\alpha}$ is the percentile of the log-normal distribution at $\alpha$ significance estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
 
 $$
-`r params$significance` = \int_{0}^{z_{~`r params$significance`}}\left|\left(1-\frac{\sqrt{\beta_{1z}}}{6}(3z-z^3)+\frac{(\beta_{2z-3})(3-6z^2+z^4)}{24} \right)\phi(z)\right|
+\int_{0}^{z_{\alpha}}\left|\left(1-\frac{\sqrt{\beta_{1z}}}{6}(3z-z^3)+\frac{(\beta_{2z-3})(3-6z^2+z^4)}{24} \right)\phi(z)\right|
 $$
 Where $\phi(z)$ is the standard normal and $z$ is a sequence from $-5$ to $5$ by intervals of $0.101$. The coefficients are calculated following equation 25 as:
 
@@ -246,7 +246,7 @@ This UPL calculation was performed in `R` using the `Lognormal_UPL()` function f
 
 ### UPL Calculation for Skew-normal Data
 
-The same UPL equation as for normal data is used, but the *t*-statistic is substituted for a new *t*-statistic that is iteratively adjusted for the skewed distribution until it achieves `r (params$significance)*100`\% significance. To achieve this, an approximation of the incomplete beta function, is used: 
+The same UPL equation as for normal data is used, but the *t*-statistic is substituted for a new *t*-statistic that is iteratively adjusted for the skewed distribution until it achieves $\alpha$ level of significance. To achieve this, an approximation of the incomplete beta function, is used: 
 
 
 \begin{gather*}
@@ -280,16 +280,16 @@ I_{u_0}\left(a_3,~ b_3\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{24n} \right)-
 
 Where $S$ and $K$ are the skewness and kurtosis estimates defined earlier. 
 
-First, the updated probability is calculated using the original *t*-statistic after accounting for skewness and kurtosis. If this $P(t)$ is within 0.0001 of `r params$significance`, then the UPL is calculated with the original *t*-statistic as:
+First, the updated probability is calculated using the original *t*-statistic after accounting for skewness and kurtosis. If this $P(t)$ is within 0.0001 of $\alpha$, then the UPL is calculated with the original *t*-statistic as:
 
 $$
-UPL = \overline{x} + t_{df,~`r params$significance`}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+UPL = \overline{x} + t_{df,\alpha}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
 $$
 
-Which is the same as the UPL for normally distributed data. If, however, the updated probability $P(t)$ is more than 0.0001 different than `r params$significance`, then a list of 20,000 potential $t_{new}$ are proposed in increasing or decreasing increments of 0.0001 (depending on whether $P(t)$ is less than or greater than `r params$significance`). The first $t_{new}$ such that $P(t_{new})$ is within 0.0001 of `r params$significance` is selected as the new *t*-statistic to use in the UPL calculation for skew-normal data:
+Which is the same as the UPL for normally distributed data. If, however, the updated probability $P(t)$ is more than 0.0001 different than $\alpha$, then a list of 20,000 potential $t_{new}$ are proposed in increasing or decreasing increments of 0.0001 (depending on whether $P(t)$ is less than or greater than $\alpha$). The first $t_{new}$ such that $P(t_{new})$ is within 0.0001 of $\alpha$ is selected as the new *t*-statistic to use in the UPL calculation for skew-normal data:
 
 $$
-UPL = \overline{x} + t_{new}\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+UPL = \overline{x} + t_{new}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
 $$
 
 This UPL calculation was performed in `R` using the `Skewed_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
@@ -340,11 +340,42 @@ cat(unlist(res), sep = '\n')
 }
 ```
 
-Figures with density plots of emission test run data were created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `gamma` kernel type, a zero lower bound, a bandwidth of $\sigma n^{-2/5}$ where $\sigma$ is the emission value standard deviation and $n$ is the number of runs. For further details see the `R` code in Appendix B. 
-
 \newpage
 ## MACT Floor Analysis Results
 
+```{r check_pairs, echo = FALSE, appendix = TRUE}
+# check if any UPL results from new and existing source pairs need to be set 
+# such that the new UPL <= existing UPL.
+order_combn = combn(seq(1,length(HAP_list), by = 1), 2)
+HAP_combn = combn(HAP_list, 2)
+subcat_combn = combn(subcat_list, 2)
+level_combn = combn(subcat_levels, 2)
+meas_combn = combn(meas_unit_list, 2)
+
+check_HAPs = HAP_combn[1, ] == HAP_combn[2, ]
+check_subcat = subcat_combn[1, ] == subcat_combn[2, ]
+check_levels = level_combn[1, ] == level_combn[2, ]
+check_units = meas_combn[1, ] == meas_combn[2, ]
+for (i in 1:length(check_HAPs)){
+  if (all(check_HAPs[i], check_subcat[i], check_levels[i],check_units[i])){
+    pair1 = order_combn[1,i]
+    pair2 = order_combn[2,i]
+    type1 = env_list[[pair1]]$type
+    type2 = env_list[[pair2]]$type
+    UPL1 = env_list[[pair1]]$UPL
+    UPL2 = env_list[[pair2]]$UPL
+    if ((type1 == "New")&(UPL1 > UPL2)&(type2 == 'Existing')){
+      env_list[[pair1]]$UPL_old = UPL1
+      env_list[[pair1]]$UPL = UPL2
+      env_list[[pair1]]$UPL_warn = TRUE
+    } else if ((type2 == "New")&(UPL2 > UPL1)(type1 == 'Existing')){
+      env_list[[pair2]]$UPL_old = UPL2
+      env_list[[pair2]]$UPL = UPL1
+      env_list[[pair2]]$UPL_warn = TRUE
+    } 
+  }
+}
+```
 ```{r, echo = FALSE, results = 'asis'}
 for (i in 1:length(env_list)){
 res = knit_child('Example_report_children/Analysis_results.Rmd', 
@@ -352,7 +383,6 @@ res = knit_child('Example_report_children/Analysis_results.Rmd',
 cat(unlist(res), sep = '\n')
 }
 ```
-
 
 ### UPL Calculation Summary
 

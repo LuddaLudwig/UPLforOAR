@@ -1,97 +1,232 @@
+
 #### `r type` Source `r HAP` `r subcat_text`
 
-The selected distribution for the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution. The parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
+The selected distribution for the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution, with the likelihood truncated such that it was zero outside the bounds of (`r minY`, `r signif(maxY, 3)`) emissions. The parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
 
 ```{r, echo = FALSE, appendix = FALSE}
-if (!exists(maxY)){
-  maxY = 3 * max(df$emissions)
-} else if (is.na(maxY)){
-  maxY = 3 * max(df$emissions)
-}
-if (distr == 'Gamma'){
-  sdY =  sd(df$emissions)
-  shape = mean(df$emissions)^2 / sdY^2
-  rate = mean(df$emissions) / sdY^2
-  parameter = c('Rate', 'Shape')
-  prior = c(paste0('~dunif (0, ', signif(maxY / (sdY^2), 3), ')'), 
-            paste0('~dunif (0, ', signif((maxY^2) / (sdY^2), 3), ')'))
-  chain1 = c(signif(rate, 3), signif(shape, 3))
-  chain2 = c(signif(1.5 * rate, 3), signif(0.5 * shape, 3))
-  chain3 = c(signif(0.5 * rate, 3), signif(1.5 * shape, 3))
-  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), 
+# This R chunk uses the initial value settings copied from setup_likelihood(). 
+# If setup_likelihood() has these calculations changed, it will need to be updated here.
+# Eventually, it would be ideal to have a separate function to set initial values 
+# based on data and distribution, then setup_likelihood() would call it and it 
+# would be called here, so updates only happen in a single place.
+if (!manual_prior){
+  if (distr == 'Gamma'){
+    sdY =  sd(df$emissions)
+    shape = mean(df$emissions)^2 / sdY^2
+    rate = mean(df$emissions) / sdY^2
+    parameter = c('Rate', 'Shape')
+    prior = c(paste0('~dunif (0, ', signif(maxY / (sdY^2), 3), ')'), 
+              paste0('~dunif (0, ', signif((maxY^2) / (sdY^2), 3), ')'))
+    chain1 = c(signif(rate, 3), signif(shape, 3))
+    chain2 = c(signif(1.5 * rate, 3), signif(0.5 * shape, 3))
+    chain3 = c(signif(0.5 * rate, 3), signif(1.5 * shape, 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), 
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1], 
+              results$conv_output$convYN[2])
+  } else if (distr == 'Normal'){
+    sdY =  sd(df$emissions)
+    meanY = mean(df$emissions)
+    parameter = c('Mean', 'Standard deviation')
+    prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
+              paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
+                    signif(1000 * sdY, 3), ')'))
+    chain1 = c(signif(meanY, 3), signif(sdY, 3))
+    chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
+    chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
                   signif(results$conv_output$gelman_diag[2], 3))
-  convYN = c(results$conv_output$convYN[1], 
-             results$conv_output$convYN[2])
-} else if (distr == 'Normal'){
-  sdY =  sd(df$emissions)
-  meanY = mean(df$emissions)
-  parameter = c('Mean', 'Standard deviation')
-  prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
-            paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
-                  signif(1000 * sdY, 3), ')'))
-  chain1 = c(signif(meanY, 3), signif(sdY, 3))
-  chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
-  chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
-  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
-                signif(results$conv_output$gelman_diag[2], 3))
-  convYN = c(results$conv_output$convYN[1],
-           results$conv_output$convYN[2])
-} else if (distr == 'Skewed'){
-  sdY =  sd(df$emissions)
-  meanY = mean(df$emissions)
-  skew1 = min(0.99, abs((1 / length(df$emissions)) *
+    convYN = c(results$conv_output$convYN[1],
+            results$conv_output$convYN[2])
+  } else if (distr == 'Skewed'){
+    sdY =  sd(df$emissions)
+    meanY = mean(df$emissions)
+    skew1 = min(0.99, abs((1 / length(df$emissions)) *
                           sum(((df$emissions - meanY) / sdY)^3)))
-  delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) / ((abs(skew1)^(2 / 3)) +
+    delta = sqrt((pi / 2) * ((abs(skew1)^(2 / 3)) / ((abs(skew1)^(2 / 3)) +
                                                    ((4 - pi) / 2)^(2 / 3))))
-  delta = delta * abs(skew1) / skew1
-  alpha = delta / sqrt(1 - delta^2)
-  omega = sdY / sqrt(1 - 2 * delta^2 / pi)
-  xi = meanY - omega * delta * sqrt(2 / pi)
-  parameter = c('Omega', 'Xi', 'Alpha')
-  prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
-            paste0('~dnorm (0, ', signif(1 / (100 * maxY), 3), ')'),
-            '~dunif (-100, 100)')
-  chain1 = c(signif(xi, 3), signif(omega, 3), signif(alpha, 3))
-  chain2 = c(signif(1.5 * xi, 3), signif(0.5 * omega, 3), signif(0.5 * alpha, 3))
-  chain3 = c(signif(0.5 * xi, 3), signif(1.5 * omega, 3), signif(1.5 * alpha, 3))
-  diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
-                  signif(results2$conv_output$gelman_diag[2],3),
-                  signif(results2$conv_output$gelman_diag[3],3))
-  convYN = c(results2$conv_output$convYN[1],
-            results2$conv_output$convYN[2],
-            results2$conv_output$convYN[3])
-} else if(distr == "Lognormal"){
-  sdY =  sd(df$ln_emiss)
-  meanY = mean(df$ln_emiss)
-  parameter = c('Mean', 'Standard deviation')
-  prior = c(paste0('~dnorm (', meanY, ', ', signif(0.001 / (sdY^2), 3), ')'),
-            paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
-                   signif(1000 * sdY, 3), ')'))
-  chain1 = c(signif(meanY, 3), signif(sdY, 3))
-  chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
-  chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
-  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
-                  signif(results$conv_output$gelman_diag[2], 3))
-  convYN = c(results$conv_output$convYN[1],
-             results$conv_output$convYN[2])
-} else if (distr == 'Beta'){
-  sdY =  sd(df$emissions)
-  meanY = mean(df$emissions)
-  alpha = meanY^2 / sdY^2 - meanY^3 / sdY^2 - meanY
-  beta = meanY - 1 + meanY / sdY^2 + meanY^3 / sdY^2 - 2 * meanY^2 / sdY^2
-  parameter = c('Alpha', 'Beta')
-  prior = c(paste0('~dunif (-1, ', signif((0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)
+    delta = delta * abs(skew1) / skew1
+    alpha = delta / sqrt(1 - delta^2)
+    omega = sdY / sqrt(1 - 2 * delta^2 / pi)
+    xi = meanY - omega * delta * sqrt(2 / pi)
+    parameter = c('Omega', 'Xi', 'Alpha')
+    prior = c(paste0('~dunif (0, ', signif(maxY, 3), ')'),
+              paste0('~dnorm (0, ', signif(1 / (100 * maxY), 3), ')'),
+              '~dunif (-100, 100)')
+    chain1 = c(signif(xi, 3), signif(omega, 3), signif(alpha, 3))
+    chain2 = c(signif(1.5 * xi, 3), signif(0.5 * omega, 3), signif(0.5 * alpha, 3))
+    chain3 = c(signif(0.5 * xi, 3), signif(1.5 * omega, 3), signif(1.5 * alpha, 3))
+    diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
+                    signif(results2$conv_output$gelman_diag[2],3),
+                    signif(results2$conv_output$gelman_diag[3],3))
+    convYN = c(results2$conv_output$convYN[1],
+               results2$conv_output$convYN[2],
+               results2$conv_output$convYN[3])
+  } else if(distr == "Lognormal"){
+    sdY =  sd(df$ln_emiss)
+    meanY = mean(df$ln_emiss)
+    parameter = c('Mean', 'Standard deviation')
+    prior = c(paste0('~dnorm (', meanY, ', ', signif(0.001 / (sdY^2), 3), ')'),
+              paste0('~dunif (', signif(0.001 * sdY, 3), ' ,',
+                    signif(1000 * sdY, 3), ')'))
+    chain1 = c(signif(meanY, 3), signif(sdY, 3))
+    chain2 = c(signif(1.5 * meanY, 3), signif(0.5 * sdY, 3))
+    chain3 = c(signif(0.5 * meanY, 3), signif(1.5 * sdY, 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1],
+              results$conv_output$convYN[2])
+  } else if (distr == 'Beta'){
+    sdY =  sd(df$emissions)
+    meanY = mean(df$emissions)
+    alpha = meanY^2 / sdY^2 - meanY^3 / sdY^2 - meanY
+    beta = meanY - 1 + meanY / sdY^2 + meanY^3 / sdY^2 - 2 * meanY^2 / sdY^2
+    parameter = c('Lambda', 'Tau')
+    prior = c(paste0('~dunif (-1, ', signif((0.75^2 / sdY^2 - 0.75^3 / sdY^2 - 0.75)
                                         * 1.25, 3), ')'),
-            paste0('~dunif (-1, ', signif((0.25 - 1 + 0.25 / sdY^2 +
+              paste0('~dunif (-1, ', signif((0.25 - 1 + 0.25 / sdY^2 +
                                            0.25^3 / sdY^2 - 2 * 0.25^2 / sdY^2)
                                         * 1.25, 3), ')'))
-  chain1 = c(signif(alpha, 3), signif(beta, 3))
-  chain2 = c(signif(1.5 * alpha, 3), signif(0.5 * beta, 3))
-  chain3 = c(signif(0.5 * alpha, 3), signif(1.5 * beta, 3))
-  diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+    chain1 = c(signif(alpha, 3), signif(beta, 3))
+    chain2 = c(signif(1.5 * alpha, 3), signif(0.5 * beta, 3))
+    chain3 = c(signif(0.5 * alpha, 3), signif(1.5 * beta, 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2])
+  }
+} else if (manual_prior){
+  if (distr == "Normal"){
+    parameter = c('Mean', 'Standard deviation')
+    prior = c(paste0('~dunif (', prior_list[3], ', ', prior_list[4], ')'),
+              paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'))
+    chain1 = c(signif(mean(c(prior_list[3], prior_list[4])), 3), 
+               signif(mean(c(prior_list[1], prior_list[2])), 3))
+    chain2 = c(signif(0.9 * prior_list[4], 3), signif(0.9 * prior_list[2], 3))
+    chain3 = c(signif(1.1 * prior_list[3], 3), signif(1.1 * prior_list[1], 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
                   signif(results$conv_output$gelman_diag[2], 3))
-  convYN = c(results$conv_output$convYN[1],
-             results$conv_output$convYN[2])
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2])  
+  } else if (distr == 'Lognormal'){
+          if (prior_list[4] < 0){
+            initial1 = 1.1 * prior_list[4]
+          } else if (prior_list[4] > 0){
+            initial1 = 0.9 * prior_list[4]
+          }
+          if (prior_list[3] < 0){
+            initial2 = 0.9 * prior_list[3]
+          } else if (prior_list[3] > 0){
+            initial2 = 1.1 * prior_list[3]
+          }
+    parameter = c('Mean', 'Standard deviation')
+    prior = c(paste0('~dunif (', prior_list[3], ', ', prior_list[4], ')'),
+              paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'))
+    chain1 = c(signif(mean(c(prior_list[3], prior_list[4])), 3), 
+               signif(mean(c(prior_list[1], prior_list[2])), 3))
+    chain2 = c(signif(initial1, 3), signif(0.9 * prior_list[2], 3))
+    chain3 = c(signif(initial2, 3), signif(1.1 * prior_list[1], 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2])      
+  } else if (distr == 'Skewed'){
+      if (prior_list[4] < 0){
+        initial1 = 1.1 * prior_list[4]
+      } else if (prior_list[4] > 0){
+        initial1 = 0.9 * prior_list[4]
+      }
+      if (prior_list[3] < 0){
+        initial2 = 0.9 * prior_list[3]
+      } else if (prior_list[3] > 0){
+        initial2 = 1.1 * prior_list[3]
+      }
+      if (prior_list[6] < 0){
+        initial3 = 1.1 * prior_list[6]
+      } else if (prior_list[6] > 0){
+        initial3 = 0.9 * prior_list[6]
+      }
+      if (prior_list[5] < 0){
+        initial4 = 0.9 * prior_list[5]
+      } else if (prior_list[5] > 0){
+        initial4 = 1.1 * prior_list[5]
+      }
+    parameter = c('Omega', 'Xi', 'Alpha')
+    prior = c(paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'),
+              paste0('~dunif (', prior_list[3], ', ', prior_list[4], ')'),
+              paste0('~dunif (', prior_list[5], ', ', prior_list[6], ')'))
+    chain1 = c(signif(mean(c(prior_list[1], prior_list[2])), 3),
+               signif(mean(c(prior_list[3], prior_list[4])), 3),
+               signif(mean(c(prior_list[5], prior_list[6])), 3))
+    chain2 = c(signif(1.1 * prior_list[1], 3), 
+               signif(initial1, 3), 
+               signif(initial4, 3))
+    chain3 = c(signif(0.9 * prior_list[2], 3), 
+               signif(initial2, 3), 
+               signif(initial3, 3))
+    diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
+                    signif(results2$conv_output$gelman_diag[2],3),
+                    signif(results2$conv_output$gelman_diag[3],3))
+    convYN = c(results2$conv_output$convYN[1],
+               results2$conv_output$convYN[2],
+               results2$conv_output$convYN[3])
+  } else if (distr == 'Gamma'){
+    parameter = c('Rate', 'Shape')
+    prior = c(paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'),
+              paste0('~dunif (', prior_list[3], ', ', prior_list[4], ')'))
+    chain1 = c(signif(mean(c(prior_list[1], prior_list[2])), 3),
+               signif(mean(c(prior_list[3], prior_list[4])), 3))
+    chain2 = c(signif(1.1 * prior_list[1], 3), signif(1.1 * prior_list[3], 3))
+    chain3 = c(signif(0.9 * prior_list[2], 3), signif(0.9 * prior_list[4], 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3), 
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1], 
+               results$conv_output$convYN[2])
+  } else if (distr == 'Beta'){
+      if (prior_list[2] < 0){
+        initial1 = 1.1 * prior_list[2]
+      } else if (prior_list[2] > 0){
+        initial1 = 0.9 * prior_list[2]
+        if (initial1 < (-1)){
+          initial1 = -0.99999
+        }
+      }
+      if (prior_list[1] < 0){
+        initial2 = 0.9 * prior_list[1]
+      } else if (prior_list[1] > 0){
+        initial2 = 1.1 * prior_list[1]
+        if (initial1 < (-1)){
+          initial1 = -0.99999
+        }
+      }
+      if (prior_list[4] < 0){
+        initial3 = 1.1 * prior_list[4]
+      } else if (prior_list[4] > 0){
+        initial3 = 0.9 * prior_list[4]
+        if (initial1 < (-1)){
+          initial1 = -0.99999
+        }
+      }
+      if (prior_list[3] < 0){
+        initial4 = 0.9 * prior_list[3]
+      } else if (prior_list[3] > 0){
+        initial4 = 1.1 * prior_list[3]
+        if (initial1 < (-1)){
+          initial1 = -0.99999
+        }
+      }
+    parameter = c('Lambda', 'Tau')
+    prior = c(paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'),
+              paste0('~dunif (', prior_list[3], ', ', prior_list[4], ')'))
+    chain1 = c(signif(mean(c(prior_list[1], prior_list[2])), 3), 
+               signif(mean(c(prior_list[3], prior_list[4])), 3))
+    chain2 = c(signif(initial1, 3), signif(initial3, 3))
+    chain3 = c(signif(initial2, 3), signif(initial4, 3))
+    diagnostics = c(signif(results$conv_output$gelman_diag[1], 3),
+                    signif(results$conv_output$gelman_diag[2], 3))
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2])
+  }
 }
 param_tab = tibble(parameter, prior, chain1, chain2, chain3, 
                    diagnostics, convYN)
@@ -106,7 +241,6 @@ param_tab %>% knitr::kable(
                          'Gelman-Rubin diagnostic',
                          'Converged?'))
 ```
-
 
 ```{r, appendix = FALSE, echo = FALSE}
 state_out = results$state

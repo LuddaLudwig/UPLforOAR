@@ -4,6 +4,9 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
     extra_dependencies: ["float"]
+header-includes:
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 params:
   source:
     label: "Stationary source category"
@@ -13,7 +16,7 @@ params:
     label: "Select data set, with named columns of emissions and sources"
     input: file
     accept: ".csv"
-    value: "Example_data3.csv"
+    value: "Example_data4.csv"
   CAA_section: 
     label: "CAA Section"
     value: 112
@@ -60,7 +63,7 @@ if (params$CAA_section == 112){
 }
 ```
 
-```{r load_data, appendix = TRUE}
+```{r load_data, appendix = TRUE, results = FALSE}
 # Below is an example of loading data, sorting and selecting to top performers, 
 # and calculating the correct distribution and UPL for existing source and NSPS. 
 # If there are multiple HAP or subcategories, simply repeat with code block for 
@@ -76,9 +79,9 @@ if (params$CAA_section == 112){
 dat_industry = read_csv(params$data)
 
 # Or load manually:
-dat_industry = read_csv('Example_data2.csv')
+dat_industry = read_csv('Example_data4.csv')
 # If it is not in your working directory, you will need to include the file path:
-# dat_industry = read_csv('USER/name/data/Example_data2.csv')
+# dat_industry = read_csv('USER/name/data/Example_data4.csv')
 
 # In this example data, column 1 is the sources, there are two HAPS, Chemical X 
 # and Chemical Y in columns 2 and 3 in your data, named 'chemX' and 'chemY', and 
@@ -115,14 +118,12 @@ sig_list = c(0.99, 0.99, 0.99, 0.99)
 # For the Bayes methods, we will assume you have already done an exploratory 
 # analysis to determine the best distribution for each UPL calculation, and only 
 # need to include the one we are using in this report.
-distr_list = c('Gamma', 'Gamma', 'Gamma', 'Normal')
+distr_list = c('Skewed', 'Skewed', 'Skewed', 'Normal')
 
-# Additional optional arguments to Bayesian_UPL() can be passed as well, 
-# for example, maxY = maxY_list[i] and if left blank will use the default states.
-
-# since the fourth distribution is normal, it ought to have alternatives to the default:
-kernel_list = c(NA, NA, NA, 'gaussian1')
-bw_list = c(NA, NA, NA, 'cv.ls')
+# Additional optional arguments to Bayesian_UPL() can be passed as well.
+# For example, suppose you want to truncate by a non-default value but only for 
+# the last UPL calculation for Chemical Y: maxY_list = c(NA, NA, NA, new_maxY)
+# Then include below: maxY = maxY_list[i] 
 
 # Now we can create a list of environments to populate the .Rmd document:
 env_list = list()
@@ -158,7 +159,7 @@ for (i in 1:length(env_list)){
 
 ## Introduction
 
-Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources governed by CAA Section 112(d)(3). 
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources for those governed by CAA Section 112(d)(3). 
 
 The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
 
@@ -204,7 +205,7 @@ For the existing-source MACT floors, selection of the MACT floor pool size (i.e.
 
 ### Probability distribution Selection
 
-The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using a `r (params$significance)*100`\% upper prediction limit (UPL) approach. Specifically, the UPL is calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` future emission test values. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
+The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using an upper prediction limit (UPL) approach. Specifically, the UPL is calculated as the $\alpha$-level significance, typically $\alpha = 0.99$, quantile of the average of future emission test values, typically three. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
 
 ### Implementation
 
@@ -218,15 +219,13 @@ $$SSE=\displaystyle\sum(y_i-\hat{y_i})^2$$
 
 Where $y_i$ is the empirical test run probability density at emission value $x_{i}$ and $\hat{y_i}$ is the predicted probability density at emission value $x_{i}$. The lower the $SSE$, the better the probability distribution represents the probability of the emission values. The empirical test run probability densities, $y_{i}$, were also checked if they were significantly different than the predicted probability densities, $\hat{y_i}$, by comparing them to the 95\% confidence interval (CI) around the predicted densities derived from posterior distributions. The uncertainty around the predicted probability density can be variable; thus one can have a very different probability at the same $x_{i}$ but be within the 95\% CI if the uncertainty is very large, or have a significantly different probability at the same $x_{i}$ even though the $y_{i}$ and $\hat{y_i}$ are extremely similar if there is very little uncertainty. The more $y_{i}$ that are statistically equivalent to $\hat{y_i}$, the better the distribution represents the probability of $x_{i}$ emission values. A proper probability density function will integrate to $1$, so if the integral of the fitted distribution is substantially different from $1$ this can indicate an issue. Lastly, a visual assessment comparing the empirical and predicted probability densities across the range of possible emission values can identify any problematic behavior or differentiate between distributions. These fit metrics were calculated using the functions `fit_likelihood()` and `obs_density()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-<!-- Note that if a different upper bound was used, the text below needs to be updated to `r maxY` rather than $3\times max(x_i)$. -->
-
-To calculate the UPL, which is the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` future emission test values, the posterior distributions of `r params$future_runs` new draws from the fitted probability distribution were averaged and then the UPL is determined as the `r (params$significance)*100`$^{th}$ quantile of this resulting distribution. The fitted distribution is truncated by lower and upper bounds of $0$ and $3\times max(x_i)$ emissions, which prevents extreme values from long-tailed distributions biasing the UPL and otherwise has no effect on the results. The $2.5^{th}$ and $97.5^{th}$ quantiles of the posterior distributions of the predicted probability density $\hat{y_i}$ at each $x_i$ test run value were used to calculate 95\% CI for the goodness-of-fit metrics. The median of the posterior distributions of the predicted probability density $\hat{y_i}$ were used in comparisons to $y_i$ to calculate the $SSE$. The median of the posterior distributions for all $\hat{y_i}$ across the possible range of emission test run values was monitored for use in plotting the distributions and visual comparisons to the empirical distributions. All of these computations were done using the function `output_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
+To calculate the UPL, which is typically the 99$^{th}$ quantile of the average of three future emission test values, the posterior distributions of three new draws from the fitted probability distribution were averaged and then the UPL is determined as the 99$^{th}$ quantile of this resulting distribution. The fitted distribution is truncated by lower and upper bounds of (typically zero and three times the maximum value) to prevent physically improbable emissions, which prevents extreme values from long-tailed distributions biasing the UPL and otherwise has no effect on the results. The $2.5^{th}$ and $97.5^{th}$ quantiles of the posterior distributions of the predicted probability density $\hat{y_i}$ at each $x_i$ test run value were used to calculate 95\% CI for the goodness-of-fit metrics. The median of the posterior distributions of the predicted probability density $\hat{y_i}$ were used in comparisons to $y_i$ to calculate the $SSE$. The median of the posterior distributions for all $\hat{y_i}$ across the possible range of emission test run values was monitored for use in plotting the distributions and visual comparisons to the empirical distributions. All of these computations were done using the function `output_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
 The parameter estimation and UPL calculations for each distribution investigated were performed using the function `Bayesian_UPL()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, which wraps the functions described above and concatenates the results for easy comparison. See Appendix B for more details. 
 
 ### UPL Calculation for Normal Data
 
-In the case of normally distributed data, the MACT floor limit is an UPL calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` new emission runs, where the probability density, $y_i$, of normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean, and $\sigma$ the standard deviation:
+In the case of normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean, and $\sigma$ the standard deviation:
 
 $$
 y_i = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x_i-\mu)^{2}}{2\sigma^{2}}}
@@ -234,7 +233,7 @@ $$
 
 ### UPL Calculation for Log-normal Data
 
-In the case of log-normally distributed data, the MACT floor limit is an UPL calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` new emission runs, where the probability density, $y_i$, of log-normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean of $log(x_i)$ and $\sigma$, the standard deviation of $log(x_i)$: 
+In the case of log-normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of log-normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean of $log(x_i)$ and $\sigma$, the standard deviation of $log(x_i)$: 
 
 $$
 y_i = \frac{1}{x_i\sqrt{2\pi \sigma^{2}}}e^{-\frac{(log(x_i)-\mu)^{2}}{2\sigma^2}}
@@ -242,34 +241,34 @@ $$
 
 ### UPL Calculation for Skew-normal Data
 
-In the case of skew-normally distributed data, the MACT floor limit is an UPL calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` new emission runs, where the skew-normal distribution is defined by three parameters; location $\xi$, scale $\omega$, and skewness $\alpha$. This is equivalent to a normal distribution when $\alpha = 0$, it is right-skewed if $\alpha > 0$, and left-skewed if $\alpha < 0$. The probability density, $y_i$, of skewed distributed emissions is:
+In the case of skew-normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the skew-normal distribution is defined by three parameters; location $\xi$, scale $\omega$, and skewness $\gamma$. This is equivalent to a normal distribution when $\gamma = 0$, it is right-skewed if $\gamma > 0$, and left-skewed if $\gamma < 0$. The probability density, $y_i$, of skewed distributed emissions is:
 
 $$
-y_i = \frac{2}{\omega}\phi \left(\frac{x_i-\xi}{\omega}\right) \Phi \left(\alpha\left(\frac{x_i-\xi}{\omega}\right)\right)
+y_i = \frac{2}{\omega}\phi \left(\frac{x_i-\xi}{\omega}\right) \Phi \left(\gamma\left(\frac{x_i-\xi}{\omega}\right)\right)
 $$
 
 Where $\phi(x)$ is the standard normal probability distribution, $\Phi(x)$ is its cumulative probability distribution function, and $x_i$ is transformed to $\frac{x_i-\xi}{\omega}$. Using the error function, this can be expanded to:
 
 $$
-y_i = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x_i-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\alpha\frac{x_i-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
+y_i = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x_i-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\gamma\frac{x_i-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
 $$
 
 ### UPL Calculation for Gamma Data
 
-In the case of gamma distributed data, the MACT floor limit is an UPL calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` new emission runs, where the probability density, $y_i$, of gamma distributed emissions, $x_i$, is dependent on parameters $\alpha$, the shape, and $\beta$, the rate:
+In the case of gamma distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of gamma distributed emissions, $x_i$, is dependent on parameters $\lambda$, the shape, and $\tau$, the rate:
 
 $$
-y_i = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x_i^{\alpha-1}e^{-\beta x_i}
+y_i = \frac{\tau^{\lambda}}{\Gamma(\lambda)}x_i^{\lambda-1}e^{-\tau x_i}
 $$
 
 \*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
 
 ### UPL Calculation for Beta Data
 
-In the case of beta distributed data, the MACT floor limit is an UPL calculated as the `r (params$significance)*100`$^{th}$ quantile of the average of `r params$future_runs` new emission runs, where the probability density, $y_i$, of beta distributed emissions, $x_i$, is dependent on parameters $\alpha$ and $\beta$:
+In the case of beta distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of beta distributed emissions, $x_i$, is dependent on parameters $\lambda$ and $\tau$:
 
 $$
-Y_i = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}x_i^{\alpha -1}(1-x_i)^{\beta-1}
+Y_i = \frac{\Gamma(\lambda + \tau)}{\Gamma(\lambda)\Gamma(\tau)}x_i^{\lambda -1}(1-x_i)^{\tau-1}
 $$
 
 \*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
@@ -313,7 +312,6 @@ cat(unlist(res), sep = '\n')
 }
 ```
 
-
 Tables with the full data sets used for each MACT floor analysis can be found listed in Appendix A. 
 
 ```{r, echo = FALSE, results = 'asis'}
@@ -327,6 +325,40 @@ cat(unlist(res), sep = '\n')
 \newpage
 ## MACT Floor Analysis Results
 
+```{r check_pairs, echo = FALSE, appendix = TRUE}
+# check if any UPL results from new and existing source pairs need to be set 
+# such that the new UPL <= existing UPL.
+order_combn = combn(seq(1,length(HAP_list), by = 1), 2)
+HAP_combn = combn(HAP_list, 2)
+subcat_combn = combn(subcat_list, 2)
+level_combn = combn(subcat_levels, 2)
+meas_combn = combn(meas_unit_list, 2)
+
+check_HAPs = HAP_combn[1, ] == HAP_combn[2, ]
+check_subcat = subcat_combn[1, ] == subcat_combn[2, ]
+check_levels = level_combn[1, ] == level_combn[2, ]
+check_units = meas_combn[1, ] == meas_combn[2, ]
+for (i in 1:length(check_HAPs)){
+  if (all(check_HAPs[i], check_subcat[i], check_levels[i],check_units[i])){
+    pair1 = order_combn[1,i]
+    pair2 = order_combn[2,i]
+    type1 = env_list[[pair1]]$type
+    type2 = env_list[[pair2]]$type
+    UPL1 = env_list[[pair1]]$results$fit_table$UPL
+    UPL2 = env_list[[pair2]]$results$fit_table$UPL
+    if ((type1 == "New")&(UPL1 > UPL2)&(type2 == 'Existing')){
+      env_list[[pair1]]$UPL_old = UPL1
+      env_list[[pair1]]$results$fit_table$UPL = UPL2
+      env_list[[pair1]]$UPL_warn = TRUE
+    } else if ((type2 == "New")&(UPL2 > UPL1)(type1 == 'Existing')){
+      env_list[[pair2]]$UPL_old = UPL2
+      env_list[[pair2]]$results$fit_table$UPL = UPL1
+      env_list[[pair2]]$UPL_warn = TRUE
+
+    }
+  }
+}
+```
 ```{r, echo = FALSE, results = 'asis'}
 for (i in 1:length(env_list)){
 res = knit_child('Example_report_children/Bayes_Analysis_results.Rmd', 
@@ -334,7 +366,6 @@ res = knit_child('Example_report_children/Bayes_Analysis_results.Rmd',
 cat(unlist(res), sep = '\n')
 }
 ```
-
 
 ### UPL Calculation Summary
 
@@ -362,7 +393,7 @@ dat_UPL %>% knitr::kable(
 
 ### Settings used in Bayesian MCMC
 
-```{r, echo = FALSE, results = 'asis'}
+```{r, echo = FALSE, results = 'asis', appendix = FALSE}
 for (i in 1:length(env_list)){
 res=knit_child('Example_report_children/Bayes_MCMC_settings.Rmd', 
                            envir = env_list[[i]], quiet = TRUE)

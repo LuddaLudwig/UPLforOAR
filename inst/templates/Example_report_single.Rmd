@@ -4,6 +4,9 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
     extra_dependencies: ["float", "breqn"]
+header-includes:
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 params:
   source:
     label: "Stationary source category"
@@ -142,7 +145,7 @@ if (distribution_result_new == "Normal"){
 
 ## Introduction
 
-Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources governed by CAA Section 112(d)(3). 
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources for those governed by CAA Section 112(d)(3). 
 
 The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
 

@@ -42,6 +42,7 @@ if (type == 'Existing'){
     source_fig = TRUE
   }
 }
+UPL_warn = FALSE
 best_source = as.character(df$sources)[1]
 df$ln_emiss = log(df$emissions)
 df$ln_emiss = replace(df$ln_emiss, !is.finite(df$ln_emiss), NA)
