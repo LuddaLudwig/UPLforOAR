@@ -4,6 +4,9 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
     extra_dependencies: ["float"]
+header-includes:
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 params:
   source:
     label: "Stationary source category"
@@ -19,6 +22,10 @@ params:
     value: 112
     input: select
     choices: [112, 129]
+  national_N:
+    label: "Number of sources nation-wide (for CAA 129 only)"
+    input: numeric
+    value: NA
   future_runs: 
     label: "Number of future test runs"
     value: 3
@@ -48,14 +55,6 @@ knitr::opts_chunk$set(
   fig.pos="H",
   out.extra = ""
 )
-library(htmltools)
-knitr::knit_hooks$set(imgcenter = function(before, options, envir){
-  if (before) {
-    HTML("<p align='center'>")
-  } else {
-    HTML("</p>")
-  }
-})
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -83,7 +82,8 @@ if (any(dat_emiss$emissions == 0)){
 } else {
   zero_warn = FALSE
 }
-dat_top_exist = MACT_existing(CAA_section = params$CAA_section, data = dat_emiss,
+dat_top_exist = MACT_existing(CAA_section = params$CAA_section, 
+                              data = dat_emiss, national_N = params$national_N,
                               emissions = 'emissions', sources = 'sources')
 dat_top_new = MACT_new(data = dat_emiss, emissions = 'emissions', 
                        sources = 'sources')
@@ -127,7 +127,7 @@ results2 = Bayesian_UPL(data = dat_top_new, distr_list = distribution_new,
 
 ## Introduction
 
-Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources, or the best-performing 5 sources for source categories with fewer than 30 sources. 
+Section 112 of the Clean Air Act (CAA) requires the the U.S. Environmental Protection Agency (EPA) establish National Emission Standards for Hazardous Air Pollutants (NESHAP) for the control of the hazardous air pollutants (HAP) emitted from both new and existing sources in a source category. These standards must reflect the maximum degree of reduction in emissions that is achievable. The minimum level of control is referred to as the “Maximum Achievable Control Technology (MACT) floor.” The method for determining the MACT floor as the minimum control level allowed for establishing standards for a NESHAP is defined for both new and existing sources by `r CAA_text`. For new sources, the MACT floor cannot be less stringent than the emission control that is achieved in practice by the best-controlled similar source. For existing sources, the MACT floor cannot be less stringent than the average emission limitation achieved by the best-performing 12 \% of existing sources for source categories with 30 or more sources or those governed by CAA Section 129(a)(2), or the best-performing 5 sources for source categories with fewer than 30 sources for those governed by CAA Section 112(d)(3). 
 
 The purpose of this memorandum is to present the methodology and the results of the MACT floor analysis for the NESHAP source category `r params$source`. This MACT floor analysis uses data collected in a nationwide survey of `r params$source` unit owners and operators conducted by the EPA in *2025* under the Information Collection Request for NESHAP for `r params$source`. 
 
@@ -235,7 +235,7 @@ $$
 
 \*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
 
-### Settings used in Bayesian MCMC
+## Settings used in Bayesian MCMC
 
 The selected distribution for the *chemical X* *subcategory A* existing source MACT floor analysis was the `r distribution_ex` distribution. The distribution's parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
 <!-- If you specified priors manually, rather than using the defaults you will need to alter the table below -->
@@ -263,7 +263,7 @@ gamm_exist %>% knitr::kable(
   caption="Parameter information for the gamma distribution 
   UPL calculation for existing source chemical X, subcategory A.",
              col.names=c('Parameter',
-                         'Prior',
+                         ' Prior',
                          'Chain 1 initial value',
                          'Chain 2 initial value',
                          'Chain 3 initial value',
@@ -313,7 +313,7 @@ gamm_new %>% knitr::kable(
   caption="Parameter information for the gamma distribution 
   UPL calculation for new source chemical X, subcategory A.",
              col.names=c('Parameter',
-                         'Prior',
+                         ' Prior',
                          'Chain 1 initial value',
                          'Chain 2 initial value',
                          'Chain 3 initial value',
@@ -321,7 +321,7 @@ gamm_new %>% knitr::kable(
                          'Converged?'))
 ```
 
-```{r RNG1, appendix = TRUE}
+```{r RNG2, appendix = TRUE}
 state_out = results2$state
 chains = c('Chain 1', 'Chain 2', 'Chain 3')
 rng_name = c(state_out[[1]]$.RNG.name, 
@@ -589,7 +589,8 @@ ggplot()+
 The `r distribution_ex` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
 
 ```{r conv_figs1, results = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for gamma parameters for existing source MACT floor analysis for chemical X in subcategory A."}
-part1 = setup_likelihood(distribution = distribution_ex, data = dat_top_exist)
+part1 = setup_likelihood(distribution = distribution_ex, data = dat_top_exist,
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1, future_runs = params$future_runs, 
                        xvals = xvals, maxY = maxY)
 part3 = converge_figs(distribution = distribution_ex, jags_model_run = part2)
@@ -638,7 +639,8 @@ ggplot()+
 
 The `r distribution_new` distributions parameters converge well, passing both Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below).
 ```{r conv_figs2, appendix = TRUE, results = FALSE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for skew-normal parameters for new source MACT floor analysis for chemical X in subcategory A."}
-part1 = setup_likelihood(distribution = distribution_new, data = dat_top_new)
+part1 = setup_likelihood(distribution = distribution_new, data = dat_top_new,
+                         emissions = 'emissions')
 part2 = run_likelihood(model_input = part1, future_runs = params$future_runs, 
                        xvals = xvals_new, maxY = maxY_new)
 part3 = converge_figs(distribution = distribution_ex, jags_model_run = part2)
@@ -766,7 +768,7 @@ readLines("./../JAGS/Emission_beta_JAGS.R")
 readLines("./../JAGS/Emission_gamma_JAGS.R")
 readLines("./../JAGS/Emission_lnorm_JAGS.R")
 readLines("./../JAGS/Emission_normal_JAGS.R")
-readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
+readLines("./../JAGS/Emission_skewed_JAGS.R")
 readLines("./../JAGS/Manual_emission_beta_JAGS.R")
 readLines("./../JAGS/Manual_emission_gamma_JAGS.R")
 readLines("./../JAGS/Manual_emission_lnorm_JAGS.R")

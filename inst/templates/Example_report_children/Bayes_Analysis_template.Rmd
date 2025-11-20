@@ -1,0 +1,122 @@
+```{r, echo = FALSE, appendix = FALSE}
+if (type == 'Existing'){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  df = MACT_existing(CAA_section = CAA_section, data = df, 
+                     emissions = 'emissions', sources = 'sources',
+                     national_N = national_N)
+  df_mean = df %>% group_by(sources) %>% 
+                              summarize(means = mean(emissions), 
+                                        counts = n())
+  if (all(df_mean$counts == 1)){
+  source_fig = FALSE
+} else {
+  source_fig = TRUE
+}
+} else if (type == "New"){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  source_fig = FALSE
+  df = MACT_new(data = df,  emissions = 'emissions', sources = 'sources')
+} else if (type == "As-is"){
+  df = data
+  if (any(df$emissions == 0)){
+    zero_warn = TRUE
+  } else {
+    zero_warn = FALSE
+  }
+  df_mean = df %>% group_by(sources) %>% 
+                              summarize(means = mean(emissions), 
+                                        counts = n())
+  if (all(df_mean$counts == 1)){
+    source_fig = FALSE
+  } else {
+    source_fig = TRUE
+  }
+}
+UPL_warn = FALSE
+best_source = as.character(df$sources)[1]
+df$ln_emiss = log(df$emissions)
+df$ln_emiss = replace(df$ln_emiss, !is.finite(df$ln_emiss), NA)
+if (!is.na(subcat_name)){
+  subcat_text = paste0('for ', subcat_name, ' subcategory ', subcat_level)
+} else {
+  subcat_text = ''
+}
+if (!exists('maxY')){
+  maxY = 3 * max(df$emissions)
+} else if (is.na(maxY)){
+  maxY = 3 * max(df$emissions)
+}
+if (!exists('minY')){
+  minY = 0
+} else if (is.na(minY)){
+  minY = 0
+}
+if (!exists('xvals')){
+  xvals = NULL
+} else if (!is.null(xvals)){
+  if (is.na(xvals)){
+    xvals = NULL 
+  }
+}
+if (!exists('up')){
+  up = Inf
+} else if (is.na(up)){
+  up = Inf
+}
+if (!exists('low')){
+  low = 0
+} else if (is.na(low)){
+  low = 0
+}
+if (!exists('kernel_arg')){
+  kernel_arg = 'gamma'
+} else if (is.null(kernel_arg)){
+  kernel_arg = 'gamma'
+} else if (is.na(kernel_arg)){
+  kernel_arg = 'gamma'
+}
+if (!exists('bw')){
+  bw = NULL
+} else if (!is.null(bw)){
+  if (is.na(bw)){
+    bw = NULL 
+  }
+}
+if (!exists('manual_prior')){
+  manual_prior = FALSE
+} else if (is.na(manual_prior)){
+  manual_prior = FALSE
+}
+if (!exists('prior_list')){
+  prior_list = NULL
+} else if (!is.null(prior_list)){
+  if (is.na(prior_list)){
+    prior_list = NULL 
+  }
+}
+if (!exists('RNG.state')){
+  RNG.state = NULL
+} else if (!is.null(RNG.state)){
+  if (is.na(RNG.state)){
+    RNG.state = NULL 
+  }
+}
+results = Bayesian_UPL(data = df, distr_list = distr,
+                       emissions = 'emissions',
+                       future_runs = future_runs,
+                       significance = significance, RNG.state = RNG.state,
+                       maxY = maxY, minY = minY, xvals = xvals,
+                       up = up, low = low,  kernel = kernel_arg, bw = bw,
+                       convergence_report = FALSE, random = FALSE,
+                       manual_prior = manual_prior, prior_list = prior_list)
+```

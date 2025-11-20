@@ -26,14 +26,20 @@
 #' run the UPL analysis on the HAP emissions in `data` with no subsetting. `'New'`
 #' will select the top performing source for the HAP using [MACT_new()], and
 #' `'Existing'` will select the top performing sources for the HAP using [MACT_existing()].
-#' @param CAA_section Applicable Clean Air Act section, either 112 or 129
+#' @param meas_unit String of measurment units to be used in text and figure axes labels.
+#' @param CAA_section Applicable Clean Air Act section, either 112 or 129.
+#' @param national_N For Clean Air Act section 129 (`CAA_section = 129`), the
+#' additional argument providing the total number of sources nation-wide
+#' regardless of whether or not they contributed emissions data is required.
 #' @param future_runs Integer of future runs to use in prediction, the default
 #' is `3` since compliance uses 1 test average of 3 runs.
 #' @param significance Level of significance from 0 to 1, the default is `0.99`.
+#' @param ... Other arguments passed on to [Bayesian_UPL()] or [obs_density()].
+#' Check the child .Rmd to figure match the arguments to expected name in template.
 make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
                             subcat_level = NA, type = c('New', 'Existing', 'As-is'),
-                            CAA_section = 112, future_runs = 3,
-                            significance = 0.99){
+                            CAA_section = 112, national_N = NA, meas_unit,
+                            future_runs = 3, significance = 0.99, ...){
   future_runs = as.integer(future_runs)
   if (!is.integer(future_runs)){
     stop("future_runs must be a positive integer")
@@ -78,9 +84,12 @@ make_environment = function(data, HAP, emissions, sources, subcat_name = NA,
                                subcat_name =  subcat_name,
                                subcat_level = subcat_level,
                                data = data_temp, CAA_section = CAA_section,
+                               national_N = national_N,
+                               meas_unit = meas_unit,
                                sources = sources, type = type,
                                significance = significance,
-                               future_runs = future_runs),
+                               future_runs = future_runs,
+                               more_args = ...),
                           parent = as.environment(2))
   return(analysis_env)
 }

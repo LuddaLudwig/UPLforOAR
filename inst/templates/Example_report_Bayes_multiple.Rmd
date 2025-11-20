@@ -3,7 +3,7 @@ author: "OAR-OCAP-NRD-EDAB and/or author names here"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
-    extra_dependencies: ["float", "breqn"]
+    extra_dependencies: ["float"]
 header-includes:
   \usepackage{fvextra}
   \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
@@ -16,7 +16,7 @@ params:
     label: "Select data set, with named columns of emissions and sources"
     input: file
     accept: ".csv"
-    value: "Example_data2.csv"
+    value: "Example_data4.csv"
   CAA_section: 
     label: "CAA Section"
     value: 112
@@ -24,8 +24,8 @@ params:
     choices: [112, 129]
   national_N:
     label: "Number of sources nation-wide (for CAA 129 only)"
-    value: NA
     input: numeric
+    value: NA
 ---
 <!-- Change the document title and authors as needed -->
 
@@ -39,9 +39,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   echo = FALSE,
-  error = TRUE,
-  warning = FALSE,
-  message = FALSE,
+  error=TRUE,
+  warning=FALSE,
+  message=FALSE,
   appendix = FALSE,
   fig.align = "center",
   fig.pos="H",
@@ -56,10 +56,14 @@ library(np)
 library(sfsmisc)
 library(UPLforOAR)
 library(knitr)
-library(rlang)
+if (params$CAA_section == 112){
+  CAA_text = 'CAA Section 112(d)(3)'
+} else if (params$CAA_section == 129){
+  CAA_text = 'CAA Section 129(a)(2)'
+}
 ```
 
-```{r load_data, appendix = TRUE}
+```{r load_data, appendix = TRUE, results = FALSE}
 # Below is an example of loading data, sorting and selecting to top performers, 
 # and calculating the correct distribution and UPL for existing source and NSPS. 
 # If there are multiple HAP or subcategories, simply repeat with code block for 
@@ -75,9 +79,9 @@ if (params$CAA_section == 112){
 dat_industry = read_csv(params$data)
 
 # Or load manually:
-dat_industry = read_csv('Example_data2.csv')
+dat_industry = read_csv('Example_data4.csv')
 # If it is not in your working directory, you will need to include the file path:
-# dat_industry = read_csv('USER/name/data/Example_data2.csv')
+# dat_industry = read_csv('USER/name/data/Example_data4.csv')
 
 # In this example data, column 1 is the sources, there are two HAPS, Chemical X 
 # and Chemical Y in columns 2 and 3 in your data, named 'chemX' and 'chemY', and 
@@ -111,11 +115,22 @@ sources = 1
 future_run_list = c(3, 3, 3, 3)
 sig_list = c(0.99, 0.99, 0.99, 0.99)
 
+# For the Bayes methods, we will assume you have already done an exploratory 
+# analysis to determine the best distribution for each UPL calculation, and only 
+# need to include the one we are using in this report.
+distr_list = c('Skewed', 'Skewed', 'Skewed', 'Normal')
+
+# Additional optional arguments to Bayesian_UPL() can be passed as well.
+# For example, suppose you want to a gaussian kernel for density figues but only for 
+# the last UPL calculation for Chemical Y: kernel_list = c(NA, NA, NA, 'gaussian1')
+# Then include below: kernel_arg = kernel_list[i] 
 
 # Now we can create a list of environments to populate the .Rmd document:
 env_list = list()
 for (i in 1:length(HAP_list)){
-  env_temp = make_environment(data = dat_industry, HAP = HAP_list[i], 
+  env_temp = make_environment(data = dat_industry, 
+                              distr = distr_list[i],
+                              HAP = HAP_list[i], 
                               emissions = emiss_list[i], 
                               sources = sources, 
                               subcat_name = subcat_list[i], 
@@ -128,15 +143,18 @@ for (i in 1:length(HAP_list)){
                               significance = sig_list[i])
   env_list = c(env_list, env_temp)
 }
-
 # You also use the make_environment() function outside of the for loop
+```
 
+```{r, echo = FALSE, results = FALSE}
 # Run the analysis for each environment set:
 for (i in 1:length(env_list)){
-  cat(asis_output(knit_child('Example_report_children/Analysis_template.Rmd',
+  cat(asis_output(knit_child('Example_report_children/Bayes_Analysis_template.Rmd',
                            envir = env_list[[i]], quiet = TRUE)))
 }
 ```
+<!-- Edit/add/remove any content as appropriate -->
+<!-- Italicized comments in * * likely need to be edited for each use -->
 
 ## Introduction
 
@@ -176,7 +194,7 @@ to a common `r paste0(meas_unit_list, collapse = ', ')` for `r paste0(HAP_list, 
 
 ## MACT Floor Analysis Methodology
 
-The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix B. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in appendix B. 
+The first step in the MACT floor analysis for each subcategory and HAP (or surrogate) was to rank all of the `r params$source` units in the subcategory (for which there were emissions data in the ICR data set) for the pollutant type by emission level (lowest to highest). From this ranking, a MACT floor pool of sources was identified for determining the minimum control level allowed for the MACT floor, consistent with the criteria defined for new and existing sources by `r CAA_text`. For the new-source MACT floors, the best-controlled similar source was identified for which there were individual source test run data in the ICR data set. The selection of top performing sources for the existing source MACT floor was performed using the  `MACT_existing()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix B. The selection of the best performing source for the new source MACT floor was performed using the `MACT_new()` function in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, with details in Appendix B. 
 
 For the existing-source MACT floors, selection of the MACT floor pool size (i.e., number of units to be included in the determination of the average emission limitation value) was determined on an individual subcategory basis as described below. 
 
@@ -186,113 +204,75 @@ For the existing-source MACT floors, selection of the MACT floor pool size (i.e.
 
 ### Probability distribution Selection
 
-The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using an upper prediction limit (UPL) approach. Specifically, the MACT floor limit is an UPL calculated with the Student’s t-distribution using the `qt()` function in the `R` `stats` software. The Student’s t-distribution has also been used in other EPA rulemakings (e.g., NESHAP for Portland Cement, NSPS for Hospital/Medical/Infectious Waste Incinerators [HMIWI], NESHAP for Industrial, Commercial, and Institutional Boilers and Process Heaters) in accounting for variability and reflects the level of confidence. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, with significance of $\alpha = 0.99$, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
+The next step in the MACT floor analysis was to incorporate data variability into the calculations of the applicable MACT floor limits for the subcategories using an upper prediction limit (UPL) approach. Specifically, the UPL is calculated as the $\alpha$-level significance, typically $\alpha = 0.99$, quantile of the average of future emission test values, typically three. The level of confidence represents the level of protection afforded to facilities whose emissions are in line with the best performers, and consequently, the level of confidence is not arbitrary. For example, a 99\% level of confidence means that a facility whose emissions are in line with the best performers has one chance in 100 of exceeding the floor limit. A prediction interval for a single future observation (or an average of several test observations) is an interval that will, with a specified degree of confidence, contain the next (or the average of some other pre-specified number) of randomly selected observation(s) from a population. In other words, the UPL estimates what the upper bound of future values will be, based upon present or past background samples taken. The UPL consequently represents the value at which we can expect the mean of future observations for the HAP or HAP surrogate emissions to fall within a specified level of confidence, based upon the measurements from an independent sample from the same population. The UPL approach encompasses all the data point-to-data point variability. 
 
-The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were distributed normally, log-normally, or skew-normally. Statistical tests of the kurtosis and skewness are then used to evaluate the normality assumption. The skewness statistic, $S$, characterizes the degree of asymmetry of a given data distribution, and is calculated according to the Fisher method as: 
+### Implementation
 
-$$
-S=\frac{n}{(n-1)(n-2)}\displaystyle\sum_{i=1}^n\left(\frac{x_{i} -\overline{x}}{\sigma}\right)^3
-$$ 
+The form of the UPL equation differs depending upon the nature of the data set to which it is applied. To this end, the data sets were evaluated for each HAP and HAP surrogate to ascertain whether the data were normally, log-normally, skew-normally, beta, or gamma distributed. For each distribution, a probability density function was fit to the test run emissions using Bayesian Markov Chain Monte Carlo (MCMC). This analysis was implemented in `R` using `runjags` and JAGS (Just Another Gibbs Sampler) software, with three MCMC chains with different initial values, completely uninformed priors, a burn-in and adapt of 10,000 iterations each, and a final set of 10,000 iterations retained in posterior distributions. Random seeds were specified to control for stochasticity and ensure reproducibility. The JAGS model scripts were defined using the function `write_likelihood()`, and executed using functions `setup_likelihood()` and `run_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-Where $n$ is the sample size, $\overline{x}$ is the mean of emissions data, and $\sigma$ is the standard deviation (Doric et al. 2007). Normally distributed data have $S = 0$. An $S$ that is greater (less) than 0 indicates that the data are asymmetrically distributed with a right (left) tail extending towards positive (negative) values. The standard error of the skewness statistic, $SES$, can be approximated by $SES = \sqrt{\frac{6n(n-1)}{(n-2)(n+1)(n+3)}}$, where $n$ is the sample size. The kurtosis statistic, $K$, characterizes the degree of peakedness or flatness of a given data distribution in comparison to a normal distribution, and is calculated according to the Fisher method as:
+Convergence was assessed quantitatively by checking Gelman-Rubin diagnostics and qualitatively by viewing plots of the iteration chains to ensure they were well-mixed and without trend, as well as histograms of the posterior distributions to ensure they converged. These checks were carried out using the functions `converge_likelihood()` and `converge_figs()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-$$
-K=\frac{\sum_{i=1}^n(x_i-\overline{x})^4}{(n-1)\sigma^4}-3
-$$ 
+Both quantitative and qualitative evaluations were used to select the appropriate distribution. For each distribution, the Sum of Squared Errors ($SSE$) is calculated as:
 
-for small data sets where $n=3$ and as:
-$$
-K=\frac{n(n+1)}{(n-1)(n-2)(n-3)}\displaystyle\sum_{i=1}^{n}\left(\frac{x_{i}-\overline{x}}{\sigma} \right)^4-\frac{3(n-1)^2}{(n-2)(n-3)}
-$$ 
+$$SSE=\displaystyle\sum(y_i-\hat{y_i})^2$$
 
-for larger data sets. Normally distributed data have $K = 3$. A $K$ that is greater (less) than 3 indicates a relatively peaked (flat) distribution. For small data sets where $n=3$, the standard error of the kurtosis statistic, $SEK$, can be approximated by $SEK = \sqrt{24/n}$, where $n$ is the sample size. Otherwise, $SEK=\sqrt{\frac{24n(n^{2}-1)}{(n-2)(n+3)(n-3)(n+5)}}$.
+Where $y_i$ is the empirical test run probability density at emission value $x_{i}$ and $\hat{y_i}$ is the predicted probability density at emission value $x_{i}$. The lower the $SSE$, the better the probability distribution represents the probability of the emission values. The empirical test run probability densities, $y_{i}$, were also checked if they were significantly different than the predicted probability densities, $\hat{y_i}$, by comparing them to the 95\% confidence interval (CI) around the predicted densities derived from posterior distributions. The uncertainty around the predicted probability density can be variable; thus one can have a very different probability at the same $x_{i}$ but be within the 95\% CI if the uncertainty is very large, or have a significantly different probability at the same $x_{i}$ even though the $y_{i}$ and $\hat{y_i}$ are extremely similar if there is very little uncertainty. The more $y_{i}$ that are statistically equivalent to $\hat{y_i}$, the better the distribution represents the probability of $x_{i}$ emission values. A proper probability density function will integrate to $1$, so if the integral of the fitted distribution is substantially different from $1$ this can indicate an issue. Lastly, a visual assessment comparing the empirical and predicted probability densities across the range of possible emission values can identify any problematic behavior or differentiate between distributions. These fit metrics were calculated using the functions `fit_likelihood()` and `obs_density()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
 
-For each data set to which the UPL was applied (i.e., the separate data sets for each HAP and HAP surrogate type applicable to the subcategory), the $S$ and $K$ statistics were calculated using both the reported test run values and the log-transformed reported test run values. For small data sets where $n=3$, if $\left|\frac{S}{SES}\right|$ for the non-transformed data is less than $\left|\frac{S}{SES}\right|$ for the log-transformed data then the distribution is considered normal, otherwise it is consider log-normal. The skew-normal distribution can only be implemented for data where $n>3$. Generally, if $\left|\frac{S}{SES}\right|$ or $\left|\frac{K}{SEK}\right|$ are greater than `qnorm(0.975, 0, 1)` (the $97.5^{th}$ quantile of the standard normal, which is approximately 1.96) the data are considered non-normal. Using these ratios, a series of decisions is used to determine the best distribution choice. First, each ratio of $\left|\frac{S}{SES}\right|$ and $\left|\frac{K}{SEK}\right|$ are calculated, and if they are less than 1.96 for untransformed or log-transformed, the data are tentatively assigned as normal. If both the skewness and kurtosis ratios came back normal for the log-transformed data and the untransformed data, then we check: if $\left|\frac{S}{SES}\right|$ is smaller for the untransformed data than the log-transformed data, the distribution is finalized as normal, if it is larger than the distribution is finalized as log-normal. For all other circumstances where both the skewness and kurtosis ratios for the untransformed data were normal, the final distribution choice is normal. Similarly, for all other circumstances where both the skewness and kurtosis ratios for the log-transformed data were normal, the final distribution is log-normal. All other circumstances are designated for the skew-normal distribution. The distribution selection is implemented via the function `distribution_type()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, which is documented in Appendix B.
+To calculate the UPL, which is typically the 99$^{th}$ quantile of the average of three future emission test values, the posterior distributions of three new draws from the fitted probability distribution were averaged and then the UPL is determined as the 99$^{th}$ quantile of this resulting distribution. The fitted distribution is truncated by lower and upper bounds of (typically zero and three times the maximum value) to prevent physically improbable emissions, which prevents extreme values from long-tailed distributions biasing the UPL and otherwise has no effect on the results. The $2.5^{th}$ and $97.5^{th}$ quantiles of the posterior distributions of the predicted probability density $\hat{y_i}$ at each $x_i$ test run value were used to calculate 95\% CI for the goodness-of-fit metrics. The median of the posterior distributions of the predicted probability density $\hat{y_i}$ were used in comparisons to $y_i$ to calculate the $SSE$. The median of the posterior distributions for all $\hat{y_i}$ across the possible range of emission test run values was monitored for use in plotting the distributions and visual comparisons to the empirical distributions. All of these computations were done using the function `output_likelihood()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`. See Appendix B for more details. 
+
+The parameter estimation and UPL calculations for each distribution investigated were performed using the function `Bayesian_UPL()` in the `UPLforOAR` `R` package version `r packageVersion('UPLforOAR')`, which wraps the functions described above and concatenates the results for easy comparison. See Appendix B for more details. 
 
 ### UPL Calculation for Normal Data
 
-In the case of normally distributed data, the MACT floor limit is an UPL calculated as:
+In the case of normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean, and $\sigma$ the standard deviation:
 
 $$
-UPL = \overline{x} + t_{df,\alpha}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+y_i = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x_i-\mu)^{2}}{2\sigma^{2}}}
 $$
-Where $\overline{x}$ is the mean of the top performing sources calculated as $\overline{x}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}x_{i}$, $n$ is the number of test runs, $m$ is the number of future test runs, $\sigma^{2}$ is the variance calculate as $\sigma^{2} = \frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^2$, $df$ is the degrees of freedom calculated as $df = n-1$, and $t_{df,~\alpha}$ is the quantile of the *t*-distribution with $df$ degrees of freedom at $\alpha$ significance. This UPL calculation was performed in `R` using the `Normal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
 
 ### UPL Calculation for Log-normal Data
 
-In the case of log-normally distributed data, the MACT floor limit is an UPL calculated from a log-normal approximation described in Bhaumik and Gibbons, 2004 using the Gram-Charlier Type-A Series expansion. 
+In the case of log-normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of log-normally distributed emissions, $x_i$, is dependent on parameters $\mu$, the mean of $log(x_i)$ and $\sigma$, the standard deviation of $log(x_i)$: 
 
 $$
-UPL= e^{\hat{\mu}+\frac{\hat{\sigma}^2}{2}}+\frac{z_{\alpha}}{m}\sqrt{m e^{2\hat{\mu}+\hat{\sigma}^{2}}(e^{\hat{\sigma}^{2}}-1)+m^{2}e^{2\hat{\mu}+\hat{\sigma}^{2}}\left(\frac{\hat{\sigma}^{2}}{n}+\frac{\hat{\sigma}^{4}}{2(n-1)}\right)}
+y_i = \frac{1}{x_i\sqrt{2\pi \sigma^{2}}}e^{-\frac{(log(x_i)-\mu)^{2}}{2\sigma^2}}
 $$
-Where $n$ is the number of test runs, $m$ is the number of future test runs,  $\hat{\mu}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}log(x_{i})$ is the mean of the log-transformed data from the top performing sources, $\hat{\sigma}^{2}=\frac{1}{n-1}\displaystyle\sum_{i=1}^{n}(log(x_{i})-\hat{\mu})^{2}$ is the variance of the log-transformed data, and $z_{~\alpha}$ is the percentile of the log-normal distribution at $\alpha$ significance estimated using the trapezoidal rule from equation 26 in Bhaumik and Gibbons 2004:
-
-$$
-\int_{0}^{z_{\alpha}}\left|\left(1-\frac{\sqrt{\beta_{1z}}}{6}(3z-z^3)+\frac{(\beta_{2z-3})(3-6z^2+z^4)}{24} \right)\phi(z)\right|
-$$
-Where $\phi(z)$ is the standard normal and $z$ is a sequence from $-5$ to $5$ by intervals of $0.101$. The coefficients are calculated following equation 25 as:
-
-$$
-\beta_{2z} = \frac{e^{4\hat\sigma^2}+2e^{3\hat\sigma^2}+3e^{2\hat\sigma^2}-3}{m(e^{\hat\sigma^2}-1)^2}+3\left(1-\frac{1}{m}\right)
-$$
-
-and:
-
-$$
-\sqrt{\beta_{1z}} = \frac{\sqrt{e^{\hat\sigma^2}-1}(e^{\hat\sigma^2}+2)}{\sqrt{m}}
-$$
-
-This UPL calculation was performed in `R` using the `Lognormal_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
 
 ### UPL Calculation for Skew-normal Data
 
-The same UPL equation as for normal data is used, but the *t*-statistic is substituted for a new *t*-statistic that is iteratively adjusted for the skewed distribution until it achieves $\alpha$ level of significance. To achieve this, an approximation of the incomplete beta function, is used: 
-
-
-\begin{gather*}
-I_{~u_0}\left(a,~ b\right) \approx \frac{\Gamma(a,w)}{\Gamma(a)}+\frac{e^{-w}w^a}{\Gamma(a)}\bigg(\frac{a-1-w}{2b}+\frac{1}{(2b)^2}\bigg(\frac{a^3}{2}-\frac{5a^2}{3}+\frac{3a}{2}-\frac{1}{3}-w\left(\frac{3a^2}{2}-\frac{11a}{6}+\frac{1}{3}\right) \\
-+w^2\left(\frac{3a}{2}-\frac{1}{6}\right)-w^3\frac{1}{2} \bigg) \bigg)
-\end{gather*}
-
-
-Where $u_0$ and $w$ are defined as: 
+In the case of skew-normally distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the skew-normal distribution is defined by three parameters; location $\xi$, scale $\omega$, and skewness $\gamma$. This is equivalent to a normal distribution when $\gamma = 0$, it is right-skewed if $\gamma > 0$, and left-skewed if $\gamma < 0$. The probability density, $y_i$, of skewed distributed emissions is:
 
 $$
-u_0 = \frac{1}{1+\frac{t_{new}^{2}}{n-1}}, ~~ w=b\left(\frac{u_0}{1-u_0}\right)
-$$
-Where $n$ is the number of test runs and $t_{new}$ is the iteratively adjusted *t*-statistic. Six expanded terms of the incomplete beta function are calculated with $(a_i,~b_i)$ pairs: 
-
-$$
-b_1,~...,~b_6=\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~\frac{1}{2}, ~1, ~1
-$$ 
-and:
-$$
-a_1,~...,~a_6 = \frac{n-1}{2}, ~\frac{n+1}{2},~ \frac{n+3}{2}, ~ \frac{n+5}{2}, ~ \frac{n-1}{2}, ~ \frac{n+1}{2}
-$$
-These six incomplete beta function terms, $I_{u_0}(a_i,~ b_i)$, for $i~\epsilon~(1,~6)$, are then used in the subsequent calculation of the probability $P(t_{new})$ given the trial *t*-statistic $t_{new}$ and actual skewness $S$, and kurtosis $K$:
-
-\begin{gather*}
-P(t_{new})=1-\frac{I_{u_0}\left(a_1,~ b_1\right)}{2}-S\times \left(I_{u_0}\left(a_5,~ b_5\right)\times\left(\frac{2n-1}{6\sqrt{2n\pi}}\right)-I_{u_0}\left(a_6,~ b_6\right)\times\left(\frac{n-1}{3\sqrt{2n\pi}} \right)\right)+ \\
-K\times\left(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{n-1}{24}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(n+2)}{12n} \right)+I_{u_0}\left(a_3,~ b_3\right)\times\left(\frac{(n+4)(n-1)}{24n} \right)\right)- \\ 
-S^2\times\bigg(I_{u_0}\left(a_1,~ b_1\right)\times\left(\frac{(n-1)(2n+5)}{72}\right)-I_{u_0}\left(a_2,~ b_2\right)\times\left(\frac{(n-1)(2n^2+5n+8)}{24n} \right)- \\ 
-I_{u_0}\left(a_3,~ b_3\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{24n} \right)-I_{u_0}\left(a_4,~ b_4\right)\times \left(\frac{(n-1)(2n^2+5n+12)}{72n} \right)\bigg) 
-\end{gather*}
-
-Where $S$ and $K$ are the skewness and kurtosis estimates defined earlier. 
-
-First, the updated probability is calculated using the original *t*-statistic after accounting for skewness and kurtosis. If this $P(t)$ is within 0.0001 of $\alpha$, then the UPL is calculated with the original *t*-statistic as:
-
-$$
-UPL = \overline{x} + t_{df,\alpha}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+y_i = \frac{2}{\omega}\phi \left(\frac{x_i-\xi}{\omega}\right) \Phi \left(\gamma\left(\frac{x_i-\xi}{\omega}\right)\right)
 $$
 
-Which is the same as the UPL for normally distributed data. If, however, the updated probability $P(t)$ is more than 0.0001 different than $\alpha$, then a list of 20,000 potential $t_{new}$ are proposed in increasing or decreasing increments of 0.0001 (depending on whether $P(t)$ is less than or greater than $\alpha$). The first $t_{new}$ such that $P(t_{new})$ is within 0.0001 of $\alpha$ is selected as the new *t*-statistic to use in the UPL calculation for skew-normal data:
+Where $\phi(x)$ is the standard normal probability distribution, $\Phi(x)$ is its cumulative probability distribution function, and $x_i$ is transformed to $\frac{x_i-\xi}{\omega}$. Using the error function, this can be expanded to:
 
 $$
-UPL = \overline{x} + t_{new}~\sqrt{\sigma^2\left(\frac{1}{n}+\frac{1}{m}\right)}
+y_i = \frac{2}{\omega}\frac{1}{\sqrt{2\pi}}e^{-\frac{\left(\frac{x_i-\xi}{\omega}\right)^{2}}{2}}\frac{1}{2}\left[1+\frac{2}{\sqrt{\pi}}\int_0^{\gamma\frac{x_i-\xi}{\omega\sqrt{2}}}e^{-t^2}dt\right]
 $$
 
-This UPL calculation was performed in `R` using the `Skewed_UPL()` function from the `UPLforOAR` package version `r packageVersion('UPLforOAR')`. See Appendix B for the function details.
+### UPL Calculation for Gamma Data
+
+In the case of gamma distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of gamma distributed emissions, $x_i$, is dependent on parameters $\lambda$, the shape, and $\tau$, the rate:
+
+$$
+y_i = \frac{\tau^{\lambda}}{\Gamma(\lambda)}x_i^{\lambda-1}e^{-\tau x_i}
+$$
+
+\*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
+
+### UPL Calculation for Beta Data
+
+In the case of beta distributed data, the MACT floor limit is an UPL calculated as the $\alpha$-level quantile of the average of $m$ new emission runs, where the probability density, $y_i$, of beta distributed emissions, $x_i$, is dependent on parameters $\lambda$ and $\tau$:
+
+$$
+Y_i = \frac{\Gamma(\lambda + \tau)}{\Gamma(\lambda)\Gamma(\tau)}x_i^{\lambda -1}(1-x_i)^{\tau-1}
+$$
+
+\*Note that $\Gamma$ in this case is the gamma *function* not the Gamma probability distribution.
+
+
 
 ## Adjustment for Below Detection Level Emissions Data 
 
@@ -303,12 +283,12 @@ The second step in the process is to calculate three times the RDL to compare wi
 *Add any RDL content specific to your source category*
 
 ```{r table1, echo = FALSE, out.width = "100%", appendix = TRUE}
-col1=c('Subcategory 1','Subcategory 2','Subcategory 3','Subcategory 4',
-       'Subcategory 5')
+col1=c('Subcategory 1','Subcategory 2','Subcategory 3',
+       'Subcategory 4','Subcategory 5')
 col2=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
 col3=c('HAP 1, HAP 2', 'HAP 1', 'HAP 1, HAP 2, HAP 3', 'None', 'None')
-col4=c('HAP 1, HAP 2, X, Y, Z', 'HAP 1, X, Y, Z', 'HAP 1, HAP 2, HAP 3, X, Y, Z', 
-       'None', 'X, Y, Z')
+col4=c('HAP 1, HAP 2, X, Y, Z', 'HAP 1, X, Y, Z', 'HAP 1, HAP 2, HAP 3, 
+       X, Y, Z', 'None', 'X, Y, Z')
 table1=tibble(col1=col1,col2=col2,col3=col3,col4=col4)
 table1%>%knitr::kable(
   caption="Here is an example of a table in case you need one",
@@ -319,6 +299,7 @@ table1%>%knitr::kable(
 ```
 
 \newpage
+## MACT Floor Data Set
 
 *describe any data that was excluded here and why*
 
@@ -362,23 +343,23 @@ for (i in 1:length(check_HAPs)){
     pair2 = order_combn[2,i]
     type1 = env_list[[pair1]]$type
     type2 = env_list[[pair2]]$type
-    UPL1 = env_list[[pair1]]$UPL
-    UPL2 = env_list[[pair2]]$UPL
+    UPL1 = env_list[[pair1]]$results$fit_table$UPL
+    UPL2 = env_list[[pair2]]$results$fit_table$UPL
     if ((type1 == "New")&(UPL1 > UPL2)&(type2 == 'Existing')){
       env_list[[pair1]]$UPL_old = UPL1
-      env_list[[pair1]]$UPL = UPL2
+      env_list[[pair1]]$results$fit_table$UPL = UPL2
       env_list[[pair1]]$UPL_warn = TRUE
     } else if ((type2 == "New")&(UPL2 > UPL1)&(type1 == 'Existing')){
       env_list[[pair2]]$UPL_old = UPL2
-      env_list[[pair2]]$UPL = UPL1
+      env_list[[pair2]]$results$fit_table$UPL = UPL1
       env_list[[pair2]]$UPL_warn = TRUE
-    } 
+    }
   }
 }
 ```
 ```{r, echo = FALSE, results = 'asis'}
 for (i in 1:length(env_list)){
-res = knit_child('Example_report_children/Analysis_results.Rmd', 
+res = knit_child('Example_report_children/Bayes_Analysis_results.Rmd', 
                            envir = env_list[[i]], quiet = TRUE)
 cat(unlist(res), sep = '\n')
 }
@@ -391,7 +372,7 @@ The table below includes all UPL calculations for `r params$source` MACT floor a
 ```{r UPL_table, out.width = "80%", appendix = TRUE}
 UPL_list = c()
 for (i in 1:length(env_list)){
-  UPL_temp = signif(env_list[[i]]$UPL, 4)
+  UPL_temp = signif(env_list[[i]]$results$fit_table$UPL, digits = 4)
   UPL_list = c(UPL_list, UPL_temp)
 }
 dat_UPL = tibble(HAP = HAP_list, 
@@ -408,12 +389,22 @@ dat_UPL %>% knitr::kable(
                 "UPL", "Significance", "No. Future<br/>Runs"))
 ```
 
+## Settings used in Bayesian MCMC
+
+```{r, echo = FALSE, results = 'asis', appendix = FALSE}
+for (i in 1:length(env_list)){
+res=knit_child('Example_report_children/Bayes_MCMC_settings.Rmd', 
+                           envir = env_list[[i]], quiet = TRUE)
+cat(unlist(res), sep = '\n')
+}
+```
+
 \newpage
 ## References
 
-Bhaumik, D.K. and Gibbons, R.D. 2004. An Upper Prediction Limit for the Arithmetic Mean of a Lognormal Random Variable. Technometrics, 46(2):239-248. 
-
 Dragan Doric, et al. 2007. On measuring skewness and kurtosis. Springer Science + Buisness Media B. V. 2007.
+
+Hobbs, N. Thompson and Mevin B. Hooten. 2015. "Bayesian Models: A statistical Primer for Ecologists". Princeton University Press.
 
 Renault O. & O. Scaillet. On the way to recovery: A parametric bias free estimation of recovery rate densities. 2004. Journal of Banking and Finance. 28:12 p. 2915-2931.
 
@@ -445,38 +436,72 @@ MACT_existing
 MACT_new
 ```
 
-### distribution_type()
+### write_likelihood()
 ```{r function_docs3, results = TRUE, message = TRUE, echo = FALSE}
-distribution_type
+readLines("./../../R/write_likelihood.R")
 ```
 
-### Normal_UPL()
+### setup_likelihood()
 ```{r function_docs4, results = TRUE, message = TRUE, echo = FALSE}
-Normal_UPL
+setup_likelihood
 ```
 
-### Lognormal_UPL()
+### run_likelihood()
 ```{r function_docs5, results = TRUE, message = TRUE, echo = FALSE}
-Lognormal_UPL
+run_likelihood
 ```
 
-### Skewed_UPL()
+### output_likelihood()
 ```{r function_docs6, results = TRUE, message = TRUE, echo = FALSE}
-Skewed_UPL
+output_likelihood
 ```
 
-### obs_density()
+### converge_likelihood()
 ```{r function_docs7, results = TRUE, message = TRUE, echo = FALSE}
-obs_density
+converge_likelihood
 ```        
 
-### make_environment()
+### converge_figs()
 ```{r function_docs8, results = TRUE, message = TRUE, echo = FALSE}
+converge_figs
+```        
+
+### fit_likelihood()
+```{r function_docs9, results = TRUE, message = TRUE, echo = FALSE}
+fit_likelihood
+```   
+
+### Bayesian_UPL()
+```{r function_docs10, results = TRUE, message = TRUE, echo = FALSE}
+Bayesian_UPL
+```  
+
+### obs_density()
+```{r function_docs11, results = TRUE, message = TRUE, echo = FALSE}
+obs_density
+```  
+
+### make_environment()
+```{r function_docs12, results = TRUE, message = TRUE, echo = FALSE}
 make_environment
-``` 
+```  
+
+### JAGS Model Scripts
+```{r function_docs13, results = TRUE, message = TRUE, echo = FALSE}
+readLines("./../JAGS/Emission_beta_JAGS.R")
+readLines("./../JAGS/Emission_gamma_JAGS.R")
+readLines("./../JAGS/Emission_lnorm_JAGS.R")
+readLines("./../JAGS/Emission_normal_JAGS.R")
+readLines("./../JAGS/Emission_skewed_JAGS.R")
+readLines("./../JAGS/Manual_emission_beta_JAGS.R")
+readLines("./../JAGS/Manual_emission_gamma_JAGS.R")
+readLines("./../JAGS/Manual_emission_lnorm_JAGS.R")
+readLines("./../JAGS/Manual_emission_normal_JAGS.R")
+readLines("./../JAGS/Manual_emission_skewed_JAGS.R")
+```
 
 \newpage
-## Appendix C: System and Package Versions
+## Appendix C: System and package versions
 ```{r versions, results = TRUE, echo = FALSE}
 sessionInfo()
 ```
@@ -485,13 +510,19 @@ sessionInfo()
 ## Appendix D: Rmd Code Chunks
 
 ### Main document code chunks:
+
 ```{r ref.label = knitr::all_labels(appendix == TRUE), echo = TRUE, eval = FALSE}
 ```
 
 ### Child document code chunks:
 
 Analysis_template.Rmd
-```{embed, file = "Example_report_children/Analysis_template.Rmd", echo = TRUE}
+```{embed, file = "Example_report_children/Bayes_Analysis_template.Rmd", echo = TRUE}
+
+```
+
+Bayes_MCMC_settings.Rmd
+```{embed, file = "Example_report_children/Bayes_MCMC_settings.Rmd", echo = TRUE}
 
 ```
 
@@ -501,7 +532,7 @@ Source_variance.Rmd
 ```
 
 Analysis_results.Rmd
-```{embed, file = "Example_report_children/Analysis_results.Rmd", echo = TRUE}
+```{embed, file = "Example_report_children/Bayes_Analysis_results.Rmd", echo = TRUE}
 
 ```
 
