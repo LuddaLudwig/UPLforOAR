@@ -1,5 +1,5 @@
 
-#### `r type` Source `r HAP` `r subcat_text`
+### `r type` Source `r HAP` `r subcat_text`
 
 The final data set for the `r HAP` `r type` source MACT floor `r subcat_text` included `r nrow(df)` test runs from `r length(unique(df$sources))` sources. The best performer for the new source calculation was `r best_source` with an average emission of `r signif(mean(df$emissions), digits = 4)` (`r meas_unit`) from `r nrow(df)` test runs. 
 

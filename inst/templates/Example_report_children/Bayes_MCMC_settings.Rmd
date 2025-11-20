@@ -1,5 +1,5 @@
 
-#### `r type` Source `r HAP` `r subcat_text`
+### `r type` Source `r HAP` `r subcat_text`
 
 The selected distribution for the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution, with the likelihood truncated such that it was zero outside the bounds of (`r minY`, `r signif(maxY, 3)`) emissions. The parameter prior distributions, MCMC initial chain values, and Gelman-Rubin diagnostics for convergence are listed in the table below, followed by the random number generator (RNG) state that was used.
 
@@ -56,12 +56,12 @@ if (!manual_prior){
     chain1 = c(signif(xi, 3), signif(omega, 3), signif(alpha, 3))
     chain2 = c(signif(1.5 * xi, 3), signif(0.5 * omega, 3), signif(0.5 * alpha, 3))
     chain3 = c(signif(0.5 * xi, 3), signif(1.5 * omega, 3), signif(1.5 * alpha, 3))
-    diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
-                    signif(results2$conv_output$gelman_diag[2],3),
-                    signif(results2$conv_output$gelman_diag[3],3))
-    convYN = c(results2$conv_output$convYN[1],
-               results2$conv_output$convYN[2],
-               results2$conv_output$convYN[3])
+    diagnostics = c(signif(results$conv_output$gelman_diag[1],3),
+                    signif(results$conv_output$gelman_diag[2],3),
+                    signif(results$conv_output$gelman_diag[3],3))
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2],
+               results$conv_output$convYN[3])
   } else if(distr == "Lognormal"){
     sdY =  sd(df$ln_emiss)
     meanY = mean(df$ln_emiss)
@@ -164,12 +164,12 @@ if (!manual_prior){
     chain3 = c(signif(0.9 * prior_list[2], 3), 
                signif(initial2, 3), 
                signif(initial3, 3))
-    diagnostics = c(signif(results2$conv_output$gelman_diag[1],3),
-                    signif(results2$conv_output$gelman_diag[2],3),
-                    signif(results2$conv_output$gelman_diag[3],3))
-    convYN = c(results2$conv_output$convYN[1],
-               results2$conv_output$convYN[2],
-               results2$conv_output$convYN[3])
+    diagnostics = c(signif(results$conv_output$gelman_diag[1],3),
+                    signif(results$conv_output$gelman_diag[2],3),
+                    signif(results$conv_output$gelman_diag[3],3))
+    convYN = c(results$conv_output$convYN[1],
+               results$conv_output$convYN[2],
+               results$conv_output$convYN[3])
   } else if (distr == 'Gamma'){
     parameter = c('Rate', 'Shape')
     prior = c(paste0('~dunif (', prior_list[1], ', ', prior_list[2], ')'),

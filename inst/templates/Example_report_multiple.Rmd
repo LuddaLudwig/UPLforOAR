@@ -146,7 +146,7 @@ The purpose of this memorandum is to present the methodology and the results of 
 
 ## MACT Floor Analysis Hazardous Air Pollutants
 
-The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(HAP_list, collapse = ', ')`.
+The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(unique(HAP_list), collapse = ', ')`.
 
 ## MACT Floor Analysis subcategories
 
@@ -368,7 +368,7 @@ for (i in 1:length(check_HAPs)){
       env_list[[pair1]]$UPL_old = UPL1
       env_list[[pair1]]$UPL = UPL2
       env_list[[pair1]]$UPL_warn = TRUE
-    } else if ((type2 == "New")&(UPL2 > UPL1)(type1 == 'Existing')){
+    } else if ((type2 == "New")&(UPL2 > UPL1)&(type1 == 'Existing')){
       env_list[[pair2]]$UPL_old = UPL2
       env_list[[pair2]]$UPL = UPL1
       env_list[[pair2]]$UPL_warn = TRUE

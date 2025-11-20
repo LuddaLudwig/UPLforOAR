@@ -8,7 +8,6 @@ cat(paste0("The ", HAP, " ", subcat_text," UPL calculated for the New source dat
 The distribution that best represents the `r type` source data set for `r HAP` `r subcat_text` was the `r distr` distribution, with a corresponding UPL of `r signif(results$fit_table$UPL, digits = 4)` (`r meas_unit`). The `r distr` distribution was the best fit distribution with a $SSE$ of `r signif(results$fit_table$SSE, digits = 4)`, `r results$fit_table$Obs_in_CI` out of `r nrow(df)` emission values within the 95\% CI of predictions, and the probability density function integrated to approximately `r signif(results$fit_table$pdf_integral, digits = 2)`.
 
 ```{r, echo = FALSE, appendix = FALSE, fig.dim = c(5, 4), fig.align = "center", fig.cap = "Observation density of  emissions for population of test runs. The obseration data are indicated in black as points and a rug along the axis, with the observation density distribution as a black line. The fitted distribution that is the basis of the UPL estimate is colored orange. The average of the emission test runs is the vertical black line and the UPL result is the vertical orange line."}
-
 if (!is.na(subcat_name)){
   ggplot()+
   geom_line(data = results$pred_pdf_dat, size = 0.75,
@@ -85,25 +84,25 @@ if (is.null(bw)){
 } else if (is.character(bw)){
   raw_dens = npuniden.boundary(X = df$emissions, Y = xvals,
                                a = low, b = up, proper = TRUE,
-                               kertype = kernel, bwmethod=bw)
+                               kertype = kernel_arg, bwmethod=bw)
   bw_result = raw_dens$h
 } else if (is.numeric(bw)){
   bw_result = bw
 }
-if (any(results$conv_output$convYN == 'No')){
+if (any(results$conv_output$convYN != 'Yes')){
   conv_text = TRUE
 } else {
   conv_text = FALSE
 }
 ```
 
-The density plot above of emission test run data was created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `r kernel` kernel type, bounds of (`r c(low, up)`), and a bandwidth of `r signif(bw_result, 3)`. For further details see the `R` code in Appendix B. 
+The density plot above of emission test run data was created using `ggplot2` in `R`. The density curves were generated using `obs_density()` in `UPLforOAR` version `r packageVersion('UPLforOAR')`, using a `r kernel_arg` kernel type, bounds of (`r c(low, up)`), and a bandwidth of `r signif(bw_result, 3)`. For further details see the `R` code in Appendix B. 
 
 ```{r, eval = !conv_text, echo = FALSE, results = 'asis'}
 cat(paste0("The ", distr, " distribution's parameters converged well, passing all Gelman-Rubin diagnostic checks and with well-mixed MCMC chains (left figures below) and an approximately normal posterior distributions around the converged value (right figures below)."))
 ```
 ```{r, eval = conv_text, echo = FALSE, results = 'asis'}
-cat(paste0("The ", distr, " distribution's parameters did not converge, failing some Gelman-Rubin diagnostic checks. Check the figures below to see if MCMC chains (left figures below) are well-mixed and posterior distributions are approximately normal around the converged value (right figures below). Results from this distribution model should not be used until the convergence issues is corrected. Consider a more appropriate choice of distribution, or manually specifying better prior and likelihood limits."))
+cat(paste0("The ", distr, " distribution's parameters did not converge, failing some Gelman-Rubin diagnostic checks. Check the figures below to see if MCMC chains (left figures below) are well-mixed and posterior distributions are approximately normal around the converged value (right figures below). Results from this distribution model should not be used until the convergence issues is corrected. Consider a more appropriate choice of distribution, or manually specifying better priors and likelihood limits."))
 ```
 ```{r, echo = FALSE, results = FALSE, appendix = TRUE, fig.height = 4, out.width = "100%", fig.align = "center", fig.cap = "Convergence figures for distribution parameters."}
 part1 = setup_likelihood(distribution = distr, data = df,

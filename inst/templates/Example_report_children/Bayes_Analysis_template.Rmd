@@ -63,8 +63,10 @@ if (!exists('minY')){
 }
 if (!exists('xvals')){
   xvals = NULL
-} else if (is.na(xvals)){
-  xvals = NULL
+} else if (!is.null(xvals)){
+  if (is.na(xvals)){
+    xvals = NULL 
+  }
 }
 if (!exists('up')){
   up = Inf
@@ -76,15 +78,19 @@ if (!exists('low')){
 } else if (is.na(low)){
   low = 0
 }
-if (!exists('kernel')){
-  kernel = 'gamma'
-} else if (is.na(kernel)){
-  kernel = 'gamma'
+if (!exists('kernel_arg')){
+  kernel_arg = 'gamma'
+} else if (is.null(kernel_arg)){
+  kernel_arg = 'gamma'
+} else if (is.na(kernel_arg)){
+  kernel_arg = 'gamma'
 }
 if (!exists('bw')){
   bw = NULL
-} else if (is.na(bw)){
-  bw = NULL
+} else if (!is.null(bw)){
+  if (is.na(bw)){
+    bw = NULL 
+  }
 }
 if (!exists('manual_prior')){
   manual_prior = FALSE
@@ -93,20 +99,24 @@ if (!exists('manual_prior')){
 }
 if (!exists('prior_list')){
   prior_list = NULL
-} else if (is.na(prior_list)){
-  prior_list = NULL
+} else if (!is.null(prior_list)){
+  if (is.na(prior_list)){
+    prior_list = NULL 
+  }
 }
 if (!exists('RNG.state')){
   RNG.state = NULL
-} else if (is.na(RNG.state)){
-  RNG.state = NULL
+} else if (!is.null(RNG.state)){
+  if (is.na(RNG.state)){
+    RNG.state = NULL 
+  }
 }
 results = Bayesian_UPL(data = df, distr_list = distr,
                        emissions = 'emissions',
-                       future_runs = future_runs, 
+                       future_runs = future_runs,
                        significance = significance, RNG.state = RNG.state,
                        maxY = maxY, minY = minY, xvals = xvals,
-                       up = up, low = low,  kernel = kernel, bw = bw,
+                       up = up, low = low,  kernel = kernel_arg, bw = bw,
                        convergence_report = FALSE, random = FALSE,
                        manual_prior = manual_prior, prior_list = prior_list)
 ```

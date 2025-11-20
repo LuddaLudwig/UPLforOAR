@@ -121,9 +121,9 @@ sig_list = c(0.99, 0.99, 0.99, 0.99)
 distr_list = c('Skewed', 'Skewed', 'Skewed', 'Normal')
 
 # Additional optional arguments to Bayesian_UPL() can be passed as well.
-# For example, suppose you want to truncate by a non-default value but only for 
-# the last UPL calculation for Chemical Y: maxY_list = c(NA, NA, NA, new_maxY)
-# Then include below: maxY = maxY_list[i] 
+# For example, suppose you want to a gaussian kernel for density figues but only for 
+# the last UPL calculation for Chemical Y: kernel_list = c(NA, NA, NA, 'gaussian1')
+# Then include below: kernel_arg = kernel_list[i] 
 
 # Now we can create a list of environments to populate the .Rmd document:
 env_list = list()
@@ -140,14 +140,13 @@ for (i in 1:length(HAP_list)){
                               CAA_section = params$CAA_section,
                               national_N = params$national_N,
                               future_runs = future_run_list[i], 
-                              significance = sig_list[i],
-                              bw = bw_list[i],
-                              kernel = kernel_list[i])
+                              significance = sig_list[i])
   env_list = c(env_list, env_temp)
 }
-
 # You also use the make_environment() function outside of the for loop
+```
 
+```{r, echo = FALSE, results = FALSE}
 # Run the analysis for each environment set:
 for (i in 1:length(env_list)){
   cat(asis_output(knit_child('Example_report_children/Bayes_Analysis_template.Rmd',
@@ -165,7 +164,7 @@ The purpose of this memorandum is to present the methodology and the results of 
 
 ## MACT Floor Analysis Hazardous Air Pollutants
 
-The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(HAP_list, collapse = ', ')`.
+The specific chemicals, compounds, or groups of compounds designated to be HAP are listed in *CAA section 112(b)*. From this HAP list, the following HAP, among others, were identified to be emitted from `r params$source` units and were included in the MACT floor analysis: `r paste0(unique(HAP_list), collapse = ', ')`.
 
 ## MACT Floor Analysis subcategories
 
@@ -350,11 +349,10 @@ for (i in 1:length(check_HAPs)){
       env_list[[pair1]]$UPL_old = UPL1
       env_list[[pair1]]$results$fit_table$UPL = UPL2
       env_list[[pair1]]$UPL_warn = TRUE
-    } else if ((type2 == "New")&(UPL2 > UPL1)(type1 == 'Existing')){
+    } else if ((type2 == "New")&(UPL2 > UPL1)&(type1 == 'Existing')){
       env_list[[pair2]]$UPL_old = UPL2
       env_list[[pair2]]$results$fit_table$UPL = UPL1
       env_list[[pair2]]$UPL_warn = TRUE
-
     }
   }
 }
@@ -391,7 +389,7 @@ dat_UPL %>% knitr::kable(
                 "UPL", "Significance", "No. Future<br/>Runs"))
 ```
 
-### Settings used in Bayesian MCMC
+## Settings used in Bayesian MCMC
 
 ```{r, echo = FALSE, results = 'asis', appendix = FALSE}
 for (i in 1:length(env_list)){
