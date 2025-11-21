@@ -46,8 +46,7 @@ Imports:
     shinycssloaders,
     sn,
     stringr,
-    tibble,
-    tidyr
+    tibble
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Suggests: 
