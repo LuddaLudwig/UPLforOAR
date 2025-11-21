@@ -122,15 +122,19 @@ calculate goodness of fit metrics using \code{\link[=fit_likelihood]{fit_likelih
 independent runs defining the population distribution, hierarchical
 dependency within groups is allowed with the group-level distribution
 parameters drawn from the overall population distribution. Results include
-\verb{$fit_table}: a tibble with the \code{UPL}, \code{pdf_integral}, \code{SSE}, and count of
-observations within 95 percent CI for each distribution in \code{'distr_list'},
+\verb{$fit_pop}: a tibble with the \code{UPL}, \code{SSE_tot} the total Sum of Squared Errors,
+and total count of observations within 95 percent CI for each group and
+distribution in \code{'distr_list'}, \verb{$fit_grp} with group level \code{SSE}, counts of
+observations in 95 percent CI, and pdf integration.
 \verb{$conv_output}: a tibble with the parameters, Gelman-Rubin diagnostics, and if
 the converged for distribution in \code{distr_list}, \verb{$obs_pdf_dat}: a tibble with
 the emissions observations, corresponding observation densities, median,
 upper, and lower 95 percent CI around predicted densities for the distribution in
 \code{distr_list}, and a 1 if the observation is within the 95 percent CI, a 0 otherwise,
-and \verb{$pred_pdf_dat}:a tibble with the predicted probability density \code{pdf_hat},
-the observation density \code{ydens} for each value in the range of emissions in
+and \verb{$pred_pdf_pop}: a tibble with the predicted probability density \code{pdf_hat}
+for the parent population density function, \verb{$pred_pdf_grp} a tibble with the
+predicted probability density \code{pdf_hat} by group and the empirical
+observation density \code{ydens} for each value in the range of emissions in
 \code{x_hat}. The maximum emission value of distributions, \code{maxY}, the ordered range
 emissions to predict to \code{xvals}, and the prior distributions and initial
 values are all automatically supplied from the emissions data to be fully

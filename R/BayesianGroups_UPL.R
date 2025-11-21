@@ -76,15 +76,19 @@
 #' independent runs defining the population distribution, hierarchical
 #' dependency within groups is allowed with the group-level distribution
 #' parameters drawn from the overall population distribution. Results include
-#' `$fit_table`: a tibble with the `UPL`, `pdf_integral`, `SSE`, and count of
-#' observations within 95 percent CI for each distribution in `'distr_list'`,
+#' `$fit_pop`: a tibble with the `UPL`, `SSE_tot` the total Sum of Squared Errors,
+#' and total count of observations within 95 percent CI for each group and
+#' distribution in `'distr_list'`, `$fit_grp` with group level `SSE`, counts of
+#' observations in 95 percent CI, and pdf integration.
 #' `$conv_output`: a tibble with the parameters, Gelman-Rubin diagnostics, and if
 #' the converged for distribution in `distr_list`, `$obs_pdf_dat`: a tibble with
 #' the emissions observations, corresponding observation densities, median,
 #' upper, and lower 95 percent CI around predicted densities for the distribution in
 #' `distr_list`, and a 1 if the observation is within the 95 percent CI, a 0 otherwise,
-#' and `$pred_pdf_dat`:a tibble with the predicted probability density `pdf_hat`,
-#' the observation density `ydens` for each value in the range of emissions in
+#' and `$pred_pdf_pop`: a tibble with the predicted probability density `pdf_hat`
+#' for the parent population density function, `$pred_pdf_grp` a tibble with the
+#' predicted probability density `pdf_hat` by group and the empirical
+#' observation density `ydens` for each value in the range of emissions in
 #' `x_hat`. The maximum emission value of distributions, `maxY`, the ordered range
 #' emissions to predict to `xvals`, and the prior distributions and initial
 #' values are all automatically supplied from the emissions data to be fully
@@ -154,7 +158,7 @@ BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'G
                                     xvals = xvals)
       mod_output = output_likelihoodGroup(jags_model_run = mod_run,
                                           significance = significance)
-      mod_fit = fit_likelihood(likelihood_result = mod_output, up = up, low = low,
+      mod_fit = fit_likelihoodGroup(likelihood_result = mod_output, up = up, low = low,
                                kernel = kernel, bw = bw)
       mod_output_list[[j]] = mod_fit
       mod_converge = converge_likelihoodGroup(mod_run)
@@ -177,30 +181,41 @@ BayesianGroups_UPL = function(distr_list = c('Normal', 'Skewed', 'Lognormal', 'G
                       output_file = paste0('BayesianGroup_UPL_convergence_',
                                            format(Sys.time(), "%m%d%Y-%H%M")))
   }
-  fit_table = tibble::tibble(distr = unlist(lapply(mod_output_list, '[[','distr')),
+  fit_pop = tibble::tibble(distr = unlist(lapply(mod_output_list, '[[','distr')),
                              UPL = (as.numeric(lapply(mod_output_list, '[[','UPL_Bayes'))),
-                             SSE = (as.numeric(lapply(mod_output_list, '[[','SSE'))),
-                             Obs_in_CI = (as.numeric(lapply(mod_output_list, '[[','good_vals'))),
-                             pdf_integral = (as.numeric(lapply(mod_output_list, '[[','pdf_integral')))
+                             SSE_tot = (as.numeric(lapply(mod_output_list, '[[','SSE_tot'))),
+                             Obs_in_CI_tot = (as.numeric(lapply(mod_output_list, '[[','good_vals_tot')))
   )
   state = mod_output_list[[length(distr_list)]]$state
+  fit_grp = tibble::tibble()
+  for (i in 1:length(distr_list)){
+    fit_dat_temp = mod_output_list[[i]]$fit_dat
+    fit_grp = rbind(fit_grp, fit_dat_temp)
+  }
   obs_pdf_dat = tibble::tibble()
   for (i in 1:length(distr_list)){
     obs_temp = mod_output_list[[i]]$obs_pdf_dat
     obs_pdf_dat = rbind(obs_pdf_dat, obs_temp)
   }
-  pred_pdf_dat = tibble::tibble()
+  pred_pdf_grp = tibble::tibble()
   for (i in 1:length(distr_list)){
-    pred_temp = mod_output_list[[i]]$xhat_pdf_dat
-    pred_pdf_dat = rbind(pred_pdf_dat, pred_temp)
+    pred_temp = mod_output_list[[i]]$xhat_pdf_grp
+    pred_pdf_grp = rbind(pred_pdf_grp, pred_temp)
+  }
+  pred_pdf_pop = tibble::tibble()
+  for (i in 1:length(distr_list)){
+    pred_temp = mod_output_list[[i]]$xhat_pdf_pop
+    pred_pdf_pop = rbind(pred_pdf_pop, pred_temp)
   }
   if (any(conv_output$convYN != "Yes")){
     warning('Some parameters have not converged')
   }
-  return_list = list(fit_table = fit_table,
+  return_list = list(fit_pop = fit_pop,
+                     fit_grp = fit_grp,
                      conv_output = conv_output,
                      obs_pdf_dat = obs_pdf_dat,
-                     pred_pdf_dat = pred_pdf_dat,
+                     pred_pdf_pop = pred_pdf_pop,
+                     pred_pdf_grp = pred_pdf_grp,
                      state = state)
   return(return_list)
 }
