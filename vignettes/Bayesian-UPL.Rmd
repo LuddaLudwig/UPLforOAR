@@ -196,7 +196,8 @@ designed to run with minimal user input needed.
 
 ```{r bayesian_UPL, echo = TRUE, results = FALSE}
 distributions = c('Beta', 'Gamma', 'Lognormal', 'Normal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss,  emissions = 'emissions',
+results = Bayesian_UPL(data = dat_emiss, 
+                       emissions = 'emissions',
                        distr_list = distributions)
 ```
 
