@@ -323,6 +323,8 @@ ggplot()+
            alpha = 0.5, outside = TRUE, color = 'black')+
   coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
   scale_fill_manual(values = palette_line)+
+  guides(linetype = guide_legend(nrow = 2, byrow = TRUE),
+         color = guide_legend(nrow = 2, byrow = TRUE))+
   scale_linetype_manual(values = c(1, 2, 3), 
                         labels = c('Frequentist', 'Unbounded', 'Zero bounded'))+
   facet_wrap(~distr+type, scales = 'fixed', nrow = 3)+
