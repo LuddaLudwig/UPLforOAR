@@ -30,6 +30,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
+  seed_list = seq(1, 300, by = 1)
   if (distribution == "Skewed"){
     xi_pop = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pop_xi_mu")))
@@ -77,7 +78,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
         }
       } else {
         for (k in 1:future_runs){
-          set.seed(12)
+          set.seed(seed_list[k])
           hat_quant[i,k] = sample(x = xvals, size = 1,
                                   prob = Fy_sn, replace = T)
         }
