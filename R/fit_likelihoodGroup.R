@@ -70,7 +70,9 @@ fit_likelihoodGroup = function(likelihood_result, up = Inf, low = 0,
       obs_pdf_dat$inCI[k] = 0
     }
   }
-  xhat_pdf_grp = dplyr::full_join(grp_pdf_temp, obs_den_df, by = c('x_hat', 'group'))
+  xhat_pdf_grp = dplyr::full_join(grp_pdf_temp, obs_den_df,
+                                  by = c('x_hat', 'group'))
+  xhat_pdf_grp$distr = rep(likelihood_result$distr, nrow(xhat_pdf_grp))
   SSE = (sum((obs_pdf_dat$ydens - obs_pdf_dat$med)^2))
   pdf_integral = sfsmisc::integrate.xy(pred_pdf_temp$x_hat,
                                        pred_pdf_temp$pdf_hat)
