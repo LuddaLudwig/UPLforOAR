@@ -46,4 +46,177 @@ library(patchwork)
 
 One of the benefits of using the Bayesian method for UPL calculations, is that there are many ways the basic application in `Bayesian_UPL()` can be expanded upon for complex situations that need more nuance. Hierarchical Bayesian modeling offers solutions to many situations that cannot be handled when using `Normal_UPL()`, `Lognormal_UPL()`, or `Skewed_UPL()` due to their restrictive assumptions. For example, the assumption that emission values were perfectly measured is often not valid, and we would like a method that can take into account measurement uncertainty. The hierarchical structure we can use with Bayesian methods can allow us to say that the *true* emission value is a latent, unobserved, state, but we can use a prior distribution to inform it with a mean and variance based on the observed measurement and its associated uncertainty. The *true* emission values then inform the likelihood distribution for the population of top performing source emissions. 
 
-Another assumption that is not always valid is that the emission test run values are all independent of one another. Typically, there are three runs within a test with some spacing of time between them to encourage independence, which might be minutes or hours depending on the type of measurement. Some sources might only have one test a year, or many within a year, or a much longer or shorter record of testing. 
+Another assumption that is not always valid is that the emission test run values are all independent of one another. Typically, there are three runs within a test with some spacing of time between them to encourage independence, which might be minutes or hours depending on the type of measurement. Some sources might only have one test a year, or many within a year, or a much longer or shorter record of testing. It is easy to imagine that there are circumstances where emissions within a test are more similar to each other than a test ten years prior. We can plot emission variance by source and see that sometimes emissions are more similar within a source than between sources. Other possible levels of grouping might be geographic region, or something related to the composition of up stream materials. As long as this grouping structure is *not* equivalent to different types of control devices, then this might be a source of variance we want to account for in the likelihood models. Fundamentally, when we have non-independence issues, fitting a single likelihood distribution when the reality is a composite of different distributions will be difficult to do well.  Furthermore, our objective when setting a standard is to base it on the emissions from the top performing sources. If the data set of top performing sources is deeply unbalanced, for example one source has 56 emission observations and the other four sources only have 3 observations each, then the UPL we calculate is being largely determined by a single source. 
+
+All of these issues can be handled when using hierarchical Bayesian methods. A generic type of hierarchical Bayesian modeling is implemented in `BayesianGroups_UPL()`. It works very similar to `Bayesian_UPL()`, and you should familiarize yourself with the contents of `vignette("Bayesian-UPL")` before using the hierarchical version. The main difference between the two is the introduction of a generic grouping variable that is specified in the argument `group`. This group is `'sources'` by default, but can be set to any character or factor variable in the data set using either the variable name or column position. When the likelihood model is run, a population-wide parent distribution, and a distribution for each level of the group is fit. The group-level distributions are determined based on the emissions in each group, and the population of emissions as whole, since the parameters defining the group-level distributions are drawn from likelihood of the population-wide parameters. Really unbalanced data sets are better balanced through this process of "borrowing strength". We calculate the UPL as the percentile at our desired significance level (usually 0.99) of the average of (usually three) future emission values, where these values are drawn from the population-wide parent distribution. We assess goodness-of-fit by comparing the source-specific distributions of our emissions observations.
+
+## Example
+
+### Load data and check group-level variance:
+
+First, let's load and example data set and plot the density of emissions by source. This data set of HCl emissions from lime processing has five top sources for determining the UPL. Below, we set sources to be a 'factor'. This assigns each unique level of the variable to an integer. In this example, it is handled alphabetically (since we didn't specify an order), so source 'A' will be `1`, 'B' is `2`, etc. It is not necessary to remake the group variable as a factor since the subsequent functions we use will do this for us if we don't, but it is good practice so we can know the factor levels correspond as we expect them to.
+
+```{r load, echoc = TRUE}
+dat_emiss = read.csv("Example_data1.csv")
+dat_emiss$sources = as.factor(dat_emiss$sources)
+levels(dat_emiss$sources)
+```
+
+The source distributions are all quite different. Sources A and B have very low emissions with A in particular having very little variance and B having many more observations than any other source. Sources C, D, and E have higher emissions and D and E have very large variance. This is an unbalanced situation where a single overall distribution assuming independent runs might not be the best way to represent emissions.
+
+```{r figure1, echo = TRUE, fig.dim = c(5.5,4), fig.align = "center", fig.cap = "Observation density of Lime HCl emissions by top performing source."}
+ggplot(aes(emissions, fill = sources), data = dat_emiss)+
+  geom_density(alpha = 0.5, trim = FALSE, bounds = c(0, Inf))+
+  multi_source_theme()+theme(legend.text = element_text(size = 8))+
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE),
+         color = guide_legend(nrow = 2, byrow = TRUE))+
+  scale_x_continuous(expand = expansion(mult =c (0,0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0,0.05)))+
+  geom_rug(sides = 'b', aes(x = emissions, color = sources),
+           alpha = 0.5, outside = TRUE)+coord_cartesian(clip = 'off')+
+  ggtitle("Source Variance")+
+  ylab("Density")+xlab("HCl emissions (lb/ton stone fed lime)")+
+  labs(fill = 'Top sources', color = 'Top sources')
+```
+
+### Explore distriubtions with hierarchical structures
+
+Similar to the steps outlined in `vignette("Bayesian-UPL")`, we will next explore possible likelihood distributions using `BayesianGroups_UPL()`. In this case, when we set a distribution to be `'Normal`', for example, we are fitting a normal distribution to every group-level and the overall population. It is possible to mix-and-match distributions, though that JAGS model would need to be written for that specific scenario (see section on custom models in `vignette("Bayesian-UPL")`). For this example, we will be using the source as the grouping variable.
+
+```{r bayesian_UPL, echo = TRUE, results = FALSE}
+distributions = c('Gamma', 'Lognormal', 'Normal', 'Skewed')
+results = BayesianGroups_UPL(data = dat_emiss, 
+                             group = 'sources',
+                             emissions = 'emissions',
+                             distr_list = distributions)
+```
+
+First, let's look at plots of the resulting distributions. The points and error 
+bars on these figures represent the median and 95\% confidence interval around 
+the predicted probability for each emission observation, using the associated 
+likelihood distribution. The colored probability curves indicate the 
+predicted likelihood across a range of possible emission values, which by default is 
+`seq(0, 3*max(data$emissions, length.out=1024))`, but can be changed by supplying 
+the `xvals` argument to `Bayesian_UPL()`. The results for plotting the densities 
+at observations including error bars are stored in `results$obs_pdf_dat`, and 
+those for plotting the densities along the range of `xvals` are stored in `results$pred_pdf_grp`.
+
+```{r figure2, echo = FALSE, out.width = "100%", fig.height = 9, fig.align = "center", fig.cap = "Fitted likelihood distributions (columns) for Lime HCl emissions with hierarchical grouping on sources (rows)."}
+palette_line = c("#377EB8", "#4DAF4A", "#FF7F00", "#984EA3")
+ggplot()+
+  geom_line(data = results$pred_pdf_grp,
+            aes(y = ydens, x = x_hat), size = 0.75, color = 'black')+
+  geom_area(data = results$pred_pdf_grp,
+            aes(y = ydens, x = x_hat), fill = 'grey')+
+  geom_point(data = results$obs_pdf_dat,
+            aes(y = ydens, x = emissions),
+            size = 3, alpha = 0.5, shape = 19, color = 'black')+
+  geom_line(data = results$pred_pdf_grp,
+            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+  geom_area(data = results$pred_pdf_grp,
+            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+  geom_errorbar(data = results$obs_pdf_dat,
+                aes(ymin = low, ymax = up, x = emissions, color = distr),
+                alpha = 0.5)+
+  geom_point(data = results$obs_pdf_dat,
+             aes(x = emissions, y = med, fill = distr),
+             size = 3, alpha = 0.5, shape = 21, color = 'black')+
+  ylab("Density")+ xlab("HCl emissions (lb/ton stone fed lime)")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, 1))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_rug(data = results$obs_pdf_dat,
+           sides = 'b', aes(x = emissions),
+           alpha = 0.5, outside = TRUE, color = 'black')+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_grid(group ~ distr, scales = 'free_y')+
+  theme(legend.position = 'none')+
+  theme(strip.text = element_text(color = 'black', size = 12))
+```
+
+### Convergence by group
+
+We can see right away that some distributions don't fit the data well. Indeed, all of the distributions have at least one parameter which fails to converge with the exception of Gamma. This is in part due to the distributions being poor choices, and in part due to the fact that all but one group only have three observations, which is not enough information to be able to converge. Note that we need all parameters to converge: both those for the population and group level. This can be a lot of parameters depending on how many groups you are using, so having enough data can be common limiting factor here.
+
+``` {r table1, fig.align = "center"}
+conv_metrics = results$conv_output
+conv_metrics = mutate(conv_metrics, across(c(3), ~signif(., digits = 4)))
+knitr::kable(conv_metrics,
+             caption = "Gelman-Rubin convergence tests for likelihood parameters",
+             col.names = c("Distribution",'Parameter',"Diagnostic","Converged"))
+```
+
+### Selecting a distribution
+
+Right off the bat we could say that Gamma is the only real choice here, since the others didn't converge. In cases where data is so limiting such as these, it can be helpful to manually supply a smaller, but still uniform, prior range to promote convergence. This can be done on a distribution-by-distribution basis following the steps in `vignette('Convergence-and-Priors')`. See the references for `BayesianGroups_UPL()` for the list order of manual priors. Note that group-level priors are never specified, since priors are only needed for the base layer of parameters in hierarchical models, which in this case are the population-level parameters.
+
+For the sake of this demo, let's look out how the fit metrics compare between distributions and groups using `results$fit_grp`. First, we can look at the group level $SSE$ and number of emission observation densities (black points on the plots above) within the 95\% CI of the predicted probability densities (the error bars on the plots above). Note that Gamma actually had the least number of observations inside 95\% CI; this is because the uncertainties and the other distributions are so large because they haven't converged in many cases, and thus they contain the probability of the observations despite not being very similar. Also note that in all these same cases, the probability density does not integrate to 1, clearly indicating issues with the fit. 
+
+```{r fit, echo = TRUE}
+fit_metrics = results$fit_grp
+```
+``` {r table2, fig.align = "center"}
+knitr::kable(mutate(fit_metrics, across(c(2, 3, 4), ~signif(., digits = 3))),
+             caption = "Goodness of fit results for group-level HCl",
+             col.names = c('Distribution', 'SSE', 'No. Obs. in 95% CI', 
+                           'integral', 'Group'))
+```
+
+### Upper Predictive Limit
+
+We can also display the total $SSE$ and count of observations in the 95\% CI, as well as the UPL that results from the population-level probability distribution from the hierarchy of groups, by calling `results$fit_pop`. 
+
+``` {r table3, fig.align = "center"}
+fit_metrics2 = results$fit_pop
+knitr::kable(mutate(fit_metrics2, across(c(2, 3, 4), ~signif(., digits = 3))),
+             caption = "Goodness of fit results for group-level HCl",
+             col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI'))
+```
+
+This results in a UPL of `r signif(fit_metrics2$UPL[fit_metrics2$distr == 'Gamma'], 3)` HCl emissions (lb/ton stone fed lime). Let's look at the population level distributions (`results$pred_pdf_pop`) from which we derived the UPL's:
+
+```{r figure3, echo = FALSE, out.width = "100%", fig.height = 5, fig.align = "center", fig.cap = "Population-level fitted probability density distributions (columns) for Lime HCl emissions. Solid curve indicates the median predicted pdf, with the dashed lines and shading indicating the interquartile range. Solid vertical lines indicate the UPL."}
+palette_line = c("#377EB8", "#4DAF4A", "#FF7F00", "#984EA3")
+ggplot()+
+  geom_line(data = results$pred_pdf_pop,
+            aes(x = x_hat, y = pdf_hat_med, color = distr), linewidth = 1)+
+  geom_line(data = results$pred_pdf_pop, linetype = 3,
+            aes(x = x_hat, y = pdf_hat_low, color = distr), linewidth = 1)+
+  geom_line(data = results$pred_pdf_pop, linetype = 3,
+            aes(x = x_hat, y = pdf_hat_up, color = distr), linewidth = 1)+
+  geom_ribbon(data = results$pred_pdf_pop, alpha = 0.25,
+              aes(ymin = pdf_hat_low, ymax = pdf_hat_up, x = x_hat, fill = distr))+
+  ylab("Density")+ xlab("HCl emissions (lb/ton stone fed lime)")+
+  pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
+  geom_vline(aes(xintercept = UPL, color = distr), 
+             data = results$fit_pop, linewidth = 1)+
+  geom_rug(data = results$obs_pdf_dat,
+           sides = 'b', aes(x = emissions),
+           alpha = 0.5, outside = FALSE, color = 'black')+
+  coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
+  scale_fill_manual(values = palette_line)+
+  facet_wrap( ~ distr, scales = 'free_y')+
+  theme(legend.position = 'none')+
+  theme(strip.text = element_text(color = 'black', size = 12))
+```
+
+### Compare to assumption of independence
+
+We can run the same set of distributions and compare the UPL outcomes if we assume all runs are independent and don't account for source variance through any grouping hierarchy.
+
+```{r Bayes_simple, echo = TRUE, results = FALSE}
+results_ind = Bayesian_UPL(data = dat_emiss, emissions = 'emissions',
+                           distr_list = distributions)
+```
+
+Assuming independence results in comparatively lower UPL's because the sources with higher emissions are those least represented. Thus, when we have the better balanced hierarchical approach, they get more weight and the UPL is higher. If the sources with fewer observations were lower emissions, we would see the opposite outcome where the hierarchical method grouping by source yields a lower UPL.
+
+``` {r table4, fig.align = "center"}
+fit_metrics3 = results_ind$fit_table
+knitr::kable(mutate(fit_metrics3, across(c(2, 3, 4, 5), ~signif(., digits = 3))),
+             caption = "UPL and Goodness of fit results for independent Lime HCl emissions",
+             col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI', 'integral'))
+```

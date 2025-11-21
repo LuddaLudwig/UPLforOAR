@@ -59,7 +59,7 @@ fit_likelihood = function(likelihood_result, up = Inf, low = 0,
   xhat_pdf_dat = dplyr::full_join(pred_pdf_temp, obs_den_df, by = 'x_hat')
   SSE = (sum((obs_pdf_dat$ydens - obs_pdf_dat$med)^2))
   pdf_integral = sfsmisc::integrate.xy(pred_pdf_temp$x_hat,
-                                       pred_pdf_temp$pdf_hat)
+                                       pred_pdf_temp$pdf_hat_med)
   fit_temp = list(distr = likelihood_result$distr,
                   pdf_integral = pdf_integral,
                   SSE = SSE, good_vals = sum(obs_pdf_dat$inCI),

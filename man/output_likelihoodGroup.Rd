@@ -19,7 +19,8 @@ A list including \code{distr}, the distribution used in \code{\link[=write_likel
 upper predictive limit based on the \code{significance} level and average
 distribution of \code{future_runs} number of draws, \code{obs_pdf}, the predicted
 probability density at each observation, and \code{pred_pdf}, the predicted
-probability density at each point in \code{xvals}, and the RNG.state for record keeping.
+probability density at each point in \code{xvals} with upper and lower bounds from
+95 percent CI, and the RNG.state for record keeping.
 }
 \description{
 Output_likelihood() takes the \code{jags_model_run} produced by \code{\link[=run_likelihoodGroup]{run_likelihoodGroup()}},

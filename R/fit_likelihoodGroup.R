@@ -75,7 +75,7 @@ fit_likelihoodGroup = function(likelihood_result, up = Inf, low = 0,
   xhat_pdf_grp$distr = rep(likelihood_result$distr, nrow(xhat_pdf_grp))
   SSE = (sum((obs_pdf_dat$ydens - obs_pdf_dat$med)^2))
   pdf_integral = sfsmisc::integrate.xy(pred_pdf_temp$x_hat,
-                                       pred_pdf_temp$pdf_hat)
+                                       pred_pdf_temp$pdf_hat_med)
   fit_dat = tibble::tibble(
     distr = rep(likelihood_result$distr, length(unique(obs_pdf_temp$group))),
     SSE = NA,
