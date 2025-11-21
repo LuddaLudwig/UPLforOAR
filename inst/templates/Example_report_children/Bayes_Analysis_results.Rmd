@@ -21,9 +21,9 @@ if (!is.na(subcat_name)){
   geom_point(data=results$obs_pdf_dat,
              aes(x=emissions,y=med,fill='b'),
              size=3,alpha=0.5,shape=21,color='black')+
-  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
+  geom_line(aes(y = pdf_hat_med, x = x_hat, color = 'b'),
                data = results$pred_pdf_dat, size = 0.75, linetype = 2)+
-  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
+  geom_area(aes(y = pdf_hat_med, x = x_hat, fill = 'b'), alpha = 0.25,
             data = results$pred_pdf_dat)+
   ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
   ggtitle(paste0(subcat_name, " ", subcat_level, " ", type, 
@@ -56,9 +56,9 @@ if (!is.na(subcat_name)){
   geom_point(data=results$obs_pdf_dat,
              aes(x=emissions,y=med,fill='b'),
              size=3,alpha=0.5,shape=21,color='black')+
-  geom_line(aes(y = pdf_hat, x = x_hat, color = 'b'),
+  geom_line(aes(y = pdf_hat_med, x = x_hat, color = 'b'),
                data = results$pred_pdf_dat, size = 0.75, linetype = 2)+
-  geom_area(aes(y = pdf_hat, x = x_hat, fill = 'b'), alpha = 0.25,
+  geom_area(aes(y = pdf_hat_med, x = x_hat, fill = 'b'), alpha = 0.25,
             data = results$pred_pdf_dat)+
   ylab("Density")+xlab(paste0(HAP, " emissions (", meas_unit, ")"))+
   ggtitle(paste0(type, 
