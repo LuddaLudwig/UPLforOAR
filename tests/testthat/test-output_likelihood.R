@@ -29,10 +29,10 @@ test_that("output_likelihood() organizes mcmc results and calculates UPL", {
   load_results1=readr::read_csv(test_path('test_output','test-obs_pdf.csv'),
                                 col_select = 2:6,show_col_types = FALSE)
   load_results2=readr::read_csv(test_path('test_output','test-pred_pdf.csv'),
-                                col_select = 2:4,show_col_types = FALSE)
+                                col_select = 2:6,show_col_types = FALSE)
   attr(load_results1,'spec')=NULL
   attr(load_results2,'spec')=NULL
-  attr(outputresult$pred_pdf$pdf_hat,'names')=NULL
+  attr(outputresult$pred_pdf$pdf_hat_med,'names')=NULL
   attr(outputresult$UPL_Bayes,'names')=NULL
   expect_equal(outputresult$pred_pdf,load_results2)
   expect_equal(round(outputresult$UPL_Bayes,3),3.782)

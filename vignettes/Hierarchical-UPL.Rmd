@@ -263,8 +263,8 @@ ggplot()+
              size = 3, alpha = 0.5, shape = 21, color = 'black')+
   ylab("Density")+ xlab("HCl emissions (lb/ton stone fed lime)")+
   pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
-  scale_x_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, 1))+
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, 40))+
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
   geom_rug(data = results2$obs_pdf_dat,
            sides = 'b', aes(x = emissions),
            alpha = 0.5, outside = TRUE, color = 'black')+
@@ -275,7 +275,7 @@ ggplot()+
   theme(strip.text = element_text(color = 'black', size = 12))
 ```
 
-The Gamma distribution looks good here, though it is worth noting that the probability increases rapidly towards zero, especially for the very low emission sources, and this leads to some big discrepancies in $SSE$. This is a good example of why you have to check the plots to assess the best distribution. It is clear the number of observations in line with the distribution is the best metric in this case, rather than $SSE$. Normal can be ruled out right away, but you might think Skewed is the best choice because it has a decent amount of observations in line and substantially lower $SSE$. However, it's behavior near zero is not at all correct for sources A, C, and F. Both the Gamma and Lognormal actually fit better, and the $SSE$ is only so high because of asymptotic behavior near zero emissions.
+Both the Gamma and Skewed distributions look good. The Skewed has better $SSE$, and the Gamma has a better count of observations in the 95\% CI's.
 
 ``` {r table5, fig.align = "center"}
 fit_metrics2 = results2$fit_pop
@@ -284,7 +284,7 @@ knitr::kable(mutate(fit_metrics2, across(c(2, 3, 4), ~signif(., digits = 3))),
              col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI'))
 ```
 
-Checking for convergence we find that every single parameter technically converged, unsurprising given the much larger data set. However, the normal parameters might be well mixed but they are flat across parameter-space, which resutls in the flat probabilities seen in the figures above and below.
+Checking for convergence we find that every single parameter technically converged, though a couple are considered weak convergence.
 ``` {r table6, fig.align = "center"}
 conv_metrics = results2$conv_output
 conv_metrics = mutate(conv_metrics, across(c(3), ~signif(., digits = 4)))
@@ -322,7 +322,7 @@ ggplot()+
   theme(legend.position = 'none')+
   theme(strip.text = element_text(color = 'black', size = 12))
 ```
-This example, with about 5 times as much data, has much less uncertainty than the first example. However, note the normal distribution's flat probability from completely failing to fit the data.  
+This example, with about 5 times as much data, has much less uncertainty than the first example.  
 
 
 

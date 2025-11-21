@@ -29,6 +29,7 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   expect_equal(output_set$fit_table$distr,c("Lognormal","Skewed"))
   expect_equal(output_set$conv_output$convYN,c("Yes","Yes","Yes","Yes","Yes"))
   expect_equal(ncol(output_set$obs_pdf_dat),7)
-  expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat","x_hat","distr","ydens"))
+  expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat_low","pdf_hat_med",
+                                                'pdf_hat_up', "x_hat","distr","ydens"))
 })
 
