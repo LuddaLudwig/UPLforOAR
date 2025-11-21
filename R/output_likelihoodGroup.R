@@ -53,18 +53,24 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
       Fy_sn = sn::dsn(xvals, xi = (xi_pop[i]),
                       omega = (omega_pop[i]),
                       alpha = (alpha_pop[i]))
-      set.seed(12)
-      pdf_obs[i,] = sn::dsn(data$emissions, xi = (xi_pop[i]),
-                            omega = (omega_pop[i]),
-                            alpha = (alpha_pop[i]))
       pdf_hat[i,] = Fy_sn
+      pdf_obs_temp = c()
       for (j in 1:length(unique(data$group))){
         set.seed(12)
         FyG_sn = sn::dsn(xvals, xi = (xi_group[i, j]),
                         omega = (omega_group[i, j]),
                         alpha = (alpha_group[i, j]))
         group_quant[i, (1 + (j - 1) * (length(xvals))):(length(xvals) * j)] = FyG_sn
+
+
+        data_sub = subset(data, data$group == levels(data$group)[j])
+        set.seed(12)
+        FyG_obs_sn = sn::dsn(data_sub$emissions, xi = (xi_group[i, j]),
+                             omega = (omega_group[i, j]),
+                             alpha = (alpha_group[i, j]))
+        pdf_obs_temp = c(pdf_obs_temp, FyG_obs_sn)
       }
+      pdf_obs[i,] = pdf_obs_temp
       if (all(Fy_sn == 0)){
         for (k in 1:future_runs){
           hat_quant[i,k] = NA
