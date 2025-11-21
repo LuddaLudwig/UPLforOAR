@@ -9,7 +9,7 @@
 #' distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 #' probability density at each observation, and `pred_pdf`, the predicted
 #' probability density at each point in `xvals` with upper and lower bounds from
-#' inter-quartile range, and the RNG.state for record keeping.
+#' 95 percent CI, and the RNG.state for record keeping.
 #' @description
 #' Output_likelihood() takes the `jags_model_run` produced by [run_likelihoodGroup()],
 #' merges the mcmc chains and calculates the UPL as well as
@@ -101,7 +101,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   pred_99_3rep = stats::quantile(as.matrix(stats::na.omit(run3_mean)),
                                  probs = c(significance))
   pdf_hat_quant = tibble::as_tibble(
-    matrixStats::colQuantiles(pdf_hat, probs = c(0.25 ,0.5, 0.75)),
+    matrixStats::colQuantiles(pdf_hat, probs = c(0.025 ,0.5, 0.975)),
                                     .name_repair = 'minimal')
   names(pdf_hat_quant) = c('pdf_hat_low', 'pdf_hat_med', 'pdf_hat_up')
   pdf_hat_quant$x_hat = xvals
