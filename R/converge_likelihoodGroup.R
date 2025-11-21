@@ -62,8 +62,8 @@ converge_likelihoodGroup = function(jags_model_run, custom_params = NULL){
   results$convYN = replace(results$convYN, results$gelman_diag > 1.2, "No")
   results$convYN = replace(results$convYN, results$gelman_diag < 1.1, "Yes")
   results$convYN = replace(results$convYN,
-                           ((result$gelman_diag > 1.1) &
-                              (result$gelman_diag < 1.2)), "Weak convergence")
+                           ((results$gelman_diag > 1.1) &
+                              (results$gelman_diag < 1.2)), "Weak convergence")
   distr_names = tibble::tibble(distr = rep(distribution, nrow(results)))
   group_levels = levels(jags_model_run$data$group)
   for (i in 1:n_groups){
