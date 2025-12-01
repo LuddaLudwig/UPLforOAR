@@ -31,7 +31,7 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
-  seed_list = seq(1, 300, by = 1)
+  seed_list = seq(2, 301, by = 1)
   if (distribution == "Skewed"){
     xi_pop = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pop_xi_mu")))
@@ -73,16 +73,11 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
         pdf_obs_temp = c(pdf_obs_temp, FyG_obs_sn)
       }
       pdf_obs[i,] = pdf_obs_temp
-      if (all(Fy_sn == 0)){
-        for (k in 1:future_runs){
-          hat_quant[i,k] = NA
-        }
-      } else {
-        for (k in 1:future_runs){
-          set.seed(seed_list[k])
-          hat_quant[i,k] = sample(x = xvals, size = 1,
-                                  prob = Fy_sn, replace = T)
-        }
+      for (k in 1:future_runs){
+        set.seed(seed_list[k])
+        hat_quant[i,k] = rsn(xi = (xi_pop[i]),
+                              omega = (omega_pop[i]),
+                              alpha = (alpha_pop[i]))
       }
     }
     hat_quant = tibble::as_tibble(hat_quant, .name_repair = 'minimal')

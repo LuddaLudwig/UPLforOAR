@@ -49,16 +49,11 @@ output_likelihood = function(jags_model_run, significance = 0.99){
                             omega = (omega_quant[i]),
                             alpha = (alpha_quant[i]))
       pdf_hat[i,] = Fy_sn
-      if (all(Fy_sn == 0)){
-        for (k in 1:future_runs){
-          hat_quant[i,k] = NA
-        }
-      } else {
-        for (k in 1:future_runs){
-          set.seed(seed_list[k])
-          hat_quant[i,k] = sample(x = xvals, size = 1,
-                                  prob = Fy_sn, replace = T)
-        }
+      for (k in 1:future_runs){
+        set.seed(seed_list[k])
+        hat_quant[i,k] = rsn(xi = (xi_pop[i]),
+                             omega = (omega_pop[i]),
+                             alpha = (alpha_pop[i]))
       }
     }
     hat_quant=tibble::as_tibble(hat_quant, .name_repair = 'minimal')
