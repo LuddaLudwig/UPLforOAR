@@ -237,9 +237,9 @@ ggplot()+
             aes(y = ydens, x = emissions),
             size = 3, alpha = 0.5, shape = 19, color = 'black')+
   geom_line(data = combined_pdf,
-            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+            aes(x = x_hat, y = pdf_hat_med, color = distr), size = 0.75)+
   geom_area(data = combined_pdf,
-            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+            aes(x = x_hat, y = pdf_hat_med, fill = distr), alpha = 0.5)+
   geom_errorbar(data = combined_obs,
                 aes(ymin = low, ymax = up, x = emissions, color = distr),
                 alpha = 0.5)+

@@ -8,7 +8,8 @@
 #' upper predictive limit based on the `significance` level and average
 #' distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 #' probability density at each observation, and `pred_pdf`, the predicted
-#' probability density at each point in `xvals`, and the RNG.state for record keeping.
+#' probability density at each point in `xvals` with upper and lower bounds from
+#' 95 percent CI, and the RNG.state for record keeping.
 #' @description
 #' Output_likelihood() takes the `jags_model_run` produced by [run_likelihoodGroup()],
 #' merges the mcmc chains and calculates the UPL as well as
@@ -30,6 +31,8 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
+  set.seed(12)
+  seed_list = sample(1:1000, 300)
   if (distribution == "Skewed"){
     xi_pop = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pop_xi_mu")))
@@ -46,45 +49,39 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
     hat_quant = matrix(nrow = length(xi_pop), ncol = future_runs, data = NA)
     pdf_obs = matrix(ncol = nrow(data), nrow = length(xi_pop), data = NA)
     pdf_hat = matrix(ncol = length(xvals), nrow = length(xi_pop), data = NA)
+    group_quant = matrix(ncol = length(unique(data$group)) * length(xvals),
+                         nrow = nrow(xi_pop), data = NA)
     for (i in 1:length(xi_pop)){
       set.seed(12)
       Fy_sn = sn::dsn(xvals, xi = (xi_pop[i]),
                       omega = (omega_pop[i]),
                       alpha = (alpha_pop[i]))
-      set.seed(12)
-      pdf_obs[i,] = sn::dsn(data$emissions, xi = (xi_pop[i]),
-                            omega = (omega_pop[i]),
-                            alpha = (alpha_pop[i]))
       pdf_hat[i,] = Fy_sn
-      if (all(Fy_sn == 0)){
-        for (k in 1:future_runs){
-          hat_quant[i,k] = NA
-        }
-      } else {
-        for (k in 1:future_runs){
-          set.seed(12)
-          hat_quant[i,k] = sample(x = xvals, size = 1,
-                                  prob = Fy_sn, replace = T)
-        }
+      pdf_obs_temp = c()
+      for (j in 1:length(unique(data$group))){
+        set.seed(12)
+        FyG_sn = sn::dsn(xvals, xi = (xi_group[i, j]),
+                        omega = (omega_group[i, j]),
+                        alpha = (alpha_group[i, j]))
+        group_quant[i, (1 + (j - 1) * (length(xvals))):(length(xvals) * j)] = FyG_sn
+
+
+        data_sub = subset(data, data$group == levels(data$group)[j])
+        set.seed(12)
+        FyG_obs_sn = sn::dsn(data_sub$emissions, xi = (xi_group[i, j]),
+                             omega = (omega_group[i, j]),
+                             alpha = (alpha_group[i, j]))
+        pdf_obs_temp = c(pdf_obs_temp, FyG_obs_sn)
+      }
+      pdf_obs[i,] = pdf_obs_temp
+      for (k in 1:future_runs){
+        set.seed(seed_list[k])
+        hat_quant[i,k] = sn::rsn(xi = (xi_pop[i]),
+                              omega = (omega_pop[i]),
+                              alpha = (alpha_pop[i]))
       }
     }
     hat_quant = tibble::as_tibble(hat_quant, .name_repair = 'minimal')
-    group_quant = matrix(nrow = nrow(xi_group),
-                         ncol = length(unique(data$group)), data = NA)
-    for (i in 1:nrow(xi_group)){
-      for (j in 1:length(unique(data$group))){
-        Fy_sn = sn::dsn(xvals, xi = (xi_group[i, j]),
-                        omega = (omega_group[i, j]),
-                        alpha = (alpha_group[i, j]))
-        if (all(Fy_sn == 0)){
-          group_quant[i, j] = NA
-          } else {
-            group_quant[i, j] = sample(x = xvals, size = 1,
-                                       prob = Fy_sn, replace = T)
-          }
-      }
-    }
-    group_quant=tibble::as_tibble(group_quant)
   } else {
     pdf_obs = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pdf_obs")))
@@ -92,31 +89,41 @@ output_likelihoodGroup = function(jags_model_run, significance = 0.99){
       coda::as.mcmc.list(jags_model_run$run_results, vars = "emission_hat"))))
     pdf_hat = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "pdf_hat")))
-    group_quant=tibble::as_tibble(as.matrix(runjags::combine.mcmc(
-      coda::as.mcmc.list(jags_model_run$run_results, vars="group_emiss"))))
+    group_quant=as.matrix(runjags::combine.mcmc(
+      coda::as.mcmc.list(jags_model_run$run_results, vars="group_emiss")))
   }
   names(hat_quant) = sprintf('run%s', seq(1:future_runs))
   run3_mean = rowMeans(hat_quant)
   pred_99_3rep = stats::quantile(as.matrix(stats::na.omit(run3_mean)),
                                  probs = c(significance))
-  pdf_hat_quant = matrixStats::colQuantiles(pdf_hat, probs = c(0.5))
-  density_hat = tibble::tibble(pdf_hat = pdf_hat_quant, x_hat = xvals)
-  density_hat = subset(density_hat, is.finite(density_hat$pdf_hat))
+  pdf_hat_quant = tibble::as_tibble(
+    matrixStats::colQuantiles(pdf_hat, probs = c(0.025 ,0.5, 0.975)),
+                                    .name_repair = 'minimal')
+  names(pdf_hat_quant) = c('pdf_hat_low', 'pdf_hat_med', 'pdf_hat_up')
+  pdf_hat_quant$x_hat = xvals
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_med))
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_low))
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_up))
+  pdf_hat_quant$distr = rep(distribution, nrow(pdf_hat_quant))
+  group_hat_quant = matrixStats::colQuantiles(group_quant, probs = c(0.5))
+  group_dat = tibble::tibble(pdf_hat = group_hat_quant,
+                             x_hat = rep(xvals, length(unique(data$group))))
+  group_dat$group = NA
+  for (j in 1:length(unique(data$group))){
+    group_dat$group[(1 + (j - 1) * (length(xvals))):(length(xvals) * j)] =
+      rep(levels(data$group)[j], length(xvals))
+  }
   pdf_obs_quant = tibble::as_tibble(
     matrixStats::colQuantiles(pdf_obs, probs = c(0.025 ,0.5, 0.975)),
     .name_repair = 'minimal')
-  names(group_quant) = levels(data$group)
-  group_long = tidyr::pivot_longer(group_quant, cols = 1:ncol(group_quant),
-                          names_to = 'groups',values_to = 'emissions')
+  names(pdf_obs_quant) = c('low', 'med', 'up')
   pdf_obs_quant$emissions = data$emissions
   pdf_obs_quant$group = data$group
-  names(pdf_obs_quant) = c('low', 'med', 'up', jags_model_run$data_names)
-  density_hat$distr = rep(distribution, nrow(density_hat))
   pdf_obs_quant$distr = rep(distribution, nrow(pdf_obs_quant))
   pred_mean = mean(hat_quant$run1, na.rm = TRUE)
   output = list("predicted_mean" = pred_mean, "UPL_Bayes" = pred_99_3rep,
-                "obs_pdf" = pdf_obs_quant, 'pred_pdf' = density_hat,
+                "obs_pdf" = pdf_obs_quant, 'pred_pdf' = pdf_hat_quant,
                 distr = distribution, minY = minY, maxY = maxY,
-                group_dat = group_long, state = jags_model_run$state)
+                group_dat = group_dat, state = jags_model_run$state)
   return(output)
 }

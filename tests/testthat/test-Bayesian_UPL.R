@@ -17,7 +17,7 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
   output_set=Bayesian_UPL(data=top5,distr_list = c("Lognormal","Skewed"),
                future_runs = runcount,significance = 0.99,xvals=xvals,
@@ -29,6 +29,7 @@ test_that("Bayesian_UPL() wraps setup, run, and output likelihood", {
   expect_equal(output_set$fit_table$distr,c("Lognormal","Skewed"))
   expect_equal(output_set$conv_output$convYN,c("Yes","Yes","Yes","Yes","Yes"))
   expect_equal(ncol(output_set$obs_pdf_dat),7)
-  expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat","x_hat","distr","ydens"))
+  expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat_low","pdf_hat_med",
+                                                'pdf_hat_up', "x_hat","distr","ydens"))
 })
 

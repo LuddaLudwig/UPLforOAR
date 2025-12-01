@@ -300,9 +300,9 @@ ggplot()+
             aes(y = ydens, x = emissions),
             size = 3, alpha = 0.5, shape = 19, color = 'black')+
   geom_line(data = combined_pdf, show.legend = FALSE,
-            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+            aes(x = x_hat, y = pdf_hat_med, color = distr), size = 0.75)+
   geom_area(data = combined_pdf, show.legend = FALSE,
-            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+            aes(x = x_hat, y = pdf_hat_med, fill = distr), alpha = 0.5)+
   geom_errorbar(data = combined_obs, width = 1e-9, show.legend = FALSE,
                 aes(ymin = low, ymax = up, x = emissions, color = distr),
                 alpha = 0.5)+
@@ -323,6 +323,8 @@ ggplot()+
            alpha = 0.5, outside = TRUE, color = 'black')+
   coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
   scale_fill_manual(values = palette_line)+
+  guides(linetype = guide_legend(nrow = 2, byrow = TRUE),
+         color = guide_legend(nrow = 2, byrow = TRUE))+
   scale_linetype_manual(values = c(1, 2, 3), 
                         labels = c('Frequentist', 'Unbounded', 'Zero bounded'))+
   facet_wrap(~distr+type, scales = 'fixed', nrow = 3)+

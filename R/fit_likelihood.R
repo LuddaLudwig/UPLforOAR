@@ -1,14 +1,13 @@
 #' fit_likelihood() calculates the error between fitted density and
 #' observed density distributions
 #' @description
-#' This function takes the list of results from [output_likelihood()] or
-#' [output_likelihoodGroup()] and compares
+#' This function takes the list of results from [output_likelihood()] and compares
 #' the predicted density distributions to observed density distributions,
 #' estimating the `SSE` (sum of squared errors) and counts the number of emissions
 #' observations with densities that have overlapping 95 percent CI with predicted
 #' densities. Additional parameters can be supplied for use in [obs_density()]
 #' @export
-#' @param likelihood_result Output list from [output_likelihood()] or [output_likelihoodGroup()]
+#' @param likelihood_result Output list from [output_likelihood()]
 #' @param up Optional upper limit to bound density, default is `Inf`.
 #' @param low Optional lower limit to bound density, default is `0`.
 #' @param bw Optional bandwidth, default is `NULL` in which case
@@ -26,7 +25,7 @@
 #' merged data sets of observed and predicted densities at each emission value
 #' and each `xval`, named `obs_pdf_dat` and `xhat_pdf_dat` respectively. The
 #' `obs_pdf_dat` also includes the upper and lower 95 percent and median around predicted
-#' pdf. The UPL estimate from [output_likelihood()] or [output_likelihoodGroup()]
+#' pdf. The UPL estimate from [output_likelihood()]
 #' is included as well as the RNG.state for record keeping.
 fit_likelihood = function(likelihood_result, up = Inf, low = 0,
                           kernel = 'gamma', bw = NULL){
@@ -60,7 +59,7 @@ fit_likelihood = function(likelihood_result, up = Inf, low = 0,
   xhat_pdf_dat = dplyr::full_join(pred_pdf_temp, obs_den_df, by = 'x_hat')
   SSE = (sum((obs_pdf_dat$ydens - obs_pdf_dat$med)^2))
   pdf_integral = sfsmisc::integrate.xy(pred_pdf_temp$x_hat,
-                                       pred_pdf_temp$pdf_hat)
+                                       pred_pdf_temp$pdf_hat_med)
   fit_temp = list(distr = likelihood_result$distr,
                   pdf_integral = pdf_integral,
                   SSE = SSE, good_vals = sum(obs_pdf_dat$inCI),

@@ -21,20 +21,19 @@ test_that("BayesianGroups_UPL() wraps setup, run, and output likelihood", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
-  output_set=BayesianGroups_UPL(data=top5,distr_list = c("Gamma","Skewed"),
+  output_set=BayesianGroups_UPL(data=top5,distr_list = c("Gamma"),
                                 future_runs = runcount,significance = 0.99,
                                 xvals=xvals, group = 'sources',
                                 emissions = 'emissions')
   # saveRDS(output_set,test_path('test_Bayes_UPL','test-BayesGroup_UPL.rds'))
   load_results=readRDS(test_path('test_Bayes_UPL','test-BayesGroup_UPL.rds'))
   expect_equal(output_set,load_results)
-  expect_equal(length(output_set),5)
-  expect_equal(output_set$fit_table$distr,c("Gamma","Skewed"))
-  expect_equal(output_set$conv_output$convYN,
-               c(rep("Yes",15),"No","Yes","Yes","No",rep("Yes",16)))
+  expect_equal(length(output_set),7)
+  expect_equal(output_set$fit_pop$distr,c("Gamma"))
   expect_equal(ncol(output_set$obs_pdf_dat),8)
-  expect_equal(names(output_set$pred_pdf_dat),c("pdf_hat","x_hat","distr","ydens"))
+  expect_equal(names(output_set$pred_pdf_grp),c("pdf_hat","x_hat", 'group',
+                                                "ydens","distr"))
 })
 

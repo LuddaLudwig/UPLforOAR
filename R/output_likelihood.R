@@ -8,7 +8,8 @@
 #' upper predictive limit based on the `significance` level and average
 #' distribution of `future_runs` number of draws, `obs_pdf`, the predicted
 #' probability density at each observation, and `pred_pdf`, the predicted
-#' probability density at each point in `xvals`, and the RNG.state for record keeping.
+#' probability density at each point in `xvals` with upper and lower bounds from
+#' 95 percent CI, and the RNG.state for record keeping.
 #' @description
 #' Output_likelihood() takes the `jags_model_run` produced by [run_likelihood()],
 #' merges the mcmc chains and calculates the UPL as well as
@@ -27,6 +28,8 @@ output_likelihood = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
+  set.seed(12)
+  seed_list = sample(1:1000, 300)
   if (distribution == "Skewed"){
     xi_quant = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "xi")))
@@ -47,16 +50,11 @@ output_likelihood = function(jags_model_run, significance = 0.99){
                             omega = (omega_quant[i]),
                             alpha = (alpha_quant[i]))
       pdf_hat[i,] = Fy_sn
-      if (all(Fy_sn == 0)){
-        for (k in 1:future_runs){
-          hat_quant[i,k] = NA
-        }
-      } else {
-        for (k in 1:future_runs){
-          set.seed(12)
-          hat_quant[i,k] = sample(x = xvals, size = 1,
-                                  prob = Fy_sn, replace = T)
-        }
+      for (k in 1:future_runs){
+        set.seed(seed_list[k])
+        hat_quant[i,k] = sn::rsn(xi = (xi_quant[i]),
+                             omega = (omega_quant[i]),
+                             alpha = (alpha_quant[i]))
       }
     }
     hat_quant=tibble::as_tibble(hat_quant, .name_repair = 'minimal')
@@ -72,19 +70,24 @@ output_likelihood = function(jags_model_run, significance = 0.99){
   run3_mean = rowMeans(hat_quant)
   pred_99_3rep = stats::quantile(as.matrix(stats::na.omit(run3_mean)),
                                probs = c(significance))
-  pdf_hat_quant = matrixStats::colQuantiles(pdf_hat, probs = c(0.5))
-  density_hat = tibble::tibble(pdf_hat = pdf_hat_quant, x_hat = xvals)
-  density_hat = subset(density_hat, is.finite(density_hat$pdf_hat))
+  pdf_hat_quant = tibble::as_tibble(
+    matrixStats::colQuantiles(pdf_hat, probs = c(0.025 ,0.5, 0.975)),
+    .name_repair = 'minimal')
+  names(pdf_hat_quant) = c('pdf_hat_low', 'pdf_hat_med', 'pdf_hat_up')
+  pdf_hat_quant$x_hat = xvals
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_med))
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_low))
+  pdf_hat_quant = subset(pdf_hat_quant, is.finite(pdf_hat_quant$pdf_hat_up))
+  pdf_hat_quant$distr = rep(distribution, nrow(pdf_hat_quant))
   pdf_obs_quant = tibble::as_tibble(
     matrixStats::colQuantiles(pdf_obs, probs = c(0.025 ,0.5, 0.975)),
                               .name_repair = 'minimal')
   names(pdf_obs_quant) = c('low', 'med', 'up')
   pdf_obs_quant$emissions = data$emissions
-  density_hat$distr = rep(distribution, nrow(density_hat))
   pdf_obs_quant$distr = rep(distribution, nrow(pdf_obs_quant))
   pred_mean = mean(hat_quant$run1, na.rm = TRUE)
   output = list("predicted_mean" = pred_mean, "UPL_Bayes" = pred_99_3rep,
-                "obs_pdf" = pdf_obs_quant, 'pred_pdf' = density_hat,
+                "obs_pdf" = pdf_obs_quant, 'pred_pdf' = pdf_hat_quant,
                 distr = distribution, minY = minY, maxY = maxY,
                 state = jags_model_run$state)
   return(output)
