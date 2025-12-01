@@ -28,7 +28,8 @@ output_likelihood = function(jags_model_run, significance = 0.99){
   xvals = jags_model_run$xvals
   minY = jags_model_run$minY
   maxY = jags_model_run$maxY
-  seed_list = seq(1, 300, by = 1)
+  set.seed(12)
+  seed_list = sample(1:1000, 300)
   if (distribution == "Skewed"){
     xi_quant = as.matrix(runjags::combine.mcmc(
       coda::as.mcmc.list(jags_model_run$run_results, vars = "xi")))
