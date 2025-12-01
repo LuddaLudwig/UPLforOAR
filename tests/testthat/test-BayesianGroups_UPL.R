@@ -21,7 +21,7 @@ test_that("BayesianGroups_UPL() wraps setup, run, and output likelihood", {
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
   ln_emiss=log(top5$emissions)
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
   output_set=BayesianGroups_UPL(data=top5,distr_list = c("Gamma"),
                                 future_runs = runcount,significance = 0.99,

@@ -19,7 +19,7 @@ test_that("fit_likelihood() compares predicted and observed density distribution
   ln_emiss=log(top5$emissions)
   JAGS_model_stuff=setup_likelihood(data=top5,distribution='Lognormal',
                                     emissions = 'emissions')
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
   runmod=run_likelihood(model_input=JAGS_model_stuff,
                         xvals=xvals,future_runs=runcount)

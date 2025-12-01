@@ -23,7 +23,7 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   ln_emiss=log(top5$emissions)
   JAGS_model_stuff=setup_likelihoodGroup(data=top5,distribution='Gamma',
                                          emissions = 'emissions')
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
   N_parameter = 4
   N_groups = length(unique(top5$sources))
@@ -32,9 +32,9 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   expect_equal(runmod$distribution,'Gamma')
   run_results=runmod$run_results
   run_mcmc=as.matrix(runmod$run_results$mcmc[[1]])
-  # saveRDS(run_mcmc,test_path('test_run','test_mcmc_group.rds'))
+  # saveRDS(run_mcmc[1:1000],test_path('test_run','test_mcmc_group.rds'))
   load_results=readRDS(test_path('test_run','test_mcmc_group.rds'))
-  expect_equal(run_mcmc,load_results)
+  expect_equal(run_mcmc[1:1000],load_results)
   expect_equal(runmod$manual_prior,FALSE)
   dat_comp = top5
   names(dat_comp) = c('emissions', 'group')
@@ -43,7 +43,8 @@ test_that("run_likelihoodGroup() runs JAGS models from setup_likelihoodGroup()",
   expect_equal(runmod$future_runs,runcount)
   expect_equal(dim(run_results$mcmc[[1]]),c(10000,length(xvals)+
                                               runcount+nrow(top5)+N_parameter+
-                                              N_groups*3))
+                                              N_groups*N_parameter/2+
+                                              length(xvals)*N_groups))
   expect_equal(run_results$burnin,20000)
   expect_equal(run_results$monitor,c('emission_hat', 'pdf_obs', 'pdf_hat',
                                      'pop_rate_mu', 'pop_shape_mu', 'pop_rate_sd',

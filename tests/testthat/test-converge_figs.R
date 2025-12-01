@@ -16,10 +16,10 @@ test_that("converge_figs() makes posterior plots of mcmc iter and histogram", {
                                             dat_topmeans$means,.desc = FALSE)
   top5$sources=factor(top5$sources,levels=levels(dat_topmeans$sources))
   top5=dplyr::arrange(top5,sources)
-
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   part1=setup_likelihood(distribution = "Gamma",data = top5,
                          emissions = 'emissions')
-  part2=run_likelihood(model_input = part1)
+  part2=run_likelihood(model_input = part1, xvals = xvals)
   part3=converge_figs(distribution = "Gamma",jags_model_run = part2)
   expect_equal(length(part3),2)
   fig1=part3[[1]]
@@ -31,5 +31,4 @@ test_that("converge_figs() makes posterior plots of mcmc iter and histogram", {
   fig2b=fig2[[2]]
   expect_equal(fig2b@labels$x,"shape_em")
   expect_equal(fig2@meta$patches$annotation$title,"Gamma")
-
 })

@@ -24,7 +24,7 @@ test_that("converge_likelihoodGroup() runs gelman diagnostics for convergence te
   JAGS_model_stuff=setup_likelihoodGroup(data=top5, emissions = 'emissions',
                                          group = 'sources',
                                          distribution='Gamma')
-  xvals=seq(0,2*max(top5$emissions),length.out=1050)
+  xvals=seq(0,2*max(top5$emissions),length.out=500)
   runcount=4
   runmod=run_likelihoodGroup(model_input=JAGS_model_stuff,
                              xvals=xvals,future_runs=runcount)
