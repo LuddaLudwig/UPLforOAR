@@ -241,7 +241,7 @@ results2 = BayesianGroups_UPL(data = dat_top2,
                               emissions = 'chemX',
                               distr_list = distributions)
 ```
-```{r figure4, echo = FALSE, out.width = "100%", fig.height = 9, fig.align = "center", fig.cap = "Fitted likelihood distributions (columns) for Lime HCl emissions with hierarchical grouping on sources (rows)."}
+```{r figure4, echo = FALSE, out.width = "100%", fig.height = 9, fig.align = "center", fig.cap = "Fitted likelihood distributions (columns) for Chemical X emissions with hierarchical grouping on sources (rows)."}
 palette_line = c("#377EB8", "#4DAF4A", "#FF7F00", "#984EA3")
 ggplot()+
   geom_line(data = results2$pred_pdf_grp,
@@ -261,7 +261,7 @@ ggplot()+
   geom_point(data = results2$obs_pdf_dat,
              aes(x = emissions, y = med, fill = distr),
              size = 3, alpha = 0.5, shape = 21, color = 'black')+
-  ylab("Density")+ xlab("HCl emissions (lb/ton stone fed lime)")+
+  ylab("Density")+ xlab("Chemical X emissions")+
   pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
@@ -270,7 +270,7 @@ ggplot()+
            alpha = 0.5, outside = TRUE, color = 'black')+
   coord_cartesian(clip = 'off')+ scale_color_manual(values = palette_line)+
   scale_fill_manual(values = palette_line)+
-  facet_grid(group ~ distr, scales = 'free_y')+
+  facet_grid(group ~ distr, scales = 'free')+
   theme(legend.position = 'none')+
   theme(strip.text = element_text(color = 'black', size = 12))
 ```
@@ -280,11 +280,11 @@ Both the Gamma and Skewed distributions look good. The Skewed has better $SSE$, 
 ``` {r table5, fig.align = "center"}
 fit_metrics2 = results2$fit_pop
 knitr::kable(mutate(fit_metrics2, across(c(2, 3, 4), ~signif(., digits = 3))),
-             caption = "Goodness of fit results for group-level HCl",
+             caption = "Goodness of fit results for group-level Chemical X",
              col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI'))
 ```
 
-Checking for convergence we find that every single parameter technically converged (with the exception of the NOrmal distribution), though a couple are considered weak convergence.
+Checking for convergence we find that every single parameter technically converged (with the exception of the Normal distribution), though a couple are considered weak convergence.
 ``` {r table6, fig.align = "center"}
 conv_metrics = results2$conv_output
 conv_metrics = mutate(conv_metrics, across(c(3), ~signif(., digits = 4)))
@@ -296,7 +296,7 @@ knitr::kable(conv_metrics,
 
 Plotting the UPL's on the population-level PDF's we get:
 
-```{r figure5, echo = FALSE, out.width = "100%", fig.height = 5, fig.align = "center", fig.cap = "Population-level fitted probability density distributions (columns) for Lime HCl emissions. Solid curve indicates the median predicted pdf, with the dashed lines and shading indicating the 95 percent CI. Solid vertical lines indicate the UPL."}
+```{r figure5, echo = FALSE, out.width = "100%", fig.height = 5, fig.align = "center", fig.cap = "Population-level fitted probability density distributions (columns) for Chemical X emissions. Solid curve indicates the median predicted pdf, with the dashed lines and shading indicating the 95 percent CI. Solid vertical lines indicate the UPL."}
 palette_line = c("#377EB8", "#4DAF4A", "#FF7F00", "#984EA3")
 ggplot()+
   geom_line(data = results2$pred_pdf_pop,
@@ -307,7 +307,7 @@ ggplot()+
             aes(x = x_hat, y = pdf_hat_up, color = distr), linewidth = 1)+
   geom_ribbon(data = results2$pred_pdf_pop, alpha = 0.25,
               aes(ymin = pdf_hat_low, ymax = pdf_hat_up, x = x_hat, fill = distr))+
-  ylab("Density")+ xlab("HCl emissions (lb/ton stone fed lime)")+
+  ylab("Density")+ xlab("Chemical X emissions")+
   pop_distr_theme()+ labs(color = 'Distribution', fill = "Distribution")+
   scale_x_continuous(expand = expansion(mult = c(0, 0.05)))+
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))+
@@ -325,13 +325,13 @@ ggplot()+
 This example, with about 5 times as much data, has much less uncertainty than the first example. We can compare these to the non-grouped version assuming fully independent test runs:
 
 ```{r Bayes_simple2, echo = TRUE, results = FALSE}
-results_ind2 = Bayesian_UPL(data = dat_top2, emissions = 'emissions',
+results_ind2 = Bayesian_UPL(data = dat_top2, emissions = 'chemX',
                             distr_list = distributions)
 ```
 
 ``` {r table7, fig.align = "center"}
 fit_metrics3 = results_ind2$fit_table
 knitr::kable(mutate(fit_metrics3, across(c(2, 3, 4, 5), ~signif(., digits = 3))),
-             caption = "UPL and Goodness of fit results for independent Lime HCl emissions",
+             caption = "UPL and Goodness of fit results for independent Chemical X emissions",
              col.names = c('Distribution', 'UPL', 'SSE', 'No. Obs. in 95% CI', 'integral'))
 ```
