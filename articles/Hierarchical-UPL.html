@@ -944,8 +944,8 @@ observations instead of the 24 observations from the first example.</p>
 <span>                              emissions <span class="op">=</span> <span class="st">'chemX'</span>,</span>
 <span>                              distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Hierarchical-UPL_files/figure-html/figure4-1.png" class="r-plt" alt="Fitted likelihood distributions (columns) for Lime HCl emissions with hierarchical grouping on sources (rows)." width="100%"><p class="caption">
-Fitted likelihood distributions (columns) for Lime HCl emissions with
+<img src="Hierarchical-UPL_files/figure-html/figure4-1.png" class="r-plt" alt="Fitted likelihood distributions (columns) for Chemical X emissions with hierarchical grouping on sources (rows)." width="100%"><p class="caption">
+Fitted likelihood distributions (columns) for Chemical X emissions with
 hierarchical grouping on sources (rows).
 </p>
 </div>
@@ -954,7 +954,7 @@ better
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">SSE</annotation></semantics></math>,
 and the Gamma has a better count of observations in the 95% CI’s.</p>
 <table class="table">
-<caption>Goodness of fit results for group-level HCl</caption>
+<caption>Goodness of fit results for group-level Chemical X</caption>
 <thead><tr class="header">
 <th align="left">Distribution</th>
 <th align="right">UPL</th>
@@ -989,7 +989,7 @@ and the Gamma has a better count of observations in the 95% CI’s.</p>
 </tbody>
 </table>
 <p>Checking for convergence we find that every single parameter
-technically converged (with the exception of the NOrmal distribution),
+technically converged (with the exception of the Normal distribution),
 though a couple are considered weak convergence.</p>
 <table class="table">
 <caption>Gelman-Rubin convergence tests for likelihood
@@ -1383,10 +1383,10 @@ parameters</caption>
 </table>
 <p>Plotting the UPL’s on the population-level PDF’s we get:</p>
 <div class="figure" style="text-align: center">
-<img src="Hierarchical-UPL_files/figure-html/figure5-1.png" class="r-plt" alt="Population-level fitted probability density distributions (columns) for Lime HCl emissions. Solid curve indicates the median predicted pdf, with the dashed lines and shading indicating the 95 percent CI. Solid vertical lines indicate the UPL." width="100%"><p class="caption">
+<img src="Hierarchical-UPL_files/figure-html/figure5-1.png" class="r-plt" alt="Population-level fitted probability density distributions (columns) for Chemical X emissions. Solid curve indicates the median predicted pdf, with the dashed lines and shading indicating the 95 percent CI. Solid vertical lines indicate the UPL." width="100%"><p class="caption">
 Population-level fitted probability density distributions (columns) for
-Lime HCl emissions. Solid curve indicates the median predicted pdf, with
-the dashed lines and shading indicating the 95 percent CI. Solid
+Chemical X emissions. Solid curve indicates the median predicted pdf,
+with the dashed lines and shading indicating the 95 percent CI. Solid
 vertical lines indicate the UPL.
 </p>
 </div>
@@ -1394,12 +1394,10 @@ vertical lines indicate the UPL.
 uncertainty than the first example. We can compare these to the
 non-grouped version assuming fully independent test runs:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results_ind2</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_top2</span>, emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
-<span>                            distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in setup_likelihood(distribution = distribution, data = data, emissions = emissions, : Emissions must be numeric</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; Error: object 'results_ind2' not found</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">results_ind2</span> <span class="op">=</span> <span class="fu"><a href="../reference/Bayesian_UPL.html">Bayesian_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_top2</span>, emissions <span class="op">=</span> <span class="st">'chemX'</span>,</span>
+<span>                            distr_list <span class="op">=</span> <span class="va">distributions</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>UPL and Goodness of fit results for independent Lime HCl
+<caption>UPL and Goodness of fit results for independent Chemical X
 emissions</caption>
 <thead><tr class="header">
 <th align="left">Distribution</th>
@@ -1411,31 +1409,31 @@ emissions</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Gamma</td>
-<td align="right">0.624</td>
-<td align="right">41.2</td>
-<td align="right">15</td>
-<td align="right">0.896</td>
+<td align="right">0.953</td>
+<td align="right">4.51</td>
+<td align="right">110</td>
+<td align="right">0.996</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal</td>
-<td align="right">0.836</td>
-<td align="right">181.0</td>
-<td align="right">15</td>
-<td align="right">0.848</td>
+<td align="right">1.780</td>
+<td align="right">27.20</td>
+<td align="right">31</td>
+<td align="right">0.995</td>
 </tr>
 <tr class="odd">
 <td align="left">Normal</td>
-<td align="right">0.506</td>
-<td align="right">1170.0</td>
+<td align="right">0.887</td>
+<td align="right">51.80</td>
 <td align="right">1</td>
-<td align="right">0.546</td>
+<td align="right">0.541</td>
 </tr>
 <tr class="even">
 <td align="left">Skewed</td>
-<td align="right">0.287</td>
-<td align="right">839.0</td>
-<td align="right">4</td>
-<td align="right">0.946</td>
+<td align="right">0.458</td>
+<td align="right">1.58</td>
+<td align="right">69</td>
+<td align="right">0.996</td>
 </tr>
 </tbody>
 </table>

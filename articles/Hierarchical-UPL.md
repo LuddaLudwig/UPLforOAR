@@ -384,11 +384,11 @@ results2 = BayesianGroups_UPL(data = dat_top2,
                               distr_list = distributions)
 ```
 
-![Fitted likelihood distributions (columns) for Lime HCl emissions with
-hierarchical grouping on sources
+![Fitted likelihood distributions (columns) for Chemical X emissions
+with hierarchical grouping on sources
 (rows).](Hierarchical-UPL_files/figure-html/figure4-1.png)
 
-Fitted likelihood distributions (columns) for Lime HCl emissions with
+Fitted likelihood distributions (columns) for Chemical X emissions with
 hierarchical grouping on sources (rows).
 
 Both the Gamma and Skewed distributions look good. The Skewed has better
@@ -401,10 +401,10 @@ $SSE$, and the Gamma has a better count of observations in the 95% CI’s.
 | Normal       | 5.900 | 84.70 |                 32 |
 | Skewed       | 0.697 |  7.09 |                 94 |
 
-Goodness of fit results for group-level HCl
+Goodness of fit results for group-level Chemical X
 
 Checking for convergence we find that every single parameter technically
-converged (with the exception of the NOrmal distribution), though a
+converged (with the exception of the Normal distribution), though a
 couple are considered weak convergence.
 
 | Distribution | Parameter     | Diagnostic | Converged        |
@@ -478,14 +478,14 @@ Gelman-Rubin convergence tests for likelihood parameters
 Plotting the UPL’s on the population-level PDF’s we get:
 
 ![Population-level fitted probability density distributions (columns)
-for Lime HCl emissions. Solid curve indicates the median predicted pdf,
-with the dashed lines and shading indicating the 95 percent CI. Solid
-vertical lines indicate the
+for Chemical X emissions. Solid curve indicates the median predicted
+pdf, with the dashed lines and shading indicating the 95 percent CI.
+Solid vertical lines indicate the
 UPL.](Hierarchical-UPL_files/figure-html/figure5-1.png)
 
 Population-level fitted probability density distributions (columns) for
-Lime HCl emissions. Solid curve indicates the median predicted pdf, with
-the dashed lines and shading indicating the 95 percent CI. Solid
+Chemical X emissions. Solid curve indicates the median predicted pdf,
+with the dashed lines and shading indicating the 95 percent CI. Solid
 vertical lines indicate the UPL.
 
 This example, with about 5 times as much data, has much less uncertainty
@@ -493,18 +493,15 @@ than the first example. We can compare these to the non-grouped version
 assuming fully independent test runs:
 
 ``` r
-results_ind2 = Bayesian_UPL(data = dat_top2, emissions = 'emissions',
+results_ind2 = Bayesian_UPL(data = dat_top2, emissions = 'chemX',
                             distr_list = distributions)
-#> Error in setup_likelihood(distribution = distribution, data = data, emissions = emissions, : Emissions must be numeric
 ```
 
-    #> Error: object 'results_ind2' not found
+| Distribution |   UPL |   SSE | No. Obs. in 95% CI | integral |
+|:-------------|------:|------:|-------------------:|---------:|
+| Gamma        | 0.953 |  4.51 |                110 |    0.996 |
+| Lognormal    | 1.780 | 27.20 |                 31 |    0.995 |
+| Normal       | 0.887 | 51.80 |                  1 |    0.541 |
+| Skewed       | 0.458 |  1.58 |                 69 |    0.996 |
 
-| Distribution |   UPL |    SSE | No. Obs. in 95% CI | integral |
-|:-------------|------:|-------:|-------------------:|---------:|
-| Gamma        | 0.624 |   41.2 |                 15 |    0.896 |
-| Lognormal    | 0.836 |  181.0 |                 15 |    0.848 |
-| Normal       | 0.506 | 1170.0 |                  1 |    0.546 |
-| Skewed       | 0.287 |  839.0 |                  4 |    0.946 |
-
-UPL and Goodness of fit results for independent Lime HCl emissions
+UPL and Goodness of fit results for independent Chemical X emissions
