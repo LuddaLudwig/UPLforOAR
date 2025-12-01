@@ -52,9 +52,9 @@ output_likelihood = function(jags_model_run, significance = 0.99){
       pdf_hat[i,] = Fy_sn
       for (k in 1:future_runs){
         set.seed(seed_list[k])
-        hat_quant[i,k] = sn::rsn(xi = (xi_pop[i]),
-                             omega = (omega_pop[i]),
-                             alpha = (alpha_pop[i]))
+        hat_quant[i,k] = sn::rsn(xi = (xi_quant[i]),
+                             omega = (omega_quant[i]),
+                             alpha = (alpha_quant[i]))
       }
     }
     hat_quant=tibble::as_tibble(hat_quant, .name_repair = 'minimal')
