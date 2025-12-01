@@ -542,7 +542,7 @@ fit_metrics = results$fit_table
 |:-------------|------:|------:|-------------------:|-------------:|
 | Gamma        | 0.624 |  41.2 |                 15 |    0.8960532 |
 | Lognormal    | 0.836 | 181.0 |                 15 |    0.8482302 |
-| Skewed       | 0.506 | 839.0 |                  4 |    0.9457529 |
+| Skewed       | 0.287 | 839.0 |                  4 |    0.9457529 |
 
 Comparing goodness of fit results for other distributions
 

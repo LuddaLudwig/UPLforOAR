@@ -12,25 +12,28 @@ and calculate goodness of fit metrics using
 Rather than independent runs defining the population distribution,
 hierarchical dependency within groups is allowed with the group-level
 distribution parameters drawn from the overall population distribution.
-Results include `$fit_table`: a tibble with the `UPL`, `pdf_integral`,
-`SSE`, and count of observations within 95 percent CI for each
-distribution in `'distr_list'`, `$conv_output`: a tibble with the
-parameters, Gelman-Rubin diagnostics, and if the converged for
-distribution in `distr_list`, `$obs_pdf_dat`: a tibble with the
-emissions observations, corresponding observation densities, median,
-upper, and lower 95 percent CI around predicted densities for the
-distribution in `distr_list`, and a 1 if the observation is within the
-95 percent CI, a 0 otherwise, and `$pred_pdf_dat`:a tibble with the
-predicted probability density `pdf_hat`, the observation density `ydens`
-for each value in the range of emissions in `x_hat`. The maximum
-emission value of distributions, `maxY`, the ordered range emissions to
-predict to `xvals`, and the prior distributions and initial values are
-all automatically supplied from the emissions data to be fully
-encompassing and uninformative by default. They can be supplied manually
-instead however by supplying `maxY`, `xvals`, or setting
-`manual_prior = TRUE` with corresponding lower and upper limits in
-`prior_list`. If manual priors are used, only a single distribution can
-be run at a time in `distr_list`.
+Results include `$fit_pop`: a tibble with the `UPL`, `SSE_tot` the total
+Sum of Squared Errors, and total count of observations within 95 percent
+CI for each group and distribution in `'distr_list'`, `$fit_grp` with
+group level `SSE`, counts of observations in 95 percent CI, and pdf
+integration. `$conv_output`: a tibble with the parameters, Gelman-Rubin
+diagnostics, and if the converged for distribution in `distr_list`,
+`$obs_pdf_dat`: a tibble with the emissions observations, corresponding
+observation densities, median, upper, and lower 95 percent CI around
+predicted densities for the distribution in `distr_list`, and a 1 if the
+observation is within the 95 percent CI, a 0 otherwise, and
+`$pred_pdf_pop`: a tibble with the predicted probability density
+`pdf_hat` for the parent population density function, `$pred_pdf_grp` a
+tibble with the predicted probability density `pdf_hat` by group and the
+empirical observation density `ydens` for each value in the range of
+emissions in `x_hat`. The maximum emission value of distributions,
+`maxY`, the ordered range emissions to predict to `xvals`, and the prior
+distributions and initial values are all automatically supplied from the
+emissions data to be fully encompassing and uninformative by default.
+They can be supplied manually instead however by supplying `maxY`,
+`xvals`, or setting `manual_prior = TRUE` with corresponding lower and
+upper limits in `prior_list`. If manual priors are used, only a single
+distribution can be run at a time in `distr_list`.
 
 ## Usage
 

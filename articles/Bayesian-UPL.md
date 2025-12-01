@@ -212,7 +212,8 @@ is designed to run with minimal user input needed.
 
 ``` r
 distributions = c('Beta', 'Gamma', 'Lognormal', 'Normal', 'Skewed')
-results = Bayesian_UPL(data = dat_emiss,  emissions = 'emissions',
+results = Bayesian_UPL(data = dat_emiss, 
+                       emissions = 'emissions',
                        distr_list = distributions)
 ```
 
@@ -230,10 +231,11 @@ bars are stored in `results$obs_pdf_dat`, and those for plotting the
 densities along the range of `xvals` are stored in
 `results$pred_pdf_dat`.
 
-![Fitted likelihood distributions for IIS HCl
-emissions.](Bayesian-UPL_files/figure-html/figure3-1.png)
-
-Fitted likelihood distributions for IIS HCl emissions.
+    #> Error in `geom_line()`:
+    #> ! Problem while computing aesthetics.
+    #> ℹ Error occurred in the 4th layer.
+    #> Caused by error:
+    #> ! object 'pdf_hat_med_med' not found
 
 ### Step 3: Selecting a distribution
 
@@ -317,7 +319,7 @@ The UPL results are the variable `UPL` stored in `results$fit_table`:
 
 |     |   Gamma |   Beta |  Skewed | Lognormal |  Normal |
 |:----|--------:|-------:|--------:|----------:|--------:|
-| UPL | 0.00261 | 0.0026 | 0.00246 |    0.0034 | 0.00288 |
+| UPL | 0.00261 | 0.0026 | 0.00171 |    0.0034 | 0.00288 |
 
 Upper Predictive Limits for IIS HCl emissions
 
@@ -606,7 +608,7 @@ is an example of how you can write your own JAGS model script and use it
 with the `_likelihood()` functions. The JAGS model script below will
 create the file ‘Custom_JAGS.R’ in your working directory. This is a
 normal probability distribution with the same `pdf_obs`, `emission_hat`,
-and `pdf_hat` variables that are needed for calculating the UPL,
+and `pdf_hat_med` variables that are needed for calculating the UPL,
 assessing fit, and plotting the full probability function. However, we
 have changed the name of the parameters, set specific prior
 distributions, and manually specified to truncate the distribution
@@ -708,9 +710,9 @@ ggplot()+
             aes(y = ydens, x = emissions),
             size = 3, alpha = 0.5, shape = 19, color = 'black')+
   geom_line(data = custom_fit$xhat_pdf_dat,
-            aes(x = x_hat, y = pdf_hat, color = distr), size = 0.75)+
+            aes(x = x_hat, y = pdf_hat_med, color = distr), size = 0.75)+
   geom_area(data = custom_fit$xhat_pdf_dat,
-            aes(x = x_hat, y = pdf_hat, fill = distr), alpha = 0.5)+
+            aes(x = x_hat, y = pdf_hat_med, fill = distr), alpha = 0.5)+
   geom_line(data = pred_dat,
             aes(x = x_hat, y = pdf_n, color = 'prior'), size = 0.75)+
   geom_area(data = pred_dat,

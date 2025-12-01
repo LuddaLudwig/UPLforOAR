@@ -2,8 +2,6 @@
 
 This function takes the list of results from
 [`output_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihood.md)
-or
-[`output_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihoodGroup.md)
 and compares the predicted density distributions to observed density
 distributions, estimating the `SSE` (sum of squared errors) and counts
 the number of emissions observations with densities that have
@@ -29,8 +27,6 @@ fit_likelihood(
 
   Output list from
   [`output_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihood.md)
-  or
-  [`output_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihoodGroup.md)
 
 - up:
 
@@ -69,6 +65,4 @@ each emission value and each `xval`, named `obs_pdf_dat` and
 and lower 95 percent and median around predicted pdf. The UPL estimate
 from
 [`output_likelihood()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihood.md)
-or
-[`output_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/output_likelihoodGroup.md)
 is included as well as the RNG.state for record keeping.

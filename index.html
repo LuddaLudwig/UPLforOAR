@@ -46,6 +46,7 @@
     <li><a class="dropdown-item" href="articles/Convergence-and-Priors.html">Convergence and Priors</a></li>
     <li><a class="dropdown-item" href="articles/Density.html">Density</a></li>
     <li><a class="dropdown-item" href="articles/Distributions.html">Distributions</a></li>
+    <li><a class="dropdown-item" href="articles/Hierarchical-UPL.html">Hierarchical UPL</a></li>
     <li><a class="dropdown-item" href="articles/Methods-Comparison.html">Methods Comparison</a></li>
   </ul>
 </li>
@@ -90,7 +91,7 @@
 <div class="section level2">
 <h2 id="example-emissions-data">Example emissions data<a class="anchor" aria-label="anchor" href="#example-emissions-data"></a>
 </h2>
-<p>This example uses Hg emissions data from the recent <a href="https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132" class="external-link">EPA rule-making</a> NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. This data set contains a lot of test report information, but only columns for <code>emissions</code> and <code>sources</code> are needed for the MACT floor UPL analysis. The <code>emissions</code> and <code>sources</code> need to be named such explicitly. The emissions should all be in consistent units, and the sources should be unique at the unit-level (e.g. a single boiler), not including sub-categories.</p>
+<p>This example uses Hg emissions data from the recent <a href="https://www.regulations.gov/document/EPA-HQ-OAR-2009-0234-20132" class="external-link">EPA rule-making</a> NESHAP for Coal- and Oil-fired Electric Utility Steam Generating Units. This data set contains a lot of test report information, but only columns for <code>emissions</code> and <code>sources</code> are needed for the MACT floor UPL analysis. The <code>emissions</code> and <code>sources</code> need to be referred to by their variable name or column position in the data set. The emissions should all be in consistent units, and the sources should be unique at the unit-level (e.g. a single boiler), not including sub-categories.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LuddaLudwig/UPLforOAR" class="external-link">UPLforOAR</a></span><span class="op">)</span></span>
 <span><span class="va">dat_emiss</span> <span class="op">=</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">"man/data_example/MATS_Hg.csv"</span>, col_names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -153,7 +154,7 @@
 </tbody>
 </table>
 <p>Top 5 of 42 sources for existing source UPL calculation</p>
-<p>Since there were more than 30 sources in the emissions data, the top 12% were chosen to represent the top sources. This yielded 47 sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is Normal, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.</p>
+<p>Since there were more than 30 sources in the emissions data, the top 12% were selected to represent the top sources. This yielded 47 sources. The data included in this regulatory docket were test averages as opposed to individual runs. As such the number of future runs used in UPL calculations will be 1 instead of the default, an average of 3 runs. The appropriate distribution for the UPL calculation is Normal, according to ratios of skewness and kurtosis. This simple distribution test does not take into account that we cannot have negative emissions, so we will also calculate the Lognormal UPL for comparison, which is strictly positive.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">UPL1_exist</span> <span class="op">=</span> <span class="fu"><a href="reference/Normal_UPL.html">Normal_UPL</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_exist</span>,</span>
 <span>                        emissions <span class="op">=</span> <span class="st">'emissions'</span>,</span>
@@ -267,7 +268,7 @@ Observation density of Hg for the overall population. The obseration data are in
 <li><a href="https://codecov.io/gh/LuddaLudwig/UPLforOAR" class="external-link"><img src="https://codecov.io/gh/LuddaLudwig/UPLforOAR/graph/badge.svg?token=B94TZPZ258" alt="codecov"></a></li>
 <li><a href="https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/LuddaLudwig/UPLforOAR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://choosealicense.com/licenses/mit/" class="external-link"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a></li>
-<li><a href="/commits/main"><img src="https://img.shields.io/badge/last%20change-2025--11--12-green.svg" alt="Last-changedate"></a></li>
+<li><a href="/commits/main"><img src="https://img.shields.io/badge/last%20change-2025--11--20-green.svg" alt="Last-changedate"></a></li>
 </ul>
 </div>
 

@@ -56,6 +56,10 @@
   : fit_likelihood() calculates the error between fitted density and
   observed density distributions
 
+- [`fit_likelihoodGroup()`](https://luddaludwig.github.io/UPLforOAR/reference/fit_likelihoodGroup.md)
+  : fit_likelihoodGroup() calculates the error between fitted density
+  and observed density distributions with a hierarchical group structure
+
 - [`make_environment()`](https://luddaludwig.github.io/UPLforOAR/reference/make_environment.md)
   : Makes a list of environments for automating analysis in reg text
   templates
